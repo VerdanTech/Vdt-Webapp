@@ -9,3 +9,15 @@ Based on the dependencies listed in pyproject.toml, update the requirements file
 
 `make run`
 Runs the server with the development settings
+
+`make lint`
+Lints files using flakeheaven
+
+`make format`
+Formats files using isort and black
+
+`make test`
+Runs pytest, outputting a report to reports/pytest, and coverage, outputting a report to report/coverage
+
+`make up`
+Runs format, lint, and test
