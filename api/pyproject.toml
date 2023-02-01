@@ -7,7 +7,6 @@ dependencies = [
     "django",
     "python-decouple",
     ]
-
 description = 'API of the AutoGMO (Automatic Garden Management and Optimization) project.'
 readme = "README.md"
 authors = [
@@ -18,7 +17,7 @@ authors = [
 test = [
     "pytest-django",
     "pytest-html",
-    "coverage",
+    "coverage[toml]",
 ]
 dev = [
     "django-debug-toolbar",
@@ -30,6 +29,9 @@ dev = [
 
 [project.urls]
 "Repository" = "https://github.com/nathanielarking/AutoGMO"
+
+[tool.setuptools]
+py-modules = ["autogmo_api"]
 
 [tool.black]
 include = '\.pyi?$'
@@ -79,4 +81,4 @@ django_find_project = false
 pythonpath = ". autogmo_api"
 DJANGO_SETTINGS_MODULE = "autogmo_api.settings.test"
 testpaths = ["autogmo_api"]
-python_files = ["tests.py", "test_*.py", "*_tests.py", "**/tests/*"]
+python_files = ["tests.py", "test_*.py", "*_test.py", "*_tests.py", "**/tests/*", "**/test/*"]

@@ -8,43 +8,20 @@ asgiref==3.6.0
     # via django
 attrs==22.2.0
     # via pytest
-cachetools==5.3.0
-    # via tox
-chardet==5.1.0
-    # via tox
-colorama==0.4.6
-    # via tox
-coverage==7.1.0
+coverage[toml]==7.1.0
     # via autogmo-api (pyproject.toml)
-distlib==0.3.6
-    # via virtualenv
 django==4.1.5
     # via autogmo-api (pyproject.toml)
 exceptiongroup==1.1.0
     # via pytest
-filelock==3.9.0
-    # via
-    #   tox
-    #   virtualenv
 iniconfig==2.0.0
     # via pytest
 packaging==23.0
-    # via
-    #   pyproject-api
-    #   pytest
-    #   tox
-platformdirs==2.6.2
-    # via
-    #   tox
-    #   virtualenv
+    # via pytest
 pluggy==1.0.0
-    # via
-    #   pytest
-    #   tox
+    # via pytest
 py==1.11.0
     # via pytest-html
-pyproject-api==1.5.0
-    # via tox
 pytest==7.2.1
     # via
     #   pytest-django
@@ -62,10 +39,5 @@ sqlparse==0.4.3
     # via django
 tomli==2.0.1
     # via
-    #   pyproject-api
+    #   coverage
     #   pytest
-    #   tox
-tox==4.4.3
-    # via autogmo-api (pyproject.toml)
-virtualenv==20.17.1
-    # via tox

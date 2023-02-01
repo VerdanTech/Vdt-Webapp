@@ -29,7 +29,9 @@ update-dependencies:
 
 .PHONY: clean
 clean:
-	rm -rf *.egg-info
+	rm -rf .egg-info/
+	rm -rf reports/
+	rm .coverage
 
 .PHONY: upgrade
 upgrade: upgrade-dependencies sync-dependencies clean
@@ -50,13 +52,10 @@ lint:
 
 .PHONY: format
 format:
-	$(BIN)/black autogmo_api
 	$(BIN)/isort .
+	$(BIN)/black autogmo_api
 
 .PHONY: test
 test:
 	$(BIN)/$(PY) -m coverage run --source autogmo_api -m pytest --html=reports/pytest/index.html
 	$(BIN)/$(PY) -m coverage html -d reports/coverage
-
-.PHONY: up
-up: format lint test
