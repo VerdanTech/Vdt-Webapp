@@ -33,8 +33,19 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "django.contrib.sites",
+    "rest_framework",
+    "rest_framework.authtoken",
+    "allauth",
+    "allauth.account",
+    "allauth.socialaccount",
+    "dj_rest_auth",
+    "dj_rest_auth.registration",
     "apps.user",
+    "apps.auth"
 ]
+
+SITE_ID = 1
 
 # ==============================================================================
 # MIDDLEWARE SETTINGS
@@ -49,6 +60,25 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
+
+
+# ==============================================================================
+# API SETTINGS
+# ==============================================================================
+
+REST_FRAMEWORK = {
+    'DEFAULT_RENDERER_CLASSES': [
+        'rest_framework.renderers.JSONRenderer',
+    ],
+    "DEFAULT_PERMISSION_CLASSES": [
+        "rest_framework.permissions.IsAuthenticated",
+    ],
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework.authentication.SessionAuthentication",
+    ],
+}
+
+API_URL_BASE = config("API_URL_BASE", default="api/", cast=str)
 
 # ==============================================================================
 # DATABASES SETTINGS
@@ -66,6 +96,27 @@ DATABASES = {
 # ==============================================================================
 
 AUTH_USER_MODEL = "user.User"
+
+AUTHENTICATION_BACKENDS = (
+    "django.contrib.auth.backends.ModelBackend",
+    "allauth.account.auth_backends.AuthenticationBackend",
+)
+
+CSRF_COOKIE_SAMESITE = 'Strict'
+SESSION_COOKIE_SAMESITE = 'Strict'
+CSRF_COOKIE_HTTPONLY = True
+SESSION_COOKIE_HTTPONLY = True
+
+# Allauth: https://django-allauth.readthedocs.io/en/latest/configuration.html
+AUTHENTICATION_METHOD = "email"
+ACCOUNT_AUTHENTICATED_LOGIN_REDIRECTS = False
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_EMAIL_VERIFICATION = "mandatory"
+ACCOUNT_PRESERVE_USERNAME_CASING = False
+
+# dj-rest-auth / rest_auth: https://dj-rest-auth.readthedocs.io/en/latest/configuration.html
+REST_AUTH_TOKEN_MODEL = None
+LOGOUT_ON_PASSWORD_CHANGE = True
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -140,6 +191,7 @@ STATICFILES_FINDERS = (
 # ==============================================================================
 # THIRD-PARTY SETTINGS
 # ==============================================================================
+
 
 # ==============================================================================
 # FIRST-PARTY SETTINGS

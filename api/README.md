@@ -1,3 +1,6 @@
+
+## Makefile commands
+
 `make build`
 Install python, initialize the virtual environment, and install all development dependencies
 
@@ -19,5 +22,10 @@ Formats files using isort and black
 `make test`
 Runs pytest, outputting a report to reports/pytest, and coverage, outputting a report to report/coverage
 
-`make up`
-Runs format, lint, and test
+## Environment variables commands
+
+SECRET_KEY: `str`, `default="django-insecure-n=r5mq#q09@3v_#x$ijj=l)(5aix3tav%!%_e9qrynsz=7+9ob"`
+DEBUG: `bool`, `default="True"`
+ALLOWED_HOSTS: `[str]`, `default=["127.0.0.1"]`
+DATABASE_URL: `django_db_url`
+API_URL_BASE: `str`, `default="api/"`

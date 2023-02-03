@@ -29,7 +29,7 @@ update-dependencies:
 
 .PHONY: clean
 clean:
-	rm -rf .egg-info/
+	rm -rf autogmo_api.egg-info/
 	rm -rf reports/
 	rm .coverage
 
@@ -59,3 +59,7 @@ format:
 test:
 	$(BIN)/$(PY) -m coverage run --source autogmo_api -m pytest --html=reports/pytest/index.html
 	$(BIN)/$(PY) -m coverage html -d reports/coverage
+
+.PHONY: migrate
+migrate:
+	$(BIN)/$(PY) autogmo_api/manage.py migrate
