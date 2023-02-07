@@ -63,3 +63,7 @@ test:
 .PHONY: migrate
 migrate:
 	$(BIN)/$(PY) autogmo_api/manage.py migrate
+
+.PHONY: schema
+schema:
+	$(BIN)/$(PY) autogmo_api/manage.py spectacular --color --file schema.yml

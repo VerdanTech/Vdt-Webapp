@@ -3,7 +3,7 @@ import copy
 import pytest
 from django.contrib.auth import get_user_model
 
-from ..managers import UserManager
+from apps.accounts.managers import UserManager
 
 
 class TestUserManager:

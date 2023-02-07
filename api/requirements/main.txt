@@ -13,9 +13,7 @@ cffi==1.15.1
 charset-normalizer==3.0.1
     # via requests
 cryptography==39.0.0
-    # via
-    #   django-rest-knox
-    #   pyjwt
+    # via pyjwt
 defusedxml==0.7.1
     # via python3-openid
 dj-rest-auth[with_social]==2.2.7
@@ -25,19 +23,15 @@ django==4.1.5
     #   autogmo-api (pyproject.toml)
     #   dj-rest-auth
     #   django-allauth
-    #   django-rest-knox
     #   djangorestframework
 django-allauth==0.52.0
     # via dj-rest-auth
 django-rest-framework==0.1.0
     # via autogmo-api (pyproject.toml)
-django-rest-knox==4.2.0
-    # via autogmo-api (pyproject.toml)
 djangorestframework==3.14.0
     # via
     #   dj-rest-auth
     #   django-rest-framework
-    #   django-rest-knox
 idna==3.4
     # via requests
 oauthlib==3.2.2

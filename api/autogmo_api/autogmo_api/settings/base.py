@@ -8,13 +8,12 @@ from decouple import Csv, config
 # ==============================================================================
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
+DEBUG = config("DEBUG", default=True, cast=bool)
 
 SECRET_KEY = config(
     "SECRET_KEY",
     default="django-insecure-n=r5mq#q09@3v_#x$ijj=l)(5aix3tav%!%_e9qrynsz=7+9ob",
 )
-
-DEBUG = config("DEBUG", default=True, cast=bool)
 
 ALLOWED_HOSTS = config("ALLOWED_HOSTS", default="127.0.0.1", cast=Csv())
 
@@ -41,8 +40,7 @@ INSTALLED_APPS = [
     "allauth.socialaccount",
     "dj_rest_auth",
     "dj_rest_auth.registration",
-    "apps.user",
-    "apps.auth"
+    "apps.accounts",
 ]
 
 SITE_ID = 1
@@ -67,8 +65,8 @@ MIDDLEWARE = [
 # ==============================================================================
 
 REST_FRAMEWORK = {
-    'DEFAULT_RENDERER_CLASSES': [
-        'rest_framework.renderers.JSONRenderer',
+    "DEFAULT_RENDERER_CLASSES": [
+        "rest_framework.renderers.JSONRenderer",
     ],
     "DEFAULT_PERMISSION_CLASSES": [
         "rest_framework.permissions.IsAuthenticated",
@@ -95,28 +93,17 @@ DATABASES = {
 # AUTHENTICATION AND AUTHORIZATION SETTINGS
 # ==============================================================================
 
-AUTH_USER_MODEL = "user.User"
+AUTH_USER_MODEL = "accounts.User"
 
 AUTHENTICATION_BACKENDS = (
     "django.contrib.auth.backends.ModelBackend",
     "allauth.account.auth_backends.AuthenticationBackend",
 )
 
-CSRF_COOKIE_SAMESITE = 'Strict'
-SESSION_COOKIE_SAMESITE = 'Strict'
+CSRF_COOKIE_SAMESITE = "Strict"
+SESSION_COOKIE_SAMESITE = "Strict"
 CSRF_COOKIE_HTTPONLY = True
 SESSION_COOKIE_HTTPONLY = True
-
-# Allauth: https://django-allauth.readthedocs.io/en/latest/configuration.html
-AUTHENTICATION_METHOD = "email"
-ACCOUNT_AUTHENTICATED_LOGIN_REDIRECTS = False
-ACCOUNT_EMAIL_REQUIRED = True
-ACCOUNT_EMAIL_VERIFICATION = "mandatory"
-ACCOUNT_PRESERVE_USERNAME_CASING = False
-
-# dj-rest-auth / rest_auth: https://dj-rest-auth.readthedocs.io/en/latest/configuration.html
-REST_AUTH_TOKEN_MODEL = None
-LOGOUT_ON_PASSWORD_CHANGE = True
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -189,12 +176,49 @@ STATICFILES_FINDERS = (
 )
 
 # ==============================================================================
-# THIRD-PARTY SETTINGS
+# ALLAUTH SETTINGS: https://django-allauth.readthedocs.io/en/latest/configuration.html
 # ==============================================================================
 
+ACCOUNT_AUTHENTICATION_METHOD = "email"
+ACCOUNT_AUTHENTICATED_LOGIN_REDIRECTS = False
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_EMAIL_VERIFICATION = "mandatory"
+ACCOUNT_PRESERVE_USERNAME_CASING = False
+ACCOUNT_ADAPTER = "apps.accounts.adapters.AccountAdapter"
+ACCOUNT_EMAIL_SUBJECT_PREFIX = config("DOMAIN_NAME", default="autogmo.com", cast=str)
+ACCOUNT_MAX_EMAIL_ADDRESSES = 3
+
+# ==============================================================================
+# DJ_REST_AUTH SETTINGS: https://dj-rest-auth.readthedocs.io/en/latest/configuration.html
+# ==============================================================================
+
+REST_AUTH_TOKEN_MODEL = None
+REST_SESSION_LOGIN = True
+LOGOUT_ON_PASSWORD_CHANGE = True
+REST_AUTH_SERIALIZERS = {
+    "PASSWORD_RESET_SERIALIZER": "apps.accounts.serializers.PasswordResetSerializer",
+}
 
 # ==============================================================================
 # FIRST-PARTY SETTINGS
 # ==============================================================================
+
+if config("USING_HTTPS", default=True, cast=bool):
+    ACCOUNT_DEFAULT_HTTP_PROTOCOL = "https"
+    CLIENT_BASE_URL = (
+        "https://" + config("DOMAIN_NAME", default="autogmo.com", cast=str) + "/"
+    )
+else:
+    ACCOUNT_DEFAULT_HTTP_PROTOCOL = "http"
+    CLIENT_BASE_URL = (
+        "http://" + config("DOMAIN_NAME", default="autogmo.com", cast=str) + "/"
+    )
+
+CLIENT_EMAIL_VERIFY_URL = CLIENT_BASE_URL + config(
+    "CLIENT_EMAIL_VERIFY_URL_POSTFIX", default="register/verify/", cast=str
+)
+CLIENT_PASSWORD_RESET_URL = CLIENT_BASE_URL + config(
+    "CLIENT_PASSWORD_RESET_URL_POSTFIX", default="password/reset/", cast=str
+)
 
 SIMPLE_ENVIRONMENT = config("SIMPLE_ENVIRONMENT", default="local")

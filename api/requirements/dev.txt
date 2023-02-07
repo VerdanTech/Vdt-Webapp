@@ -7,7 +7,9 @@
 asgiref==3.6.0
     # via django
 attrs==22.2.0
-    # via pytest
+    # via
+    #   jsonschema
+    #   pytest
 black==22.12.0
     # via autogmo-api (pyproject.toml)
 certifi==2022.12.7
@@ -23,9 +25,7 @@ colorama==0.4.6
 coverage[toml]==7.1.0
     # via autogmo-api (pyproject.toml)
 cryptography==39.0.0
-    # via
-    #   django-rest-knox
-    #   pyjwt
+    # via pyjwt
 defusedxml==0.7.1
     # via python3-openid
 dj-rest-auth[with_social]==2.2.7
@@ -36,25 +36,37 @@ django==4.1.5
     #   dj-rest-auth
     #   django-allauth
     #   django-debug-toolbar
-    #   django-rest-knox
+    #   django-mock-queries
     #   djangorestframework
+    #   drf-spectacular
+    #   drf-spectacular-sidecar
+    #   model-bakery
 django-allauth==0.52.0
     # via dj-rest-auth
 django-debug-toolbar==3.8.1
     # via autogmo-api (pyproject.toml)
-django-rest-framework==0.1.0
+django-mock-queries==2.1.7
     # via autogmo-api (pyproject.toml)
-django-rest-knox==4.2.0
+django-rest-framework==0.1.0
     # via autogmo-api (pyproject.toml)
 djangorestframework==3.14.0
     # via
     #   dj-rest-auth
+    #   django-mock-queries
     #   django-rest-framework
-    #   django-rest-knox
+    #   drf-spectacular
+drf-spectacular[sidecar]==0.25.1
+    # via autogmo-api (pyproject.toml)
+drf-spectacular-sidecar==2022.12.1
+    # via drf-spectacular
 entrypoints==0.4
     # via flakeheaven
 exceptiongroup==1.1.0
     # via pytest
+factory-boy==3.2.1
+    # via autogmo-api (pyproject.toml)
+faker==16.6.1
+    # via factory-boy
 fastjsonschema==2.16.2
     # via validate-pyproject
 flake8==4.0.1
@@ -63,12 +75,22 @@ flakeheaven==3.2.1
     # via autogmo-api (pyproject.toml)
 idna==3.4
     # via requests
+inflection==0.5.1
+    # via drf-spectacular
 iniconfig==2.0.0
     # via pytest
 isort==5.12.0
     # via autogmo-api (pyproject.toml)
+jsonschema==4.17.3
+    # via drf-spectacular
 mccabe==0.6.1
     # via flake8
+mock==5.0.1
+    # via django-mock-queries
+model-bakery==1.10.1
+    # via
+    #   autogmo-api (pyproject.toml)
+    #   django-mock-queries
 mypy-extensions==0.4.3
     # via black
 oauthlib==3.2.2
@@ -93,29 +115,45 @@ pygments==2.14.0
     # via flakeheaven
 pyjwt[crypto]==2.6.0
     # via django-allauth
+pyrsistent==0.19.3
+    # via jsonschema
 pytest==7.2.1
     # via
     #   pytest-django
     #   pytest-html
     #   pytest-metadata
+    #   pytest-mock
 pytest-django==4.5.2
     # via autogmo-api (pyproject.toml)
 pytest-html==3.2.0
     # via autogmo-api (pyproject.toml)
 pytest-metadata==2.0.4
     # via pytest-html
+pytest-mock==3.10.0
+    # via autogmo-api (pyproject.toml)
+python-dateutil==2.8.2
+    # via faker
 python-decouple==3.7
     # via autogmo-api (pyproject.toml)
 python3-openid==3.2.0
     # via django-allauth
 pytz==2022.7.1
     # via djangorestframework
+pyyaml==6.0
+    # via drf-spectacular
 requests==2.28.2
     # via
     #   django-allauth
+    #   requests-mock
     #   requests-oauthlib
+requests-mock==1.10.0
+    # via autogmo-api (pyproject.toml)
 requests-oauthlib==1.3.1
     # via django-allauth
+six==1.16.0
+    # via
+    #   python-dateutil
+    #   requests-mock
 sqlparse==0.4.3
     # via
     #   django
@@ -127,6 +165,8 @@ tomli==2.0.1
     #   black
     #   coverage
     #   pytest
+uritemplate==4.1.1
+    # via drf-spectacular
 urllib3==1.26.14
     # via
     #   flakeheaven

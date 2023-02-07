@@ -14,16 +14,16 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from decouple import config
+from django.conf import settings
 from django.contrib import admin
-from django.settings import API_URL_BASE
 from django.urls import include, path
 
 urlpatterns = [
-    path(f"{API_URL_BASE}" + r"admin/", admin.site.urls),
-    path(f"{API_URL_BASE}", include("apps.auth.urls")),
+    path(f"{settings.API_URL_BASE}" + r"admin/", admin.site.urls),
+    path(f"{settings.API_URL_BASE}", include("apps.accounts.urls")),
 ]
 
 if config("DEBUG", default=True, cast=bool):
     urlpatterns = [
-        path(f"{API_URL_BASE}" + r"__debug__/", include("debug_toolbar.urls")),
+        path(f"{settings.API_URL_BASE}" + r"__debug__/", include("debug_toolbar.urls")),
     ] + urlpatterns

@@ -18,10 +18,16 @@ authors = [
 [project.optional-dependencies]
 test = [
     "pytest-django",
+    "model_bakery",
+    "factory_boy",
+    "pytest-mock",
+    "requests-mock",
+    "django-mock-queries",
     "pytest-html",
     "coverage[toml]",
 ]
 dev = [
+    "drf-spectacular[sidecar]",
     "django-debug-toolbar",
     "black",
     "isort",
@@ -58,6 +64,9 @@ max-line-length = 88
 format = "grouped"
 show_source = true
 
+[tool.flakeheaven.exceptions."autogmo_api/"]
+pycodestyle = ["-W503", "-E501"]
+
 [tool.flakeheaven.exceptions."venv/"]
 pycodestyle = ["-*"]
 pyflakes = ["-*"]
@@ -80,7 +89,12 @@ skip_glob = ["**/migrations/*"]
 
 [tool.pytest.ini_options]
 django_find_project = false
+addopts = "-vv -x -rx"
 pythonpath = ". autogmo_api"
 DJANGO_SETTINGS_MODULE = "autogmo_api.settings.test"
-testpaths = ["autogmo_api"]
+testpaths = ["autogmo_api/tests/"]
 python_files = ["tests.py", "test_*.py", "*_test.py", "*_tests.py", "**/tests/*", "**/test/*"]
+markers = [
+    "unit: Isolated tests of individual functions",
+    "endpoint: Integrated tests of one or multiple endpoints",
+]

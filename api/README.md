@@ -29,3 +29,7 @@ DEBUG: `bool`, `default="True"`
 ALLOWED_HOSTS: `[str]`, `default=["127.0.0.1"]`
 DATABASE_URL: `django_db_url`
 API_URL_BASE: `str`, `default="api/"`
+USING_HTTPS: `bool`, `default=True`
+DOMAIN_NAME: `str`, `"default="autogmo.com"`
+CLIENT_EMAIL_VERIFY_URL_POSTFIX: `str`, `default="register/verify/"`
+CLIENT_PASSWORD_RESET_URL_POSTFIX: `str`, `default="password/reset/"`
