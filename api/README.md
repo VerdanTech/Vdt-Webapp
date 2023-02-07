@@ -24,12 +24,20 @@ Runs pytest, outputting a report to reports/pytest, and coverage, outputting a r
 
 ## Environment variables commands
 
-> SECRET_KEY: `str`, `default="django-insecure-n=r5mq#q09@3v_#x$ijj=l)(5aix3tav%!%_e9qrynsz=7+9ob"`
-> DEBUG: `bool`, `default="True"`
-> ALLOWED_HOSTS: `[str]`, `default=["127.0.0.1"]`
-> DATABASE_URL: `django_db_url`
-> API_URL_BASE: `str`, `default="api/"`
-> USING_HTTPS: `bool`, `default=True`
-> DOMAIN_NAME: `str`, `"default="autogmo.com"`
-> CLIENT_EMAIL_VERIFY_URL_POSTFIX: `str`, `default="register/verify/"`
-> CLIENT_PASSWORD_RESET_URL_POSTFIX: `str`, `default="password/reset/"`
+SECRET_KEY: `str`, `default="django-insecure-n=r5mq#q09@3v_#x$ijj=l)(5aix3tav%!%_e9qrynsz=7+9ob"`
+
+DEBUG: `bool`, `default="True"`
+
+ALLOWED_HOSTS: `[str]`, `default=["127.0.0.1"]`
+
+DATABASE_URL: `django_db_url`
+
+API_URL_BASE: `str`, `default="api/"`
+
+USING_HTTPS: `bool`, `default=True`
+
+DOMAIN_NAME: `str`, `"default="autogmo.com"`
+
+CLIENT_EMAIL_VERIFY_URL_POSTFIX: `str`, `default="register/verify/"`
+
+CLIENT_PASSWORD_RESET_URL_POSTFIX: `str`, `default="password/reset/"`
