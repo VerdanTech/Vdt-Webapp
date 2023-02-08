@@ -1,0 +1,100 @@
+[project]
+name = "autogmo_api"
+version = "1.0.0"
+requires-python = ">=3.10.6"
+license = {text = "GPL-3.0-or-later"}
+dependencies = [
+    "django",
+    "django-rest-framework",
+    "dj-rest-auth[with_social]",
+    "python-decouple",
+    ]
+description = 'API of the AutoGMO (Automatic Garden Management and Optimization) project.'
+readme = "README.md"
+authors = [
+  { name = "Nathaniel King", email = "nathanielarking@gmail.com" }
+]
+
+[project.optional-dependencies]
+test = [
+    "pytest-django",
+    "model_bakery",
+    "factory_boy",
+    "pytest-mock",
+    "requests-mock",
+    "django-mock-queries",
+    "pytest-html",
+    "coverage[toml]",
+]
+dev = [
+    "drf-spectacular[sidecar]",
+    "django-debug-toolbar",
+    "black",
+    "isort",
+    "flakeheaven",
+    "validate-pyproject",
+]
+
+[project.urls]
+"Repository" = "https://github.com/nathanielarking/AutoGMO"
+
+[tool.setuptools]
+py-modules = ["autogmo_api"]
+
+[tool.black]
+include = '\.pyi?$'
+exclude = '''
+  /(
+      \.eggs
+    | \.git
+    | \.hg
+    | \.mypy_cache
+    | \.tox
+    | \.venv
+    | _build
+    | buck-out
+    | build
+    | dist
+    | migrations
+  )/
+'''
+
+[tool.flakeheaven]
+max-line-length = 88
+format = "grouped"
+show_source = true
+
+[tool.flakeheaven.exceptions."autogmo_api/"]
+pycodestyle = ["-W503", "-E501"]
+
+[tool.flakeheaven.exceptions."venv/"]
+pycodestyle = ["-*"]
+pyflakes = ["-*"]
+
+[tool.flakeheaven.exceptions."**/migrations/*"]
+pycodestyle = ["-*"]
+pyflakes = ["-*"]
+
+[tool.flakeheaven.exceptions."**/settings/*"]
+pycodestyle = ["-*"]
+pyflakes = ["-*"]
+
+[tool.isort]
+profile = "black"
+combine_as_imports = true
+src_paths = ["autogmo_api"]
+known_first_party = ["autogmo_api"]
+skip_gitignore = true
+skip_glob = ["**/migrations/*"]
+
+[tool.pytest.ini_options]
+django_find_project = false
+addopts = "-vv -x -rx"
+pythonpath = ". autogmo_api"
+DJANGO_SETTINGS_MODULE = "autogmo_api.settings.test"
+testpaths = ["autogmo_api/tests/"]
+python_files = ["tests.py", "test_*.py", "*_test.py", "*_tests.py", "**/tests/*", "**/test/*"]
+markers = [
+    "unit: Isolated tests of individual functions",
+    "endpoint: Integrated tests of one or multiple endpoints",
+]
