@@ -1,4 +1,7 @@
-from dj_rest_auth.registration.views import RegisterView as RestAuthRegisterView
+from dj_rest_auth.registration.views import (
+    RegisterView as RestAuthRegisterView,
+    SocialLoginView,
+)
 from dj_rest_auth.views import (
     LoginView as RestAuthLogin,
     PasswordResetConfirmView as RestAuthPasswordResetConfirmView,
