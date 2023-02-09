@@ -1,42 +1,40 @@
-<script>
-    import { AppBar } from '@skeletonlabs/skeleton';
-</script>
-
-<AppBar gridColumns="grid-cols-3" padding="p-0" slotLead="justify-self-start" slotDefault="justify-self-center" slotTrail="justify-self-end">
-
-	<svelte:fragment slot="lead">
-        <a href="#">
-            <img class="w-12 mr-2 self-center" src="/autogmo_logo.png" alt="Logo" />
-        </a>
-        <div>
-            <a href="#" class="text-3xl no-underline hover:text-blue-dark font-sans font-bold">AutoGMO</a><br>
-            <span class="text-s text-grey-dark">Automated Garden Management & Optimization</span>
-        </div>
-    </svelte:fragment>
-        <ul class="">
+<header class="bg-surface-100-800-token flex justify-between items-center">
+    <nav class="font-semibold text-lg">
+        <ul class="flex items-center">
+            <li>
+                <a href="#">
+                    <img class="w-16" src="/autogmo_logo.png" alt="Logo" />
+                </a>
+            </li>
+            <li>
+                <a href="#" class="font-semibold text-lg">autogmo</a>
+            </li>
+        </ul>
+    </nav>
+    <nav class="font-semibold text-lg">
+        <ul class="flex items-center">
+            <li class="p-4 underline-none border-b-2 border-primary-500 border-opacity-0 hover:border-opacity-100">
+                <a href="#">Guides</a>
+            </li>
+            <li class="p-4 border-b-2 border-primary-500 border-opacity-0 hover:border-opacity-100">
+                <a href="#" class="">Github</a>
+            </li>
+            <li class="p-4 border-b-2 border-primary-500 border-opacity-0 hover:border-opacity-100">
+                <a href="#" class="">About</a>
+            </li>
+            <li class="p-4 border-b-2 border-primary-500 border-opacity-0 hover:border-opacity-100">
+                <a href="#" class="">Donate</a>
+            </li>
+        </ul>
+    </nav>
+    <nav class="font-semibold text-lg">
+        <ul class="flex items-center">
             <li class="">
-                <a href="#" class="btn rounded-none hover:bg-primary-500">Home</a>
+                <a href="#" class="">Log in</a>
             </li>
-            <li>
-                <a href="#" class="btn rounded-none hover:bg-primary-500">Guides</a>
-            </li>
-            <li>
-                <a href="#" class="btn rounded-none hover:bg-primary-500">Github</a>
-            </li>
-            <li>
-                <a href="#" class="btn rounded-none hover:bg-primary-500">Donat</a>
+            <li class="">
+                <a href="#" class="">Get started</a>
             </li>
         </ul>
-    <svelte:fragment slot="trail">
-        <ul class="">
-            <li>
-                <a href="#" class="btn">Log in</a>
-            </li>
-            <li>
-                <a href="#" class="btn variant-filled-primary">Register</a>
-            </li>
-        </ul>
-    </svelte:fragment>
-
-
-</AppBar>
+    </nav>
+</header>
