@@ -63,11 +63,11 @@
 		<!--Login and register links-->
 		<nav class="h-full font-semibold mr-4 text-md lg:text-lg">
 			<ul class="h-full flex items-center">
-				<li class="">
+				<li>
 					<a href="/users/login" class="btn">Log in</a>
 				</li>
-				<li class="/users/register">
-					<a href="#" class="btn variant-filled-primary">Get started</a>
+				<li>
+					<a href="/users/register" class="btn variant-filled-primary">Get started</a>
 				</li>
 			</ul>
 		</nav>
