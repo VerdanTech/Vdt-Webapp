@@ -1,36 +1,15 @@
+<script>
+	import RegisterForm from './RegisterForm.svelte';
+</script>
+
 <svelte:head>
-	<title>Register | AutoGMO</title>
+	<title>Register | Verdantech</title>
 </svelte:head>
 
-<div class="container w-3/4 md:w-1/2 2xl:w-1/4 mx-auto mt-16 bg-surface-100-800-token rounded-container-token">
-    <div class="bg-primary-500 ">
-        <h1 class="text-center text-on-primary-token p-4">
-            Register
-        </h1>
-    </div>
-    <div>
-        <ul>
-            <li>
-                <label for="">
-                    <span>Email</span>
-                    <input type="email">
-                </label>
-            </li>
-            <li>
-                <label for="">
-                    <span>Username</span>
-                    <input type="text">
-                </label>
-            </li>
-            <li>
-                <label for="">
-                    <span>Password</span>
-                    <input type="password">
-                </label>
-            </li>
-            <li>
-                <button class="btn btn-variant-filled-primary">Register</button>
-            </li>
-        </ul>
-    </div>
+<div class="card p-8 w-3/4 md:w-1/2 2xl:w-1/4 mx-auto mt-16 2xl:mt-24 rounded-container-token">
+	<h2 class="p-4">
+		Create an account or <span><a href="./login" class="!no-underline">log in</a></span>
+	</h2>
+	<hr />
+	<RegisterForm />
 </div>

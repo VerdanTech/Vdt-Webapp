@@ -32,7 +32,7 @@
 				</li>
 				<li>
 					<a href="/" class="hidden sm:block">
-						<span>AutoGMO</span>
+						<span>VerdanTech</span>
 					</a>
 				</li>
 			</ul>
@@ -72,21 +72,24 @@
 			</ul>
 		</nav>
 	</svelte:fragment>
-	<svelte:fragment slot="headline">
-		<!--Mobile vertical navigation menu-->
-		<input type="checkbox" id="menu-toggle" name="menu-toggle" class="peer hidden" />
-		<nav class="hidden peer-checked:block md:peer-checked:hidden bg-surface-700 text-xl">
-			<ul>
-				{#each navLinks as link}
-					<li
-						class="flex bg-surface-100-800-token odd:bg-surface-300-600-token hover:bg-surface-200-700-token odd:hover:bg-surface-400-500-token"
-					>
-						<a href={link.url} class="w-full flex justify-center">
-							<span class="p-4">{link.label}</span>
-						</a>
-					</li>
-				{/each}
-			</ul>
-		</nav>
-	</svelte:fragment>
 </AppBar>
+<!--Mobile vertical navigation menu-->
+<div>
+	<input type="checkbox" id="menu-toggle" name="menu-toggle" class="peer hidden" />
+	<nav class="hidden peer-checked:block md:peer-checked:hidden bg-surface-700 text-xl">
+		<ul>
+			{#each navLinks as link}
+				<li
+					class="flex bg-surface-100-800-token odd:bg-surface-300-600-token hover:bg-surface-200-700-token odd:hover:bg-surface-400-500-token"
+				>
+					<a
+						href={link.url}
+						class="w-full flex justify-center !no-underline !text-surface-900-50-token"
+					>
+						<span class="p-4">{link.label}</span>
+					</a>
+				</li>
+			{/each}
+		</ul>
+	</nav>
+</div>
