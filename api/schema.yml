@@ -1,15 +1,15 @@
 openapi: 3.0.3
 info:
-  title: AutoGMO-API
+  title: VerdanTech-API
   version: 0.1.0
-  description: API of the AutoGMO (Automatic Garden Management and Optimization) project.
+  description: API of the VerdanTech Project
 paths:
   /api/accounts/csrf/:
     get:
-      operationId: csrf_retrieve
-      description: Obtain valid CSRF token
+      operationId: accounts_csrf_retrieve
+      description: 'GET: Obtain valid CSRF token'
       tags:
-      - csrf
+      - accounts
       security:
       - {}
       responses:
@@ -17,13 +17,13 @@ paths:
           description: No response body
   /api/accounts/login/:
     post:
-      operationId: login_create
+      operationId: accounts_login_create
       description: |-
         Login using Session authentication.
         Requires CSRF token to prevent login-csrf,
         see: https://docs.djangoproject.com/en/4.1/ref/csrf/
       tags:
-      - login
+      - accounts
       requestBody:
         content:
           application/json:
@@ -48,17 +48,16 @@ paths:
           description: ''
   /api/accounts/logout/:
     post:
-      operationId: logout_create
+      operationId: accounts_logout_create
       description: |-
         Calls Django logout method and delete the Token object
         assigned to the current User object.
 
         Accepts/Returns nothing.
       tags:
-      - logout
+      - accounts
       security:
       - cookieAuth: []
-      - basicAuth: []
       - {}
       responses:
         '200':
@@ -69,14 +68,14 @@ paths:
           description: ''
   /api/accounts/password/change/:
     post:
-      operationId: password_change_create
+      operationId: accounts_password_change_create
       description: |-
         Calls Django Auth SetPasswordForm save method.
 
         Accepts the following POST parameters: new_password1, new_password2
         Returns the success/fail message.
       tags:
-      - password
+      - accounts
       requestBody:
         content:
           application/json:
@@ -91,7 +90,6 @@ paths:
         required: true
       security:
       - cookieAuth: []
-      - basicAuth: []
       responses:
         '200':
           content:
@@ -101,14 +99,10 @@ paths:
           description: ''
   /api/accounts/password/reset/:
     post:
-      operationId: password_reset_create
-      description: |-
-        Calls Django Auth PasswordResetForm save method.
-
-        Accepts the following POST parameters: email
-        Returns the success/fail message.
+      operationId: accounts_password_reset_create
+      description: Add CSRF protection to password reset view
       tags:
-      - password
+      - accounts
       requestBody:
         content:
           application/json:
@@ -123,27 +117,20 @@ paths:
         required: true
       security:
       - cookieAuth: []
-      - basicAuth: []
       - {}
       responses:
         '200':
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/RestAuthDetail'
+                $ref: '#/components/schemas/PasswordReset'
           description: ''
   /api/accounts/password/reset/confirm/:
     post:
-      operationId: password_reset_confirm_create
-      description: |-
-        Password reset e-mail link is confirmed, therefore
-        this resets the user's password.
-
-        Accepts the following POST parameters: token, uid,
-            new_password1, new_password2
-        Returns the success/fail message.
+      operationId: accounts_password_reset_confirm_create
+      description: Add CSRF protection to password reset confirm view
       tags:
-      - password
+      - accounts
       requestBody:
         content:
           application/json:
@@ -158,20 +145,20 @@ paths:
         required: true
       security:
       - cookieAuth: []
-      - basicAuth: []
       - {}
       responses:
         '200':
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/RestAuthDetail'
+                $ref: '#/components/schemas/PasswordResetConfirm'
           description: ''
   /api/accounts/registration/:
     post:
-      operationId: registration_create
+      operationId: accounts_registration_create
+      description: Add CSRF protection to registration view
       tags:
-      - registration
+      - accounts
       requestBody:
         content:
           application/json:
@@ -186,20 +173,19 @@ paths:
         required: true
       security:
       - cookieAuth: []
-      - basicAuth: []
       - {}
       responses:
         '201':
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/RestAuthDetail'
+                $ref: '#/components/schemas/Register'
           description: ''
   /api/accounts/registration/resend-email/:
     post:
-      operationId: registration_resend_email_create
+      operationId: accounts_registration_resend_email_create
       tags:
-      - registration
+      - accounts
       requestBody:
         content:
           application/json:
@@ -214,7 +200,6 @@ paths:
         required: true
       security:
       - cookieAuth: []
-      - basicAuth: []
       - {}
       responses:
         '201':
@@ -225,9 +210,9 @@ paths:
           description: ''
   /api/accounts/registration/verify-email/:
     post:
-      operationId: registration_verify_email_create
+      operationId: accounts_registration_verify_email_create
       tags:
-      - registration
+      - accounts
       requestBody:
         content:
           application/json:
@@ -242,7 +227,6 @@ paths:
         required: true
       security:
       - cookieAuth: []
-      - basicAuth: []
       - {}
       responses:
         '200':
@@ -253,7 +237,7 @@ paths:
           description: ''
   /api/accounts/user/:
     get:
-      operationId: user_retrieve
+      operationId: accounts_user_retrieve
       description: |-
         Reads and updates UserModel fields
         Accepts GET, PUT, PATCH methods.
@@ -264,10 +248,9 @@ paths:
 
         Returns UserModel fields.
       tags:
-      - user
+      - accounts
       security:
       - cookieAuth: []
-      - basicAuth: []
       responses:
         '200':
           content:
@@ -276,7 +259,7 @@ paths:
                 $ref: '#/components/schemas/UserDetails'
           description: ''
     put:
-      operationId: user_update
+      operationId: accounts_user_update
       description: |-
         Reads and updates UserModel fields
         Accepts GET, PUT, PATCH methods.
@@ -287,7 +270,7 @@ paths:
 
         Returns UserModel fields.
       tags:
-      - user
+      - accounts
       requestBody:
         content:
           application/json:
@@ -301,7 +284,6 @@ paths:
               $ref: '#/components/schemas/UserDetails'
       security:
       - cookieAuth: []
-      - basicAuth: []
       responses:
         '200':
           content:
@@ -310,7 +292,7 @@ paths:
                 $ref: '#/components/schemas/UserDetails'
           description: ''
     patch:
-      operationId: user_partial_update
+      operationId: accounts_user_partial_update
       description: |-
         Reads and updates UserModel fields
         Accepts GET, PUT, PATCH methods.
@@ -321,7 +303,7 @@ paths:
 
         Returns UserModel fields.
       tags:
-      - user
+      - accounts
       requestBody:
         content:
           application/json:
@@ -335,7 +317,6 @@ paths:
               $ref: '#/components/schemas/PatchedUserDetails'
       security:
       - cookieAuth: []
-      - basicAuth: []
       responses:
         '200':
           content:
@@ -472,9 +453,6 @@ components:
       required:
       - key
   securitySchemes:
-    basicAuth:
-      type: http
-      scheme: basic
     cookieAuth:
       type: apiKey
       in: cookie

@@ -25,9 +25,7 @@
 		}).then((response) => {
 			if (response.ok) {
                 goto('/app/dashboard')
-			} else if (response.status == 403) {
-
-            }
+			}
 		});
 	}
 </script>

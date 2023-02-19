@@ -66,4 +66,4 @@ migrate:
 
 .PHONY: schema
 schema:
-	$(BIN)/$(PY) autogmo_api/manage.py spectacular --color --file schema.yml
+	$(BIN)/$(PY) autogmo_api/manage.py spectacular --color --validate --file schema.yml

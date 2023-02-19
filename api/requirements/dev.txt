@@ -35,6 +35,7 @@ django==4.1.5
     #   autogmo-api (pyproject.toml)
     #   dj-rest-auth
     #   django-allauth
+    #   django-cors-headers
     #   django-debug-toolbar
     #   django-mock-queries
     #   djangorestframework
@@ -43,6 +44,8 @@ django==4.1.5
     #   model-bakery
 django-allauth==0.52.0
     # via dj-rest-auth
+django-cors-headers==3.13.0
+    # via autogmo-api (pyproject.toml)
 django-debug-toolbar==3.8.1
     # via autogmo-api (pyproject.toml)
 django-mock-queries==2.1.7

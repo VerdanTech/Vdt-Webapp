@@ -16,22 +16,17 @@ MIDDLEWARE.insert(0, "debug_toolbar.middleware.DebugToolbarMiddleware")
 # API SETTINGS
 # ==============================================================================
 
-REST_FRAMEWORK = {
-    "DEFAULT_RENDERER_CLASSES": [
-        "rest_framework.renderers.JSONRenderer",
-        "rest_framework.renderers.BrowsableAPIRenderer",
-    ],
-    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
-}
+REST_FRAMEWORK[
+    "DEFAULT_SCHEMA_CLASS"] = "drf_spectacular.openapi.AutoSchema"
+
 
 # ==============================================================================
 # SPECTACULAR DOCUMENTATION SETTINGS
 # ==============================================================================
 
 SPECTACULAR_SETTINGS = {
-    "TITLE": "AutoGMO-API",
-    "DESCRIPTION": "API of the AutoGMO "
-    "(Automatic Garden Management and Optimization) project.",
+    "TITLE": "VerdanTech-API",
+    "DESCRIPTION": "API of the VerdanTech Project",
     "VERSION": "0.1.0",
     "SERVE_INCLUDE_SCHEMA": False,
     "SWAGGER_UI_DIST": "SIDECAR",
@@ -56,3 +51,10 @@ EMAIL_USE_SSL = False
 # ==============================================================================
 
 INTERNAL_IPS = ["127.0.0.1"]
+
+# ==============================================================================
+# CORS SETTINGS
+# ==============================================================================
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:5173"
+]

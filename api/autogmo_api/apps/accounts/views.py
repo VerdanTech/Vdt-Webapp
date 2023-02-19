@@ -14,14 +14,16 @@ from rest_framework.permissions import AllowAny
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.generics import GenericAPIView
 
 
 @method_decorator(ensure_csrf_cookie, name="get")
-class CSRFTokenView(APIView):
-    """Obtain valid CSRF token"""
+class CSRFTokenView(GenericAPIView):
+    """GET: Obtain valid CSRF token"""
 
     permission_classes = [AllowAny]
     authentication_classes = []
+    serializer = None
 
     def get(self, request: Request) -> Response:
         return Response("CSRF Cookie set.")
