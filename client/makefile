@@ -1,4 +1,4 @@
 .PHONY: run
 run:
-	cd autogmo_client
+	cd verdantech_client
 	npm run dev

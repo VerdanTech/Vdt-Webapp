@@ -19,11 +19,11 @@ ALLOWED_HOSTS = config("ALLOWED_HOSTS", default="127.0.0.1", cast=Csv())
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-ROOT_URLCONF = "autogmo_api.urls"
+ROOT_URLCONF = "verdantech_api.urls"
 
 STATIC_URL = "static/"
 
-WSGI_APPLICATION = "autogmo_api.wsgi.application"
+WSGI_APPLICATION = "verdantech_api.wsgi.application"
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -194,7 +194,7 @@ ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_EMAIL_VERIFICATION = "mandatory"
 ACCOUNT_PRESERVE_USERNAME_CASING = False
 ACCOUNT_ADAPTER = "apps.accounts.adapters.AccountAdapter"
-ACCOUNT_EMAIL_SUBJECT_PREFIX = config("DOMAIN_NAME", default="autogmo.com", cast=str)
+ACCOUNT_EMAIL_SUBJECT_PREFIX = config("DOMAIN_NAME", default="verdantech.com", cast=str)
 ACCOUNT_MAX_EMAIL_ADDRESSES = 3
 
 # ==============================================================================
@@ -215,12 +215,12 @@ REST_AUTH_SERIALIZERS = {
 if config("USING_HTTPS", default=True, cast=bool):
     ACCOUNT_DEFAULT_HTTP_PROTOCOL = "https"
     CLIENT_BASE_URL = (
-        "https://" + config("DOMAIN_NAME", default="autogmo.com", cast=str) + "/"
+        "https://" + config("DOMAIN_NAME", default="verdantech.com", cast=str) + "/"
     )
 else:
     ACCOUNT_DEFAULT_HTTP_PROTOCOL = "http"
     CLIENT_BASE_URL = (
-        "http://" + config("DOMAIN_NAME", default="autogmo.com", cast=str) + "/"
+        "http://" + config("DOMAIN_NAME", default="verdantech.com", cast=str) + "/"
     )
 
 CLIENT_EMAIL_VERIFY_URL = CLIENT_BASE_URL + config(

@@ -1,5 +1,5 @@
 <svelte:head>
-	<title>Home | AutoGMO</title>
+	<title>Home | VerdanTech</title>
 </svelte:head>
 
 <div>This is the landing page</div>

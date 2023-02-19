@@ -5,7 +5,7 @@
 
 	let navLinks = [
 		{ url: '/guides', label: 'Guides' },
-		{ url: 'https://github.com/nathanielarking/AutoGMO', label: 'Github' },
+		{ url: 'https://github.com/nathanielarking/VerdanTech', label: 'Github' },
 		{ url: '/project', label: 'Project' },
 		{ url: '/donate', label: 'Donate' }
 	];

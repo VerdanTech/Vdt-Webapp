@@ -29,7 +29,7 @@ update-dependencies:
 
 .PHONY: clean
 clean:
-	rm -rf autogmo_api.egg-info/
+	rm -rf verdantech_api.egg-info/
 	rm -rf reports/
 	rm .coverage
 
@@ -44,26 +44,26 @@ build: init-venv sync-dependencies
 
 .PHONY: run
 run:
-	$(BIN)/$(PY) autogmo_api/manage.py runserver --settings=autogmo_api.settings.development
+	$(BIN)/$(PY) verdantech_api/manage.py runserver --settings=verdantech_api.settings.development
 
 .PHONY: lint
 lint:
-	$(BIN)/flakeheaven lint ./autogmo_api
+	$(BIN)/flakeheaven lint ./verdantech_api
 
 .PHONY: format
 format:
 	$(BIN)/isort .
-	$(BIN)/black autogmo_api
+	$(BIN)/black verdantech_api
 
 .PHONY: test
 test:
-	$(BIN)/$(PY) -m coverage run --source autogmo_api -m pytest --html=reports/pytest/index.html
+	$(BIN)/$(PY) -m coverage run --source verdantech_api -m pytest --html=reports/pytest/index.html
 	$(BIN)/$(PY) -m coverage html -d reports/coverage
 
 .PHONY: migrate
 migrate:
-	$(BIN)/$(PY) autogmo_api/manage.py migrate
+	$(BIN)/$(PY) verdantech_api/manage.py migrate
 
 .PHONY: schema
 schema:
-	$(BIN)/$(PY) autogmo_api/manage.py spectacular --color --validate --file schema.yml
+	$(BIN)/$(PY) verdantech_api/manage.py spectacular --color --validate --file schema.yml

@@ -1,3 +1,3 @@
 <svelte:head>
-	<title>Donate | AutoGMO</title>
+	<title>Donate | VerdanTech</title>
 </svelte:head>

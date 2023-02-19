@@ -4,7 +4,7 @@ from .base import *
 
 DEBUG = False
 
-ALLOWED_HOSTS = ["autogmo.com"]
+ALLOWED_HOSTS = ["verdantech.com"]
 
 CACHES = {
     "default": {

@@ -1,3 +1,3 @@
 <svelte:head>
-	<title>Guides | AutoGMO</title>
+	<title>Guides | VerdanTech</title>
 </svelte:head>

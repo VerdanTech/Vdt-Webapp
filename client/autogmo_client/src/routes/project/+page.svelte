@@ -1,3 +1,3 @@
 <svelte:head>
-	<title>Project | AutoGMO</title>
+	<title>Project | VerdanTech</title>
 </svelte:head>
