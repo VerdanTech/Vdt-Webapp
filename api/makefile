@@ -11,7 +11,7 @@ init-venv:
 .PHONY: sync-dependencies
 sync-dependencies:
 	$(BIN)/$(PY) -m pip install --upgrade pip pip-tools wheel
-	$(BIN)/$(PY) -m piptools sync requirements/main.txt requirements/dev.txt
+	$(BIN)/$(PY) -m piptools sync requirements/dev.txt
 	$(BIN)/$(PY) -m pip check
 
 .PHONY: upgrade-dependencies

@@ -15,8 +15,6 @@ SECRET_KEY = config(
     default="django-insecure-n=r5mq#q09@3v_#x$ijj=l)(5aix3tav%!%_e9qrynsz=7+9ob",
 )
 
-ALLOWED_HOSTS = config("ALLOWED_HOSTS", default="127.0.0.1", cast=Csv())
-
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 ROOT_URLCONF = "verdantech_api.urls"
@@ -58,9 +56,9 @@ REST_FRAMEWORK = {
 # ==============================================================================
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
-    'corsheaders.middleware.CorsMiddleware',
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
@@ -85,7 +83,19 @@ REST_FRAMEWORK = {
     ],
 }
 
-API_URL_BASE = config("API_URL_BASE", default="api/", cast=str)
+API_URL_BASE = config("API_URL_BASE", default="", cast=str)
+
+# ==============================================================================
+# SECURITY SETTINGS
+# ==============================================================================
+
+ALLOWED_HOSTS = config("ALLOWED_HOSTS", default="127.0.0.1", cast=Csv())
+CSRF_COOKIE_SAMESITE = 'Strict'
+SESSION_COOKIE_SAMESITE = 'Strict'
+CSRF_COOKIE_HTTPONLY = True
+SESSION_COOKIE_HTTPONLY = True
+
+CSRF_HEADER_NAME = "X-CSRF-Token"
 
 # ==============================================================================
 # DATABASES SETTINGS

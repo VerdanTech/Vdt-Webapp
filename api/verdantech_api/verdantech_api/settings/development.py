@@ -4,6 +4,8 @@ from .base import *
 # CORE SETTINGS
 # ==============================================================================
 
+ALLOWED_HOSTS = ['*']
+
 INSTALLED_APPS += ["debug_toolbar", "drf_spectacular", "drf_spectacular_sidecar"]
 
 # ==============================================================================
@@ -40,7 +42,7 @@ SPECTACULAR_SETTINGS = {
 
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_HOST = "smtp.gmail.com"
-EMAIL_HOST_USER = "verdantech.web@gmail.com"
+EMAIL_HOST_USER = "autogmo.web@gmail.com"
 EMAIL_HOST_PASSWORD = "kfkbwrymgrowpxhh"
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
@@ -55,6 +57,9 @@ INTERNAL_IPS = ["127.0.0.1"]
 # ==============================================================================
 # CORS SETTINGS
 # ==============================================================================
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:5173"
-]
+
+CORS_ALLOW_ALL_ORIGINS = True
+CSRF_TRUSTED_ORIGINS = ['http://localhost:5173','http://127.0.0.1:5173']
+
+CORS_EXPOSE_HEADERS = ['Content-Type', 'X-CSRFToken']
+CORS_ALLOW_CREDENTIALS = True

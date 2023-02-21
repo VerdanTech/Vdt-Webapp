@@ -22,7 +22,8 @@ EMAIL_USE_TLS = True
 
 
 # ==============================================================================
-# AUTHENTICATION AND AUTHORIZATION SETTINGS
+# SECURITY SETTINGS
 # ==============================================================================
+
 CSRF_COOKIE_SECURE = True
 SESSION_COOKIE_SECURE = True
