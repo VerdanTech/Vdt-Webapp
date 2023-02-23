@@ -4,10 +4,10 @@ info:
   version: 0.1.0
   description: API of the VerdanTech Project
 paths:
-  /api/accounts/csrf/:
+  /accounts/csrf/:
     get:
       operationId: accounts_csrf_retrieve
-      description: 'GET: Obtain valid CSRF token'
+      description: 'Sets response cookie: X-CSRF-Token to a valid CSRF token'
       tags:
       - accounts
       security:
@@ -15,7 +15,7 @@ paths:
       responses:
         '200':
           description: No response body
-  /api/accounts/login/:
+  /accounts/login/:
     post:
       operationId: accounts_login_create
       description: |-
@@ -46,14 +46,11 @@ paths:
               schema:
                 $ref: '#/components/schemas/Login'
           description: ''
-  /api/accounts/logout/:
+  /accounts/logout/:
     post:
       operationId: accounts_logout_create
-      description: |-
-        Calls Django logout method and delete the Token object
-        assigned to the current User object.
-
-        Accepts/Returns nothing.
+      description: Calls Django logout methods and deletes the sessionid assigned
+        to the user object
       tags:
       - accounts
       security:
@@ -61,12 +58,8 @@ paths:
       - {}
       responses:
         '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/RestAuthDetail'
-          description: ''
-  /api/accounts/password/change/:
+          description: No response body
+  /accounts/password/change/:
     post:
       operationId: accounts_password_change_create
       description: |-
@@ -97,10 +90,14 @@ paths:
               schema:
                 $ref: '#/components/schemas/RestAuthDetail'
           description: ''
-  /api/accounts/password/reset/:
+  /accounts/password/reset/:
     post:
       operationId: accounts_password_reset_create
-      description: Add CSRF protection to password reset view
+      description: |-
+        Calls Django Auth PasswordResetForm save method.
+
+        Accepts the following POST parameters: email
+        Returns the success/fail message.
       tags:
       - accounts
       requestBody:
@@ -125,10 +122,16 @@ paths:
               schema:
                 $ref: '#/components/schemas/PasswordReset'
           description: ''
-  /api/accounts/password/reset/confirm/:
+  /accounts/password/reset/confirm/:
     post:
       operationId: accounts_password_reset_confirm_create
-      description: Add CSRF protection to password reset confirm view
+      description: |-
+        Password reset e-mail link is confirmed, therefore
+        this resets the user's password.
+
+        Accepts the following POST parameters: token, uid,
+            new_password1, new_password2
+        Returns the success/fail message.
       tags:
       - accounts
       requestBody:
@@ -153,10 +156,9 @@ paths:
               schema:
                 $ref: '#/components/schemas/PasswordResetConfirm'
           description: ''
-  /api/accounts/registration/:
+  /accounts/registration/:
     post:
       operationId: accounts_registration_create
-      description: Add CSRF protection to registration view
       tags:
       - accounts
       requestBody:
@@ -181,7 +183,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Register'
           description: ''
-  /api/accounts/registration/resend-email/:
+  /accounts/registration/resend-email/:
     post:
       operationId: accounts_registration_resend_email_create
       tags:
@@ -208,7 +210,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/RestAuthDetail'
           description: ''
-  /api/accounts/registration/verify-email/:
+  /accounts/registration/verify-email/:
     post:
       operationId: accounts_registration_verify_email_create
       tags:
@@ -235,108 +237,18 @@ paths:
               schema:
                 $ref: '#/components/schemas/RestAuthDetail'
           description: ''
-  /api/accounts/user/:
-    get:
-      operationId: accounts_user_retrieve
-      description: |-
-        Reads and updates UserModel fields
-        Accepts GET, PUT, PATCH methods.
-
-        Default accepted fields: username, first_name, last_name
-        Default display fields: pk, username, email, first_name, last_name
-        Read-only fields: pk, email
-
-        Returns UserModel fields.
-      tags:
-      - accounts
-      security:
-      - cookieAuth: []
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/UserDetails'
-          description: ''
-    put:
-      operationId: accounts_user_update
-      description: |-
-        Reads and updates UserModel fields
-        Accepts GET, PUT, PATCH methods.
-
-        Default accepted fields: username, first_name, last_name
-        Default display fields: pk, username, email, first_name, last_name
-        Read-only fields: pk, email
-
-        Returns UserModel fields.
-      tags:
-      - accounts
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/UserDetails'
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: '#/components/schemas/UserDetails'
-          multipart/form-data:
-            schema:
-              $ref: '#/components/schemas/UserDetails'
-      security:
-      - cookieAuth: []
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/UserDetails'
-          description: ''
-    patch:
-      operationId: accounts_user_partial_update
-      description: |-
-        Reads and updates UserModel fields
-        Accepts GET, PUT, PATCH methods.
-
-        Default accepted fields: username, first_name, last_name
-        Default display fields: pk, username, email, first_name, last_name
-        Read-only fields: pk, email
-
-        Returns UserModel fields.
-      tags:
-      - accounts
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/PatchedUserDetails'
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: '#/components/schemas/PatchedUserDetails'
-          multipart/form-data:
-            schema:
-              $ref: '#/components/schemas/PatchedUserDetails'
-      security:
-      - cookieAuth: []
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/UserDetails'
-          description: ''
 components:
   schemas:
     Login:
       type: object
       properties:
-        username:
-          type: string
         email:
           type: string
           format: email
         password:
           type: string
       required:
+      - email
       - password
     PasswordChange:
       type: object
@@ -378,19 +290,6 @@ components:
       - new_password2
       - token
       - uid
-    PatchedUserDetails:
-      type: object
-      description: User model w/o password
-      properties:
-        pk:
-          type: integer
-          readOnly: true
-          title: ID
-        email:
-          type: string
-          format: email
-          readOnly: true
-          title: Email address
     Register:
       type: object
       properties:
@@ -428,22 +327,6 @@ components:
           readOnly: true
       required:
       - detail
-    UserDetails:
-      type: object
-      description: User model w/o password
-      properties:
-        pk:
-          type: integer
-          readOnly: true
-          title: ID
-        email:
-          type: string
-          format: email
-          readOnly: true
-          title: Email address
-      required:
-      - email
-      - pk
     VerifyEmail:
       type: object
       properties:

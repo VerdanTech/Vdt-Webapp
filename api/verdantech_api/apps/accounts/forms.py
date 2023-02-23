@@ -20,6 +20,7 @@ class PasswordResetForm(RestAuthPasswordResetForm):
 
             temp_key = token_generator.make_token(user)
 
+            # ----- DJ_REST_AUTH DEFAULT BEHAVIOR -----
             # save it to the password reset model
             # password_reset = PasswordReset(user=user, temp_key=temp_key)
             # password_reset.save()
@@ -34,6 +35,7 @@ class PasswordResetForm(RestAuthPasswordResetForm):
             # url = build_absolute_uri(None, path)
             # else:
             # url = build_absolute_uri(request, path)
+            # ----------
 
             # Override: set URL to our frontend's password reset route
             url = (

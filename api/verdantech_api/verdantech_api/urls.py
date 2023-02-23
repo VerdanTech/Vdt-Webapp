@@ -17,7 +17,11 @@ from decouple import config
 from django.conf import settings
 from django.contrib import admin
 from django.urls import include, path
-from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView
+from drf_spectacular.views import (
+    SpectacularAPIView,
+    SpectacularRedocView,
+    SpectacularSwaggerView,
+)
 
 urlpatterns = [
     path(f"{settings.API_URL_BASE}" + r"admin/", admin.site.urls),
@@ -27,6 +31,19 @@ urlpatterns = [
 if config("DEBUG", default=True, cast=bool):
     urlpatterns = [
         path(f"{settings.API_URL_BASE}" + r"__debug__/", include("debug_toolbar.urls")),
-        path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
-        path(f"{settings.API_URL_BASE}" + r'schema/redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
+        path(
+            f"{settings.API_URL_BASE}" + "schema/",
+            SpectacularAPIView.as_view(),
+            name="schema",
+        ),
+        path(
+            f"{settings.API_URL_BASE}" + r"redoc/",
+            SpectacularRedocView.as_view(url_name="schema"),
+            name="redoc",
+        ),
+        path(
+            f"{settings.API_URL_BASE}" + r"swagger/",
+            SpectacularSwaggerView.as_view(url_name="schema"),
+            name="swagger",
+        ),
     ] + urlpatterns

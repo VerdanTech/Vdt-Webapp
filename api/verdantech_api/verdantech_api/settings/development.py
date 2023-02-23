@@ -4,7 +4,7 @@ from .base import *
 # CORE SETTINGS
 # ==============================================================================
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ["*"]
 
 INSTALLED_APPS += ["debug_toolbar", "drf_spectacular", "drf_spectacular_sidecar"]
 
@@ -18,8 +18,7 @@ MIDDLEWARE.insert(0, "debug_toolbar.middleware.DebugToolbarMiddleware")
 # API SETTINGS
 # ==============================================================================
 
-REST_FRAMEWORK[
-    "DEFAULT_SCHEMA_CLASS"] = "drf_spectacular.openapi.AutoSchema"
+REST_FRAMEWORK["DEFAULT_SCHEMA_CLASS"] = "drf_spectacular.openapi.AutoSchema"
 
 
 # ==============================================================================
@@ -34,6 +33,7 @@ SPECTACULAR_SETTINGS = {
     "SWAGGER_UI_DIST": "SIDECAR",
     "SWAGGER_UI_FAVICON_HREF": "SIDECAR",
     "REDOC_DIST": "SIDECAR",
+    "COMPONENT_SPLIT_REQUEST": False,
 }
 
 # ==============================================================================
@@ -59,7 +59,7 @@ INTERNAL_IPS = ["127.0.0.1"]
 # ==============================================================================
 
 CORS_ALLOW_ALL_ORIGINS = True
-CSRF_TRUSTED_ORIGINS = ['http://localhost:5173','http://127.0.0.1:5173']
+CSRF_TRUSTED_ORIGINS = ["http://localhost:5173", "http://127.0.0.1:5173"]
 
-CORS_EXPOSE_HEADERS = ['Content-Type', 'X-CSRFToken']
+CORS_EXPOSE_HEADERS = ["Content-Type", "X-CSRFToken"]
 CORS_ALLOW_CREDENTIALS = True

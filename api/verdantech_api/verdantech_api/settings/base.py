@@ -31,7 +31,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "django.contrib.sites",
-    'corsheaders',
+    "corsheaders",
     "rest_framework",
     "rest_framework.authtoken",
     "allauth",
@@ -56,7 +56,7 @@ REST_FRAMEWORK = {
 # ==============================================================================
 
 MIDDLEWARE = [
-    'corsheaders.middleware.CorsMiddleware',
+    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -90,12 +90,10 @@ API_URL_BASE = config("API_URL_BASE", default="", cast=str)
 # ==============================================================================
 
 ALLOWED_HOSTS = config("ALLOWED_HOSTS", default="127.0.0.1", cast=Csv())
-CSRF_COOKIE_SAMESITE = 'Strict'
-SESSION_COOKIE_SAMESITE = 'Strict'
+CSRF_COOKIE_SAMESITE = "Strict"
+SESSION_COOKIE_SAMESITE = "Strict"
 CSRF_COOKIE_HTTPONLY = True
 SESSION_COOKIE_HTTPONLY = True
-
-CSRF_HEADER_NAME = "X-CSRF-Token"
 
 # ==============================================================================
 # DATABASES SETTINGS
@@ -215,6 +213,7 @@ REST_AUTH_TOKEN_MODEL = None
 REST_SESSION_LOGIN = True
 LOGOUT_ON_PASSWORD_CHANGE = True
 REST_AUTH_SERIALIZERS = {
+    "LOGIN_SERIALIZER": "apps.accounts.serializers.LoginSerializer",
     "PASSWORD_RESET_SERIALIZER": "apps.accounts.serializers.PasswordResetSerializer",
 }
 

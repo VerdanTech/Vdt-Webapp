@@ -1,7 +1,4 @@
-from dj_rest_auth.registration.views import (
-    RegisterView as RestAuthRegisterView,
-    SocialLoginView,
-)
+from dj_rest_auth.registration.views import RegisterView as RestAuthRegisterView
 from dj_rest_auth.views import (
     LoginView as RestAuthLogin,
     PasswordResetConfirmView as RestAuthPasswordResetConfirmView,
@@ -9,22 +6,22 @@ from dj_rest_auth.views import (
 )
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_protect, ensure_csrf_cookie
+from drf_spectacular.utils import extend_schema
 from rest_framework.authentication import SessionAuthentication
+from rest_framework.generics import GenericAPIView
 from rest_framework.permissions import AllowAny
 from rest_framework.request import Request
 from rest_framework.response import Response
-from rest_framework.views import APIView
-from rest_framework.generics import GenericAPIView
 
 
 @method_decorator(ensure_csrf_cookie, name="get")
 class CSRFTokenView(GenericAPIView):
-    """GET: Obtain valid CSRF token"""
+    """Sets response cookie: "csrftoken" to a valid CSRF token"""
 
     permission_classes = [AllowAny]
     authentication_classes = []
-    serializer = None
 
+    @extend_schema(responses=None)
     def get(self, request: Request) -> Response:
         return Response("CSRF Cookie set.")
 
@@ -40,25 +37,25 @@ class LoginView(RestAuthLogin):
     authentication_classes = [SessionAuthentication]
 
 
+# Add CSRF protection to registration view
 @method_decorator(csrf_protect, name="post")
 class RegisterView(RestAuthRegisterView):
-    """Add CSRF protection to registration view"""
 
     permission_classes = [AllowAny]
     authentication_classes = [SessionAuthentication]
 
 
+# Add CSRF protection to password reset view
 @method_decorator(csrf_protect, name="post")
 class PasswordResetView(RestAuthPasswordResetView):
-    """Add CSRF protection to password reset view"""
 
     permission_classes = [AllowAny]
     authentication_classes = [SessionAuthentication]
 
 
+# Add CSRF protection to password reset confirm view
 @method_decorator(csrf_protect, name="post")
 class PasswordResetConfirmView(RestAuthPasswordResetConfirmView):
-    """Add CSRF protection to password reset confirm view"""
 
     permission_classes = [AllowAny]
     authentication_classes = [SessionAuthentication]

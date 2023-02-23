@@ -24,11 +24,6 @@ urlpatterns = [
                     name="password_reset_confirm",
                 ),
                 path(
-                    r"user/",
-                    base_auth_views.UserDetailsView.as_view(),
-                    name="user_details",
-                ),
-                path(
                     r"password/change/",
                     base_auth_views.PasswordChangeView.as_view(),
                     name="password_change",
