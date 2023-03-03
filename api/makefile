@@ -67,3 +67,4 @@ migrate:
 .PHONY: schema
 schema:
 	$(BIN)/$(PY) verdantech_api/manage.py spectacular --color --validate --file schema.yml
+	cp schema.yml ../client/verdantech_client/

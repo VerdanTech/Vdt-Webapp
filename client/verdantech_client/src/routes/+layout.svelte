@@ -2,7 +2,7 @@
 	import '../theme-garden.postcss';
 	import '@skeletonlabs/skeleton/styles/all.css';
 	import { AppShell } from '@skeletonlabs/skeleton';
-	import UnauthenticatedAppBar from '$lib/layout/UnauthenticatedAppBar.svelte';
+	import UnauthenticatedAppBar from '$lib/components/layout/UnauthenticatedAppBar.svelte';
 	import '../app.postcss';
 </script>
 

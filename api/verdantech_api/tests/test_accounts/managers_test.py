@@ -3,7 +3,7 @@ import copy
 import pytest
 from django.contrib.auth import get_user_model
 
-from apps.accounts.managers import UserManager
+from verdantech_api.apps.accounts.managers import UserManager
 
 
 class TestUserManager:

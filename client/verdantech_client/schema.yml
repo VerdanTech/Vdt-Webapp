@@ -13,7 +13,7 @@ paths:
         Accepts the following POST parameters: new_password1, new_password2
         Returns the success/fail message.
       tags:
-      - accounts
+        - accounts
       requestBody:
         content:
           application/json:
@@ -21,7 +21,7 @@ paths:
               $ref: '#/components/schemas/PasswordChangeRequest'
         required: true
       security:
-      - cookieAuth: []
+        - cookieAuth: []
       responses:
         '200':
           content:
@@ -38,7 +38,7 @@ paths:
         Accepts the following POST parameters: email
         Returns the success/fail message.
       tags:
-      - accounts
+        - accounts
       requestBody:
         content:
           application/json:
@@ -46,8 +46,8 @@ paths:
               $ref: '#/components/schemas/PasswordResetRequest'
         required: true
       security:
-      - cookieAuth: []
-      - {}
+        - cookieAuth: []
+        - {}
       responses:
         '200':
           content:
@@ -66,7 +66,7 @@ paths:
             new_password1, new_password2
         Returns the success/fail message.
       tags:
-      - accounts
+        - accounts
       requestBody:
         content:
           application/json:
@@ -74,8 +74,8 @@ paths:
               $ref: '#/components/schemas/PasswordResetConfirmRequest'
         required: true
       security:
-      - cookieAuth: []
-      - {}
+        - cookieAuth: []
+        - {}
       responses:
         '200':
           content:
@@ -87,7 +87,7 @@ paths:
     post:
       operationId: accounts_registration_create
       tags:
-      - accounts
+        - accounts
       requestBody:
         content:
           application/json:
@@ -95,8 +95,8 @@ paths:
               $ref: '#/components/schemas/RegisterRequest'
         required: true
       security:
-      - cookieAuth: []
-      - {}
+        - cookieAuth: []
+        - {}
       responses:
         '201':
           content:
@@ -108,7 +108,7 @@ paths:
     post:
       operationId: accounts_registration_resend_email_create
       tags:
-      - accounts
+        - accounts
       requestBody:
         content:
           application/json:
@@ -116,8 +116,8 @@ paths:
               $ref: '#/components/schemas/ResendEmailVerificationRequest'
         required: true
       security:
-      - cookieAuth: []
-      - {}
+        - cookieAuth: []
+        - {}
       responses:
         '201':
           content:
@@ -129,7 +129,7 @@ paths:
     post:
       operationId: accounts_registration_verify_email_create
       tags:
-      - accounts
+        - accounts
       requestBody:
         content:
           application/json:
@@ -137,8 +137,8 @@ paths:
               $ref: '#/components/schemas/VerifyEmailRequest'
         required: true
       security:
-      - cookieAuth: []
-      - {}
+        - cookieAuth: []
+        - {}
       responses:
         '200':
           description: No response body
@@ -147,9 +147,9 @@ paths:
       operationId: auth_csrf_retrieve
       description: Returns valid CSRF token
       tags:
-      - auth
+        - auth
       security:
-      - {}
+        - {}
       responses:
         '200':
           content:
@@ -165,7 +165,7 @@ paths:
         Requires CSRF token to prevent login-csrf,
         see: https://docs.djangoproject.com/en/4.1/ref/csrf/
       tags:
-      - auth
+        - auth
       requestBody:
         content:
           application/json:
@@ -173,8 +173,8 @@ paths:
               $ref: '#/components/schemas/LoginRequest'
         required: true
       security:
-      - cookieAuth: []
-      - {}
+        - cookieAuth: []
+        - {}
       responses:
         '200':
           content:
@@ -188,10 +188,10 @@ paths:
       description: Calls Django logout methods and deletes the sessionid assigned
         to the user object
       tags:
-      - auth
+        - auth
       security:
-      - cookieAuth: []
-      - {}
+        - cookieAuth: []
+        - {}
       responses:
         '200':
           description: No response body
@@ -203,7 +203,7 @@ components:
         csrftoken:
           type: string
       required:
-      - csrftoken
+        - csrftoken
     Login:
       type: object
       properties:
@@ -213,8 +213,8 @@ components:
         password:
           type: string
       required:
-      - email
-      - password
+        - email
+        - password
     LoginRequest:
       type: object
       properties:
@@ -226,8 +226,8 @@ components:
           type: string
           minLength: 1
       required:
-      - email
-      - password
+        - email
+        - password
     PasswordChangeRequest:
       type: object
       properties:
@@ -240,8 +240,8 @@ components:
           minLength: 1
           maxLength: 128
       required:
-      - new_password1
-      - new_password2
+        - new_password1
+        - new_password2
     PasswordReset:
       type: object
       description: Serializer for requesting a password reset e-mail.
@@ -250,7 +250,7 @@ components:
           type: string
           format: email
       required:
-      - email
+        - email
     PasswordResetConfirm:
       type: object
       description: Serializer for confirming a password reset attempt.
@@ -266,10 +266,10 @@ components:
         token:
           type: string
       required:
-      - new_password1
-      - new_password2
-      - token
-      - uid
+        - new_password1
+        - new_password2
+        - token
+        - uid
     PasswordResetConfirmRequest:
       type: object
       description: Serializer for confirming a password reset attempt.
@@ -289,10 +289,10 @@ components:
           type: string
           minLength: 1
       required:
-      - new_password1
-      - new_password2
-      - token
-      - uid
+        - new_password1
+        - new_password2
+        - token
+        - uid
     PasswordResetRequest:
       type: object
       description: Serializer for requesting a password reset e-mail.
@@ -302,7 +302,7 @@ components:
           format: email
           minLength: 1
       required:
-      - email
+        - email
     Register:
       type: object
       properties:
@@ -314,8 +314,8 @@ components:
           type: string
           format: email
       required:
-      - email
-      - username
+        - email
+        - username
     RegisterRequest:
       type: object
       properties:
@@ -336,10 +336,10 @@ components:
           writeOnly: true
           minLength: 1
       required:
-      - email
-      - password1
-      - password2
-      - username
+        - email
+        - password1
+        - password2
+        - username
     ResendEmailVerification:
       type: object
       properties:
@@ -347,7 +347,7 @@ components:
           type: string
           format: email
       required:
-      - email
+        - email
     ResendEmailVerificationRequest:
       type: object
       properties:
@@ -356,7 +356,7 @@ components:
           format: email
           minLength: 1
       required:
-      - email
+        - email
     RestAuthDetail:
       type: object
       properties:
@@ -364,7 +364,7 @@ components:
           type: string
           readOnly: true
       required:
-      - detail
+        - detail
     VerifyEmailRequest:
       type: object
       properties:
@@ -373,14 +373,14 @@ components:
           writeOnly: true
           minLength: 1
       required:
-      - key
+        - key
   securitySchemes:
     cookieAuth:
       type: apiKey
       in: cookie
       name: sessionid
 servers:
-- url: http://localhost:5173/api
+  - url: http://localhost:5173/api
 tags:
-- name: authentication
-- name: accounts
+  - name: authentication
+  - name: accounts

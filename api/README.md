@@ -36,7 +36,7 @@ API_URL_BASE: `str`, `default="api/"`
 
 USING_HTTPS: `bool`, `default=True`
 
-DOMAIN_NAME: `str`, `"default="verdantech.com"`
+DOMAIN_NAME: `str`, `"default="verdantech.io"`
 
 CLIENT_EMAIL_VERIFY_URL_POSTFIX: `str`, `default="register/verify/"`
 

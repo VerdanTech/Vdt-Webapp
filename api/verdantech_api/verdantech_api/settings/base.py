@@ -39,17 +39,11 @@ INSTALLED_APPS = [
     "allauth.socialaccount",
     "dj_rest_auth",
     "dj_rest_auth.registration",
-    "apps.accounts",
+    "verdantech_api.apps.authentication",
+    "verdantech_api.apps.accounts",
 ]
 
 SITE_ID = 1
-
-REST_FRAMEWORK = {
-    "DEFAULT_RENDERER_CLASSES": [
-        "rest_framework.renderers.JSONRenderer",
-        "rest_framework.renderers.BrowsableAPIRenderer",
-    ],
-}
 
 # ==============================================================================
 # MIDDLEWARE SETTINGS
@@ -75,6 +69,7 @@ REST_FRAMEWORK = {
     "DEFAULT_RENDERER_CLASSES": [
         "rest_framework.renderers.JSONRenderer",
     ],
+    "DEFAULT_PARSER_CLASSES": ["rest_framework.parsers.JSONParser"],
     "DEFAULT_PERMISSION_CLASSES": [
         "rest_framework.permissions.IsAuthenticated",
     ],
@@ -89,10 +84,12 @@ API_URL_BASE = config("API_URL_BASE", default="", cast=str)
 # SECURITY SETTINGS
 # ==============================================================================
 
+ADMINS = []
 ALLOWED_HOSTS = config("ALLOWED_HOSTS", default="127.0.0.1", cast=Csv())
-CSRF_COOKIE_SAMESITE = "Strict"
-SESSION_COOKIE_SAMESITE = "Strict"
-CSRF_COOKIE_HTTPONLY = True
+CSRF_COOKIE_HTTPONLY = False
+CSRF_COOKIE_SAMESITE = "Lax"
+CSRF_TRUSTED_ORIGINS = []
+SESSION_COOKIE_SAMESITE = "Lax"
 SESSION_COOKIE_HTTPONLY = True
 
 # ==============================================================================
@@ -201,7 +198,7 @@ ACCOUNT_AUTHENTICATED_LOGIN_REDIRECTS = False
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_EMAIL_VERIFICATION = "mandatory"
 ACCOUNT_PRESERVE_USERNAME_CASING = False
-ACCOUNT_ADAPTER = "apps.accounts.adapters.AccountAdapter"
+ACCOUNT_ADAPTER = "verdantech_api.apps.accounts.adapters.AccountAdapter"
 ACCOUNT_EMAIL_SUBJECT_PREFIX = config("DOMAIN_NAME", default="verdantech.com", cast=str)
 ACCOUNT_MAX_EMAIL_ADDRESSES = 3
 
@@ -213,8 +210,8 @@ REST_AUTH_TOKEN_MODEL = None
 REST_SESSION_LOGIN = True
 LOGOUT_ON_PASSWORD_CHANGE = True
 REST_AUTH_SERIALIZERS = {
-    "LOGIN_SERIALIZER": "apps.accounts.serializers.LoginSerializer",
-    "PASSWORD_RESET_SERIALIZER": "apps.accounts.serializers.PasswordResetSerializer",
+    "LOGIN_SERIALIZER": "verdantech_api.apps.authentication.serializers.LoginSerializer",
+    "PASSWORD_RESET_SERIALIZER": "verdantech_api.apps.accounts.serializers.PasswordResetSerializer",
 }
 
 # ==============================================================================

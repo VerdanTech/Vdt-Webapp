@@ -1,6 +1,6 @@
 <script>
 	import { AppBar } from '@skeletonlabs/skeleton';
-	import Logo from '$lib/graphics/logo.svelte';
+	import Logo from '$lib/components/graphics/logo.svelte';
 	import IconMenuRounded from 'virtual:icons/ic/round-menu';
 
 	let navLinks = [
@@ -48,9 +48,7 @@
 		<nav class="h-full font-semibold text-md lg:text-lg hidden md:block">
 			<ul class="h-full flex">
 				{#each navLinks as link}
-					<li
-						class="p-2 lg:p-4 hover:bg-primary-700 hover:text-on-primary-token transition"
-					>
+					<li class="p-2 lg:p-4 hover:bg-primary-700 hover:text-on-primary-token transition">
 						<a href={link.url} class="h-full flex">
 							<span class="self-center p-4"> {link.label} </span>
 						</a>
