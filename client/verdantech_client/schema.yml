@@ -4,7 +4,7 @@ info:
   version: 0.1.0
   description: API of the VerdanTech Project Web Application
 paths:
-  /api/accounts/password/change:
+  /accounts/password/change:
     post:
       operationId: accounts_password_change_create
       description: |-
@@ -29,7 +29,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/RestAuthDetail'
           description: ''
-  /api/accounts/password/reset:
+  /accounts/password/reset:
     post:
       operationId: accounts_password_reset_create
       description: |-
@@ -55,7 +55,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/PasswordReset'
           description: ''
-  /api/accounts/password/reset/confirm:
+  /accounts/password/reset/confirm:
     post:
       operationId: accounts_password_reset_confirm_create
       description: |-
@@ -83,7 +83,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/PasswordResetConfirm'
           description: ''
-  /api/accounts/registration:
+  /accounts/registration:
     post:
       operationId: accounts_registration_create
       tags:
@@ -104,7 +104,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Register'
           description: ''
-  /api/accounts/registration/resend_email:
+  /accounts/registration/resend_email:
     post:
       operationId: accounts_registration_resend_email_create
       tags:
@@ -125,7 +125,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ResendEmailVerification'
           description: ''
-  /api/accounts/registration/verify_email:
+  /accounts/registration/verify_email:
     post:
       operationId: accounts_registration_verify_email_create
       tags:
@@ -142,7 +142,7 @@ paths:
       responses:
         '200':
           description: No response body
-  /api/auth/csrf:
+  /auth/csrf:
     get:
       operationId: auth_csrf_retrieve
       description: Returns valid CSRF token
@@ -157,7 +157,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/CSRFToken'
           description: ''
-  /api/auth/login:
+  /auth/login:
     post:
       operationId: auth_login_create
       description: |-
@@ -182,7 +182,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Login'
           description: ''
-  /api/auth/logout:
+  /auth/logout:
     post:
       operationId: auth_logout_create
       description: Calls Django logout methods and deletes the sessionid assigned

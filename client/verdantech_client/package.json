@@ -15,9 +15,10 @@
 		"gen": "orval"
 	},
 	"devDependencies": {
+		"@faker-js/faker": "^7.6.0",
 		"@iconify/json": "^2.2.20",
 		"@playwright/test": "^1.28.1",
-		"@skeletonlabs/skeleton": "^0.124.2",
+		"@skeletonlabs/skeleton": "^0.132.5",
 		"@sveltejs/adapter-auto": "^2.0.0",
 		"@sveltejs/kit": "^1.5.0",
 		"@tailwindcss/forms": "^0.5.3",
@@ -27,26 +28,26 @@
 		"eslint": "^8.28.0",
 		"eslint-config-prettier": "^8.5.0",
 		"eslint-plugin-svelte3": "^4.0.0",
+		"msw": "^1.1.0",
+		"orval": "^6.12.0",
 		"postcss": "^8.4.21",
 		"prettier": "^2.8.0",
 		"prettier-plugin-svelte": "^2.8.1",
 		"svelte": "^3.54.0",
 		"svelte-check": "^3.0.1",
 		"svelte-preprocess": "^5.0.1",
+		"svelte-use-form": "^2.6.1",
 		"tailwindcss": "^3.2.4",
 		"tslib": "^2.4.1",
 		"typescript": "^4.9.3",
 		"unplugin-icons": "^0.15.2",
 		"vite": "^4.0.0",
-		"vitest": "^0.25.3",
-		"orval": "^6.12.0",
-		"msw": "^1.1.0",
-		"@faker-js/faker": "^7.6.0"
+		"vitest": "^0.25.3"
 	},
 	"type": "module",
 	"dependencies": {
-		"npx": "^10.2.2",
+		"@tanstack/svelte-query": "4.24.10",
 		"axios": "^1.3.4",
-		"@tanstack/svelte-query": "4.24.10"
+		"npx": "^10.2.2"
 	}
 }

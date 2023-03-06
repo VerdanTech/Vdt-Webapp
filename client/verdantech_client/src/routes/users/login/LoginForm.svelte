@@ -4,59 +4,66 @@
 	import type { LoginRequest } from '$lib/api/codegen/verdanTechAPI.schemas';
 	import { authLoginCreate } from '$lib/api/codegen/auth/auth';
 	import { csrftoken } from '$lib/stores/csrftoken';
+	import { useForm, validators, Hint, HintGroup, email, required } from 'svelte-use-form';
+	import type { ErrorResponse } from '$lib/api/utils';
+	import Error from '$lib/components/forms/Error.svelte';
 
-	function getCookie(name: string) {
-		// Split cookie string and get all individual name=value pairs in an array
-		var cookieArr = document.cookie.split(';');
+	const form = useForm();
+	let errors: ErrorResponse = {};
 
-		// Loop through the array elements
-		for (var i = 0; i < cookieArr.length; i++) {
-			var cookiePair = cookieArr[i].split('=');
-
-			/* Removing whitespace at the beginning of the cookie name
-        and compare it with the given string */
-			if (name == cookiePair[0].trim()) {
-				// Decode the cookie value and return
-				return decodeURIComponent(cookiePair[1]);
-			}
-		}
-
-		// Return null if not found
-		return null;
-	}
-
-	async function handleSubmit(event: SubmitEvent) {
-		const formData = new FormData(event.target as HTMLFormElement);
-
+	async function handleSubmit() {
 		const login: LoginRequest = {
-			email: formData.get('email') as string,
-			password: formData.get('password') as string
+			email: ($form.values.email as string) ?? '',
+			password: ($form.values.password as string) ?? ''
 		};
 
-		try {
-			const response = await authLoginCreate(login);
-			console.log(response);
-		} catch (error) {}
+		authLoginCreate(login, { withCredentials: true, headers: { 'X-CSRFToken': $csrftoken } })
+			.then((response) => {
+				console.log(response);
+			})
+			.catch((error) => {
+				errors = Object.assign({}, error.response.data);
+			});
 	}
 </script>
 
 <EnsureCsrf />
-<form on:submit|preventDefault={handleSubmit}>
+<form use:form on:submit|preventDefault={handleSubmit}>
 	<ul>
 		<li class="p-4">
 			<label class="label">
 				<span>Email</span>
-				<input class="input" type="email" name="email" required />
+				<input name="email" type="email" class="input" use:validators={[required, email]} />
+				<HintGroup for="email">
+					<Hint on="required">Email is required</Hint>
+					<Hint on="email">Invalid email</Hint>
+				</HintGroup>
 			</label>
+			{#each errors.email ?? [] as error}
+				<div class="bg-error">
+					{error}
+				</div>
+			{/each}
 		</li>
 		<li class="p-4">
 			<label class="label">
 				<span>Password</span>
-				<input class="input" type="password" name="password" required />
+				<input name="password" type="password" class="input" use:validators={[required]} />
+				<Hint on="required">Password is required</Hint>
 			</label>
+			{#each errors.password ?? [] as error}
+			<div class="bg-error">
+				{error}
+			</div>
+			{/each}
+		</li>
+		<li class="p-4">
+			{#each errors.non_field_errors ?? [] as error}
+				<Error text={error}/>
+			{/each}
 		</li>
 		<li class="p-4 mt-4">
-			<button class="btn variant-filled-primary w-full">Login</button>
+			<button disabled={!$form.valid} class="btn variant-filled-primary w-full">Login</button>
 		</li>
 	</ul>
 </form>
