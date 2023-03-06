@@ -4,8 +4,10 @@
 	import { AppShell } from '@skeletonlabs/skeleton';
 	import UnauthenticatedAppBar from '$lib/components/layout/UnauthenticatedAppBar.svelte';
 	import '../app.postcss';
+	import { Toast } from '@skeletonlabs/skeleton';
 </script>
 
+<Toast />
 <AppShell>
 	<svelte:fragment slot="header">
 		<UnauthenticatedAppBar />

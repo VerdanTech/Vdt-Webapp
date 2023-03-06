@@ -1,12 +1,12 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import EnsureCsrf from '$lib/components/security/EnsureCSRF.svelte';
+	import { csrftoken } from '$lib/stores/csrftoken';
 	import type { LoginRequest } from '$lib/api/codegen/verdanTechAPI.schemas';
 	import { authLoginCreate } from '$lib/api/codegen/auth/auth';
-	import { csrftoken } from '$lib/stores/csrftoken';
 	import { useForm, validators, Hint, HintGroup, email, required } from 'svelte-use-form';
 	import type { ErrorResponse } from '$lib/api/utils';
-	import Error from '$lib/components/forms/Error.svelte';
+	import FormError from '$lib/components/forms/FormError.svelte';
 
 	const form = useForm();
 	let errors: ErrorResponse = {};
@@ -22,6 +22,12 @@
 				console.log(response);
 			})
 			.catch((error) => {
+				console.log(error);
+
+				if (error.response.status == 500) {
+					//Server connection fail toast
+				}
+
 				errors = Object.assign({}, error.response.data);
 			});
 	}
@@ -35,31 +41,27 @@
 				<span>Email</span>
 				<input name="email" type="email" class="input" use:validators={[required, email]} />
 				<HintGroup for="email">
-					<Hint on="required">Email is required</Hint>
-					<Hint on="email">Invalid email</Hint>
+					<Hint on="required"><FormError text={'Email is required'} /></Hint>
+					<Hint on="email"><FormError text={'Invalid email'} /></Hint>
 				</HintGroup>
 			</label>
 			{#each errors.email ?? [] as error}
-				<div class="bg-error">
-					{error}
-				</div>
+				<FormError text={error} />
 			{/each}
 		</li>
 		<li class="p-4">
 			<label class="label">
 				<span>Password</span>
 				<input name="password" type="password" class="input" use:validators={[required]} />
-				<Hint on="required">Password is required</Hint>
+				<Hint on="required"><FormError text={'Password is required'} /></Hint>
 			</label>
 			{#each errors.password ?? [] as error}
-			<div class="bg-error">
-				{error}
-			</div>
+				<FormError text={error} />
 			{/each}
 		</li>
 		<li class="p-4">
 			{#each errors.non_field_errors ?? [] as error}
-				<Error text={error}/>
+				<FormError text={error} />
 			{/each}
 		</li>
 		<li class="p-4 mt-4">
