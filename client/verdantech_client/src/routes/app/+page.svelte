@@ -1,1 +1,1 @@
-//List of gardens
+//List of gardens App view

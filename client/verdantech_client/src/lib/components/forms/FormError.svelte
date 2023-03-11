@@ -3,7 +3,7 @@
 	export let text = '';
 </script>
 
-<div class="mt-1 bg-error-700 rounded-token border-error-500 flex items-center">
+<div class="bg-error-700 rounded-token border-error-500 flex items-center">
 	<span class="p-1">
 		<ErrorCircleRoundedOutline style="font-size: 2em" />
 	</span>

@@ -1,10 +1,8 @@
 <script lang="ts">
-	import { goto } from '$app/navigation';
 	import EnsureCsrf from '$lib/components/security/EnsureCSRF.svelte';
 	import { csrftoken } from '$lib/stores';
-	import { is_authenticated } from '$lib/stores';
-	import type { LoginRequest } from '$lib/api/codegen/verdanTechAPI.schemas';
-	import { authLoginCreate } from '$lib/api/codegen/auth/auth';
+	import type { ResendEmailVerificationRequest } from '$lib/api/codegen/verdanTechAPI.schemas';
+	import { accountsRegistrationResendEmailCreate } from '$lib/api/codegen/accounts/accounts';
 	import { useForm, validators, Hint, HintGroup, email, required } from 'svelte-use-form';
 	import type { ErrorResponse } from '$lib/api/utils';
 	import FormError from '$lib/components/forms/FormError.svelte';
@@ -15,18 +13,25 @@
 	let errors: ErrorResponse = {};
 
 	async function handleSubmit() {
-		const login: LoginRequest = {
-			email: ($form.values.email as string) ?? '',
-			password: ($form.values.password as string) ?? ''
+		const verification_resend: ResendEmailVerificationRequest = {
+			email: ($form.values.email as string) ?? ''
 		};
 
-		authLoginCreate(login, { withCredentials: true, headers: { 'X-CSRFToken': $csrftoken } })
-			.then(() => {
-				//Set application state
-				$is_authenticated = true;
+		accountsRegistrationResendEmailCreate(verification_resend, {
+			withCredentials: true,
+			headers: { 'X-CSRFToken': $csrftoken }
+		})
+			.then((response) => {
+				console.log(response);
 
-				//Redirect to app home page
-				goto('app');
+				//Create email verification toast
+				const toast: ToastSettings = {
+					message: 'Verification email sent to ' + verification_resend.email,
+					background: 'bg-success-500',
+					autohide: true,
+					timeout: 15000
+				};
+				toastStore.trigger(toast);
 			})
 			.catch((error) => {
 				console.log(error);
@@ -50,7 +55,7 @@
 <EnsureCsrf />
 <form use:form on:submit|preventDefault={handleSubmit}>
 	<ul>
-		<li class="p-4">
+		<li class="px-4 pt-4 pb-8">
 			<label class="label">
 				<span>Email</span>
 				<input name="email" type="email" class="input" use:validators={[required, email]} />
@@ -63,26 +68,13 @@
 				<FormError text={error} />
 			{/each}
 		</li>
-		<li class="px-4 pt-4 pb-8">
-			<label class="label">
-				<span>Password</span>
-				<input name="password" type="password" class="input" use:validators={[required]} />
-			</label>
-			<Hint on="required"><FormError text={'Password is required'} /></Hint>
-			{#each errors.password ?? [] as error}
-				<FormError text={error} />
-			{/each}
-		</li>
 		<li class="px-4 pt-4">
 			{#each errors.non_field_errors ?? [] as error}
 				<FormError text={error} />
 			{/each}
 		</li>
 		<li class="px-4">
-			<button disabled={!$form.valid} class="btn variant-filled-primary w-full">Login</button>
-		</li>
-		<li class="px-4 pt-2">
-			<span><a href="login/reset" class="!no-underline">Forgot password?</a></span>
+			<button disabled={!$form.valid} class="btn variant-filled-primary w-full">Send Email</button>
 		</li>
 	</ul>
 </form>
