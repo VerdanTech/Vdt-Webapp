@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import EnsureCsrf from '$lib/components/security/EnsureCSRF.svelte';
-	import { csrftoken } from '$lib/stores';
 	import type { RegisterRequest } from '$lib/api/codegen/verdanTechAPI.schemas';
 	import { accountsRegistrationCreate } from '$lib/api/codegen/accounts/accounts';
 	import { useForm, validators, Hint, HintGroup, email, required } from 'svelte-use-form';
@@ -21,10 +20,7 @@
 			password2: ($form.values.password2 as string) ?? ''
 		};
 
-		accountsRegistrationCreate(register, {
-			withCredentials: true,
-			headers: { 'X-CSRFToken': $csrftoken }
-		})
+		accountsRegistrationCreate(register)
 			.then(() => {
 				//Create email verification toast
 				const toast: ToastSettings = {
@@ -40,13 +36,10 @@
 				goto('login');
 			})
 			.catch((error) => {
-				console.log(error);
-
-				if (error.response.status == 500) {
-					//Server connection fail toast
-				}
-
-				errors = Object.assign({}, error.response.data);
+				errors = {
+					...error.response.data,
+					non_field_errors: error.response.data.non_field_errors ?? []
+				};
 			});
 	}
 </script>

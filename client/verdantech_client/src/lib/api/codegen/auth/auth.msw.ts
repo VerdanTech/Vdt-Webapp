@@ -16,21 +16,21 @@ export const getAuthLoginCreateMock = () => ({
 });
 
 export const getAuthMSW = () => [
-	rest.get('*/api/auth/csrf', (_req, res, ctx) => {
+	rest.get('*/auth/csrf', (_req, res, ctx) => {
 		return res(
 			ctx.delay(1000),
 			ctx.status(200, 'Mocked status'),
 			ctx.json(getAuthCsrfRetrieveMock())
 		);
 	}),
-	rest.post('*/api/auth/login', (_req, res, ctx) => {
+	rest.post('*/auth/login', (_req, res, ctx) => {
 		return res(
 			ctx.delay(1000),
 			ctx.status(200, 'Mocked status'),
 			ctx.json(getAuthLoginCreateMock())
 		);
 	}),
-	rest.post('*/api/auth/logout', (_req, res, ctx) => {
+	rest.post('*/auth/logout', (_req, res, ctx) => {
 		return res(ctx.delay(1000), ctx.status(200, 'Mocked status'));
 	})
 ];

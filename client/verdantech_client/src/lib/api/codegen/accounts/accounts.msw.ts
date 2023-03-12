@@ -29,42 +29,42 @@ export const getAccountsRegistrationResendEmailCreateMock = () => ({
 });
 
 export const getAccountsMSW = () => [
-	rest.post('*/api/accounts/password/change', (_req, res, ctx) => {
+	rest.post('*/accounts/password/change', (_req, res, ctx) => {
 		return res(
 			ctx.delay(1000),
 			ctx.status(200, 'Mocked status'),
 			ctx.json(getAccountsPasswordChangeCreateMock())
 		);
 	}),
-	rest.post('*/api/accounts/password/reset', (_req, res, ctx) => {
+	rest.post('*/accounts/password/reset', (_req, res, ctx) => {
 		return res(
 			ctx.delay(1000),
 			ctx.status(200, 'Mocked status'),
 			ctx.json(getAccountsPasswordResetCreateMock())
 		);
 	}),
-	rest.post('*/api/accounts/password/reset/confirm', (_req, res, ctx) => {
+	rest.post('*/accounts/password/reset/confirm', (_req, res, ctx) => {
 		return res(
 			ctx.delay(1000),
 			ctx.status(200, 'Mocked status'),
 			ctx.json(getAccountsPasswordResetConfirmCreateMock())
 		);
 	}),
-	rest.post('*/api/accounts/registration', (_req, res, ctx) => {
+	rest.post('*/accounts/registration', (_req, res, ctx) => {
 		return res(
 			ctx.delay(1000),
 			ctx.status(200, 'Mocked status'),
 			ctx.json(getAccountsRegistrationCreateMock())
 		);
 	}),
-	rest.post('*/api/accounts/registration/resend_email', (_req, res, ctx) => {
+	rest.post('*/accounts/registration/resend_email', (_req, res, ctx) => {
 		return res(
 			ctx.delay(1000),
 			ctx.status(200, 'Mocked status'),
 			ctx.json(getAccountsRegistrationResendEmailCreateMock())
 		);
 	}),
-	rest.post('*/api/accounts/registration/verify_email', (_req, res, ctx) => {
+	rest.post('*/accounts/registration/verify_email', (_req, res, ctx) => {
 		return res(ctx.delay(1000), ctx.status(200, 'Mocked status'));
 	})
 ];

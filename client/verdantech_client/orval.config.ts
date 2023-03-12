@@ -12,14 +12,13 @@ export default defineConfig({
 			target: 'src/lib/api/codegen/',
 			//schemas: 'src/lib/api/codegen/model/',
 			//useDates: true,
-			mock: true
-			/*
+			mock: true,
 			override: {
 				mutator: {
 					path: './src/lib/api/customAxios.ts',
 					name: 'customInstance'
 				}
-			}*/
+			}
 		},
 		hooks: {
 			afterAllFilesWrite: 'npm run format'

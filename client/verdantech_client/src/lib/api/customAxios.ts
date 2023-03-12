@@ -1,46 +1,44 @@
-import type { Axios, AxiosRequestConfig } from 'axios';
+import type { AxiosRequestConfig, AxiosResponse } from 'axios';
 import axios from 'axios';
 import { get } from 'svelte/store';
-import { csrftoken } from '$lib/stores/csrftoken';
+import { csrftoken } from '$lib/stores';
+import { toastStore } from '@skeletonlabs/skeleton';
+import type { ToastSettings } from '@skeletonlabs/skeleton';
 
+//Static configuration in the AXIOS_INSTANCE
 export const AXIOS_INSTANCE = axios.create({
-	headers: { 'X-CSRFToken': get(csrftoken) },
+	baseURL: '/api',
 	withCredentials: true
 });
 
-function createAxiosResponseInterceptor(axiosInstance: any) {
-	const interceptor = axiosInstance.interceptors.request.use(
-		(config: AxiosRequestConfig): AxiosRequestConfig => {
-			//config.headers['X-CSRFToken'] = get(csrftoken)
-			return config;
+//Dynamic configuration in request/response interceptors
+AXIOS_INSTANCE.interceptors.request.use((config) => {
+	config.headers['X-CSRFToken'] = get(csrftoken);
+	return config;
+});
+
+AXIOS_INSTANCE.interceptors.response.use(
+	(response) => {
+		return response;
+	},
+	(error) => {
+		if (error.response.status == 500) {
+			//Server connection fail toast
+			const toast: ToastSettings = {
+				message: 'Error: Server connection failed (HTTP 500)',
+				background: 'bg-error-500',
+				autohide: true,
+				timeout: 5000
+			};
+			toastStore.trigger(toast);
 		}
-	);
-}
 
-createAxiosResponseInterceptor(AXIOS_INSTANCE);
+		throw error;
+	}
+);
 
-export const customInstance = <T>(
-	config: AxiosRequestConfig,
-
-	options?: AxiosRequestConfig
-): Promise<T> => {
-	const source = axios.CancelToken.source();
-
-	const promise = AXIOS_INSTANCE({
-		...config,
-
-		...options,
-
-		cancelToken: source.token
-	}).then(({ data }) => data);
-
-	// @ts-ignore
-
-	promise.cancel = () => {
-		source.cancel('Query was cancelled');
-	};
-
-	return promise;
+export const customInstance = <T>(config: AxiosRequestConfig): Promise<AxiosResponse<T>> => {
+	return AXIOS_INSTANCE({ ...config });
 };
 
-//export default AXIOS_INSTANCE
+export default customInstance;

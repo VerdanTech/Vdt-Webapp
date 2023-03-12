@@ -1,15 +1,12 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import EnsureCsrf from '$lib/components/security/EnsureCSRF.svelte';
-	import { csrftoken } from '$lib/stores';
 	import { is_authenticated } from '$lib/stores';
 	import type { LoginRequest } from '$lib/api/codegen/verdanTechAPI.schemas';
 	import { authLoginCreate } from '$lib/api/codegen/auth/auth';
 	import { useForm, validators, Hint, HintGroup, email, required } from 'svelte-use-form';
 	import type { ErrorResponse } from '$lib/api/utils';
 	import FormError from '$lib/components/forms/FormError.svelte';
-	import { toastStore } from '@skeletonlabs/skeleton';
-	import type { ToastSettings } from '@skeletonlabs/skeleton';
 
 	const form = useForm();
 	let errors: ErrorResponse = {};
@@ -20,7 +17,7 @@
 			password: ($form.values.password as string) ?? ''
 		};
 
-		authLoginCreate(login, { withCredentials: true, headers: { 'X-CSRFToken': $csrftoken } })
+		authLoginCreate(login)
 			.then(() => {
 				//Set application state
 				$is_authenticated = true;
@@ -29,20 +26,10 @@
 				goto('app');
 			})
 			.catch((error) => {
-				console.log(error);
-
-				if (error.response.status == 500) {
-					//Server connection fail toast
-					const toast: ToastSettings = {
-						message: 'Error: server connection failed',
-						background: 'bg-error-500',
-						autohide: true,
-						timeout: 5000
-					};
-					toastStore.trigger(toast);
-				}
-
-				errors = Object.assign({}, error.response.data);
+				errors = {
+					...error.response.data,
+					non_field_errors: error.response.data.non_field_errors ?? []
+				};
 			});
 	}
 </script>

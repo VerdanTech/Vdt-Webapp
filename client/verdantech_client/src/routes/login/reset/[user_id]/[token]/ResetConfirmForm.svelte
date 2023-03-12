@@ -2,7 +2,6 @@
 	import { page } from '$app/stores';
 	import { goto } from '$app/navigation';
 	import EnsureCsrf from '$lib/components/security/EnsureCSRF.svelte';
-	import { csrftoken } from '$lib/stores';
 	import type { PasswordResetConfirmRequest } from '$lib/api/codegen/verdanTechAPI.schemas';
 	import { accountsPasswordResetConfirmCreate } from '$lib/api/codegen/accounts/accounts';
 	import { useForm, validators, Hint, required } from 'svelte-use-form';
@@ -22,13 +21,8 @@
 			token: $page.params.token as string
 		};
 
-		accountsPasswordResetConfirmCreate(password_reset_confirm, {
-			withCredentials: true,
-			headers: { 'X-CSRFToken': $csrftoken }
-		})
-			.then((response) => {
-				console.log(response);
-
+		accountsPasswordResetConfirmCreate(password_reset_confirm)
+			.then(() => {
 				//Create password reset toast
 				const toast: ToastSettings = {
 					message: 'Password successfully reset',
@@ -42,13 +36,16 @@
 				goto('../../');
 			})
 			.catch((error) => {
-				console.log(error);
-				errors = Object.assign({}, error.response.data);
-				errors.non_field_errors = errors.non_field_errors ?? [];
+				errors = {
+					...error.response.data,
+					non_field_errors: error.response.data.non_field_errors ?? []
+				};
 
-				//Returns 400 status when token details are invalid
-				if (error.response.status == 400) {
-					errors.non_field_errors?.push('Token expired. Please request new reset request.');
+				if (error.response.data.token) {
+					errors.non_field_errors?.push('Invalid reset token (URL Parameter)');
+				}
+				if (error.response.data.uid) {
+					errors.non_field_errors?.push('Invalid user ID (URL Parameter)');
 				}
 			});
 	}

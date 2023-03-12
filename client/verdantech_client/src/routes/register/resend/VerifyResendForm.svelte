@@ -1,6 +1,5 @@
 <script lang="ts">
 	import EnsureCsrf from '$lib/components/security/EnsureCSRF.svelte';
-	import { csrftoken } from '$lib/stores';
 	import type { ResendEmailVerificationRequest } from '$lib/api/codegen/verdanTechAPI.schemas';
 	import { accountsRegistrationResendEmailCreate } from '$lib/api/codegen/accounts/accounts';
 	import { useForm, validators, Hint, HintGroup, email, required } from 'svelte-use-form';
@@ -17,13 +16,8 @@
 			email: ($form.values.email as string) ?? ''
 		};
 
-		accountsRegistrationResendEmailCreate(verification_resend, {
-			withCredentials: true,
-			headers: { 'X-CSRFToken': $csrftoken }
-		})
-			.then((response) => {
-				console.log(response);
-
+		accountsRegistrationResendEmailCreate(verification_resend)
+			.then(() => {
 				//Create email verification toast
 				const toast: ToastSettings = {
 					message: 'Verification email sent to ' + verification_resend.email,
@@ -34,20 +28,10 @@
 				toastStore.trigger(toast);
 			})
 			.catch((error) => {
-				console.log(error);
-
-				if (error.response.status == 500) {
-					//Server connection fail toast
-					const toast: ToastSettings = {
-						message: 'Error: server connection failed',
-						background: 'bg-error-500',
-						autohide: true,
-						timeout: 5000
-					};
-					toastStore.trigger(toast);
-				}
-
-				errors = Object.assign({}, error.response.data);
+				errors = {
+					...error.response.data,
+					non_field_errors: error.response.data.non_field_errors ?? []
+				};
 			});
 	}
 </script>

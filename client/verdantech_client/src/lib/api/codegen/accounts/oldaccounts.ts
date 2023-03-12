@@ -5,6 +5,8 @@
  * API of the VerdanTech Project Web Application
  * OpenAPI spec version: 0.1.0
  */
+import axios from 'axios';
+import type { AxiosRequestConfig, AxiosResponse, AxiosError } from 'axios';
 import { createMutation } from '@tanstack/svelte-query';
 import type { CreateMutationOptions, MutationFunction } from '@tanstack/svelte-query';
 import type {
@@ -20,7 +22,6 @@ import type {
 	ResendEmailVerificationRequest,
 	VerifyEmailRequest
 } from '../verdanTechAPI.schemas';
-import { customInstance } from '../../customAxios';
 
 /**
  * Calls Django Auth SetPasswordForm save method.
@@ -28,30 +29,32 @@ import { customInstance } from '../../customAxios';
 Accepts the following POST parameters: new_password1, new_password2
 Returns the success/fail message.
  */
-export const accountsPasswordChangeCreate = (passwordChangeRequest: PasswordChangeRequest) => {
-	return customInstance<RestAuthDetail>({
-		url: `/accounts/password/change`,
-		method: 'post',
-		headers: { 'Content-Type': 'application/json' },
-		data: passwordChangeRequest
-	});
+export const accountsPasswordChangeCreate = (
+	passwordChangeRequest: PasswordChangeRequest,
+	options?: AxiosRequestConfig
+): Promise<AxiosResponse<RestAuthDetail>> => {
+	return axios.post(`/accounts/password/change`, passwordChangeRequest, options);
 };
 
 export type AccountsPasswordChangeCreateMutationResult = NonNullable<
 	Awaited<ReturnType<typeof accountsPasswordChangeCreate>>
 >;
 export type AccountsPasswordChangeCreateMutationBody = PasswordChangeRequest;
-export type AccountsPasswordChangeCreateMutationError = unknown;
+export type AccountsPasswordChangeCreateMutationError = AxiosError<unknown>;
 
-export const createAccountsPasswordChangeCreate = <TError = unknown, TContext = unknown>(options?: {
+export const createAccountsPasswordChangeCreate = <
+	TError = AxiosError<unknown>,
+	TContext = unknown
+>(options?: {
 	mutation?: CreateMutationOptions<
 		Awaited<ReturnType<typeof accountsPasswordChangeCreate>>,
 		TError,
 		{ data: PasswordChangeRequest },
 		TContext
 	>;
+	axios?: AxiosRequestConfig;
 }) => {
-	const { mutation: mutationOptions } = options ?? {};
+	const { mutation: mutationOptions, axios: axiosOptions } = options ?? {};
 
 	const mutationFn: MutationFunction<
 		Awaited<ReturnType<typeof accountsPasswordChangeCreate>>,
@@ -59,7 +62,7 @@ export const createAccountsPasswordChangeCreate = <TError = unknown, TContext = 
 	> = (props) => {
 		const { data } = props ?? {};
 
-		return accountsPasswordChangeCreate(data);
+		return accountsPasswordChangeCreate(data, axiosOptions);
 	};
 
 	return createMutation<
@@ -75,30 +78,32 @@ export const createAccountsPasswordChangeCreate = <TError = unknown, TContext = 
 Accepts the following POST parameters: email
 Returns the success/fail message.
  */
-export const accountsPasswordResetCreate = (passwordResetRequest: PasswordResetRequest) => {
-	return customInstance<PasswordReset>({
-		url: `/accounts/password/reset`,
-		method: 'post',
-		headers: { 'Content-Type': 'application/json' },
-		data: passwordResetRequest
-	});
+export const accountsPasswordResetCreate = (
+	passwordResetRequest: PasswordResetRequest,
+	options?: AxiosRequestConfig
+): Promise<AxiosResponse<PasswordReset>> => {
+	return axios.post(`/accounts/password/reset`, passwordResetRequest, options);
 };
 
 export type AccountsPasswordResetCreateMutationResult = NonNullable<
 	Awaited<ReturnType<typeof accountsPasswordResetCreate>>
 >;
 export type AccountsPasswordResetCreateMutationBody = PasswordResetRequest;
-export type AccountsPasswordResetCreateMutationError = unknown;
+export type AccountsPasswordResetCreateMutationError = AxiosError<unknown>;
 
-export const createAccountsPasswordResetCreate = <TError = unknown, TContext = unknown>(options?: {
+export const createAccountsPasswordResetCreate = <
+	TError = AxiosError<unknown>,
+	TContext = unknown
+>(options?: {
 	mutation?: CreateMutationOptions<
 		Awaited<ReturnType<typeof accountsPasswordResetCreate>>,
 		TError,
 		{ data: PasswordResetRequest },
 		TContext
 	>;
+	axios?: AxiosRequestConfig;
 }) => {
-	const { mutation: mutationOptions } = options ?? {};
+	const { mutation: mutationOptions, axios: axiosOptions } = options ?? {};
 
 	const mutationFn: MutationFunction<
 		Awaited<ReturnType<typeof accountsPasswordResetCreate>>,
@@ -106,7 +111,7 @@ export const createAccountsPasswordResetCreate = <TError = unknown, TContext = u
 	> = (props) => {
 		const { data } = props ?? {};
 
-		return accountsPasswordResetCreate(data);
+		return accountsPasswordResetCreate(data, axiosOptions);
 	};
 
 	return createMutation<
@@ -125,24 +130,20 @@ Accepts the following POST parameters: token, uid,
 Returns the success/fail message.
  */
 export const accountsPasswordResetConfirmCreate = (
-	passwordResetConfirmRequest: PasswordResetConfirmRequest
-) => {
-	return customInstance<PasswordResetConfirm>({
-		url: `/accounts/password/reset/confirm`,
-		method: 'post',
-		headers: { 'Content-Type': 'application/json' },
-		data: passwordResetConfirmRequest
-	});
+	passwordResetConfirmRequest: PasswordResetConfirmRequest,
+	options?: AxiosRequestConfig
+): Promise<AxiosResponse<PasswordResetConfirm>> => {
+	return axios.post(`/accounts/password/reset/confirm`, passwordResetConfirmRequest, options);
 };
 
 export type AccountsPasswordResetConfirmCreateMutationResult = NonNullable<
 	Awaited<ReturnType<typeof accountsPasswordResetConfirmCreate>>
 >;
 export type AccountsPasswordResetConfirmCreateMutationBody = PasswordResetConfirmRequest;
-export type AccountsPasswordResetConfirmCreateMutationError = unknown;
+export type AccountsPasswordResetConfirmCreateMutationError = AxiosError<unknown>;
 
 export const createAccountsPasswordResetConfirmCreate = <
-	TError = unknown,
+	TError = AxiosError<unknown>,
 	TContext = unknown
 >(options?: {
 	mutation?: CreateMutationOptions<
@@ -151,8 +152,9 @@ export const createAccountsPasswordResetConfirmCreate = <
 		{ data: PasswordResetConfirmRequest },
 		TContext
 	>;
+	axios?: AxiosRequestConfig;
 }) => {
-	const { mutation: mutationOptions } = options ?? {};
+	const { mutation: mutationOptions, axios: axiosOptions } = options ?? {};
 
 	const mutationFn: MutationFunction<
 		Awaited<ReturnType<typeof accountsPasswordResetConfirmCreate>>,
@@ -160,7 +162,7 @@ export const createAccountsPasswordResetConfirmCreate = <
 	> = (props) => {
 		const { data } = props ?? {};
 
-		return accountsPasswordResetConfirmCreate(data);
+		return accountsPasswordResetConfirmCreate(data, axiosOptions);
 	};
 
 	return createMutation<
@@ -170,30 +172,32 @@ export const createAccountsPasswordResetConfirmCreate = <
 		TContext
 	>(mutationFn, mutationOptions);
 };
-export const accountsRegistrationCreate = (registerRequest: RegisterRequest) => {
-	return customInstance<Register>({
-		url: `/accounts/registration`,
-		method: 'post',
-		headers: { 'Content-Type': 'application/json' },
-		data: registerRequest
-	});
+export const accountsRegistrationCreate = (
+	registerRequest: RegisterRequest,
+	options?: AxiosRequestConfig
+): Promise<AxiosResponse<Register>> => {
+	return axios.post(`/accounts/registration`, registerRequest, options);
 };
 
 export type AccountsRegistrationCreateMutationResult = NonNullable<
 	Awaited<ReturnType<typeof accountsRegistrationCreate>>
 >;
 export type AccountsRegistrationCreateMutationBody = RegisterRequest;
-export type AccountsRegistrationCreateMutationError = unknown;
+export type AccountsRegistrationCreateMutationError = AxiosError<unknown>;
 
-export const createAccountsRegistrationCreate = <TError = unknown, TContext = unknown>(options?: {
+export const createAccountsRegistrationCreate = <
+	TError = AxiosError<unknown>,
+	TContext = unknown
+>(options?: {
 	mutation?: CreateMutationOptions<
 		Awaited<ReturnType<typeof accountsRegistrationCreate>>,
 		TError,
 		{ data: RegisterRequest },
 		TContext
 	>;
+	axios?: AxiosRequestConfig;
 }) => {
-	const { mutation: mutationOptions } = options ?? {};
+	const { mutation: mutationOptions, axios: axiosOptions } = options ?? {};
 
 	const mutationFn: MutationFunction<
 		Awaited<ReturnType<typeof accountsRegistrationCreate>>,
@@ -201,7 +205,7 @@ export const createAccountsRegistrationCreate = <TError = unknown, TContext = un
 	> = (props) => {
 		const { data } = props ?? {};
 
-		return accountsRegistrationCreate(data);
+		return accountsRegistrationCreate(data, axiosOptions);
 	};
 
 	return createMutation<
@@ -212,24 +216,20 @@ export const createAccountsRegistrationCreate = <TError = unknown, TContext = un
 	>(mutationFn, mutationOptions);
 };
 export const accountsRegistrationResendEmailCreate = (
-	resendEmailVerificationRequest: ResendEmailVerificationRequest
-) => {
-	return customInstance<ResendEmailVerification>({
-		url: `/accounts/registration/resend_email`,
-		method: 'post',
-		headers: { 'Content-Type': 'application/json' },
-		data: resendEmailVerificationRequest
-	});
+	resendEmailVerificationRequest: ResendEmailVerificationRequest,
+	options?: AxiosRequestConfig
+): Promise<AxiosResponse<ResendEmailVerification>> => {
+	return axios.post(`/accounts/registration/resend_email`, resendEmailVerificationRequest, options);
 };
 
 export type AccountsRegistrationResendEmailCreateMutationResult = NonNullable<
 	Awaited<ReturnType<typeof accountsRegistrationResendEmailCreate>>
 >;
 export type AccountsRegistrationResendEmailCreateMutationBody = ResendEmailVerificationRequest;
-export type AccountsRegistrationResendEmailCreateMutationError = unknown;
+export type AccountsRegistrationResendEmailCreateMutationError = AxiosError<unknown>;
 
 export const createAccountsRegistrationResendEmailCreate = <
-	TError = unknown,
+	TError = AxiosError<unknown>,
 	TContext = unknown
 >(options?: {
 	mutation?: CreateMutationOptions<
@@ -238,8 +238,9 @@ export const createAccountsRegistrationResendEmailCreate = <
 		{ data: ResendEmailVerificationRequest },
 		TContext
 	>;
+	axios?: AxiosRequestConfig;
 }) => {
-	const { mutation: mutationOptions } = options ?? {};
+	const { mutation: mutationOptions, axios: axiosOptions } = options ?? {};
 
 	const mutationFn: MutationFunction<
 		Awaited<ReturnType<typeof accountsRegistrationResendEmailCreate>>,
@@ -247,7 +248,7 @@ export const createAccountsRegistrationResendEmailCreate = <
 	> = (props) => {
 		const { data } = props ?? {};
 
-		return accountsRegistrationResendEmailCreate(data);
+		return accountsRegistrationResendEmailCreate(data, axiosOptions);
 	};
 
 	return createMutation<
@@ -257,23 +258,21 @@ export const createAccountsRegistrationResendEmailCreate = <
 		TContext
 	>(mutationFn, mutationOptions);
 };
-export const accountsRegistrationVerifyEmailCreate = (verifyEmailRequest: VerifyEmailRequest) => {
-	return customInstance<void>({
-		url: `/accounts/registration/verify_email`,
-		method: 'post',
-		headers: { 'Content-Type': 'application/json' },
-		data: verifyEmailRequest
-	});
+export const accountsRegistrationVerifyEmailCreate = (
+	verifyEmailRequest: VerifyEmailRequest,
+	options?: AxiosRequestConfig
+): Promise<AxiosResponse<void>> => {
+	return axios.post(`/accounts/registration/verify_email`, verifyEmailRequest, options);
 };
 
 export type AccountsRegistrationVerifyEmailCreateMutationResult = NonNullable<
 	Awaited<ReturnType<typeof accountsRegistrationVerifyEmailCreate>>
 >;
 export type AccountsRegistrationVerifyEmailCreateMutationBody = VerifyEmailRequest;
-export type AccountsRegistrationVerifyEmailCreateMutationError = unknown;
+export type AccountsRegistrationVerifyEmailCreateMutationError = AxiosError<unknown>;
 
 export const createAccountsRegistrationVerifyEmailCreate = <
-	TError = unknown,
+	TError = AxiosError<unknown>,
 	TContext = unknown
 >(options?: {
 	mutation?: CreateMutationOptions<
@@ -282,8 +281,9 @@ export const createAccountsRegistrationVerifyEmailCreate = <
 		{ data: VerifyEmailRequest },
 		TContext
 	>;
+	axios?: AxiosRequestConfig;
 }) => {
-	const { mutation: mutationOptions } = options ?? {};
+	const { mutation: mutationOptions, axios: axiosOptions } = options ?? {};
 
 	const mutationFn: MutationFunction<
 		Awaited<ReturnType<typeof accountsRegistrationVerifyEmailCreate>>,
@@ -291,7 +291,7 @@ export const createAccountsRegistrationVerifyEmailCreate = <
 	> = (props) => {
 		const { data } = props ?? {};
 
-		return accountsRegistrationVerifyEmailCreate(data);
+		return accountsRegistrationVerifyEmailCreate(data, axiosOptions);
 	};
 
 	return createMutation<
