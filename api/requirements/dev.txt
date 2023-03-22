@@ -32,7 +32,6 @@ dj-rest-auth[with_social]==2.2.7
     # via verdantech-api (pyproject.toml)
 django==4.1.5
     # via
-    #   verdantech-api (pyproject.toml)
     #   dj-rest-auth
     #   django-allauth
     #   django-cors-headers
@@ -42,6 +41,7 @@ django==4.1.5
     #   drf-spectacular
     #   drf-spectacular-sidecar
     #   model-bakery
+    #   verdantech-api (pyproject.toml)
 django-allauth==0.52.0
     # via dj-rest-auth
 django-cors-headers==3.13.0
@@ -51,6 +51,8 @@ django-debug-toolbar==3.8.1
 django-mock-queries==2.1.7
     # via verdantech-api (pyproject.toml)
 django-rest-framework==0.1.0
+    # via verdantech-api (pyproject.toml)
+django-timezone-field==5.0
     # via verdantech-api (pyproject.toml)
 djangorestframework==3.14.0
     # via
@@ -92,8 +94,8 @@ mock==5.0.1
     # via django-mock-queries
 model-bakery==1.10.1
     # via
-    #   verdantech-api (pyproject.toml)
     #   django-mock-queries
+    #   verdantech-api (pyproject.toml)
 mypy-extensions==0.4.3
     # via black
 oauthlib==3.2.2
@@ -141,7 +143,9 @@ python-decouple==3.7
 python3-openid==3.2.0
     # via django-allauth
 pytz==2022.7.1
-    # via djangorestframework
+    # via
+    #   django-timezone-field
+    #   djangorestframework
 pyyaml==6.0
     # via drf-spectacular
 requests==2.28.2

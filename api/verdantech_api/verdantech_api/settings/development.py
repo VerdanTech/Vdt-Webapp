@@ -38,7 +38,7 @@ SPECTACULAR_SETTINGS = {
     "DESCRIPTION": "API of the VerdanTech Project Web Application",
     "VERSION": "0.1.0",
     "SERVERS": [{"url": "http://localhost:5173/api"}],
-    #"SCHEMA_PATH_PREFIX_INSERT": "api",
+    # "SCHEMA_PATH_PREFIX_INSERT": "api",
     "TAGS": app_tags,
     "SERVE_INCLUDE_SCHEMA": False,
     "SWAGGER_UI_DIST": "SIDECAR",

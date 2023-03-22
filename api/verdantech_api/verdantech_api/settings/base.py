@@ -39,11 +39,17 @@ INSTALLED_APPS = [
     "allauth.socialaccount",
     "dj_rest_auth",
     "dj_rest_auth.registration",
+    "timezone_field",
+    "verdantech_api.apps.core",
     "verdantech_api.apps.authentication",
     "verdantech_api.apps.accounts",
+    "verdantech_api.apps.gardens",
 ]
 
 SITE_ID = 1
+
+TIME_ZONE = "UTC"
+USE_TZ = True
 
 # ==============================================================================
 # MIDDLEWARE SETTINGS
@@ -68,7 +74,7 @@ MIDDLEWARE = [
 REST_FRAMEWORK = {
     "DEFAULT_RENDERER_CLASSES": [
         "rest_framework.renderers.JSONRenderer",
-        'rest_framework.renderers.BrowsableAPIRenderer',
+        "rest_framework.renderers.BrowsableAPIRenderer",
     ],
     "DEFAULT_PARSER_CLASSES": ["rest_framework.parsers.JSONParser"],
     "DEFAULT_PERMISSION_CLASSES": [

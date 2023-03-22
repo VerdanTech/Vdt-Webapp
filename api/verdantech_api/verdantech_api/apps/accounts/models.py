@@ -3,10 +3,12 @@ from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
+from verdantech_api.apps.core.models import BaseModel
+
 from .managers import UserManager
 
 
-class User(AbstractBaseUser, PermissionsMixin):
+class User(AbstractBaseUser, PermissionsMixin, BaseModel):
     """
     User model to handle authentication
     """
