@@ -9,7 +9,6 @@ dependencies = [
     "django-rest-framework",
     "dj-rest-auth[with_social]",
     "python-decouple",
-    "django-timezone-field",
     ]
 description = 'API of the VerdanTech (Automatic Garden Management and Optimization) project.'
 readme = "README.md"

@@ -2,7 +2,7 @@ import pytest
 from rest_framework.test import APIClient
 
 from .test_accounts.factories import UserFactory
-from .test_gardens.factories import ValidGardenFactory
+from .test_gardens.factories import BaseGardenFactory, GardenFactory
 
 
 @pytest.fixture
@@ -25,5 +25,9 @@ def User():
 
 
 @pytest.fixture
+def BaseGarden():
+    return BaseGardenFactory
+
+@pytest.fixture
 def Garden():
-    return ValidGardenFactory
+    return GardenFactory

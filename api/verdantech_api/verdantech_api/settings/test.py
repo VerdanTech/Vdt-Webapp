@@ -13,3 +13,15 @@ ACCOUNT_EMAIL_VERIFICATION = "optional"
 # ==============================================================================
 
 EMAIL_BACKEND = "django.core.mail.backends.locmem.EmailBackend"
+
+# ==============================================================================
+# DATABASE SETTINGS
+# ==============================================================================
+
+DATABASES = {
+    "default": {
+        "ENGINE": "django.db.backends.sqlite3",
+        "NAME": BASE_DIR / "test_db.sqlite3",
+    }
+}
+

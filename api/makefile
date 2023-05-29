@@ -60,6 +60,10 @@ test:
 	$(BIN)/$(PY) -m coverage run --source verdantech_api -m pytest --html=reports/pytest/index.html
 	$(BIN)/$(PY) -m coverage html -d reports/coverage
 
+.PHONY: migrations
+migrations:
+	$(BIN)/$(PY) verdantech_api/manage.py makemigrations
+
 .PHONY: migrate
 migrate:
 	$(BIN)/$(PY) verdantech_api/manage.py migrate

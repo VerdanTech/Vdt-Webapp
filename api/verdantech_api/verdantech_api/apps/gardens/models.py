@@ -1,7 +1,7 @@
 from django.conf import settings
 from django.db import models
 from django.utils.translation import gettext_lazy as _
-from timezone_field import TimeZoneField
+from django.core.exceptions import ValidationError
 
 from verdantech_api.apps.core.models import BaseModel
 
@@ -50,42 +50,12 @@ class Garden(BaseModel):
         ),
     )
 
-    admins = models.ManyToManyField(
+    users = models.ManyToManyField(
         User,
-        related_name="admin_gardens",
-        verbose_name=_("garden_admins"),
-        help_text=_(
-            "Admin users have the following permisions in a Garden: "
-            "Garden settings update, "
-            "Admin, editor, viewer list: create, update and delete, "
-            "Workspaces create and delete, "
-            "Devices create, update, and delete, "
-            "ModelOutput control."
-        ),
-    )
-    editors = models.ManyToManyField(
-        User,
-        related_name="edit_gardens",
-        verbose_name=_("garden_editors"),
-        help_text=_(
-            "Editor users have the following permisions in a Garden: "
-            "Garden viewers create, "
-            "Planting scheme create, update, and delete, "
-            "HarvestEntry create, update, and delete, "
-            "ModelInputEntry create, update, and delete."
-        ),
-    )
-    viewers = models.ManyToManyField(
-        User,
-        related_name="view_gardens",
-        verbose_name=_("garden_viewers"),
-        help_text=_("Viewer users have read-only permisions in a Garden"),
-    )
-
-    timezone = TimeZoneField(
-        _("timezone"),
-        null=True,
-        blank=True,
+        related_name="user_gardens",
+        verbose_name=_("garden users"),
+        through='GardenMembership',
+        through_fields=("garden", "user")
     )
 
     # set_coordinates_from_address = models.BooleanField(_("set coordinates from address"), default=True)
@@ -99,27 +69,40 @@ class Garden(BaseModel):
         _("latitude coordinate"), max_digits=9, decimal_places=6, null=True, blank=True
     )
 
-    class Meta:
-        constraints = [
-            models.CheckConstraint(
-                name="admins_count_greaterthan_zero",
-                check=models.Q(admins__isnull=False),
-            ),
-            models.UniqueConstraint(
-                name="unique_garden_name_among_user_created_gardens",
-                fields=["name", "creator"],
-            ),
-        ]
-
     def __str__(self):
-        return self.name
+        return self.string_id
 
     def clean(self):
+
+        # Ensure the admin count is greater than zero
+        if not (self.members.filter(role="ADMIN").count() > 0):
+            raise ValidationError("Requires minimum 1 admin")
+
+        # Ensure users are in at most one role
+
         pass
 
 
-class GardenInvite(models.Model):
-    # user
-    # garden
-    # role
-    pass
+class GardenMembership(BaseModel):
+    """
+    Garden memberships tie user models to roles, allowing
+    users to be invited to gardens
+    """
+
+    inviter = models.ForeignKey(User, on_delete=models.SET_NULL, verbose_name="inviter", null=True, blank=True, related_name="invitations_sent")
+    user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="user", related_name="memberships")
+    garden = models.ForeignKey(Garden, on_delete=models.CASCADE, verbose_name="garden", related_name="members")
+    
+    class RoleChoices(models.TextChoices):
+        ADMIN = "ADMIN", _("Admin")
+        EDITOR = "EDITOR", _("Editor")
+        VIEWER = "VIEWER", _("Viewer")
+    
+    role = models.CharField(
+        _("role"),
+        max_length=6,
+        choices=RoleChoices.choices,
+        default=RoleChoices.VIEWER,
+    )
+
+    open_invite = models.BooleanField(_("open invite"), default=True)
