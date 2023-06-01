@@ -1,14 +1,14 @@
 import pytest
 from django.core.exceptions import ValidationError
+from django.db.utils import IntegrityError
 
-
+from verdantech_api.apps.gardens.models import GardenMembership
 
 pytestmark = pytest.mark.django_db
 
-from verdantech_api.apps.gardens.models import Garden
 
 class TestGardenModelValidaton:
-    
+
     # This is supposed to be a unit test, but I can't figure out how to mock the many-to-many models
     def test_minimum_admins(self, mocker, BaseGarden):
         """
@@ -20,37 +20,27 @@ class TestGardenModelValidaton:
 
         with pytest.raises(ValidationError):
             garden.clean()
-            
-    @pytest.mark.skip
-    def test_one_role_per_user(self, User, Garden):
+
+
+class TestGardenMembershipModelValidation:
+    def test_one_membership_per_user_per_garden(self, User, Garden):
         """
-        Ensure users are in at most one role.
+        Ensure users only have one membership per garden
         """
 
-        user = User.build()
-        gardens = Garden.build_batch(6)
+        user = User.create()
+        garden = Garden.create()
 
-        gardens[0].admins.add(user)
-        gardens[0].admins.add(user)
+        membership1 = GardenMembership(
+            user=user, garden=garden, role=GardenMembership.RoleChoices.ADMIN
+        )
+        membership1.save()
 
-        gardens[1].editors.add(user)
-        gardens[1].editors.add(user)
-
-        gardens[2].viewers.add(user)
-        gardens[2].viewers.add(user)
-
-        gardens[3].admins.add(user)
-        gardens[3].editors.add(user)
-
-        gardens[4].admins.add(user)
-        gardens[4].viewers.add(user)
-
-        gardens[5].editors.add(user)
-        gardens[5].viewers.add(user)
-
-        for garden in gardens:
-            with pytest.raises(ValidationError):
-                garden.clean()
+        with pytest.raises(IntegrityError):
+            membership2 = GardenMembership(
+                user=user, garden=garden, role=GardenMembership.RoleChoices.ADMIN
+            )
+            membership2.save()
 
 
 class TestGardenModelCreate:

@@ -1,7 +1,7 @@
 from django.conf import settings
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.translation import gettext_lazy as _
-from django.core.exceptions import ValidationError
 
 from verdantech_api.apps.core.models import BaseModel
 
@@ -54,11 +54,9 @@ class Garden(BaseModel):
         User,
         related_name="user_gardens",
         verbose_name=_("garden users"),
-        through='GardenMembership',
-        through_fields=("garden", "user")
+        through="GardenMembership",
+        through_fields=("garden", "user"),
     )
-
-    # set_coordinates_from_address = models.BooleanField(_("set coordinates from address"), default=True)
 
     address = models.CharField(_("address"), max_length=100, null=True, blank=True)
 
@@ -78,8 +76,6 @@ class Garden(BaseModel):
         if not (self.members.filter(role="ADMIN").count() > 0):
             raise ValidationError("Requires minimum 1 admin")
 
-        # Ensure users are in at most one role
-
         pass
 
 
@@ -89,20 +85,39 @@ class GardenMembership(BaseModel):
     users to be invited to gardens
     """
 
-    inviter = models.ForeignKey(User, on_delete=models.SET_NULL, verbose_name="inviter", null=True, blank=True, related_name="invitations_sent")
-    user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="user", related_name="memberships")
-    garden = models.ForeignKey(Garden, on_delete=models.CASCADE, verbose_name="garden", related_name="members")
-    
+    inviter = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        verbose_name="inviter",
+        null=True,
+        blank=True,
+        related_name="invitations_sent",
+    )
+    user = models.ForeignKey(
+        User, on_delete=models.CASCADE, verbose_name="user", related_name="memberships"
+    )
+    garden = models.ForeignKey(
+        Garden, on_delete=models.CASCADE, verbose_name="garden", related_name="members"
+    )
+
     class RoleChoices(models.TextChoices):
         ADMIN = "ADMIN", _("Admin")
-        EDITOR = "EDITOR", _("Editor")
-        VIEWER = "VIEWER", _("Viewer")
-    
+        EDIT = "EDIT", _("Editor")
+        VIEW = "VIEW", _("Viewer")
+
     role = models.CharField(
         _("role"),
         max_length=6,
         choices=RoleChoices.choices,
-        default=RoleChoices.VIEWER,
+        default=RoleChoices.VIEW,
     )
 
     open_invite = models.BooleanField(_("open invite"), default=True)
+
+    class Meta:
+
+        constraints = [
+            models.UniqueConstraint(
+                fields=["user", "garden"], name="user_unique_in_garden"
+            )
+        ]

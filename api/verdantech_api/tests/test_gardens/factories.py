@@ -13,6 +13,7 @@ class BaseGardenFactory(factory.django.DjangoModelFactory):
     string_id = factory.Faker("slug")
     visibility = "PRIVATE"
 
+
 class GardenAdminMembershipFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = GardenMembership
@@ -27,5 +28,5 @@ class GardenFactory(BaseGardenFactory):
 
     admin = factory.RelatedFactory(
         GardenAdminMembershipFactory,
-        factory_related_name='garden',
+        factory_related_name="garden",
     )
