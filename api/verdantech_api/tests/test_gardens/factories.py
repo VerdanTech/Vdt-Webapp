@@ -10,7 +10,6 @@ class BaseGardenFactory(factory.django.DjangoModelFactory):
         model = Garden
 
     name = factory.Faker("first_name")
-    string_id = factory.Faker("slug")
     visibility = "PRIVATE"
 
 

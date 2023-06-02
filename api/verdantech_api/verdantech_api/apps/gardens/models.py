@@ -1,9 +1,10 @@
 from django.conf import settings
-from django.core.exceptions import ValidationError
+from django.core.validators import validate_unicode_slug
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 from verdantech_api.apps.core.models import BaseModel
+from verdantech_api.apps.core.utils import hashid_generator
 
 User = settings.AUTH_USER_MODEL
 
@@ -15,10 +16,10 @@ class Garden(BaseModel):
     Users can create gardens and join others, with admin, edit, and view roles.
     """
 
-    name = models.CharField(_("name"), max_length=50)
-    string_id = models.CharField(
-        _("unique sting identifier"), max_length=75, unique=True
+    name = models.CharField(
+        _("name"), max_length=50, validators=[validate_unicode_slug]
     )
+    hashid = models.CharField(max_length=6, null=True, blank=True, unique=True)
     creator = models.ForeignKey(
         User,
         on_delete=models.SET_NULL,
@@ -67,16 +68,29 @@ class Garden(BaseModel):
         _("latitude coordinate"), max_digits=9, decimal_places=6, null=True, blank=True
     )
 
-    def __str__(self):
-        return self.string_id
-
-    def clean(self):
+    def is_abandoned(self):
+        """
+        Check whether a garden is still in use
+        """
 
         # Ensure the admin count is greater than zero
-        if not (self.members.filter(role="ADMIN").count() > 0):
-            raise ValidationError("Requires minimum 1 admin")
+        if self.members.filter(role=GardenMembership.RoleChoices.ADMIN).count() > 0:
+            return False
+        else:
+            return True
 
-        pass
+    def __str__(self):
+        return self.name
+
+    def save(self, *args, **kwargs):
+
+        # Generate a unique hash ID
+        if not self.hashid:
+            self.hashid = hashid_generator()
+            while Garden.objects.filter(hashid=self.hashid).exists():
+                self.hashid = hashid_generator()
+
+        super(Garden, self).save(*args, **kwargs)
 
 
 class GardenMembership(BaseModel):
