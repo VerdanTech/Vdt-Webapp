@@ -1,14 +1,7 @@
-from __future__ import annotations
-
-from typing import TYPE_CHECKING
-
 import pytest
 from django.contrib.auth import get_user_model
 from django.urls import reverse
 from rest_framework import status
-
-if TYPE_CHECKING:
-    from rest_framework.test import APIClient
 
 pytestmark = pytest.mark.django_db
 
@@ -17,7 +10,7 @@ login_endpoint = reverse("login")
 
 
 class TestCSRFTokenEndpoint:
-    def test_csrf(self, client: APIClient) -> None:
+    def test_csrf(self, client):
         """Ensure that a CSRF token is correctly issued at the endpoint"""
 
         response = client.get(
@@ -30,7 +23,7 @@ class TestCSRFTokenEndpoint:
 
 
 class TestLoginEndpoint:
-    def test_login_without_csrf(self, csrf_client: APIClient, mocker) -> None:
+    def test_login_without_csrf(self, csrf_client, mocker):
         """Ensure the login view is CSRF protected"""
 
         User = get_user_model()
@@ -50,7 +43,7 @@ class TestLoginEndpoint:
         assert response.status_code == status.HTTP_403_FORBIDDEN
         assert "CSRF verification failed" in response.content.decode()
 
-    def test_login_with_csrf(self, csrf_client: APIClient) -> None:
+    def test_login_with_csrf(self, csrf_client):
         """Ensure the login view is suceeds with email, password, and csrf token"""
 
         User = get_user_model()

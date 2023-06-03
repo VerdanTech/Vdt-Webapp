@@ -29,6 +29,7 @@ urlpatterns = [
         f"{settings.API_URL_BASE}", include("verdantech_api.apps.authentication.urls")
     ),
     path(f"{settings.API_URL_BASE}", include("verdantech_api.apps.accounts.urls")),
+    path(f"{settings.API_URL_BASE}", include("verdantech_api.apps.gardens.urls")),
 ]
 
 if config("DEBUG", default=True, cast=bool):

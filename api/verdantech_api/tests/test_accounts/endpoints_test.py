@@ -25,9 +25,7 @@ password_reset_confirm_endpoint = reverse("password_reset_confirm")
 
 
 class TestRegistrationEndpoints:
-    def test_registration_and_email_confirmation_without_csrf(
-        self, csrf_client: APIClient
-    ) -> None:
+    def test_registration_and_email_confirmation_without_csrf(self, csrf_client):
         """Ensure the registration view requires a CSRF token"""
 
         username = "testusername"
@@ -45,7 +43,7 @@ class TestRegistrationEndpoints:
 
         assert response.status_code == status.HTTP_403_FORBIDDEN
 
-    def test_registration_and_email_confirmation(self, csrf_client: APIClient) -> None:
+    def test_registration_and_email_confirmation(self, csrf_client):
         """Ensure the registration process is working correctly"""
 
         User = get_user_model()
@@ -103,7 +101,7 @@ class TestRegistrationEndpoints:
 
 
 class TestPasswordEndpoints:
-    def test_password_reset_without_csrf(self, csrf_client: APIClient) -> None:
+    def test_password_reset_without_csrf(self, csrf_client):
         """Ensure the password reset view requires a CSRF token"""
 
         email = "test@test.com"
@@ -114,7 +112,7 @@ class TestPasswordEndpoints:
 
         assert response.status_code == status.HTTP_403_FORBIDDEN
 
-    def test_password_reset(self, csrf_client: APIClient) -> None:
+    def test_password_reset(self, csrf_client):
         """Ensure the password reset process is working correctly"""
 
         User = get_user_model()
