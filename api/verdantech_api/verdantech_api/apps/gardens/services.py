@@ -1,4 +1,4 @@
-from typing import List, Tuple
+from typing import Dict, List, Tuple
 
 from django.core.exceptions import PermissionDenied
 
@@ -6,15 +6,45 @@ from verdantech_api.apps.accounts.models import User
 
 from .models import Garden, GardenMembership
 
-user_role_pair_list = List[Tuple[User, str]]
+
+def garden_create_parse_invitees(
+    invitees: List[Dict[str, str]] = None
+) -> List[Dict[User, str]]:
+    """
+    Turn the list of usernames and roles into a list
+    of users and roles, not including any usernames
+    that don't exist
+    """
+
+    if invitees is None:
+        return None
+
+    # Extract usernames from invitee list
+    usernames = [invitee["username"] for invitee in invitees]
+
+    # Get user objects
+    users = User.objects.filter(username__in=usernames)
+
+    # Construct output list
+    output_list = []
+    for invitee in invitees:
+
+        # Add user object to output list only if it exists
+        user = next(
+            (user for user in users if user.username == invitee["username"]), None
+        )
+        if user is not None:
+            output_list.append({"user": user, "role": invitee["role"]})
+
+    return output_list
 
 
 def garden_create(
     name: str,
     creator: User,
-    invitees: user_role_pair_list = None,
+    invitees: List[Dict[User, str]] = None,
     visibility: str = Garden.VisibilityChoices.PRIVATE,
-) -> Garden:
+) -> Tuple[Garden, List[Dict[str, str]]]:
     """Create a new garden and save it to the database"""
 
     # Create the model
@@ -34,16 +64,25 @@ def garden_create(
     garden_membership.save()
 
     # Add any invitees
+    invitations_sent = None
     if invitees:
         for user_role_pair in invitees:
+            user = user_role_pair["user"]
+            role = user_role_pair["role"]
             garden_membership_create(
-                user=user_role_pair[0],
+                user=user,
                 garden=garden,
                 inviter=creator,
-                role=user_role_pair[1],
+                role=role,
             )
 
-    return garden
+        # Construct list of users invited
+        invitations_sent = [
+            {"username": user_role_pair["user"].username, "role": user_role_pair["role"]}
+            for user_role_pair in invitees
+        ]
+
+    return garden, invitations_sent
 
 
 def garden_membership_create(

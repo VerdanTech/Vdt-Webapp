@@ -2,9 +2,41 @@ import pytest
 from django.core.exceptions import PermissionDenied
 
 from verdantech_api.apps.gardens.models import Garden, GardenMembership
-from verdantech_api.apps.gardens.services import garden_create, garden_membership_create
+from verdantech_api.apps.gardens.services import (
+    garden_create,
+    garden_create_parse_invitees,
+    garden_membership_create,
+)
 
 pytestmark = pytest.mark.django_db
+
+
+class TestGardenModelCreateParseInvitees:
+    def test_users_returned(self, User):
+        """
+        Ensure that the users are properly
+        fetched and not included if they
+        don't exist
+        """
+
+        users = User.create_batch(3)
+
+        input_list = [
+            {"username": users[0].username, "role": "ADMIN"},
+            {"username": users[1].username, "role": "EDIT"},
+            {"username": users[2].username, "role": "VIEW"},
+            {"username": "user_does_not_exist", "role": "ADMIN"},
+        ]
+
+        expected_output_list = [
+            {"user": users[0], "role": "ADMIN"},
+            {"user": users[1], "role": "EDIT"},
+            {"user": users[2], "role": "VIEW"},
+        ]
+
+        output_list = garden_create_parse_invitees(input_list)
+
+        assert output_list == expected_output_list
 
 
 class TestGardenModelCreate:
@@ -18,11 +50,12 @@ class TestGardenModelCreate:
         name = "test"
         visibility = Garden.VisibilityChoices.PUBLIC
 
-        garden = garden_create(name=name, creator=user, visibility=visibility)
+        garden, invitations_sent = garden_create(name=name, creator=user, visibility=visibility)
 
         assert garden.name == name
         assert garden.creator == user
         assert garden.visibility == visibility
+        assert invitations_sent is None
 
     def test_creator_and_admin_set(self, User):
         """
@@ -33,7 +66,7 @@ class TestGardenModelCreate:
         user = User.create()
         name = "test"
 
-        garden = garden_create(name=name, creator=user)
+        garden, invitations_sent = garden_create(name=name, creator=user)
 
         assert garden.members.count() == 1
         assert (
@@ -49,7 +82,7 @@ class TestGardenModelCreate:
         user = User.create()
         name = "test"
 
-        garden = garden_create(name=name, creator=user)
+        garden, invitations_sent = garden_create(name=name, creator=user)
 
         assert garden.visibility == Garden.VisibilityChoices.PRIVATE
 
@@ -63,12 +96,12 @@ class TestGardenModelCreate:
 
         invitees = User.create_batch(3)
         user_role_pairs = [
-            (invitees[0], GardenMembership.RoleChoices.VIEW),
-            (invitees[1], GardenMembership.RoleChoices.EDIT),
-            (invitees[2], GardenMembership.RoleChoices.ADMIN),
+            {"user": invitees[0], "role": GardenMembership.RoleChoices.VIEW},
+            {"user": invitees[1], "role": GardenMembership.RoleChoices.EDIT},
+            {"user": invitees[2], "role": GardenMembership.RoleChoices.ADMIN},
         ]
 
-        garden = garden_create(name=name, creator=user, invitees=user_role_pairs)
+        garden, invitations_sent = garden_create(name=name, creator=user, invitees=user_role_pairs)
 
         assert garden.members.count() == 4
         assert (
