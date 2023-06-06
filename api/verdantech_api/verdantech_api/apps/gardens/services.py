@@ -78,7 +78,10 @@ def garden_create(
 
         # Construct list of users invited
         invitations_sent = [
-            {"username": user_role_pair["user"].username, "role": user_role_pair["role"]}
+            {
+                "username": user_role_pair["user"].username,
+                "role": user_role_pair["role"],
+            }
             for user_role_pair in invitees
         ]
 

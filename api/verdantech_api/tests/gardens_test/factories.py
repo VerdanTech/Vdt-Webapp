@@ -2,7 +2,7 @@ import factory
 
 from verdantech_api.apps.gardens.models import Garden, GardenMembership
 
-from ..test_accounts.factories import UserFactory
+from ..accounts_test.factories import UserFactory
 
 
 class BaseGardenFactory(factory.django.DjangoModelFactory):

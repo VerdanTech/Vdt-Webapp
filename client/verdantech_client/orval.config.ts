@@ -10,7 +10,6 @@ export default defineConfig({
 			mode: 'tags-split',
 			client: 'svelte-query',
 			target: 'src/lib/api/codegen/',
-			//schemas: 'src/lib/api/codegen/model/',
 			//useDates: true,
 			mock: true,
 			override: {

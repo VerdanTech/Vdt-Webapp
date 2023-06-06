@@ -1,8 +1,8 @@
 import pytest
 from rest_framework.test import APIClient
 
-from .test_accounts.factories import UserFactory
-from .test_gardens.factories import BaseGardenFactory, GardenFactory
+from .accounts_test.factories import UserFactory
+from .gardens_test.factories import BaseGardenFactory, GardenFactory
 
 
 @pytest.fixture

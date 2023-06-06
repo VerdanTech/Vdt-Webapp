@@ -50,7 +50,9 @@ class TestGardenModelCreate:
         name = "test"
         visibility = Garden.VisibilityChoices.PUBLIC
 
-        garden, invitations_sent = garden_create(name=name, creator=user, visibility=visibility)
+        garden, invitations_sent = garden_create(
+            name=name, creator=user, visibility=visibility
+        )
 
         assert garden.name == name
         assert garden.creator == user
@@ -101,7 +103,9 @@ class TestGardenModelCreate:
             {"user": invitees[2], "role": GardenMembership.RoleChoices.ADMIN},
         ]
 
-        garden, invitations_sent = garden_create(name=name, creator=user, invitees=user_role_pairs)
+        garden, invitations_sent = garden_create(
+            name=name, creator=user, invitees=user_role_pairs
+        )
 
         assert garden.members.count() == 4
         assert (

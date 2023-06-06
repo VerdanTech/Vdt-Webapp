@@ -83,6 +83,7 @@ REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
         "rest_framework.authentication.SessionAuthentication",
     ],
+    #"EXCEPTION_HANDLER": "verdantech_api.apps.core.exceptions.custom_exception_handler",
 }
 
 API_URL_BASE = config("API_URL_BASE", default="", cast=str)

@@ -96,6 +96,7 @@ class TestGardenCreateEndpoint:
                 {"username": users[1].username, "role": "ADMIN"},
                 {"username": users[2].username, "role": "EDIT"},
                 {"username": users[3].username, "role": "VIEW"},
+                {"username": "user_does_not_exist", "role": "VIEW"},
             ],
         }
 
