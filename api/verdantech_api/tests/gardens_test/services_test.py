@@ -6,6 +6,7 @@ from verdantech_api.apps.gardens.services import (
     garden_create,
     garden_create_parse_invitees,
     garden_membership_create,
+    garden_update,
 )
 
 pytestmark = pytest.mark.django_db
@@ -120,6 +121,59 @@ class TestGardenModelCreate:
             garden.members.filter(user=invitees[2]).first().role
             == GardenMembership.RoleChoices.ADMIN
         )
+
+
+class TestGardenModelUpdate:
+    def test_arguments_updated(self, User, Garden):
+        """
+        Ensure that the arguments are properly updated
+        """
+
+        user = User.create()
+        garden = Garden.create()
+
+        GardenMembership.objects.create(
+            user=user,
+            garden=garden,
+            role=GardenMembership.RoleChoices.ADMIN,
+            open_invite=False,
+        )
+
+        new_name = "test"
+        new_visibility = "PUBLIC"
+
+        garden = garden_update(
+            user=user, hashid=garden.hashid, name=new_name, visibility=new_visibility
+        )
+
+        assert garden.name == new_name
+        assert garden.visibility == new_visibility
+
+    def test_admin_required(self, User, Garden):
+        """
+        Ensure that the arguments are properly updated
+        """
+
+        user = User.create()
+        garden = Garden.create()
+
+        GardenMembership.objects.create(
+            user=user,
+            garden=garden,
+            role=GardenMembership.RoleChoices.EDIT,
+            open_invite=False,
+        )
+
+        new_name = "test"
+        new_visibility = "PUBLIC"
+
+        with pytest.raises(PermissionDenied):
+            garden = garden_update(
+                user=user,
+                hashid=garden.hashid,
+                name=new_name,
+                visibility=new_visibility,
+            )
 
 
 class TestGardenMembershipModelCreate:

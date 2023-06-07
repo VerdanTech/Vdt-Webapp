@@ -75,11 +75,11 @@ INTERNAL_IPS = ["127.0.0.1"]
 # ==============================================================================
 
 ALLOWED_HOSTS = ["*"]
-CSRF_COOKIE_HTTPONLY = False
-CSRF_COOKIE_SAMESITE = "None"
-CSRF_TRUSTED_ORIGINS = ["*"]
-SESSION_COOKIE_SAMESITE = "None"
-SESSION_COOKIE_HTTPONLY = False
+# CSRF_COOKIE_HTTPONLY = False
+# CSRF_COOKIE_SAMESITE = "None"
+# CSRF_TRUSTED_ORIGINS = ["*"]
+# SESSION_COOKIE_SAMESITE = "None"
+# SESSION_COOKIE_HTTPONLY = False
 
 CORS_ALLOW_ALL_ORIGINS = True
 CSRF_TRUSTED_ORIGINS = ["http://localhost:5173", "http://127.0.0.1:5173"]

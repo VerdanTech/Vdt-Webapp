@@ -1,7 +1,7 @@
 from dj_rest_auth.views import LoginView as RestAuthLogin
 from django.middleware.csrf import get_token
 from django.utils.decorators import method_decorator
-from django.views.decorators.csrf import csrf_protect
+from django.views.decorators.csrf import csrf_protect, ensure_csrf_cookie
 from drf_spectacular.utils import extend_schema
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.generics import GenericAPIView
@@ -12,6 +12,7 @@ from rest_framework.response import Response
 from .serializers import CSRFTokenSerializer
 
 
+@method_decorator(ensure_csrf_cookie, name="get")
 class CSRFTokenView(GenericAPIView):
     """Returns valid CSRF token"""
 

@@ -5,6 +5,7 @@ from django.core.exceptions import PermissionDenied
 from verdantech_api.apps.accounts.models import User
 
 from .models import Garden, GardenMembership
+from .selectors import garden_detail
 
 
 def garden_create_parse_invitees(
@@ -86,6 +87,34 @@ def garden_create(
         ]
 
     return garden, invitations_sent
+
+
+def garden_update(
+    user: User, hashid: str, name: str = None, visibility: str = None
+) -> Garden:
+    """
+    Update the garden name, or visibility
+    """
+
+    garden = garden_detail(fetched_by=user, hashid=hashid)
+    membership = garden.members.filter(user=user).first()
+
+    if membership.role != GardenMembership.RoleChoices.ADMIN:
+        raise PermissionDenied()
+
+    updated = False
+    if name is not None:
+        garden.name = name
+        updated = True
+    if visibility is not None:
+        garden.visibility = visibility
+        updated = True
+
+    if updated:
+        garden.full_clean()
+        garden.save()
+
+    return garden
 
 
 def garden_membership_create(

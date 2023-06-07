@@ -83,7 +83,7 @@ REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
         "rest_framework.authentication.SessionAuthentication",
     ],
-    #"EXCEPTION_HANDLER": "verdantech_api.apps.core.exceptions.custom_exception_handler",
+    "EXCEPTION_HANDLER": "verdantech_api.apps.core.exceptions.custom_exception_handler",
 }
 
 API_URL_BASE = config("API_URL_BASE", default="", cast=str)
@@ -92,12 +92,11 @@ API_URL_BASE = config("API_URL_BASE", default="", cast=str)
 # SECURITY SETTINGS
 # ==============================================================================
 
-ADMINS = []
 ALLOWED_HOSTS = config("ALLOWED_HOSTS", default="127.0.0.1", cast=Csv())
 CSRF_COOKIE_HTTPONLY = False
-CSRF_COOKIE_SAMESITE = "Lax"
-CSRF_TRUSTED_ORIGINS = []
-SESSION_COOKIE_SAMESITE = "Lax"
+CSRF_COOKIE_SAMESITE = "None"
+CSRF_TRUSTED_ORIGINS = ["*"]
+SESSION_COOKIE_SAMESITE = "None"
 SESSION_COOKIE_HTTPONLY = True
 
 # ==============================================================================
@@ -121,11 +120,6 @@ AUTHENTICATION_BACKENDS = (
     "django.contrib.auth.backends.ModelBackend",
     "allauth.account.auth_backends.AuthenticationBackend",
 )
-
-CSRF_COOKIE_SAMESITE = "Strict"
-SESSION_COOKIE_SAMESITE = "Strict"
-CSRF_COOKIE_HTTPONLY = True
-SESSION_COOKIE_HTTPONLY = True
 
 AUTH_PASSWORD_VALIDATORS = [
     {

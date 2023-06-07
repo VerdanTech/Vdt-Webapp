@@ -2,6 +2,7 @@ import pytest
 from django.urls import reverse
 from rest_framework import status
 
+from verdantech_api.apps.core.exceptions import ApplicationError
 from verdantech_api.apps.gardens.models import Garden, GardenMembership
 
 pytestmark = pytest.mark.django_db
@@ -121,20 +122,61 @@ class TestGardenCreateEndpoint:
 
 
 class TestGardenDetailEndpoint:
-    def test_garden_detail(self, client, User, Garden):
+    def test_garden_detail(self, client, User, BaseGarden):
         """
         Ensure that the garden detail endpoint
         returns the correct details
         """
-        pass
+        users = User.create_batch(3)
+        client.force_authenticate(user=users[0])
+        garden = BaseGarden.create()
 
-    def test_garden_detail_permissions(self, client, User, Garden):
+        membership1 = GardenMembership(user=users[0], garden=garden, open_invite=False)
+        membership2 = GardenMembership(user=users[1], garden=garden, open_invite=False)
+        membership3 = GardenMembership(user=users[2], garden=garden, open_invite=True)
+        membership1.save()
+        membership2.save()
+        membership3.save()
+
+        expected_response = {
+            "id": 1,
+            "hashid": garden.hashid,
+            "name": garden.name,
+            "visibility": garden.visibility,
+            "members": [
+                {"username": users[0].username, "role": "VIEW"},
+                {"username": users[1].username, "role": "VIEW"},
+            ],
+        }
+
+        endpoint = reverse("garden_detail", args=[garden.hashid])
+        response = client.get(endpoint)
+
+        assert response.status_code == status.HTTP_200_OK
+        assert response.data == expected_response
+
+    def test_garden_detail_does_not_exist(self, client, User, BaseGarden):
         """
         Ensure that the garden detail endpoint
         returns the correct error for inaccessible
         gardens
         """
-        pass
+
+        user = User.create()
+        client.force_authenticate(user=user)
+        garden = BaseGarden.create()
+
+        expected_response = {
+            "message": "Garden does not exist or is not accessible to the user",
+            "extra": {},
+        }
+
+        endpoint = reverse("garden_detail", args=[garden.hashid])
+
+        response = client.get(endpoint)
+
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert response.data == expected_response
 
 
 class TestGardenUpdateEndpoint:
@@ -143,15 +185,35 @@ class TestGardenUpdateEndpoint:
         Ensure that the garden update endpoint
         updates the correct details
         """
-        pass
 
-    def test_garden_update_permissions(self, client, User, Garden):
-        """
-        Ensure that the garden update endpoint
-        returns the correct error for inaccessible
-        gardens
-        """
-        pass
+        user = User.create()
+        client.force_authenticate(user=user)
+        garden = Garden.create()
+
+        GardenMembership.objects.create(
+            user=user,
+            garden=garden,
+            role=GardenMembership.RoleChoices.ADMIN,
+            open_invite=False,
+        )
+
+        new_name = "test"
+        new_visibility = "PUBLIC"
+
+        request = {"name": new_name, "visibility": new_visibility}
+
+        expected_response = {
+            "id": garden.id,
+            "hashid": garden.hashid,
+            "name": new_name,
+            "visibility": new_visibility,
+        }
+
+        endpoint = reverse("garden_update", args=[garden.hashid])
+        response = client.post(endpoint, data=request, format="json")
+
+        assert response.status_code == status.HTTP_200_OK
+        assert response.data == expected_response
 
 
 class TestGardenInviteEndpoint:

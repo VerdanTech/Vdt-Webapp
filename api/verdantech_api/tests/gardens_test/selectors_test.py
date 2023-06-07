@@ -1,7 +1,13 @@
 import pytest
 
+from verdantech_api.apps.core.exceptions import ApplicationError
 from verdantech_api.apps.gardens.models import GardenMembership
-from verdantech_api.apps.gardens.selectors import garden_get_visible, garden_list
+from verdantech_api.apps.gardens.selectors import (
+    garden_detail,
+    garden_get_visible,
+    garden_list,
+    garden_members,
+)
 
 pytestmark = pytest.mark.django_db
 
@@ -48,3 +54,59 @@ class TestGardenList:
         assert gardens[0] not in returned_gardens
         assert gardens[1] not in returned_gardens
         assert gardens[2] in returned_gardens
+
+
+class TestGardenDetail:
+    def test_query_result(self, User, Garden):
+        """
+        Ensure the query filters by user
+        and returns a single garden object
+        """
+
+        user = User.create()
+        garden = Garden.create()
+
+        membership1 = GardenMembership(user=user, garden=garden, open_invite=False)
+        membership1.save()
+
+        garden_query = garden_detail(fetched_by=user, hashid=garden.hashid)
+
+        assert garden_query == garden
+
+    def test_does_not_exist(self, User, Garden):
+        """
+        Ensure the query raises an application error
+        for a garden which does not exist
+        """
+
+        user = User.create()
+
+        with pytest.raises(ApplicationError):
+            garden_detail(fetched_by=user, hashid="888888")
+
+
+class TestGardenMembers:
+    def test_result(self, User, BaseGarden):
+        """
+        Ensure the function produces the
+        correct output
+        """
+
+        users = User.create_batch(3)
+        garden = BaseGarden.create()
+
+        membership1 = GardenMembership(user=users[0], garden=garden, open_invite=False)
+        membership2 = GardenMembership(user=users[1], garden=garden, open_invite=False)
+        membership3 = GardenMembership(user=users[2], garden=garden, open_invite=True)
+        membership1.save()
+        membership2.save()
+        membership3.save()
+
+        expected_output = [
+            {"username": users[0].username, "role": "VIEW"},
+            {"username": users[1].username, "role": "VIEW"},
+        ]
+
+        members = garden_members(garden)
+
+        assert members == expected_output

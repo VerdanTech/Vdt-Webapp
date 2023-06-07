@@ -4,12 +4,11 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from .models import Garden
-from .selectors import garden_list
-from .services import garden_create, garden_create_parse_invitees
+from .selectors import garden_detail, garden_list, garden_members
+from .services import garden_create, garden_create_parse_invitees, garden_update
 
 
 class GardenListView(APIView):
-
     authentication_classes = [SessionAuthentication]
 
     class OutputSerializer(serializers.Serializer):
@@ -34,7 +33,6 @@ class GardenListView(APIView):
 
 
 class GardenCreateView(APIView):
-
     authentication_classes = [SessionAuthentication]
 
     class InputSerializer(serializers.Serializer):
@@ -71,14 +69,67 @@ class GardenCreateView(APIView):
 
 
 class GardenDetailView(APIView):
-    class InputSerializer(serializers.Serializer):
-        pass
+    authentication_classes = [SessionAuthentication]
 
     class OutputSerializer(serializers.Serializer):
-        pass
+        id = serializers.IntegerField()
+        hashid = serializers.CharField()
+        name = serializers.CharField()
+        visibility = serializers.ChoiceField(choices=Garden.VisibilityChoices.choices)
+        members = serializers.ListField(child=serializers.DictField())
+
+    def get(self, request, hashid):
+
+        garden = garden_detail(fetched_by=request.user, hashid=hashid)
+        members = garden_members(garden)
+
+        data = {
+            "id": garden.id,
+            "hashid": garden.hashid,
+            "name": garden.name,
+            "visibility": garden.visibility,
+            "members": members,
+        }
+        data = self.OutputSerializer(data).data
+
+        return Response(data)
 
 
 class GardenUpdateView(APIView):
+    authentication_classes = [SessionAuthentication]
+
+    class InputSerializer(serializers.Serializer):
+        name = serializers.CharField(required=False)
+        visibility = serializers.ChoiceField(
+            choices=Garden.VisibilityChoices.choices, required=False
+        )
+
+    class OutputSerializer(serializers.Serializer):
+        id = serializers.IntegerField()
+        hashid = serializers.CharField()
+        name = serializers.CharField()
+        visibility = serializers.ChoiceField(choices=Garden.VisibilityChoices.choices)
+
+    def post(self, request, hashid):
+
+        serializer = self.InputSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        name = serializer.validated_data["name"] or None
+        visibility = serializer.validated_data["visibility"] or None
+
+        garden = garden_update(
+            user=request.user, hashid=hashid, name=name, visibility=visibility
+        )
+
+        data = self.OutputSerializer(garden).data
+
+        return Response(data)
+
+
+class GardenMembershipCreateView(APIView):
+    authentication_classes = [SessionAuthentication]
+
     class InputSerializer(serializers.Serializer):
         pass
 
@@ -86,29 +137,22 @@ class GardenUpdateView(APIView):
         pass
 
 
-class GardenInviteView(APIView):
-    class InputSerializer(serializers.Serializer):
-        pass
+class GardenMembershipAcceptView(APIView):
+    authentication_classes = [SessionAuthentication]
 
-    class OutputSerializer(serializers.Serializer):
-        pass
-
-
-class GardenInviteAcceptView(APIView):
     class InputSerializer(serializers.Serializer):
         pass
 
 
-class GardenInviteRejectView(APIView):
+class GardenMembershipUpdateView(APIView):
+    authentication_classes = [SessionAuthentication]
+
     class InputSerializer(serializers.Serializer):
         pass
 
 
-class GardenMembershipDemoteView(APIView):
-    class InputSerializer(serializers.Serializer):
-        pass
+class GardenMemberhipDeleteView(APIView):
+    authentication_classes = [SessionAuthentication]
 
-
-class GardenMembershipRevokeView(APIView):
     class InputSerializer(serializers.Serializer):
         pass
