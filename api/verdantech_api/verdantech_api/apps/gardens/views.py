@@ -3,9 +3,11 @@ from rest_framework.authentication import SessionAuthentication
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .models import Garden
+from verdantech_api.apps.accounts.selectors import user_detail
+
+from .models import Garden, GardenMembership
 from .selectors import garden_detail, garden_list, garden_members
-from .services import garden_create, garden_create_parse_invitees, garden_update
+from .services import garden_create, garden_create_parse_invitees, garden_update, garden_membership_create
 
 
 class GardenListView(APIView):
@@ -127,14 +129,46 @@ class GardenUpdateView(APIView):
         return Response(data)
 
 
-class GardenMembershipCreateView(APIView):
+class GardenMembershipInvitesListView(APIView):
     authentication_classes = [SessionAuthentication]
-
-    class InputSerializer(serializers.Serializer):
-        pass
 
     class OutputSerializer(serializers.Serializer):
         pass
+
+
+class GardenMembershipInviteCreateView(APIView):
+    authentication_classes = [SessionAuthentication]
+
+    class InputSerializer(serializers.Serializer):
+        username = serializers.CharField()
+        role = serializers.ChoiceField(choices=GardenMembership.RoleChoices.choices)
+
+    class OutputSerializer(serializers.Serializer):
+        username = serializers.CharField()
+        role = serializers.ChoiceField(choices=GardenMembership.RoleChoices.choices)
+
+    def post(self, request, hashid):
+
+        serializer = self.InputSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        username = serializer.validated_data["username"]
+        role = serializer.validated_data["role"]
+
+        garden = garden_detail(fetched_by=request.user, hashid=hashid)
+        user = user_detail(fetched_by=request.user, username=username)
+
+        membership_invite = garden_membership_create(
+            user=user, garden=garden, inviter=request.user, role=role
+        )
+
+        data = {
+            "username": membership_invite.user.username,
+            "role": membership_invite.role,
+        }
+        data = self.OutputSerializer(data).data
+
+        return Response(data)
 
 
 class GardenMembershipAcceptView(APIView):

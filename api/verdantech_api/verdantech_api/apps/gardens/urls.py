@@ -19,6 +19,11 @@ urlpatterns = [
                     views.GardenUpdateView.as_view(),
                     name="garden_update",
                 ),
+                path(
+                    r"<str:hashid>/members/create",
+                    views.GardenMembershipInviteCreateView.as_view(),
+                    name="garden_membership_invite_create",
+                ),
             ]
         ),
     )

@@ -216,18 +216,32 @@ class TestGardenUpdateEndpoint:
         assert response.data == expected_response
 
 
+class TestGardenInviteListEndpoint:
+    pass
+
+
 class TestGardenInviteEndpoint:
     def test_garden_invite(self, client, User, Garden):
         """
         Ensure that a garden invite is
         successfully created
         """
-        pass
+        user = User.create()
+        garden = Garden.create()
 
-    def test_garden_invite(self, client, User, Garden):
-        """
-        Ensure that a
-        """
+        admin = garden.members.filter(role=GardenMembership.RoleChoices.ADMIN).first().user
+        client.force_authenticate(user=admin)
+        print(admin.username)
+
+        request = {"username": user.username, "role": "ADMIN"}
+
+        expected_response = {"username": user.username, "role": "ADMIN"}
+
+        endpoint = reverse("garden_membership_invite_create", args=[garden.hashid])
+        response = client.post(endpoint, data=request, format="json")
+
+        assert response.status_code == status.HTTP_200_OK
+        assert response.data == expected_response
 
 
 class TestGardenInviteAcceptEndpoint:
