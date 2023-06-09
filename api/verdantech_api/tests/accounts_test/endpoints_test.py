@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import re
-from typing import TYPE_CHECKING
 
 import pytest
 from django.conf import settings
@@ -9,9 +8,6 @@ from django.contrib.auth import get_user_model
 from django.core import mail
 from django.urls import reverse
 from rest_framework import status
-
-if TYPE_CHECKING:
-    from rest_framework.test import APIClient
 
 pytestmark = pytest.mark.django_db
 

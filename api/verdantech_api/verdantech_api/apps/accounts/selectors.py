@@ -1,5 +1,7 @@
 from django.db.models import Q
 
+from verdantech_api.apps.core.exceptions import ApplicationError
+
 from .models import User
 
 

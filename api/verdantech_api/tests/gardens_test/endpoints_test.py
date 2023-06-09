@@ -2,7 +2,6 @@ import pytest
 from django.urls import reverse
 from rest_framework import status
 
-from verdantech_api.apps.core.exceptions import ApplicationError
 from verdantech_api.apps.gardens.models import Garden, GardenMembership
 
 pytestmark = pytest.mark.django_db
@@ -231,7 +230,7 @@ class TestGardenInviteListEndpoint:
             user=user, garden=gardens[1], inviter=admin1, open_invite=True
         )
         admin2 = Garden.objects.filter(id=gardens[2].id).first().users.first()
-        membership2 = GardenMembership.objects.create(
+        GardenMembership.objects.create(
             user=user, garden=gardens[2], inviter=admin2, open_invite=False
         )
 
