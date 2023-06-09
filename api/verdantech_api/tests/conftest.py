@@ -20,15 +20,15 @@ def client():
 
 
 @pytest.fixture
-def User():
+def UserMake():
     return UserFactory
 
 
 @pytest.fixture
-def BaseGarden():
+def BaseGardenMake():
     return BaseGardenFactory
 
 
 @pytest.fixture
-def Garden():
+def GardenMake():
     return GardenFactory

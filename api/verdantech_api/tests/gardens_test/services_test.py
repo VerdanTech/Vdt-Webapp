@@ -13,14 +13,14 @@ pytestmark = pytest.mark.django_db
 
 
 class TestGardenModelCreateParseInvitees:
-    def test_users_returned(self, User):
+    def test_users_returned(self, UserMake):
         """
         Ensure that the users are properly
         fetched and not included if they
         don't exist
         """
 
-        users = User.create_batch(3)
+        users = UserMake.create_batch(3)
 
         input_list = [
             {"username": users[0].username, "role": "ADMIN"},
@@ -41,13 +41,13 @@ class TestGardenModelCreateParseInvitees:
 
 
 class TestGardenModelCreate:
-    def test_arguments_set(self, User):
+    def test_arguments_set(self, UserMake):
         """
         Ensure that the arguments
         are properly set
         """
 
-        user = User.create()
+        user = UserMake.create()
         name = "test"
         visibility = Garden.VisibilityChoices.PUBLIC
 
@@ -60,13 +60,13 @@ class TestGardenModelCreate:
         assert garden.visibility == visibility
         assert invitations_sent is None
 
-    def test_creator_and_admin_set(self, User):
+    def test_creator_and_admin_set(self, UserMake):
         """
         Ensure that the admin role is
         properly set
         """
 
-        user = User.create()
+        user = UserMake.create()
         name = "test"
 
         garden, invitations_sent = garden_create(name=name, creator=user)
@@ -77,27 +77,27 @@ class TestGardenModelCreate:
             == GardenMembership.RoleChoices.ADMIN
         )
 
-    def test_visibility_default(self, User):
+    def test_visibility_default(self, UserMake):
         """
         Ensure that the default visibility is PRIVATE
         """
 
-        user = User.create()
+        user = UserMake.create()
         name = "test"
 
         garden, invitations_sent = garden_create(name=name, creator=user)
 
         assert garden.visibility == Garden.VisibilityChoices.PRIVATE
 
-    def test_extra_users_invited(self, User):
+    def test_extra_users_invited(self, UserMake):
         """
         Ensure that extra users specified are invited
         """
 
-        user = User.create()
+        user = UserMake.create()
         name = "test"
 
-        invitees = User.create_batch(3)
+        invitees = UserMake.create_batch(3)
         user_role_pairs = [
             {"user": invitees[0], "role": GardenMembership.RoleChoices.VIEW},
             {"user": invitees[1], "role": GardenMembership.RoleChoices.EDIT},
@@ -124,13 +124,13 @@ class TestGardenModelCreate:
 
 
 class TestGardenModelUpdate:
-    def test_arguments_updated(self, User, Garden):
+    def test_arguments_updated(self, UserMake, GardenMake):
         """
         Ensure that the arguments are properly updated
         """
 
-        user = User.create()
-        garden = Garden.create()
+        user = UserMake.create()
+        garden = GardenMake.create()
 
         GardenMembership.objects.create(
             user=user,
@@ -149,13 +149,13 @@ class TestGardenModelUpdate:
         assert garden.name == new_name
         assert garden.visibility == new_visibility
 
-    def test_admin_required(self, User, Garden):
+    def test_admin_required(self, UserMake, GardenMake):
         """
         Ensure that the arguments are properly updated
         """
 
-        user = User.create()
-        garden = Garden.create()
+        user = UserMake.create()
+        garden = GardenMake.create()
 
         GardenMembership.objects.create(
             user=user,
@@ -177,14 +177,14 @@ class TestGardenModelUpdate:
 
 
 class TestGardenMembershipModelCreate:
-    def test_arguments_set(self, User, Garden):
+    def test_arguments_set(self, UserMake, GardenMake):
         """
         Ensure that the arguments
         are properly set
         """
 
-        garden = Garden.create()
-        user = User.create()
+        garden = GardenMake.create()
+        user = UserMake.create()
         inviter = garden.members.first().user
         role = GardenMembership.RoleChoices.EDIT
 
@@ -198,14 +198,14 @@ class TestGardenMembershipModelCreate:
         assert garden_membership.inviter == inviter
         assert garden_membership.role == role
 
-    def test_default_role_view(self, User, Garden):
+    def test_default_role_view(self, UserMake, GardenMake):
         """
         Ensure that if a role is not passed,
         it defaults to VIEW
         """
 
-        garden = Garden.create()
-        user = User.create()
+        garden = GardenMake.create()
+        user = UserMake.create()
         inviter = garden.members.first().user
 
         garden_membership = garden_membership_create(
@@ -214,29 +214,29 @@ class TestGardenMembershipModelCreate:
 
         assert garden_membership.role == GardenMembership.RoleChoices.VIEW
 
-    def test_user_in_garden(self, User, Garden):
+    def test_user_in_garden(self, UserMake, GardenMake):
         """
         Ensure that only users from within a garden
         can invite others to that garden
         """
 
-        garden = Garden.create()
-        user = User.create()
-        inviter = User.create()
+        garden = GardenMake.create()
+        user = UserMake.create()
+        inviter = UserMake.create()
 
         with pytest.raises(PermissionDenied):
             garden_membership_create(user=user, garden=garden, inviter=inviter)
 
-    def test_permissions(self, User, Garden):
+    def test_permissions(self, UserMake, GardenMake):
         """
         Ensure that users without the admin role
         can only invite others to a role that
         less than their role's level of permissions
         """
 
-        garden = Garden.create()
-        users = User.create_batch(2)
-        invitee = User.create()
+        garden = GardenMake.create()
+        users = UserMake.create_batch(2)
+        invitee = UserMake.create()
 
         GardenMembership.objects.create(
             user=users[0], garden=garden, role=GardenMembership.RoleChoices.VIEW

@@ -14,7 +14,6 @@ class GardenListView(APIView):
     authentication_classes = [SessionAuthentication]
 
     class OutputSerializer(serializers.Serializer):
-        id = serializers.IntegerField()
         hashid = serializers.CharField()
         name = serializers.CharField()
         creator_username = serializers.SerializerMethodField()
@@ -42,7 +41,6 @@ class GardenCreateView(APIView):
         invitees = serializers.ListField(child=serializers.DictField(), required=False)
 
     class OutputSerializer(serializers.Serializer):
-        id = serializers.IntegerField()
         hashid = serializers.CharField()
         name = serializers.CharField()
         invitations_sent = serializers.ListField(child=serializers.DictField())
@@ -74,7 +72,6 @@ class GardenDetailView(APIView):
     authentication_classes = [SessionAuthentication]
 
     class OutputSerializer(serializers.Serializer):
-        id = serializers.IntegerField()
         hashid = serializers.CharField()
         name = serializers.CharField()
         visibility = serializers.ChoiceField(choices=Garden.VisibilityChoices.choices)
@@ -107,7 +104,6 @@ class GardenUpdateView(APIView):
         )
 
     class OutputSerializer(serializers.Serializer):
-        id = serializers.IntegerField()
         hashid = serializers.CharField()
         name = serializers.CharField()
         visibility = serializers.ChoiceField(choices=Garden.VisibilityChoices.choices)

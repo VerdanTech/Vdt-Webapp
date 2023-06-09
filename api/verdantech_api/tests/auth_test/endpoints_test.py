@@ -23,7 +23,7 @@ class TestCSRFTokenEndpoint:
 
 
 class TestLoginEndpoint:
-    def test_login_without_csrf(self, csrf_client, mocker):
+    def test_login_without_csrf(self, csrf_client):
         """Ensure the login view is CSRF protected"""
 
         User = get_user_model()

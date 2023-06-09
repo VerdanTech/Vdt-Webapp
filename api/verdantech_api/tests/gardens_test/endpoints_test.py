@@ -12,15 +12,15 @@ garden_create_endpoint = reverse("garden_create")
 
 
 class TestGardenListEndpoint:
-    def test_garden_list(self, client, User, Garden):
+    def test_garden_list(self, client, UserMake, GardenMake):
         """
         Ensure the garden list endpoint returns
         the correct gardens
         """
 
-        user = User.create()
+        user = UserMake.create()
         client.force_authenticate(user=user)
-        gardens = Garden.create_batch(4)
+        gardens = GardenMake.create_batch(4)
 
         membership1 = GardenMembership(user=user, garden=gardens[1], open_invite=True)
         membership2 = GardenMembership(user=user, garden=gardens[2], open_invite=False)
@@ -33,13 +33,11 @@ class TestGardenListEndpoint:
 
         expected_response = [
             {
-                "id": gardens[2].id,
                 "hashid": gardens[2].hashid,
                 "name": gardens[2].name,
                 "creator_username": user.username,
             },
             {
-                "id": gardens[3].id,
                 "hashid": gardens[3].hashid,
                 "name": gardens[3].name,
                 "creator_username": "",
@@ -56,13 +54,13 @@ class TestGardenListEndpoint:
 
 
 class TestGardenCreateEndpoint:
-    def test_garden_create(self, client, User):
+    def test_garden_create(self, client, UserMake):
         """
         Ensure that the endpoint
         creates a garden sucessfully
         """
 
-        user = User.create()
+        user = UserMake.create()
         client.force_authenticate(user=user)
 
         request = {"name": "test_garden"}
@@ -73,7 +71,6 @@ class TestGardenCreateEndpoint:
             Garden.objects.filter(creator=user, name="test_garden").first().hashid
         )
         expected_response = {
-            "id": 1,
             "hashid": garden_hashid,
             "name": "test_garden",
             "invitations_sent": None,
@@ -82,13 +79,13 @@ class TestGardenCreateEndpoint:
         assert response.status_code == status.HTTP_200_OK
         assert response.data == expected_response
 
-    def test_garden_create_invitations(self, client, User):
+    def test_garden_create_invitations(self, client, UserMake):
         """
         Ensure that the endpoint
         invites users sucessfully
         """
 
-        users = User.create_batch(4)
+        users = UserMake.create_batch(4)
         client.force_authenticate(user=users[0])
 
         request = {
@@ -107,7 +104,6 @@ class TestGardenCreateEndpoint:
             Garden.objects.filter(creator=users[0], name="test_garden").first().hashid
         )
         expected_response = {
-            "id": 1,
             "hashid": garden_hashid,
             "name": "test_garden",
             "invitations_sent": [
@@ -122,14 +118,14 @@ class TestGardenCreateEndpoint:
 
 
 class TestGardenDetailEndpoint:
-    def test_garden_detail(self, client, User, BaseGarden):
+    def test_garden_detail(self, client, UserMake, BaseGardenMake):
         """
         Ensure that the garden detail endpoint
         returns the correct details
         """
-        users = User.create_batch(3)
+        users = UserMake.create_batch(3)
         client.force_authenticate(user=users[0])
-        garden = BaseGarden.create()
+        garden = BaseGardenMake.create()
 
         membership1 = GardenMembership(user=users[0], garden=garden, open_invite=False)
         membership2 = GardenMembership(user=users[1], garden=garden, open_invite=False)
@@ -139,7 +135,6 @@ class TestGardenDetailEndpoint:
         membership3.save()
 
         expected_response = {
-            "id": 1,
             "hashid": garden.hashid,
             "name": garden.name,
             "visibility": garden.visibility,
@@ -155,16 +150,16 @@ class TestGardenDetailEndpoint:
         assert response.status_code == status.HTTP_200_OK
         assert response.data == expected_response
 
-    def test_garden_detail_does_not_exist(self, client, User, BaseGarden):
+    def test_garden_detail_does_not_exist(self, client, UserMake, BaseGardenMake):
         """
         Ensure that the garden detail endpoint
         returns the correct error for inaccessible
         gardens
         """
 
-        user = User.create()
+        user = UserMake.create()
         client.force_authenticate(user=user)
-        garden = BaseGarden.create()
+        garden = BaseGardenMake.create()
 
         expected_response = {
             "message": "Garden does not exist or is not accessible to the user",
@@ -180,15 +175,15 @@ class TestGardenDetailEndpoint:
 
 
 class TestGardenUpdateEndpoint:
-    def test_garden_update(self, client, User, Garden):
+    def test_garden_update(self, client, UserMake, GardenMake):
         """
         Ensure that the garden update endpoint
         updates the correct details
         """
 
-        user = User.create()
+        user = UserMake.create()
         client.force_authenticate(user=user)
-        garden = Garden.create()
+        garden = GardenMake.create()
 
         GardenMembership.objects.create(
             user=user,
@@ -203,7 +198,6 @@ class TestGardenUpdateEndpoint:
         request = {"name": new_name, "visibility": new_visibility}
 
         expected_response = {
-            "id": garden.id,
             "hashid": garden.hashid,
             "name": new_name,
             "visibility": new_visibility,
@@ -221,13 +215,13 @@ class TestGardenInviteListEndpoint:
 
 
 class TestGardenInviteEndpoint:
-    def test_garden_invite(self, client, User, Garden):
+    def test_garden_invite(self, client, UserMake, GardenMake):
         """
         Ensure that a garden invite is
         successfully created
         """
-        user = User.create()
-        garden = Garden.create()
+        user = UserMake.create()
+        garden = GardenMake.create()
 
         admin = garden.members.filter(role=GardenMembership.RoleChoices.ADMIN).first().user
         client.force_authenticate(user=admin)

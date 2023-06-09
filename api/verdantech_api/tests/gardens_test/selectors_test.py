@@ -13,14 +13,14 @@ pytestmark = pytest.mark.django_db
 
 
 class TestGetVisibleGarden:
-    def test_query_result(self, User, Garden):
+    def test_query_result(self, UserMake, GardenMake):
         """
         Ensure the query filters by user and
         open invitation, and returns garden ids
         """
 
-        user = User.create()
-        gardens = Garden.create_batch(3)
+        user = UserMake.create()
+        gardens = GardenMake.create_batch(3)
 
         membership1 = GardenMembership(user=user, garden=gardens[1], open_invite=True)
         membership2 = GardenMembership(user=user, garden=gardens[2], open_invite=False)
@@ -35,14 +35,14 @@ class TestGetVisibleGarden:
 
 
 class TestGardenList:
-    def test_query_result(self, User, Garden):
+    def test_query_result(self, UserMake, GardenMake):
         """
         Ensure the query filters by user and
         open invitation, and returns garden objects
         """
 
-        user = User.create()
-        gardens = Garden.create_batch(3)
+        user = UserMake.create()
+        gardens = GardenMake.create_batch(3)
 
         membership1 = GardenMembership(user=user, garden=gardens[1], open_invite=True)
         membership2 = GardenMembership(user=user, garden=gardens[2], open_invite=False)
@@ -57,14 +57,14 @@ class TestGardenList:
 
 
 class TestGardenDetail:
-    def test_query_result(self, User, Garden):
+    def test_query_result(self, UserMake, GardenMake):
         """
         Ensure the query filters by user
         and returns a single garden object
         """
 
-        user = User.create()
-        garden = Garden.create()
+        user = UserMake.create()
+        garden = GardenMake.create()
 
         membership1 = GardenMembership(user=user, garden=garden, open_invite=False)
         membership1.save()
@@ -73,27 +73,27 @@ class TestGardenDetail:
 
         assert garden_query == garden
 
-    def test_does_not_exist(self, User, Garden):
+    def test_does_not_exist(self, UserMake):
         """
         Ensure the query raises an application error
         for a garden which does not exist
         """
 
-        user = User.create()
+        user = UserMake.create()
 
         with pytest.raises(ApplicationError):
             garden_detail(fetched_by=user, hashid="888888")
 
 
 class TestGardenMembers:
-    def test_result(self, User, BaseGarden):
+    def test_result(self, UserMake, BaseGardenMake):
         """
         Ensure the function produces the
         correct output
         """
 
-        users = User.create_batch(3)
-        garden = BaseGarden.create()
+        users = UserMake.create_batch(3)
+        garden = BaseGardenMake.create()
 
         membership1 = GardenMembership(user=users[0], garden=garden, open_invite=False)
         membership2 = GardenMembership(user=users[1], garden=garden, open_invite=False)
