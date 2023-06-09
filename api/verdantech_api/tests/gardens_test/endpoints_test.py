@@ -9,6 +9,7 @@ pytestmark = pytest.mark.django_db
 
 garden_list_endpoint = reverse("garden_list")
 garden_create_endpoint = reverse("garden_create")
+garden_membership_invite_list_endpoint = reverse("garden_membership_invite_list")
 
 
 class TestGardenListEndpoint:
@@ -211,7 +212,48 @@ class TestGardenUpdateEndpoint:
 
 
 class TestGardenInviteListEndpoint:
-    pass
+    def test_garden_invite_list(self, client, UserMake, GardenMake):
+        """
+        Ensure the garden invite list endpoint
+        returns the correct invites
+        """
+
+        user = UserMake.create()
+        client.force_authenticate(user=user)
+        gardens = GardenMake.create_batch(3)
+
+        admin0 = Garden.objects.filter(id=gardens[0].id).first().users.first()
+        membership0 = GardenMembership.objects.create(
+            user=user, garden=gardens[0], inviter=admin0, open_invite=True
+        )
+        admin1 = Garden.objects.filter(id=gardens[1].id).first().users.first()
+        membership1 = GardenMembership.objects.create(
+            user=user, garden=gardens[1], inviter=admin1, open_invite=True
+        )
+        admin2 = Garden.objects.filter(id=gardens[2].id).first().users.first()
+        membership2 = GardenMembership.objects.create(
+            user=user, garden=gardens[2], inviter=admin2, open_invite=False
+        )
+
+        expected_response = [
+            {
+                "hashid": gardens[0].hashid,
+                "name": gardens[0].name,
+                "inviter_username": admin0.username,
+                "role": membership0.role,
+            },
+            {
+                "hashid": gardens[1].hashid,
+                "name": gardens[1].name,
+                "inviter_username": admin1.username,
+                "role": membership1.role,
+            },
+        ]
+
+        response = client.get(garden_membership_invite_list_endpoint, format="json")
+
+        assert response.status_code == status.HTTP_200_OK
+        assert response.data == expected_response
 
 
 class TestGardenInviteEndpoint:
@@ -223,7 +265,9 @@ class TestGardenInviteEndpoint:
         user = UserMake.create()
         garden = GardenMake.create()
 
-        admin = garden.members.filter(role=GardenMembership.RoleChoices.ADMIN).first().user
+        admin = (
+            garden.members.filter(role=GardenMembership.RoleChoices.ADMIN).first().user
+        )
         client.force_authenticate(user=admin)
         print(admin.username)
 

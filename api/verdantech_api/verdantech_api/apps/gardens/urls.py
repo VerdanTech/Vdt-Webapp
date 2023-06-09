@@ -8,6 +8,11 @@ urlpatterns = [
         include(
             [
                 path(r"", views.GardenListView.as_view(), name="garden_list"),
+                path(
+                    r"invites",
+                    views.GardenMembershipInviteListView.as_view(),
+                    name="garden_membership_invite_list",
+                ),
                 path(r"create", views.GardenCreateView.as_view(), name="garden_create"),
                 path(
                     r"<str:hashid>",

@@ -6,8 +6,18 @@ from rest_framework.views import APIView
 from verdantech_api.apps.accounts.selectors import user_detail
 
 from .models import Garden, GardenMembership
-from .selectors import garden_detail, garden_list, garden_members
-from .services import garden_create, garden_create_parse_invitees, garden_update, garden_membership_create
+from .selectors import (
+    garden_detail,
+    garden_list,
+    garden_members,
+    garden_membership_invite_list,
+)
+from .services import (
+    garden_create,
+    garden_create_parse_invitees,
+    garden_membership_create,
+    garden_update,
+)
 
 
 class GardenListView(APIView):
@@ -125,11 +135,34 @@ class GardenUpdateView(APIView):
         return Response(data)
 
 
-class GardenMembershipInvitesListView(APIView):
+class GardenMembershipInviteListView(APIView):
     authentication_classes = [SessionAuthentication]
 
     class OutputSerializer(serializers.Serializer):
-        pass
+        hashid = serializers.CharField()
+        name = serializers.CharField()
+        inviter_username = serializers.CharField()
+        role = serializers.ChoiceField(choices=GardenMembership.RoleChoices.choices)
+
+    def get(self, request):
+
+        garden_membership_invites = garden_membership_invite_list(
+            fetched_by=request.user
+        )
+
+        data = [
+            {
+                "hashid": membership.garden.hashid,
+                "name": membership.garden.name,
+                "inviter_username": (membership.inviter.username or ""),
+                "role": membership.role,
+            }
+            for membership in garden_membership_invites
+        ]
+
+        data = self.OutputSerializer(data, many=True).data
+
+        return Response(data)
 
 
 class GardenMembershipInviteCreateView(APIView):

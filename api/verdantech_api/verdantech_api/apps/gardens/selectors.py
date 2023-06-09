@@ -61,3 +61,13 @@ def garden_members(garden: Garden) -> List[Dict[str, str]]:
             )
 
     return members
+
+
+def garden_membership_invite_list(fetched_by: User) -> List[GardenMembership]:
+    """
+    Return a list of garden memberships
+    with open invites
+    """
+
+    query = Q(user=fetched_by) & Q(open_invite=True)
+    return GardenMembership.objects.filter(query).all()

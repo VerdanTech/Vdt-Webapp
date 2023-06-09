@@ -7,6 +7,7 @@ from verdantech_api.apps.gardens.selectors import (
     garden_get_visible,
     garden_list,
     garden_members,
+    garden_membership_invite_list,
 )
 
 pytestmark = pytest.mark.django_db
@@ -110,3 +111,30 @@ class TestGardenMembers:
         members = garden_members(garden)
 
         assert members == expected_output
+
+
+class TestGardenMembershipInvitesList:
+    def test_query_result(self, UserMake, GardenMake):
+        """
+        Ensure that the function returns
+        all memberships with open invites
+        """
+
+        user = UserMake.create()
+        gardens = GardenMake.create_batch(3)
+
+        membership1 = GardenMembership.objects.create(
+            user=user, garden=gardens[0], open_invite=True
+        )
+        membership2 = GardenMembership.objects.create(
+            user=user, garden=gardens[1], open_invite=True
+        )
+        membership3 = GardenMembership.objects.create(
+            user=user, garden=gardens[2], open_invite=False
+        )
+
+        memberships = garden_membership_invite_list(fetched_by=user)
+
+        assert membership1 in memberships
+        assert membership2 in memberships
+        assert membership3 not in memberships
