@@ -7,6 +7,7 @@ from verdantech_api.apps.gardens.selectors import (
     garden_get_visible,
     garden_list,
     garden_members,
+    garden_membership_invite_detail,
     garden_membership_invite_list,
 )
 
@@ -138,3 +139,50 @@ class TestGardenMembershipInvitesList:
         assert membership1 in memberships
         assert membership2 in memberships
         assert membership3 not in memberships
+
+
+class TestGardenMembershipInviteDetail:
+    def test_query_result(self, UserMake, GardenMake):
+        """
+        Ensure the query filters by user
+        and returns a single GardenMembership object
+        """
+
+        user = UserMake.create()
+        garden = GardenMake.create()
+
+        membership = GardenMembership.objects.create(
+            user=user, garden=garden, open_invite=True
+        )
+
+        garden_membership_invite_query = garden_membership_invite_detail(
+            fetched_by=user, id=membership.id
+        )
+
+        assert garden_membership_invite_query == membership
+
+    def test_does_not_exist(self, UserMake, GardenMake):
+        """
+        Ensure the query raises an application error
+        for an invite which does not exist
+        """
+
+        users = UserMake.create_batch(2)
+        gardens = GardenMake.create_batch(2)
+
+        membership1 = GardenMembership.objects.create(
+            user=users[0], garden=gardens[0], open_invite=False
+        )
+        membership2 = GardenMembership.objects.create(
+            user=users[1], garden=gardens[0], open_invite=True
+        )
+        membership3 = GardenMembership.objects.create(
+            user=users[1], garden=gardens[1], open_invite=True
+        )
+
+        with pytest.raises(ApplicationError):
+            garden_membership_invite_detail(fetched_by=users[0], id=membership1.id)
+        with pytest.raises(ApplicationError):
+            garden_membership_invite_detail(fetched_by=users[0], id=membership2.id)
+        with pytest.raises(ApplicationError):
+            garden_membership_invite_detail(fetched_by=users[0], id=membership3.id)

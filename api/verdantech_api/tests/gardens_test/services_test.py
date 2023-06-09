@@ -5,6 +5,7 @@ from verdantech_api.apps.gardens.models import Garden, GardenMembership
 from verdantech_api.apps.gardens.services import (
     garden_create,
     garden_create_parse_invitees,
+    garden_membership_accept,
     garden_membership_create,
     garden_update,
 )
@@ -263,3 +264,25 @@ class TestGardenMembershipModelCreate:
                 inviter=users[1],
                 role=GardenMembership.RoleChoices.ADMIN,
             )
+
+
+class TestGardenMembershipModelAccept:
+    def test_membership_accepted(self, UserMake, GardenMake):
+        """
+        Ensure that the membership invite
+        is successfully updated
+        """
+
+        user = UserMake.create()
+        garden = GardenMake.create()
+
+        membership_invite = GardenMembership.objects.create(
+            user=user, garden=garden, open_invite=True
+        )
+
+        membership = garden_membership_accept(
+            user=user, membership_invite_id=membership_invite.id
+        )
+
+        assert membership == membership_invite
+        assert membership.open_invite is False

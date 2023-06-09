@@ -5,7 +5,7 @@ from django.core.exceptions import PermissionDenied
 from verdantech_api.apps.accounts.models import User
 
 from .models import Garden, GardenMembership
-from .selectors import garden_detail
+from .selectors import garden_detail, garden_membership_invite_detail
 
 
 def garden_create_parse_invitees(
@@ -159,3 +159,20 @@ def garden_membership_create(
     garden_membership.save()
 
     return garden_membership
+
+
+def garden_membership_accept(user: User, membership_invite_id: int) -> GardenMembership:
+    """
+    Accept the invite for a garden membership,
+    turning the open_invite field to false
+    """
+
+    membership_invite = garden_membership_invite_detail(
+        fetched_by=user, id=membership_invite_id
+    )
+
+    membership_invite.open_invite = False
+    membership_invite.full_clean()
+    membership_invite.save()
+
+    return membership_invite

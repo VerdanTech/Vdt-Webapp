@@ -237,12 +237,14 @@ class TestGardenInviteListEndpoint:
 
         expected_response = [
             {
+                "id": membership0.id,
                 "hashid": gardens[0].hashid,
                 "name": gardens[0].name,
                 "inviter_username": admin0.username,
                 "role": membership0.role,
             },
             {
+                "id": membership1.id,
                 "hashid": gardens[1].hashid,
                 "name": gardens[1].name,
                 "inviter_username": admin1.username,
@@ -283,7 +285,29 @@ class TestGardenInviteEndpoint:
 
 
 class TestGardenInviteAcceptEndpoint:
-    pass
+    def test_invite_accepted(self, client, UserMake, GardenMake):
+        """
+        Ensure that a garden invite is
+        successfully accepted
+        """
+        user = UserMake.create()
+        client.force_authenticate(user=user)
+        garden = GardenMake.create()
+
+        admin = Garden.objects.filter(id=garden.id).first().users.first()
+        membership_invite = GardenMembership.objects.create(
+            user=user, garden=garden, inviter=admin, open_invite=True
+        )
+
+        expected_response = {"hashid": garden.hashid, "role": membership_invite.role}
+
+        endpoint = reverse(
+            "garden_membership_invite_accept", args=[membership_invite.id]
+        )
+        response = client.post(endpoint, format="json")
+
+        assert response.status_code == status.HTTP_200_OK
+        assert response.data == expected_response
 
 
 class TestGardenInviteRejectEndpoint:

@@ -15,6 +15,7 @@ from .selectors import (
 from .services import (
     garden_create,
     garden_create_parse_invitees,
+    garden_membership_accept,
     garden_membership_create,
     garden_update,
 )
@@ -139,6 +140,7 @@ class GardenMembershipInviteListView(APIView):
     authentication_classes = [SessionAuthentication]
 
     class OutputSerializer(serializers.Serializer):
+        id = serializers.IntegerField()
         hashid = serializers.CharField()
         name = serializers.CharField()
         inviter_username = serializers.CharField()
@@ -152,6 +154,7 @@ class GardenMembershipInviteListView(APIView):
 
         data = [
             {
+                "id": membership.id,
                 "hashid": membership.garden.hashid,
                 "name": membership.garden.name,
                 "inviter_username": (membership.inviter.username or ""),
@@ -200,11 +203,23 @@ class GardenMembershipInviteCreateView(APIView):
         return Response(data)
 
 
-class GardenMembershipAcceptView(APIView):
+class GardenMembershipInviteAcceptView(APIView):
     authentication_classes = [SessionAuthentication]
 
-    class InputSerializer(serializers.Serializer):
-        pass
+    class OutputSerializer(serializers.Serializer):
+        hashid = serializers.CharField()
+        role = serializers.ChoiceField(choices=GardenMembership.RoleChoices.choices)
+
+    def post(self, request, id):
+
+        membership = garden_membership_accept(
+            user=request.user, membership_invite_id=id
+        )
+
+        data = {"hashid": membership.garden.hashid, "role": membership.role}
+        data = self.OutputSerializer(data).data
+
+        return Response(data)
 
 
 class GardenMembershipUpdateView(APIView):

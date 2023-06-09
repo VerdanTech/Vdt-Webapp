@@ -71,3 +71,21 @@ def garden_membership_invite_list(fetched_by: User) -> List[GardenMembership]:
 
     query = Q(user=fetched_by) & Q(open_invite=True)
     return GardenMembership.objects.filter(query).all()
+
+
+def garden_membership_invite_detail(fetched_by: User, id: int) -> GardenMembership:
+    """
+    Return the garden membership with the
+    given ID
+    """
+
+    membership_invite = (
+        garden_membership_invite_list(fetched_by=fetched_by).filter(id=id).first()
+    )
+
+    if membership_invite is None:
+        raise ApplicationError(
+            message="Invite does not exist or is not accessible to the user"
+        )
+
+    return membership_invite

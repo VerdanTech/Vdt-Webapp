@@ -4,7 +4,7 @@ from . import views
 
 urlpatterns = [
     path(
-        "garden/",
+        "gardens/",
         include(
             [
                 path(r"", views.GardenListView.as_view(), name="garden_list"),
@@ -12,6 +12,11 @@ urlpatterns = [
                     r"invites",
                     views.GardenMembershipInviteListView.as_view(),
                     name="garden_membership_invite_list",
+                ),
+                path(
+                    r"invites/<int:id>/accept",
+                    views.GardenMembershipInviteAcceptView.as_view(),
+                    name="garden_membership_invite_accept",
                 ),
                 path(r"create", views.GardenCreateView.as_view(), name="garden_create"),
                 path(
