@@ -176,3 +176,11 @@ def garden_membership_accept(user: User, membership_invite_id: int) -> GardenMem
     membership_invite.save()
 
     return membership_invite
+
+
+def garden_membership_update(user: User):
+    pass
+
+
+def garden_membership_delete():
+    pass

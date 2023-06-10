@@ -229,7 +229,7 @@ class GardenMembershipUpdateView(APIView):
         pass
 
 
-class GardenMemberhipDeleteView(APIView):
+class GardenMembershipDeleteView(APIView):
     authentication_classes = [SessionAuthentication]
 
     class InputSerializer(serializers.Serializer):

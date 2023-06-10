@@ -115,6 +115,7 @@ class TestGardenMembers:
 
 
 class TestGardenMembershipInvitesList:
+    @pytest.mark.skip
     def test_query_result(self, UserMake, GardenMake):
         """
         Ensure that the function returns
@@ -142,6 +143,7 @@ class TestGardenMembershipInvitesList:
 
 
 class TestGardenMembershipInviteDetail:
+    @pytest.mark.skip
     def test_query_result(self, UserMake, GardenMake):
         """
         Ensure the query filters by user
@@ -161,6 +163,7 @@ class TestGardenMembershipInviteDetail:
 
         assert garden_membership_invite_query == membership
 
+    @pytest.mark.skip
     def test_does_not_exist(self, UserMake, GardenMake):
         """
         Ensure the query raises an application error

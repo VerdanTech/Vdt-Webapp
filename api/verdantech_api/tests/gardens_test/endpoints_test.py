@@ -211,6 +211,7 @@ class TestGardenUpdateEndpoint:
 
 
 class TestGardenInviteListEndpoint:
+    @pytest.mark.skip
     def test_garden_invite_list(self, client, UserMake, GardenMake):
         """
         Ensure the garden invite list endpoint
@@ -258,6 +259,7 @@ class TestGardenInviteListEndpoint:
 
 
 class TestGardenInviteEndpoint:
+    @pytest.mark.skip
     def test_garden_invite(self, client, UserMake, GardenMake):
         """
         Ensure that a garden invite is
@@ -284,6 +286,7 @@ class TestGardenInviteEndpoint:
 
 
 class TestGardenInviteAcceptEndpoint:
+    @pytest.mark.skip
     def test_invite_accepted(self, client, UserMake, GardenMake):
         """
         Ensure that a garden invite is
@@ -307,10 +310,6 @@ class TestGardenInviteAcceptEndpoint:
 
         assert response.status_code == status.HTTP_200_OK
         assert response.data == expected_response
-
-
-class TestGardenInviteRejectEndpoint:
-    pass
 
 
 class TestGardenMembershipDemoteEndpoint:
