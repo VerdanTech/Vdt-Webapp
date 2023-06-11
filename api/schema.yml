@@ -195,6 +195,132 @@ paths:
       responses:
         '200':
           description: No response body
+  /gardens/:
+    get:
+      operationId: gardens_retrieve
+      tags:
+      - gardens
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /gardens/{hashid}:
+    get:
+      operationId: gardens_retrieve_2
+      parameters:
+      - in: path
+        name: hashid
+        schema:
+          type: string
+        required: true
+      tags:
+      - gardens
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /gardens/{hashid}/members/create:
+    post:
+      operationId: gardens_members_create_create
+      parameters:
+      - in: path
+        name: hashid
+        schema:
+          type: string
+        required: true
+      tags:
+      - gardens
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /gardens/{hashid}/members/delete:
+    post:
+      operationId: gardens_members_delete_create
+      parameters:
+      - in: path
+        name: hashid
+        schema:
+          type: string
+        required: true
+      tags:
+      - gardens
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /gardens/{hashid}/members/update:
+    post:
+      operationId: gardens_members_update_create
+      parameters:
+      - in: path
+        name: hashid
+        schema:
+          type: string
+        required: true
+      tags:
+      - gardens
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /gardens/{hashid}/update:
+    post:
+      operationId: gardens_update_create
+      parameters:
+      - in: path
+        name: hashid
+        schema:
+          type: string
+        required: true
+      tags:
+      - gardens
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /gardens/create:
+    post:
+      operationId: gardens_create_create
+      tags:
+      - gardens
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /gardens/invites:
+    get:
+      operationId: gardens_invites_retrieve
+      tags:
+      - gardens
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /gardens/invites/{id}/accept:
+    post:
+      operationId: gardens_invites_accept_create
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - gardens
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
 components:
   schemas:
     CSRFToken:
@@ -382,5 +508,7 @@ components:
 servers:
 - url: http://localhost:5173/api
 tags:
+- name: core
 - name: authentication
 - name: accounts
+- name: gardens

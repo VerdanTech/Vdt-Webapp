@@ -7,6 +7,8 @@ from verdantech_api.apps.gardens.selectors import (
     garden_get_visible,
     garden_list,
     garden_members,
+    garden_membership_detail,
+    garden_membership_get_visible,
     garden_membership_invite_detail,
     garden_membership_invite_list,
 )
@@ -24,10 +26,8 @@ class TestGetVisibleGarden:
         user = UserMake.create()
         gardens = GardenMake.create_batch(3)
 
-        membership1 = GardenMembership(user=user, garden=gardens[1], open_invite=True)
-        membership2 = GardenMembership(user=user, garden=gardens[2], open_invite=False)
-        membership1.save()
-        membership2.save()
+        GardenMembership.objects.create(user=user, garden=gardens[1], open_invite=True)
+        GardenMembership.objects.create(user=user, garden=gardens[2], open_invite=False)
 
         garden_ids = garden_get_visible(user=user)
 
@@ -46,10 +46,8 @@ class TestGardenList:
         user = UserMake.create()
         gardens = GardenMake.create_batch(3)
 
-        membership1 = GardenMembership(user=user, garden=gardens[1], open_invite=True)
-        membership2 = GardenMembership(user=user, garden=gardens[2], open_invite=False)
-        membership1.save()
-        membership2.save()
+        GardenMembership.objects.create(user=user, garden=gardens[1], open_invite=True)
+        GardenMembership.objects.create(user=user, garden=gardens[2], open_invite=False)
 
         returned_gardens = garden_list(fetched_by=user)
 
@@ -97,12 +95,9 @@ class TestGardenMembers:
         users = UserMake.create_batch(3)
         garden = BaseGardenMake.create()
 
-        membership1 = GardenMembership(user=users[0], garden=garden, open_invite=False)
-        membership2 = GardenMembership(user=users[1], garden=garden, open_invite=False)
-        membership3 = GardenMembership(user=users[2], garden=garden, open_invite=True)
-        membership1.save()
-        membership2.save()
-        membership3.save()
+        GardenMembership.objects.create(user=users[0], garden=garden, open_invite=False)
+        GardenMembership.objects.create(user=users[1], garden=garden, open_invite=False)
+        GardenMembership.objects.create(user=users[2], garden=garden, open_invite=True)
 
         expected_output = [
             {"username": users[0].username, "role": "VIEW"},
@@ -114,8 +109,118 @@ class TestGardenMembers:
         assert members == expected_output
 
 
+class TestGardenMembershipGetVisible:
+    def test_query_result(self, UserMake, GardenMake):
+        """
+        Ensure the function returns the ids for garden
+        memberships associated with their user or a
+        garden they are a part of
+        """
+
+        users = UserMake.create_batch(3)
+        gardens = GardenMake.create_batch(3)
+
+        membership0 = GardenMembership.objects.create(
+            user=users[0], garden=gardens[0], open_invite=False
+        )
+        membership1 = GardenMembership.objects.create(
+            user=users[0], garden=gardens[1], open_invite=False
+        )
+        membership2 = GardenMembership.objects.create(
+            user=users[1], garden=gardens[0], open_invite=False
+        )
+        membership3 = GardenMembership.objects.create(
+            user=users[1], garden=gardens[1], open_invite=False
+        )
+        membership4 = GardenMembership.objects.create(
+            user=users[1], garden=gardens[2], open_invite=False
+        )
+        membership5 = GardenMembership.objects.create(
+            user=users[2], garden=gardens[2], open_invite=False
+        )
+
+        membership_ids = garden_membership_get_visible(fetched_by=users[0])
+
+        assert membership0.id in membership_ids
+        assert membership1.id in membership_ids
+        assert membership2.id in membership_ids
+        assert membership3.id in membership_ids
+        assert membership4.id not in membership_ids
+        assert membership5.id not in membership_ids
+
+
+class TestGardenMembershipDetail:
+    def test_query_result(self, UserMake, GardenMake):
+        """
+        Ensure the function returns the correct
+        garden membership object
+        """
+
+        users = UserMake.create_batch(2)
+        gardens = GardenMake.create_batch(2)
+
+        membership0 = GardenMembership.objects.create(
+            user=users[0], garden=gardens[0], open_invite=False
+        )
+        membership1 = GardenMembership.objects.create(
+            user=users[0], garden=gardens[1], open_invite=False
+        )
+        membership2 = GardenMembership.objects.create(
+            user=users[1], garden=gardens[0], open_invite=False
+        )
+        membership3 = GardenMembership.objects.create(
+            user=users[1], garden=gardens[1], open_invite=False
+        )
+
+        assert membership0 == garden_membership_detail(
+            fetched_by=users[0], username=users[0].username, hashid=gardens[0].hashid
+        )
+        assert membership1 == garden_membership_detail(
+            fetched_by=users[0], username=users[0].username, hashid=gardens[1].hashid
+        )
+        assert membership2 == garden_membership_detail(
+            fetched_by=users[0], username=users[1].username, hashid=gardens[0].hashid
+        )
+        assert membership3 == garden_membership_detail(
+            fetched_by=users[0], username=users[1].username, hashid=gardens[1].hashid
+        )
+
+    def test_does_not_exist(self, UserMake, GardenMake):
+        """
+        Ensure the function raises an ApplicationError
+        for gardenmembership objects which are not
+        accessible
+        """
+
+        users = UserMake.create_batch(2)
+        gardens = GardenMake.create_batch(2)
+
+        GardenMembership.objects.create(
+            user=users[0], garden=gardens[0], open_invite=True
+        )
+
+        GardenMembership.objects.create(
+            user=users[1], garden=gardens[0], open_invite=False
+        )
+        GardenMembership.objects.create(
+            user=users[1], garden=gardens[1], open_invite=False
+        )
+
+        with pytest.raises(ApplicationError):
+            garden_membership_detail(
+                fetched_by=users[0],
+                username=users[1].username,
+                hashid=gardens[0].hashid,
+            )
+        with pytest.raises(ApplicationError):
+            garden_membership_detail(
+                fetched_by=users[0],
+                username=users[1].username,
+                hashid=gardens[1].hashid,
+            )
+
+
 class TestGardenMembershipInvitesList:
-    @pytest.mark.skip
     def test_query_result(self, UserMake, GardenMake):
         """
         Ensure that the function returns
@@ -143,7 +248,6 @@ class TestGardenMembershipInvitesList:
 
 
 class TestGardenMembershipInviteDetail:
-    @pytest.mark.skip
     def test_query_result(self, UserMake, GardenMake):
         """
         Ensure the query filters by user
@@ -163,7 +267,6 @@ class TestGardenMembershipInviteDetail:
 
         assert garden_membership_invite_query == membership
 
-    @pytest.mark.skip
     def test_does_not_exist(self, UserMake, GardenMake):
         """
         Ensure the query raises an application error

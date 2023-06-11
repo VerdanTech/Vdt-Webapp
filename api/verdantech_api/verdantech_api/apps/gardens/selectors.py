@@ -63,17 +63,45 @@ def garden_members(garden: Garden) -> List[Dict[str, str]]:
     return members
 
 
+def garden_membership_invite_list(fetched_by: User) -> List[GardenMembership]:
+    """
+    Return a list of garden memberships
+    with open invites
+    """
+
+    query = Q(user=fetched_by) & Q(open_invite=True)
+    return GardenMembership.objects.filter(query).all()
+
+
+def garden_membership_invite_detail(fetched_by: User, id: int) -> GardenMembership:
+    """
+    Return the garden membership with the
+    given ID
+    """
+
+    membership_invite = (
+        garden_membership_invite_list(fetched_by=fetched_by).filter(id=id).first()
+    )
+
+    if membership_invite is None:
+        raise ApplicationError(
+            message="Invite does not exist or is not accessible to the user"
+        )
+
+    return membership_invite
+
+
 def garden_membership_get_visible(fetched_by: User) -> List[int]:
     """
     Return all garden memberships containing the user
     or containing a garden the user is associated with
     """
 
-    garden_ids = garden_get_visible(fetched_by=fetched_by)
+    garden_ids = garden_get_visible(user=fetched_by)
 
     query = Q(user=fetched_by) | Q(garden__id__in=garden_ids)
 
-    return GardenMembership.objects.filter(query).values_list("garden_id", flat=True)
+    return GardenMembership.objects.filter(query).values_list("id", flat=True)
 
 
 def garden_membership_detail(
@@ -99,38 +127,3 @@ def garden_membership_detail(
         )
 
     return GardenMembership.objects.filter(query).first()
-
-
-def garden_membership_invite_list(fetched_by: User) -> List[GardenMembership]:
-    """
-    Return a list of garden memberships
-    with open or closed invites
-    """
-
-    membership_ids = garden_membership_get_visible(fetched_by=fetched_by)
-
-    query = Q(id__in=membership_ids) & Q(user=fetched_by) & Q(open_invite=True)
-
-    return GardenMembership.objects.filter(query).all()
-
-
-def garden_membership_invite_detail(fetched_by: User, id: int) -> GardenMembership:
-    """
-    Return the garden membership invite
-    with the given ID
-    """
-
-    membership_ids = garden_membership_get_visible(fetched_by=fetched_by)
-
-    query = (
-        Q(id__in=membership_ids) & Q(id=id) & Q(user=fetched_by) & Q(open_invite=True)
-    )
-
-    membership_invite = GardenMembership.objects.filter(query).first()
-
-    if membership_invite is None:
-        raise ApplicationError(
-            message="Invite does not exist or is not accessible to the user"
-        )
-
-    return membership_invite

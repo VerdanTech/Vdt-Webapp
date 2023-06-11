@@ -10,6 +10,7 @@ from .selectors import (
     garden_detail,
     garden_list,
     garden_members,
+    garden_membership_detail,
     garden_membership_invite_list,
 )
 from .services import (
@@ -17,6 +18,8 @@ from .services import (
     garden_create_parse_invitees,
     garden_membership_accept,
     garden_membership_create,
+    garden_membership_delete,
+    garden_membership_update,
     garden_update,
 )
 
@@ -226,11 +229,56 @@ class GardenMembershipUpdateView(APIView):
     authentication_classes = [SessionAuthentication]
 
     class InputSerializer(serializers.Serializer):
-        pass
+        username = serializers.CharField()
+        new_role = serializers.ChoiceField(choices=GardenMembership.RoleChoices.choices)
+
+    class OutputSerializer(serializers.Serializer):
+        username = serializers.CharField()
+        role = serializers.ChoiceField(choices=GardenMembership.RoleChoices.choices)
+
+    def post(self, request, hashid):
+
+        serializer = self.InputSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        username = serializer.validated_data["username"]
+        new_role = serializer.validated_data["new_role"]
+
+        membership = garden_membership_detail(
+            fetched_by=request.user, username=username, hashid=hashid
+        )
+        membership = garden_membership_update(
+            user=request.user, membership=membership, new_role=new_role
+        )
+
+        data = {"username": membership.user.username, "role": membership.role}
+        data = self.OutputSerializer(data).data
+
+        return Response(data)
 
 
 class GardenMembershipDeleteView(APIView):
     authentication_classes = [SessionAuthentication]
 
     class InputSerializer(serializers.Serializer):
-        pass
+        username = serializers.CharField()
+
+    class OutputSerializer(serializers.Serializer):
+        message = serializers.CharField()
+
+    def post(self, request, hashid):
+
+        serializer = self.InputSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        username = serializer.validated_data["username"]
+
+        membership = garden_membership_detail(
+            fetched_by=request.user, username=username, hashid=hashid
+        )
+        garden_membership_delete(user=request.user, membership=membership)
+
+        data = {"message": "The membership has been successfully deleted"}
+        data = self.OutputSerializer(data).data
+
+        return Response(data)

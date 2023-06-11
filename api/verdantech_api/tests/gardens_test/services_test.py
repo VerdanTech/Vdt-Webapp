@@ -1,19 +1,22 @@
 import pytest
 from django.core.exceptions import PermissionDenied
 
+from verdantech_api.apps.core.exceptions import ApplicationError
 from verdantech_api.apps.gardens.models import Garden, GardenMembership
 from verdantech_api.apps.gardens.services import (
     garden_create,
     garden_create_parse_invitees,
     garden_membership_accept,
     garden_membership_create,
+    garden_membership_delete,
+    garden_membership_update,
     garden_update,
 )
 
 pytestmark = pytest.mark.django_db
 
 
-class TestGardenModelCreateParseInvitees:
+class TestGardenCreateParseInvitees:
     def test_users_returned(self, UserMake):
         """
         Ensure that the users are properly
@@ -41,7 +44,7 @@ class TestGardenModelCreateParseInvitees:
         assert output_list == expected_output_list
 
 
-class TestGardenModelCreate:
+class TestGardenCreate:
     def test_arguments_set(self, UserMake):
         """
         Ensure that the arguments
@@ -124,7 +127,7 @@ class TestGardenModelCreate:
         )
 
 
-class TestGardenModelUpdate:
+class TestGardenUpdate:
     def test_arguments_updated(self, UserMake, GardenMake):
         """
         Ensure that the arguments are properly updated
@@ -152,7 +155,7 @@ class TestGardenModelUpdate:
 
     def test_admin_required(self, UserMake, GardenMake):
         """
-        Ensure that the arguments are properly updated
+        Ensure that the admin role is required
         """
 
         user = UserMake.create()
@@ -177,7 +180,7 @@ class TestGardenModelUpdate:
             )
 
 
-class TestGardenMembershipModelCreate:
+class TestGardenMembershipCreate:
     def test_arguments_set(self, UserMake, GardenMake):
         """
         Ensure that the arguments
@@ -266,7 +269,7 @@ class TestGardenMembershipModelCreate:
             )
 
 
-class TestGardenMembershipModelAccept:
+class TestGardenMembershipAccept:
     def test_membership_accepted(self, UserMake, GardenMake):
         """
         Ensure that the membership invite
@@ -286,3 +289,218 @@ class TestGardenMembershipModelAccept:
 
         assert membership == membership_invite
         assert membership.open_invite is False
+
+
+class TestGardenMembershipUpdate:
+    def test_membership_updated(self, UserMake, GardenMake):
+        """
+        Ensure the model is updated sucessfully
+        """
+
+        users = UserMake.create_batch(2)
+        garden = GardenMake.create()
+
+        GardenMembership.objects.create(
+            user=users[0],
+            garden=garden,
+            open_invite=False,
+            role=GardenMembership.RoleChoices.ADMIN,
+        )
+        membership = GardenMembership.objects.create(
+            user=users[1],
+            garden=garden,
+            open_invite=False,
+            role=GardenMembership.RoleChoices.VIEW,
+        )
+
+        garden_membership_update(
+            user=users[0],
+            membership=membership,
+            new_role=GardenMembership.RoleChoices.EDIT,
+        )
+
+        assert membership.role == GardenMembership.RoleChoices.EDIT
+
+    def test_admin_required(self, UserMake, GardenMake):
+        """
+        Ensure that admin permissions are required
+        """
+
+        users = UserMake.create_batch(2)
+        garden = GardenMake.create()
+
+        GardenMembership.objects.create(
+            user=users[0],
+            garden=garden,
+            open_invite=False,
+            role=GardenMembership.RoleChoices.EDIT,
+        )
+        membership = GardenMembership.objects.create(
+            user=users[1],
+            garden=garden,
+            open_invite=False,
+            role=GardenMembership.RoleChoices.VIEW,
+        )
+
+        with pytest.raises(PermissionDenied):
+            garden_membership_update(
+                user=users[0],
+                membership=membership,
+                new_role=GardenMembership.RoleChoices.EDIT,
+            )
+
+    def test_admins_cant_demote_themselves(self, UserMake, GardenMake):
+        """
+        Ensure that admins can't change their own roles
+        """
+
+        user = UserMake.create()
+        garden = GardenMake.create()
+
+        membership = GardenMembership.objects.create(
+            user=user,
+            garden=garden,
+            open_invite=False,
+            role=GardenMembership.RoleChoices.ADMIN,
+        )
+
+        with pytest.raises(ApplicationError):
+            garden_membership_update(
+                user=user,
+                membership=membership,
+                new_role=GardenMembership.RoleChoices.EDIT,
+            )
+
+    def test_cant_demote_creator(self, UserMake, GardenMake):
+        """
+        Ensure that the creator of a garden cant have
+        their permissions changed
+        """
+
+        users = UserMake.create_batch(2)
+        garden = GardenMake.create()
+
+        GardenMembership.objects.create(
+            user=users[0],
+            garden=garden,
+            open_invite=False,
+            role=GardenMembership.RoleChoices.ADMIN,
+        )
+        membership = GardenMembership.objects.create(
+            user=users[1],
+            garden=garden,
+            open_invite=False,
+            role=GardenMembership.RoleChoices.ADMIN,
+        )
+        garden.creator = users[1]
+
+        with pytest.raises(ApplicationError):
+            garden_membership_update(
+                user=users[0],
+                membership=membership,
+                new_role=GardenMembership.RoleChoices.EDIT,
+            )
+
+
+class TestGardenMembershipDelete:
+    def test_admin_membership_deleted(self, UserMake, GardenMake):
+        """
+        Ensure that an admin can delete a membership
+        """
+        users = UserMake.create_batch(2)
+        garden = GardenMake.create()
+
+        GardenMembership.objects.create(
+            user=users[0],
+            garden=garden,
+            open_invite=False,
+            role=GardenMembership.RoleChoices.ADMIN,
+        )
+        membership = GardenMembership.objects.create(
+            user=users[1],
+            garden=garden,
+            open_invite=False,
+            role=GardenMembership.RoleChoices.VIEW,
+        )
+        id = membership.id
+
+        garden_membership_delete(
+            user=users[0],
+            membership=membership,
+        )
+
+        assert GardenMembership.objects.filter(id=id).exists() is False
+
+    def test_self_membership_deleted(self, UserMake, GardenMake):
+        """
+        Ensure that a user can delete their own membership
+        """
+        user = UserMake.create()
+        garden = GardenMake.create()
+
+        membership = GardenMembership.objects.create(
+            user=user,
+            garden=garden,
+            open_invite=False,
+            role=GardenMembership.RoleChoices.VIEW,
+        )
+        id = membership.id
+
+        garden_membership_delete(
+            user=user,
+            membership=membership,
+        )
+
+        assert GardenMembership.objects.filter(id=id).exists() is False
+
+    def test_admin_required(self, UserMake, GardenMake):
+        """
+        Ensure that admin permissions are required
+        """
+
+        users = UserMake.create_batch(2)
+        garden = GardenMake.create()
+
+        GardenMembership.objects.create(
+            user=users[0],
+            garden=garden,
+            open_invite=False,
+            role=GardenMembership.RoleChoices.EDIT,
+        )
+        membership = GardenMembership.objects.create(
+            user=users[1],
+            garden=garden,
+            open_invite=False,
+            role=GardenMembership.RoleChoices.VIEW,
+        )
+
+        with pytest.raises(PermissionDenied):
+            garden_membership_delete(
+                user=users[0],
+                membership=membership,
+            )
+
+    def test_cant_kick_creator(self, UserMake, GardenMake):
+        """
+        Ensure that the creator of a garden cant have
+        their membership deleted
+        """
+        users = UserMake.create_batch(2)
+        garden = GardenMake.create()
+
+        GardenMembership.objects.create(
+            user=users[0],
+            garden=garden,
+            open_invite=False,
+            role=GardenMembership.RoleChoices.ADMIN,
+        )
+        membership = GardenMembership.objects.create(
+            user=users[1],
+            garden=garden,
+            open_invite=False,
+            role=GardenMembership.RoleChoices.ADMIN,
+        )
+        garden.creator = users[1]
+
+        with pytest.raises(ApplicationError):
+            garden_membership_delete(user=users[0], membership=membership)

@@ -3,6 +3,7 @@ from typing import Dict, List, Tuple
 from django.core.exceptions import PermissionDenied
 
 from verdantech_api.apps.accounts.models import User
+from verdantech_api.apps.core.exceptions import ApplicationError
 
 from .models import Garden, GardenMembership
 from .selectors import garden_detail, garden_membership_invite_detail
@@ -93,13 +94,14 @@ def garden_update(
     user: User, hashid: str, name: str = None, visibility: str = None
 ) -> Garden:
     """
-    Update the garden name, or visibility
+    Update the garden name, or visibility.
+    Require admin permissions
     """
 
     garden = garden_detail(fetched_by=user, hashid=hashid)
     membership = garden.members.filter(user=user).first()
 
-    if membership.role != GardenMembership.RoleChoices.ADMIN:
+    if membership is None or membership.role != GardenMembership.RoleChoices.ADMIN:
         raise PermissionDenied()
 
     updated = False
@@ -178,9 +180,61 @@ def garden_membership_accept(user: User, membership_invite_id: int) -> GardenMem
     return membership_invite
 
 
-def garden_membership_update(user: User):
-    pass
+def garden_membership_update(
+    user: User, membership: GardenMembership, new_role: str
+) -> GardenMembership:
+    """
+    Update the membership's role.
+    Require admin permissions, and
+    don't allow admins to change their role
+    or that of the garden's creator
+    """
+
+    garden = membership.garden
+    user_membership = garden.members.filter(user=user).first()
+
+    if (
+        user_membership is None
+        or user_membership.role != GardenMembership.RoleChoices.ADMIN
+    ):
+        raise PermissionDenied()
+
+    if user == membership.user:
+        raise ApplicationError("Admins cannot update their own permissions")
+
+    if membership.user == garden.creator:
+        raise ApplicationError("Cannot change garden creator's permissions")
+
+    if membership.role == new_role:
+        return
+
+    membership.role = new_role
+    membership.full_clean()
+    membership.save()
+
+    return membership
 
 
-def garden_membership_delete():
-    pass
+def garden_membership_delete(user: User, membership: GardenMembership) -> None:
+    """
+    Delete the garden membership.
+    Require admin permissions, or the
+    membership's user to be the same as the user.
+    Don't allow creators to be removed.
+    """
+
+    garden = membership.garden
+    user_membership = garden.members.filter(user=user).first()
+
+    if user_membership is None:
+        raise ApplicationError("Membership does not exist or is not accessible")
+
+    if membership != user_membership:
+
+        if membership.user == garden.creator:
+            raise ApplicationError("Cannot change garden creator's permissions")
+
+        if user_membership.role != GardenMembership.RoleChoices.ADMIN:
+            raise PermissionDenied()
+
+    membership.delete()
