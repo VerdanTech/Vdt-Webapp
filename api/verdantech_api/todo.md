@@ -1,3 +1,11 @@
-- Fix garden tests - they're supposed to be unit tests, but I can't figure out how to mock the many-to-many models
+# To-do
 
-"django-timezone-field"
+Figure out best way to combine drf-spectacular's requirements with HackSoft's style guide
+
+Dockerize
+
+Build API for workspace functionality
+
+Tweak file structure
+
+Re-do user registration and authentication system
