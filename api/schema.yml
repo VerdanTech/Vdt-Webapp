@@ -204,7 +204,11 @@ paths:
       - cookieAuth: []
       responses:
         '200':
-          description: No response body
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Output'
+          description: ''
   /gardens/{hashid}:
     get:
       operationId: gardens_retrieve_2
@@ -220,7 +224,11 @@ paths:
       - cookieAuth: []
       responses:
         '200':
-          description: No response body
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Output'
+          description: ''
   /gardens/{hashid}/members/create:
     post:
       operationId: gardens_members_create_create
@@ -232,11 +240,21 @@ paths:
         required: true
       tags:
       - gardens
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InputRequest'
+        required: true
       security:
       - cookieAuth: []
       responses:
         '200':
-          description: No response body
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Output'
+          description: ''
   /gardens/{hashid}/members/delete:
     post:
       operationId: gardens_members_delete_create
@@ -248,11 +266,21 @@ paths:
         required: true
       tags:
       - gardens
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InputRequest'
+        required: true
       security:
       - cookieAuth: []
       responses:
         '200':
-          description: No response body
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Output'
+          description: ''
   /gardens/{hashid}/members/update:
     post:
       operationId: gardens_members_update_create
@@ -264,11 +292,21 @@ paths:
         required: true
       tags:
       - gardens
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InputRequest'
+        required: true
       security:
       - cookieAuth: []
       responses:
         '200':
-          description: No response body
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Output'
+          description: ''
   /gardens/{hashid}/update:
     post:
       operationId: gardens_update_create
@@ -280,21 +318,41 @@ paths:
         required: true
       tags:
       - gardens
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InputRequest'
+        required: true
       security:
       - cookieAuth: []
       responses:
         '200':
-          description: No response body
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Output'
+          description: ''
   /gardens/create:
     post:
       operationId: gardens_create_create
       tags:
       - gardens
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InputRequest'
+        required: true
       security:
       - cookieAuth: []
       responses:
         '200':
-          description: No response body
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Output'
+          description: ''
   /gardens/invites:
     get:
       operationId: gardens_invites_retrieve
@@ -304,7 +362,11 @@ paths:
       - cookieAuth: []
       responses:
         '200':
-          description: No response body
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Output'
+          description: ''
   /gardens/invites/{id}/accept:
     post:
       operationId: gardens_invites_accept_create
@@ -320,7 +382,11 @@ paths:
       - cookieAuth: []
       responses:
         '200':
-          description: No response body
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Output'
+          description: ''
 components:
   schemas:
     CSRFToken:
@@ -330,6 +396,17 @@ components:
           type: string
       required:
       - csrftoken
+    InputRequest:
+      type: object
+      properties:
+        username:
+          type: string
+          minLength: 1
+        role:
+          $ref: '#/components/schemas/RoleEnum'
+      required:
+      - role
+      - username
     Login:
       type: object
       properties:
@@ -354,6 +431,20 @@ components:
       required:
       - email
       - password
+    Output:
+      type: object
+      properties:
+        hashid:
+          type: string
+        name:
+          type: string
+        creator_username:
+          type: string
+          readOnly: true
+      required:
+      - creator_username
+      - hashid
+      - name
     PasswordChangeRequest:
       type: object
       properties:
@@ -491,6 +582,12 @@ components:
           readOnly: true
       required:
       - detail
+    RoleEnum:
+      enum:
+      - ADMIN
+      - EDIT
+      - VIEW
+      type: string
     VerifyEmailRequest:
       type: object
       properties:

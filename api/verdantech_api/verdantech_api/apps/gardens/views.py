@@ -2,6 +2,7 @@ from rest_framework import serializers
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from drf_spectacular.utils import extend_schema
 
 from verdantech_api.apps.accounts.selectors import user_detail
 
@@ -39,6 +40,9 @@ class GardenListView(APIView):
             else:
                 return ""
 
+    @extend_schema(
+        responses=OutputSerializer,
+    )
     def get(self, request):
 
         gardens = garden_list(fetched_by=request.user)
@@ -59,6 +63,11 @@ class GardenCreateView(APIView):
         name = serializers.CharField()
         invitations_sent = serializers.ListField(child=serializers.DictField())
 
+
+    @extend_schema(
+        request=InputSerializer,
+        responses=OutputSerializer,
+    )
     def post(self, request):
         serializer = self.InputSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -91,6 +100,9 @@ class GardenDetailView(APIView):
         visibility = serializers.ChoiceField(choices=Garden.VisibilityChoices.choices)
         members = serializers.ListField(child=serializers.DictField())
 
+    @extend_schema(
+        responses=OutputSerializer,
+    )
     def get(self, request, hashid):
 
         garden = garden_detail(fetched_by=request.user, hashid=hashid)
@@ -122,6 +134,10 @@ class GardenUpdateView(APIView):
         name = serializers.CharField()
         visibility = serializers.ChoiceField(choices=Garden.VisibilityChoices.choices)
 
+    @extend_schema(
+        request=InputSerializer,
+        responses=OutputSerializer,
+    )
     def post(self, request, hashid):
 
         serializer = self.InputSerializer(data=request.data)
@@ -149,6 +165,9 @@ class GardenMembershipInviteListView(APIView):
         inviter_username = serializers.CharField()
         role = serializers.ChoiceField(choices=GardenMembership.RoleChoices.choices)
 
+    @extend_schema(
+        responses=OutputSerializer,
+    )
     def get(self, request):
 
         garden_membership_invites = garden_membership_invite_list(
@@ -182,6 +201,10 @@ class GardenMembershipInviteCreateView(APIView):
         username = serializers.CharField()
         role = serializers.ChoiceField(choices=GardenMembership.RoleChoices.choices)
 
+    @extend_schema(
+        request=InputSerializer,
+        responses=OutputSerializer,
+    )
     def post(self, request, hashid):
 
         serializer = self.InputSerializer(data=request.data)
@@ -213,6 +236,9 @@ class GardenMembershipInviteAcceptView(APIView):
         hashid = serializers.CharField()
         role = serializers.ChoiceField(choices=GardenMembership.RoleChoices.choices)
 
+    @extend_schema(
+        responses=OutputSerializer,
+    )
     def post(self, request, id):
 
         membership = garden_membership_accept(
@@ -236,6 +262,10 @@ class GardenMembershipUpdateView(APIView):
         username = serializers.CharField()
         role = serializers.ChoiceField(choices=GardenMembership.RoleChoices.choices)
 
+    @extend_schema(
+        request=InputSerializer,
+        responses=OutputSerializer,
+    )
     def post(self, request, hashid):
 
         serializer = self.InputSerializer(data=request.data)
@@ -266,6 +296,10 @@ class GardenMembershipDeleteView(APIView):
     class OutputSerializer(serializers.Serializer):
         message = serializers.CharField()
 
+    @extend_schema(
+        request=InputSerializer,
+        responses=OutputSerializer,
+    )
     def post(self, request, hashid):
 
         serializer = self.InputSerializer(data=request.data)
