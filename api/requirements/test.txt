@@ -4,118 +4,150 @@
 #
 #    pip-compile --extra=test --output-file=requirements/test.txt --resolver=backtracking pyproject.toml
 #
-asgiref==3.6.0
-    # via django
-attrs==22.2.0
-    # via pytest
-certifi==2022.12.7
-    # via requests
-cffi==1.15.1
-    # via cryptography
-charset-normalizer==3.0.1
-    # via requests
-coverage[toml]==7.1.0
-    # via verdantech-api (pyproject.toml)
-cryptography==39.0.0
-    # via pyjwt
-defusedxml==0.7.1
-    # via python3-openid
-dj-rest-auth[with_social]==2.2.7
-    # via verdantech-api (pyproject.toml)
-django==4.1.5
+alembic==1.11.1
+    # via litestar
+anyio==3.7.0
     # via
-    #   dj-rest-auth
-    #   django-allauth
-    #   django-cors-headers
-    #   django-mock-queries
-    #   djangorestframework
-    #   model-bakery
-    #   verdantech-api (pyproject.toml)
-django-allauth==0.52.0
-    # via dj-rest-auth
-django-cors-headers==3.13.0
-    # via verdantech-api (pyproject.toml)
-django-mock-queries==2.1.7
-    # via verdantech-api (pyproject.toml)
-django-rest-framework==0.1.0
-    # via verdantech-api (pyproject.toml)
-django-timezone-field==5.0
-    # via verdantech-api (pyproject.toml)
-djangorestframework==3.14.0
+    #   httpcore
+    #   litestar
+    #   watchfiles
+certifi==2023.5.7
     # via
-    #   dj-rest-auth
-    #   django-mock-queries
-    #   django-rest-framework
-exceptiongroup==1.1.0
-    # via pytest
+    #   httpcore
+    #   httpx
+click==8.1.3
+    # via
+    #   litestar
+    #   rich-click
+    #   uvicorn
+coverage[toml]==7.2.7
+    # via verdantech-api (pyproject.toml)
+dnspython==2.3.0
+    # via email-validator
+editorconfig==0.12.3
+    # via jsbeautifier
+email-validator==2.0.0.post2
+    # via verdantech-api (pyproject.toml)
+exceptiongroup==1.1.1
+    # via
+    #   anyio
+    #   pytest
 factory-boy==3.2.1
     # via verdantech-api (pyproject.toml)
-faker==16.6.1
-    # via factory-boy
+faker==18.11.1
+    # via
+    #   factory-boy
+    #   polyfactory
+fast-query-parsers==0.4.0
+    # via litestar
+greenlet==2.0.2
+    # via sqlalchemy
+h11==0.14.0
+    # via
+    #   httpcore
+    #   uvicorn
+httpcore==0.17.2
+    # via httpx
+httptools==0.5.0
+    # via uvicorn
+httpx==0.24.1
+    # via litestar
 idna==3.4
-    # via requests
+    # via
+    #   anyio
+    #   email-validator
+    #   httpx
 iniconfig==2.0.0
     # via pytest
-mock==5.0.1
-    # via django-mock-queries
-model-bakery==1.10.1
+jsbeautifier==1.14.8
+    # via litestar
+litestar[cli,picologging,sqlalchemy]==2.0.0b1
+    # via verdantech-api (pyproject.toml)
+mako==1.2.4
     # via
-    #   django-mock-queries
-    #   verdantech-api (pyproject.toml)
-oauthlib==3.2.2
-    # via requests-oauthlib
-packaging==23.0
+    #   alembic
+    #   litestar
+markdown-it-py==3.0.0
+    # via rich
+markupsafe==2.1.3
+    # via mako
+mdurl==0.1.2
+    # via markdown-it-py
+msgspec==0.16.0
+    # via litestar
+multidict==6.0.4
+    # via litestar
+packaging==23.1
     # via pytest
+picologging==0.9.2
+    # via litestar
 pluggy==1.0.0
     # via pytest
+polyfactory==2.3.3
+    # via litestar
 py==1.11.0
     # via pytest-html
-pycparser==2.21
-    # via cffi
-pyjwt[crypto]==2.6.0
-    # via django-allauth
-pytest==7.2.1
+pydantic==1.10.9
+    # via litestar
+pygments==2.15.1
+    # via rich
+pytest==7.3.2
     # via
-    #   pytest-django
     #   pytest-html
     #   pytest-metadata
     #   pytest-mock
-pytest-django==4.5.2
-    # via verdantech-api (pyproject.toml)
+    #   verdantech-api (pyproject.toml)
 pytest-html==3.2.0
     # via verdantech-api (pyproject.toml)
-pytest-metadata==2.0.4
+pytest-metadata==3.0.0
     # via pytest-html
-pytest-mock==3.10.0
+pytest-mock==3.11.1
     # via verdantech-api (pyproject.toml)
 python-dateutil==2.8.2
     # via faker
-python-decouple==3.7
+python-decouple==3.8
     # via verdantech-api (pyproject.toml)
-python3-openid==3.2.0
-    # via django-allauth
-pytz==2022.7.1
+python-dotenv==1.0.0
+    # via uvicorn
+pyyaml==6.0
     # via
-    #   django-timezone-field
-    #   djangorestframework
-requests==2.28.2
+    #   litestar
+    #   uvicorn
+rich==13.4.2
     # via
-    #   django-allauth
-    #   requests-mock
-    #   requests-oauthlib
-requests-mock==1.10.0
-    # via verdantech-api (pyproject.toml)
-requests-oauthlib==1.3.1
-    # via django-allauth
+    #   litestar
+    #   rich-click
+rich-click==1.6.1
+    # via litestar
 six==1.16.0
     # via
+    #   jsbeautifier
     #   python-dateutil
-    #   requests-mock
-sqlparse==0.4.3
-    # via django
+sniffio==1.3.0
+    # via
+    #   anyio
+    #   httpcore
+    #   httpx
+sqlalchemy==2.0.16
+    # via
+    #   alembic
+    #   litestar
 tomli==2.0.1
     # via
     #   coverage
     #   pytest
-urllib3==1.26.14
-    # via requests
+typing-extensions==4.6.3
+    # via
+    #   alembic
+    #   litestar
+    #   polyfactory
+    #   pydantic
+    #   sqlalchemy
+uvicorn[standard]==0.22.0
+    # via litestar
+uvloop==0.17.0
+    # via uvicorn
+watchfiles==0.19.0
+    # via uvicorn
+websockets==11.0.3
+    # via uvicorn

@@ -44,31 +44,29 @@ build: init-venv sync-dependencies
 
 .PHONY: run
 run:
-	$(BIN)/$(PY) verdantech_api/manage.py runserver --settings=verdantech_api.settings.development
+	$(BIN)/$(PY) manage.py runserver --settings=verdantech_api.settings.development
 
 .PHONY: lint
 lint:
-	$(BIN)/flakeheaven lint ./verdantech_api
+	$(BIN)/ruff check ./verdantech_api
+	$(BIN)/ruff check ./tests
 
 .PHONY: format
 format:
-	$(BIN)/isort .
-	$(BIN)/black verdantech_api
+	$(BIN)/isort ./src
+	$(BIN)/isort ./tests
+	$(BIN)/black src
+	$(BIN)/black tests
 
 .PHONY: test
 test:
-	$(BIN)/$(PY) -m coverage run --source verdantech_api -m pytest --html=reports/pytest/index.html
+	$(BIN)/$(PY) -m coverage run --source tests -m pytest --html=reports/pytest/index.html
 	$(BIN)/$(PY) -m coverage html -d reports/coverage
 
 .PHONY: migrations
 migrations:
-	$(BIN)/$(PY) verdantech_api/manage.py makemigrations
+	$(BIN)/$(PY) manage.py makemigrations
 
 .PHONY: migrate
 migrate:
-	$(BIN)/$(PY) verdantech_api/manage.py migrate
-
-.PHONY: schema
-schema:
-	$(BIN)/$(PY) verdantech_api/manage.py spectacular --color --validate --file schema.yml
-	cp schema.yml ../client/verdantech_client/
+	$(BIN)/$(PY) manage.py migrate

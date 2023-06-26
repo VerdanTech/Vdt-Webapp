@@ -3,36 +3,29 @@ name = "verdantech_api"
 version = "1.0.0"
 requires-python = ">=3.10.6"
 license = {text = "GPL-3.0-or-later"}
-dependencies = [
-    "django",
-    "django-cors-headers",
-    "django-rest-framework",
-    "dj-rest-auth[with_social]",
-    "python-decouple",
-    ]
-description = 'API of the VerdanTech (Automatic Garden Management and Optimization) project.'
+description = 'API of the VerdanTech web application.'
 readme = "README.md"
 authors = [
   { name = "Nathaniel King", email = "nathanielarking@gmail.com" }
 ]
+dependencies = [
+    "litestar[picologging, sqlalchemy, cli]",
+    "email-validator",
+    "python-decouple",
+]
 
 [project.optional-dependencies]
 test = [
-    "pytest-django",
-    "model_bakery",
+    "pytest",
     "factory_boy",
     "pytest-mock",
-    "requests-mock",
-    "django-mock-queries",
     "pytest-html",
     "coverage[toml]",
 ]
 dev = [
-    "drf-spectacular[sidecar]",
-    "django-debug-toolbar",
     "black",
     "isort",
-    "flakeheaven",
+    "ruff",
     "validate-pyproject",
 ]
 
@@ -60,25 +53,6 @@ exclude = '''
   )/
 '''
 
-[tool.flakeheaven]
-max-line-length = 88
-format = "grouped"
-show_source = true
-
-[tool.flakeheaven.exceptions."verdantech_api/"]
-pycodestyle = ["-W503", "-E501"]
-
-[tool.flakeheaven.exceptions."venv/"]
-pycodestyle = ["-*"]
-pyflakes = ["-*"]
-
-[tool.flakeheaven.exceptions."**/migrations/*"]
-pycodestyle = ["-*"]
-pyflakes = ["-*"]
-
-[tool.flakeheaven.exceptions."**/settings/*"]
-pycodestyle = ["-*"]
-pyflakes = ["-*"]
 
 [tool.isort]
 profile = "black"
@@ -89,11 +63,9 @@ skip_gitignore = true
 skip_glob = ["**/migrations/*"]
 
 [tool.pytest.ini_options]
-django_find_project = false
 addopts = "-vv -x -rx"
-pythonpath = ". verdantech_api"
-DJANGO_SETTINGS_MODULE = "verdantech_api.settings.test"
-testpaths = ["verdantech_api/tests/"]
+pythonpath = ". tests"
+testpaths = ["tests/"]
 python_files = ["tests.py", "test_*.py", "*_test.py", "*_tests.py", "**/tests/*", "**/test/*"]
 markers = [
     "unit: Isolated tests of individual functions",
