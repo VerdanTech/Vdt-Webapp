@@ -1,5 +1,4 @@
 from litestar import Litestar
-from litestar.contrib.sqlalchemy.plugins import SQLAlchemyAsyncConfig, SQLAlchemyPlugin
 
 
 def create_app() -> Litestar:
@@ -7,6 +6,6 @@ def create_app() -> Litestar:
 
     db_config = SQLAlchemyAsyncConfig(connection_string="sqlite+aiosqlite:///db.sqlite")
 
-    app = Litestar(route_handlers=[], plugins=[SQLAlchemyPlugin(db_config)])
+    app = Litestar.from_config()
 
     return app

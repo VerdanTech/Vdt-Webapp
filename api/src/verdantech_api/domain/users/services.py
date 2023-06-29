@@ -1,10 +1,8 @@
 from typing import Any
 
-from email_validator import EmailNotValidError, validate_email
+from api.src.verdantech_api.lib.email.generic import AsyncEmailClient
+from api.src.verdantech_api.lib.services.orm import AsyncRepoService
 from litestar.contrib.sqlalchemy.repository import SQLAlchemyAsyncRepository
-from litestar.exceptions import ValidationException
-
-from api.src.verdantech_api.lib.services import AsyncRepoService
 
 from .models import UserModel
 
@@ -25,30 +23,47 @@ class UserService(AsyncRepoService[UserModel]):
         self.model_type = self.repo.model_type
 
     async def register():
-        
         # validate email
         # create user
         # send verification email
 
         pass
 
-    async def resend_email_verification():
+    async def change_password():
+        pass
 
+    async def change_username():
+        pass
+
+
+class EmailVerificationService:
+    """Handles verification of email for new users
+    and for adding/changing primary email address"""
+
+    def __init__(self, user: UserModel, email_client: AsyncEmailClient):
+        self.user: UserModel = user
+        self.email_client: AsyncEmailClient = email_client
+
+    async def send_email_verification(self):
+        pass
+
+    async def resend_email_verification():
         # send verification email
 
         pass
 
     async def verify_email():
-
-        # validate email 
+        # validate email
         # update user object
-
 
         pass
 
 
-    async def change_password():
-        pass 
+class PasswordResetService:
+    """Handles password reset email verification"""
+
+    def __init__(self, email_client: AsyncEmailClient):
+        self.email_client: AsyncEmailClient = email_client
 
     async def reset_password():
         pass
@@ -56,37 +71,6 @@ class UserService(AsyncRepoService[UserModel]):
     async def reset_password_confirm():
         pass
 
-class EmailService:
 
-    def validate_and_normalize_email(self, email: str) -> str:
-        """Validate and normalize email address using email-validator
-
-        Args:
-            email (str): the email to operate on
-
-        Raises:
-            ValidationException: raised if email validation fails
-
-        Returns:
-            str: the normalized email address
-        """
-
-        try:
-            validated_email = validate_email(email, check_deliverability=False)
-            email = validated_email.normalized
-        except EmailNotValidError as exc:
-            raise ValidationException(detail=f"{exc}")
-
-        return email
-    
-    def send_email():
-        pass
-
-class EmailVerificationService():
-    pass
-
-class PasswordResetService():
-    pass
-
-class AuthService():
+class AuthService:
     pass

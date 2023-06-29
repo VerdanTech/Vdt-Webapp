@@ -4,6 +4,10 @@
 #
 #    pip-compile --extra=dev --extra=test --output-file=requirements/dev.txt --resolver=backtracking pyproject.toml
 #
+aiofiles==23.1.0
+    # via verdantech-api (pyproject.toml)
+aiosmtplib==2.0.2
+    # via verdantech-api (pyproject.toml)
 alembic==1.11.1
     # via litestar
 anyio==3.7.0
@@ -23,6 +27,8 @@ click==8.1.3
     #   litestar
     #   rich-click
     #   uvicorn
+confusable-homoglyphs==3.2.0
+    # via verdantech-api (pyproject.toml)
 coverage[toml]==7.2.7
     # via verdantech-api (pyproject.toml)
 dnspython==2.3.0
@@ -124,6 +130,8 @@ python-decouple==3.8
     # via verdantech-api (pyproject.toml)
 python-dotenv==1.0.0
     # via uvicorn
+python-usernames==1.0.0
+    # via verdantech-api (pyproject.toml)
 pyyaml==6.0
     # via
     #   litestar

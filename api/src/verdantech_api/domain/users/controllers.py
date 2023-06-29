@@ -1,7 +1,9 @@
-from litestar import Controller, get, post, patch, delete
+from litestar import Controller, delete, get, patch, post
+
 
 class UserController(Controller):
     """User controller"""
+
     pass
 
     async def user_list():
@@ -33,6 +35,7 @@ class UserController(Controller):
 
     async def user_delete():
         pass
+
 
 class AuthController(Controller):
     """Authentication controller"""
