@@ -15,20 +15,24 @@ anyio==3.7.0
     #   httpcore
     #   litestar
     #   watchfiles
+argon2-cffi==21.3.0
+    # via verdantech-api (pyproject.toml)
+argon2-cffi-bindings==21.2.0
+    # via argon2-cffi
 black==23.3.0
     # via verdantech-api (pyproject.toml)
 certifi==2023.5.7
     # via
     #   httpcore
     #   httpx
+cffi==1.15.1
+    # via argon2-cffi-bindings
 click==8.1.3
     # via
     #   black
     #   litestar
     #   rich-click
     #   uvicorn
-confusable-homoglyphs==3.2.0
-    # via verdantech-api (pyproject.toml)
 coverage[toml]==7.2.7
     # via verdantech-api (pyproject.toml)
 dnspython==2.3.0
@@ -57,6 +61,8 @@ h11==0.14.0
     # via
     #   httpcore
     #   uvicorn
+html2text==2020.1.16
+    # via verdantech-api (pyproject.toml)
 httpcore==0.17.2
     # via httpx
 httptools==0.5.0
@@ -74,7 +80,7 @@ isort==5.12.0
     # via verdantech-api (pyproject.toml)
 jsbeautifier==1.14.8
     # via litestar
-litestar[cli,picologging,sqlalchemy]==2.0.0b1
+litestar[cli,sqlalchemy]==2.0.0b1
     # via verdantech-api (pyproject.toml)
 mako==1.2.4
     # via
@@ -96,10 +102,10 @@ packaging==23.1
     # via
     #   black
     #   pytest
+passlib==1.7.4
+    # via verdantech-api (pyproject.toml)
 pathspec==0.11.1
     # via black
-picologging==0.9.2
-    # via litestar
 platformdirs==3.7.0
     # via black
 pluggy==1.0.0
@@ -108,16 +114,21 @@ polyfactory==2.3.3
     # via litestar
 py==1.11.0
     # via pytest-html
+pycparser==2.21
+    # via cffi
 pydantic==1.10.9
     # via litestar
 pygments==2.15.1
     # via rich
 pytest==7.3.2
     # via
+    #   pytest-asyncio
     #   pytest-html
     #   pytest-metadata
     #   pytest-mock
     #   verdantech-api (pyproject.toml)
+pytest-asyncio==0.21.0
+    # via verdantech-api (pyproject.toml)
 pytest-html==3.2.0
     # via verdantech-api (pyproject.toml)
 pytest-metadata==3.0.0

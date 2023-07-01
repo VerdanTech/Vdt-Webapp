@@ -41,3 +41,8 @@ DOMAIN_NAME: `str`, `"default="verdantech.io"`
 CLIENT_EMAIL_VERIFY_URL_POSTFIX: `str`, `default="register/verify/"`
 
 CLIENT_PASSWORD_RESET_URL_POSTFIX: `str`, `default="password/reset/"`
+
+## To implement
+
+Periodic tasks:
+delete user models with unverified emails that don't have a confirmation

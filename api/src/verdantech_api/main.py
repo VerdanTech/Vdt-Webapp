@@ -1,11 +1,11 @@
 from litestar import Litestar
 
+from verdantech_api.settings import app_config
+
 
 def create_app() -> Litestar:
     """Application factory patten for Litestar instance"""
 
-    db_config = SQLAlchemyAsyncConfig(connection_string="sqlite+aiosqlite:///db.sqlite")
-
-    app = Litestar.from_config()
+    app = Litestar.from_config(app_config)
 
     return app

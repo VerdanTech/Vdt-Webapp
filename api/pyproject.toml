@@ -9,18 +9,21 @@ authors = [
   { name = "Nathaniel King", email = "nathanielarking@gmail.com" }
 ]
 dependencies = [
-    "litestar[picologging, sqlalchemy, cli]",
+    "litestar[sqlalchemy, cli]",
+    "passlib",
+    "argon2_cffi",
     "aiosmtplib",
+    "html2text",
     "aiofiles",
     "email-validator",
     "python-usernames",
-    "confusable_homoglyphs",
     "python-decouple",
 ]
 
 [project.optional-dependencies]
 test = [
     "pytest",
+    "pytest-asyncio",
     "factory_boy",
     "pytest-mock",
     "pytest-html",
@@ -75,3 +78,4 @@ markers = [
     "unit: Isolated tests of individual functions",
     "endpoint: Integrated tests of one or multiple endpoints",
 ]
+asyncio_mode="auto"
