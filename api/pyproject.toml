@@ -16,7 +16,6 @@ dependencies = [
     "html2text",
     "aiofiles",
     "email-validator",
-    "python-usernames",
     "python-decouple",
 ]
 

@@ -11,6 +11,7 @@ if config("DEV_OR_PROD", cast=str) == "dev":
 elif config("DEV_OR_PROD", case=str) == "prod":
     import prod as settings
 
+
 sqlalchemy_config = SQLAlchemyAsyncConfig()
 
 # allowed_hosts_config = AllowedHostsConfig(allowed_hosts=ALLOWED_HOSTS)

@@ -1,25 +1,31 @@
-from typing import TypeVar
+from typing import TYPE_CHECKING
 
 from litestar.contrib.sqlalchemy.repository import SQLAlchemyAsyncRepository
-from pydantic import SecretStr
 
-from verdantech_api.lib.crypt import (
-    GeneratePasswordHashAwaitableT,
-    VerifyPasswordHashAwaitableT,
-)
 from verdantech_api.lib.email.generic import AsyncEmailClient
 from verdantech_api.lib.utils import StringIDGeneratorT
-from verdantech_api.settings import CLIENT_BASE_URL, EMAIL_VERIFICATION_CLIENT_URL
+from verdantech_api.settings import (
+    CLIENT_BASE_URL,
+    EMAIL_VERIFICATION_CLIENT_URL,
+    EMAIL_VERIFICATION_KEY_LENGTH,
+    email_path,
+)
 
 from ..models import EmailConfirmationModel, EmailModel
-from .users import EmailRepoT
 
-EmailConfirmationRepoT = TypeVar("EmailConfirmationRepoT", bound="EmailConfirmationRepo")
+if TYPE_CHECKING:
+    from litestar import Litestar
+
+    from .users import EmailRepo
+
 
 class EmailConfirmationRepo(SQLAlchemyAsyncRepository[EmailConfirmationModel]):
-    """SQLAlchemy Repository for the UserModel"""
+    """SQLAlchemy Repository for the EmailConfirmationModel"""
 
     model_type = EmailConfirmationModel
+
+    async def clean_expired(self):
+        pass
 
 
 class EmailVerificationService:
@@ -27,73 +33,90 @@ class EmailVerificationService:
     and for adding/changing primary email address"""
 
     email_client: AsyncEmailClient
-    email_repo: EmailRepoT
-    email_confirmation_repo: EmailConfirmationRepoT
+    email_repo: EmailRepo
+    email_confirmation_repo: EmailConfirmationRepo
     key_generator: StringIDGeneratorT
-    password_hasher: GeneratePasswordHashAwaitableT
-    password_verifier: VerifyPasswordHashAwaitableT
 
     def __init__(
         self,
         email_client: AsyncEmailClient,
-        email_repo: EmailRepoT,
-        email_confirmation_repo: EmailConfirmationRepoT,
+        email_repo: EmailRepo,
+        email_confirmation_repo: EmailConfirmationRepo,
         key_generator: StringIDGeneratorT,
-        password_hasher: GeneratePasswordHashAwaitableT,
-        password_verifier: VerifyPasswordHashAwaitableT,
     ):
         self.email_client = email_client
         self.email_repo = email_repo
         self.email_confirmation_repo = email_confirmation_repo
         self.key_generator = key_generator
-        self.password_hasher = password_hasher
-        self.password_verifier = password_verifier
 
-    async def send_email_verification(self, email: str) -> None:
-        """Generate verification key, send in database, and send email
+    async def send_email_verification(self, email: EmailModel, app: Litestar) -> None:
+        """Generate verification key, update database, and send email
 
         Args:
             email (str): the email to verify
 
         Raises:
             Exception: _description_
-        """        
+        """
 
-        # Query email model from database
-        email = await self.email_repo.get_one_or_none(email=email)
-        if not email:
-            raise Exception  # make application exception
+        # Prevent re-verification
+        if email.is_verified:
+            raise Exception
 
         # Generate verification key
-        key = self.key_generator(size=32)
-        key_hash: SecretStr = await self.password_hasher(key)
+        key = self.key_generator(size=EMAIL_VERIFICATION_KEY_LENGTH)
+        while await self.email_confirmation_repo.get_one_or_none(key=key) is not None:
+            key = self.key_generator(size=EMAIL_VERIFICATION_KEY_LENGTH)
 
         # Create database object
-        email_confirmation = EmailConfirmationModel(key_hash=key_hash)
+        email_confirmation = EmailConfirmationModel(key=key)
         email.confirmations = {email_confirmation}
 
         # Add to repo
         await self.email_repo.update(email)
         await self.email_confirmation_repo.add(email_confirmation)
 
-        # Send email
-        self.email_client
+        # Emit email
+        app.emit(
+            "emit_email",
+            receiver=email.email,
+            subject="Email verification - VerdanTech",
+            filepath=email_path("email_verification.html"),
+            username=email.user.username,
+            client_base_url=CLIENT_BASE_URL,
+            verification_url=EMAIL_VERIFICATION_CLIENT_URL + key,
+        )
 
-        await self.email_client.send_email(
-        receiver=email.email,
-        subject="Email verification - VerdanTech",
-        filepath="", #todo
-        username=email.user.username,
-        client_base_url=CLIENT_BASE_URL,
-        verification_url=EMAIL_VERIFICATION_CLIENT_URL+key,
-    )
+    async def verify_email(self, key: str) -> None:
+        """Verifies the email and updates user emails
 
+        Args:
+            key (str): the email verification key
 
-    async def verify_email():
-        # validate email
-        # update user object
+        """
 
-        pass
+        # Get email confirmation
+        email_confirmation = await self.email_confirmation_repo.get_one_or_none(key=key)
+        if email_confirmation is None:
+            return Exception  # todo
 
-    async def send_email_change_verification():
-        pass
+        # Validate email confirmation expiry
+        if email_confirmation.is_expired():
+            self.email_confirmation_repo.remove(email_confirmation)
+            return Exception  # todo
+
+        # Update verification on email model
+        email = email_confirmation.email
+        email.is_verified = True
+        await self.email_repo.update(email)
+
+        user_id = email.user.id
+        # Remove the oldest email
+        user_emails = await self.email_repo.remove_oldest_email(user_id=user_id)
+        # Update primary status on the rest of the emails
+        await self.email_repo.set_new_primary_email(
+            user_id=user_id, user_emails=user_emails
+        )
+
+        # Delete email confirmation
+        await self.email_confirmation_repo.remove(email_confirmation)
