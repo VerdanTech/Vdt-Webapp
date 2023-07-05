@@ -5,12 +5,12 @@ from litestar.di import Provide
 
 from verdantech_api.lib.crypt import provide_password_crypt
 from verdantech_api.lib.email import provide_email_client
-from verdantech_api.lib.utils import strid_generator
-from verdantech_api.lib.validators import (
+from verdantech_api.lib.field_validators import (
     provide_email_validator,
     provide_password_validator,
     provide_username_validator,
 )
+from verdantech_api.lib.utils import strid_generator
 
 from ..dependencies import (
     provide_email_confirmation_repo,
@@ -57,12 +57,6 @@ class UserController(Controller):
 
     @get(path=USER_CHECK_USERNAME_AVAILABLE_URL)
     async def user_check_username(user_service: UserService):
-        pass
-
-    async def user_check_email(user_service: UserService):
-        pass
-
-    async def user_check_password(user_service: UserService):
         pass
 
     @post(

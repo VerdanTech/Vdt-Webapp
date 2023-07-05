@@ -32,6 +32,7 @@ clean:
 	rm -rf verdantech_api.egg-info/
 	rm -rf reports/
 	rm .coverage
+	find . -type f -name '*.py[co]' -delete -o -type d -name __pycache__ -delete
 
 .PHONY: upgrade
 upgrade: upgrade-dependencies sync-dependencies clean

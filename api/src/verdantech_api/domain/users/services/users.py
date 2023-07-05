@@ -1,83 +1,16 @@
-from typing import TYPE_CHECKING, List, Tuple, TypeVar
+from typing import TYPE_CHECKING, Tuple
 
-from litestar.contrib.repository.filters import CollectionFilter, OrderBy
-from litestar.contrib.sqlalchemy.repository import SQLAlchemyAsyncRepository
 from litestar.exceptions import ValidationException
 from pydantic import SecretStr
 
-from verdantech_api.lib.validators.exceptions import ValidationError
-from verdantech_api.settings import USER_MAX_EMAILS
+from verdantech_api.lib.field_validators.errors import ValidationError
 
 if TYPE_CHECKING:
-    from verdantech_api.lib.validators.generic import Validator
     from verdantech_api.lib.crypt.generic import PasswordCrypt
 
 from ..models import EmailModel, UserModel
-
-UserRepoT = TypeVar("UserRepoT", bound="UserRepo")
-EmailRepoT = TypeVar("EmailRepoT", bound="EmailRepo")
-
-
-class UserRepo(SQLAlchemyAsyncRepository[UserModel]):
-    """SQLAlchemy Repository for the UserModel"""
-
-    model_type = UserModel
-
-
-class EmailRepo(SQLAlchemyAsyncRepository[EmailModel]):
-    """SQLAlchemy Repository for the EmailModel"""
-
-    model_type = EmailModel
-
-    async def remove_oldest_email(self, user_id: int) -> List[EmailModel]:
-        """Remove the user's email with the least magnitude
-        of the set_at attribute
-
-        Args:
-            user_id (int): ID of the user
-
-        Returns:
-            List[EmailModel]: the full list of user's emails
-                after the operation
-        """
-        # Get list of user's emails and remove the one with the oldest primary_at
-        user_emails, count = await self.list_and_count(
-            CollectionFilter(field_name="user_id", values=[user_id]),
-            OrderBy(field_name="set_at"),
-        )
-        if count > USER_MAX_EMAILS:
-            oldest_email = user_emails.pop[0]
-            await self.email_confirmation_repo.remove(oldest_email)
-
-        return user_emails
-
-    async def set_new_primary_email(
-        self, new_primary_email: EmailModel, user_emails: List[EmailModel]
-    ) -> None:
-        """Set exclusive primary status to new email
-
-        Args:
-            new_primary_email (EmailModel): the email to set as primary.
-                Must be contained in user_emails, and be verified
-            user_emails (List[EmailModel]): list of user's emails
-
-        Raises:
-            Exception: _description_
-        """
-        if not new_primary_email.is_verified:
-            raise Exception  # todo
-
-        if new_primary_email not in user_emails:
-            raise Exception  # todo
-
-        # Remove primary status for all emails except new one
-        for email in user_emails:
-            if email.id == new_primary_email.id:
-                email.set_primary_status()
-            else:
-                email.remove_primary_status()
-
-        await self.update_many(user_emails)
+from ..repos.email import EmailRepo
+from ..repos.user import UserRepo
 
 
 class UserService:
@@ -85,25 +18,16 @@ class UserService:
 
     user_repo: UserRepo
     email_repo: EmailRepo
-    email_validator: Validator
-    username_validator: Validator
-    password_validator: Validator
     password_crypt: PasswordCrypt
 
     def __init__(
         self,
         user_repo: UserRepo,
         email_repo: EmailRepo,
-        email_validator: Validator,
-        username_validator: Validator,
-        password_validator: Validator,
         password_crypt: PasswordCrypt,
     ) -> None:
         self.user_repo = user_repo
         self.email_repo = email_repo
-        self.email_validator = email_validator
-        self.username_validator = username_validator
-        self.password_validator = password_validator
         self.password_crypt = password_crypt
 
     async def create(
@@ -120,50 +44,34 @@ class UserService:
         Returns:
             UserModel: The added instance
         """
-        # Validate and normalize email
+        raised_exception = False
+        exception = {"detail": "Field validation failed", "extra": {}}
+
+        # Sanitize email
         try:
-            self.email_validator.validate(input=email)
+            email = self.email_repo.email_sanitize(email=email)
         except ValidationError as error:
-            raise ValidationException(
-                detail="Email validation failed", extra={"email": error}
-            )
+            raised_exception = True
+            exception["extra"]["email"] = str(error)
 
-        email = self.email_validator.normalize(input=email)
-        matched_email = await self.user_repo.get_one_or_none(email=email)
-        if matched_email:
-            raise ValidationException(
-                detail="Email validation failed",
-                extra={"email": "Email address already in use"},
-            )
-
-        # Validate username
+        # Sanitize username
         try:
-            self.username_validator.validate(input=username)
+            username = self.user_repo.username_sanitize(username=username)
         except ValidationError as error:
-            raise ValidationException(
-                detail="Username validation failed", extra={"username": error}
-            )
-        matched_username = await self.user_repo.get_one_or_none(username=username)
-        if matched_username:
-            raise ValidationException(
-                detail="Username validation failed",
-                extra={"username": "Username already in use"},
-            )
+            raised_exception = True
+            exception["extra"]["username"] = str(error)
 
-        # Validate password
-        if not password1 == password2:
-            raise ValidationException(
-                detail="Password validation failed",
-                extra={
-                    "password1": "Passwords do not match",
-                    "password2": "Passwords do not match",
-                },
-            )
+        # Sanitize password
         try:
-            self.password_validator.validate(password1)
-        except ValueError as error:
+            self.user_repo.password_sanitize(password1=password1, password2=password2)
+        except ValidationError as error:
+            raised_exception = True
+            exception["extra"]["password1"] = str(error)
+            exception["extra"]["password2"] = str(error)
+
+        if raised_exception:
             raise ValidationException(
-                detail="Password validation failed", extra={"password": error}
+                detail=exception["detail"], extra=exception["extra"]
             )
 
         # Generate hashed password
