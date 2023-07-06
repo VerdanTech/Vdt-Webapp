@@ -75,6 +75,10 @@ testpaths = ["tests/"]
 python_files = ["tests.py", "test_*.py", "*_test.py", "*_tests.py", "**/tests/*", "**/test/*"]
 markers = [
     "unit: Isolated tests of individual functions",
-    "endpoint: Integrated tests of one or multiple endpoints",
+    "integration: Integrated tests of one or multiple functions",
 ]
 asyncio_mode="auto"
+
+[tool.pytest.mark]
+". tests/unit/" = "unit"
+". tests/integration/" = "integration"

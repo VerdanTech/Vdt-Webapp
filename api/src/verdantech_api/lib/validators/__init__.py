@@ -29,7 +29,7 @@ def provide_username_validator():
         min_length_message="Requires minimum {message} characters",
         max_length_message="Allows minimum {message} characters",
         regex_message="Must fit pattern: {message}",
-        banned_input_message="Input not allowed",
+        banned_input_message="Username unsafe or offensive",
     )
 
 
@@ -43,5 +43,5 @@ def provide_password_validator():
         min_length_message="Requires minimum {message} characters",
         max_length_message="Allows minimum {message} characters",
         regex_message="Must fit pattern: {message}",
-        banned_input_message="Input not allowed",
+        banned_input_message="Choose a stronger password!",
     )

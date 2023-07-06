@@ -1,6 +1,7 @@
+import inspect
 from abc import ABC, abstractmethod
 from numbers import Real
-from typing import Dict, List, Pattern, TypeVar
+from typing import Callable, Dict, List, Pattern, TypeVar
 
 from .errors import ValidationError
 from .validations import (
@@ -25,6 +26,18 @@ class FieldValidator(ABC):
     def __init__(self):
         """Must set all variables required by ValidationMixins"""
 
+    def _get_base_validations(self) -> List[Callable[[Dict[str, str]], Dict[str, str]]]:
+        """Returns a callable validation function for every
+            ValidationMixin
+
+        Returns:
+            List[Callable]: a list of validation methods
+        """
+        methods = inspect.getmembers(FieldValidator, predicate=(inspect.ismethod))
+        return [
+            method(1) for method in methods if method(0).endswith("base_validation")
+        ]
+
     def _validate(self, input: GenericInputType) -> Dict[str, str]:
         """Validates the input against base validation logis
 
@@ -39,10 +52,8 @@ class FieldValidator(ABC):
         error = {}
 
         # Base validation logic here
-        for base in FieldValidator.__bases__:
-            if hasattr(base, "base_validation"):
-                base_validation_method = getattr(base, "base_validation")
-                error = base_validation_method(self, input, error)
+        for validation_method in self._get_base_validations():
+            error = validation_method(error)
 
         return error
 

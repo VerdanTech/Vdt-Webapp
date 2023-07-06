@@ -13,7 +13,9 @@ class ValidationMixin(ABC):
     # error_message: str
 
     @abstractmethod
-    def base_validation(self, input: Any, error: Dict[str, str]) -> Dict[str, str]:
+    def validation_base_validation(
+        self, input: Any, error: Dict[str, str]
+    ) -> Dict[str, str]:
         """Validate input against self.validate_against
 
         Args:
@@ -42,8 +44,10 @@ class MinSizeValidationMixin(ValidationMixin):
     min_size: int
     min_size_message: str
 
-    def base_validation(self, input: Real, error: Dict[str, str]) -> Dict[str, str]:
-        if input < self.min_size:
+    def min_size_base_validation(
+        self, input: Real, error: Dict[str, str]
+    ) -> Dict[str, str]:
+        if self.min_size and input < self.min_size:
             error[self.name] = self.error_message.format(message=self.min_size_message)
         return error
 
@@ -55,8 +59,10 @@ class MaxSizeValidationMixin(ValidationMixin):
     max_size: int
     max_size_message: str
 
-    def base_validation(self, input: Real, error: Dict[str, str]) -> Dict[str, str]:
-        if input > self.max_size:
+    def max_size_base_validation(
+        self, input: Real, error: Dict[str, str]
+    ) -> Dict[str, str]:
+        if self.max_size and input > self.max_size:
             error[self.name] = self.error_message.format(message=self.max_size_message)
         return error
 
@@ -68,8 +74,10 @@ class MinLengthValidationMixin(ValidationMixin):
     min_length: int
     min_length_message: str
 
-    def base_validation(self, input: str, error: Dict[str, str]) -> Dict[str, str]:
-        if len(input) < self.min_length:
+    def min_length_base_validation(
+        self, input: str, error: Dict[str, str]
+    ) -> Dict[str, str]:
+        if self.min_length and len(input) < self.min_length:
             error[self.name] = self.error_message.format(
                 message=self.min_length_message
             )
@@ -83,8 +91,10 @@ class MaxLengthValidationMixin(ValidationMixin):
     max_length: int
     max_length_message: str
 
-    def base_validation(self, input: str, error: Dict[str, str]) -> Dict[str, str]:
-        if len(input) > self.max_length:
+    def max_length_base_validation(
+        self, input: str, error: Dict[str, str]
+    ) -> Dict[str, str]:
+        if self.max_length and len(input) > self.max_length:
             error[self.name] = self.error_message.format(
                 message=self.max_length_message
             )
@@ -98,8 +108,10 @@ class RegexValidationMixin(ValidationMixin):
     regex: Pattern
     regex_message: str
 
-    def base_validation(self, input: str, error: Dict[str, str]) -> Dict[str, str]:
-        if not re.match(self.regex, input):
+    def regex_base_validation(
+        self, input: str, error: Dict[str, str]
+    ) -> Dict[str, str]:
+        if self.regex and not re.match(self.regex, input):
             error[self.name] = self.error_message.format(message=self.regex_message)
         return error
 
@@ -113,9 +125,11 @@ class BannedInputValidationMixin(ValidationMixin):
     banned_input_message: str
     normalize_banned_input_validation: bool
 
-    def base_validation(
+    def banned_input_base_validation(
         self, input: Union[Real, str], error: Dict[str, str]
     ) -> Dict[str, str]:
+        if not self.blacklist:
+            return error
         banned_inputs = set(self.blacklist) - set(self.whitelist)
         if isinstance(input, str):
             if self.normalize_banned_input_validation:
