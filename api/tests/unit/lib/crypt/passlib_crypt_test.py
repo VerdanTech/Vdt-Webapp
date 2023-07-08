@@ -1,6 +1,7 @@
 import pytest
 from pydantic import SecretBytes, SecretStr
 
+
 class TestPasslibCrypt:
     async def test_get_password_hash(self, passlib_password_crypt) -> None:
         """Test that the encryption key is formatted correctly."""
@@ -19,7 +20,8 @@ class TestPasslibCrypt:
             ("SuperS3cret123456789!!", "Invalid!!", False),
         ),
     )
-    async def test_verify_password(self,
+    async def test_verify_password(
+        self,
         passlib_password_crypt,
         valid_password: str,
         tested_password: str,

@@ -45,7 +45,11 @@ build: init-venv sync-dependencies
 
 .PHONY: run
 run:
-	$(BIN)/$(PY) manage.py runserver --settings=verdantech_api.settings.development
+	$(BIN)/litestar --app src.verdantech_api.app:create_app run
+
+.PHONY: schema
+schema:
+	$(BIN)/litestar openapi schema --output schema.yaml
 
 .PHONY: lint
 lint:

@@ -6,10 +6,10 @@ from email.mime.text import MIMEText
 from typing import Any, Dict
 
 import html2text
-from aiofiles import open as async_open
+from src.verdantech_api.lib.utils import read_file_async
 
 
-class AsyncEmailClient(ABC):
+class AsyncEmailClient:
     client_hostname: str
     client_port: int
     client_username: str
@@ -30,12 +30,12 @@ class AsyncEmailClient(ABC):
         self.client_password = client_password
         self.sender = sender
 
-    async def gather_html(self, filepath: str, **kwargs: Dict[str, Any]) -> str:
-        """Read html email at filepath and replace templated variables in {{}}
-            with kwargs
+    def template_html(self, html_content: str, **kwargs: Dict[str, Any]) -> str:
+        """Replace templated variables in {{}} with kwargs
 
         Args:
             filepath (str): The path of the email html document
+            kwargs (Dict[str, Any]): arguments to insert into html
 
         Raises:
             ValueError: Raised if not all templated valued provided
@@ -44,9 +44,22 @@ class AsyncEmailClient(ABC):
         Returns:
             str: the html string
         """
-        # Open file with asyncio
-        with async_open(filepath, "r") as file:
-            html_content = await file.read()
+
+        # Find all templated values in html_content
+        templated_vars = set(re.findall(r"{{\w+}}", html_content))
+
+        # Remove the {{ and }} from each templated variable to get just the names
+        templated_var_names = {var[2:-2] for var in templated_vars}
+
+        # Check if all keys in kwargs match a templated variable name in html_content
+        for key in kwargs.keys():
+            if key not in templated_var_names:
+                raise ValueError(
+                    f"""
+                    Error while constructing email: the argument {key} 
+                    does not match any templated variable in the html content
+                    """
+                )
 
         # Replace templated values with kwargs
         for key, value in kwargs.items():
@@ -55,7 +68,7 @@ class AsyncEmailClient(ABC):
             )
 
         # Check if there are any un-replaced templated variables left
-        leftover_vars = re.findall("{{\w+}}", html_content)
+        leftover_vars = re.findall(r"{{\w+}}", html_content)
         if leftover_vars:
             leftover_vars = ", ".join(leftover_vars)
             raise ValueError(
@@ -125,7 +138,8 @@ class AsyncEmailClient(ABC):
             subject (str): subject line of the message
         """
 
-        html_content = await self.gather_html(filepath=filepath, **kwargs)
+        html_content = await read_file_async(filepath=filepath)
+        html_content = self.template_html(html_content=html_content, **kwargs)
         plain_text_content = self.html_to_plain_text(html_content)
         message = self.compile_message(
             sender=self.sender,
@@ -136,7 +150,6 @@ class AsyncEmailClient(ABC):
         )
         await self.send(message=message)
 
-    @abstractmethod
     async def send(self, message: MIMEMultipart) -> None:
         """Send the email using the client
 
@@ -147,4 +160,4 @@ class AsyncEmailClient(ABC):
             username (str): client username
             password (str): client password
         """
-        pass
+        return

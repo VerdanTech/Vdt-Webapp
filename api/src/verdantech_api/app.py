@@ -1,6 +1,6 @@
 from litestar import Litestar
 
-from verdantech_api.settings import app_config
+from src.verdantech_api.settings import app_config
 
 
 def create_app() -> Litestar:

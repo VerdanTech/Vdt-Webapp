@@ -70,7 +70,7 @@ skip_glob = ["**/migrations/*"]
 
 [tool.pytest.ini_options]
 addopts = "-vv -x -rx"
-pythonpath = ". tests"
+pythonpath = ". src/verdantech_api tests"
 testpaths = ["tests/"]
 python_files = ["tests.py", "test_*.py", "*_test.py", "*_tests.py", "**/tests/*", "**/test/*"]
 markers = [

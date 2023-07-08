@@ -15,13 +15,13 @@ from decouple import Csv, config
 # ALLOWED HOSTS SETTINGS
 # ======================================
 
-ALLOWED_HOSTS: List[str] = config("ALLOWED_HOSTS", cast=Csv(), default=".localhost")
+LITESTAR_ALLOWED_HOSTS: List[str] = config("ALLOWED_HOSTS", cast=Csv(), default=".localhost")
 
 # ======================================
 # CORS SETTINGS
 # ======================================
 
-ALLOWED_ORIGINS: List[str] = config("ALLOWED_ORIGINS", cast=Csv(), default="")
+LITESTAR_ALLOW_ORIGINS: List[str] = config("ALLOWED_ORIGINS", cast=Csv(), default="")
 
 # ======================================
 # CSRF SETTINGS
@@ -31,8 +31,8 @@ ALLOWED_ORIGINS: List[str] = config("ALLOWED_ORIGINS", cast=Csv(), default="")
 # OPENAPI SETTINGS
 # ======================================
 
-OPENAPI_TITLE: str = config("OPENAPI_TITLE", cast=str, default="verdantech_api")
-OPENAPI_VERSION: str = config("OPENAPI_VERSION", cast=str)
+OPENAPI_TITLE: str = "verdantech_api"
+OPENAPI_VERSION: str = "v0.0.1"
 OPENAPI_DOCUMENTATION_URL: str = "https://github.com/nathanielarking/VerdanTech"
 OPENAPI_LICENSE: str = "GPL-3.0-or-later"
 
@@ -58,7 +58,7 @@ def email_path(*paths: str) -> Path:
 # ======================================
 
 USING_HTTPS: bool = config("USING_HTTPS", default=False, cast=bool)
-BASE_DOMAIN: str = config("BASE_DOMAIN", cast=bool)
+BASE_DOMAIN: str = config("BASE_DOMAIN", cast=str, default="127.0.0.1")
 API_URL_BASE: str = "api/"
 
 # ======================================

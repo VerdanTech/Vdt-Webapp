@@ -1,4 +1,4 @@
-from verdantech_api import settings
+from src.verdantech_api import settings
 
 from .aiosmtplib import aioSMTPLibEmailClient
 
