@@ -2,6 +2,7 @@ from pathlib import Path
 from typing import List
 
 from decouple import Csv, config
+from litestar.logging import StructLoggingConfig
 
 # ==============================================================================
 # LITESTAR SETTINGS
@@ -15,7 +16,9 @@ from decouple import Csv, config
 # ALLOWED HOSTS SETTINGS
 # ======================================
 
-LITESTAR_ALLOWED_HOSTS: List[str] = config("ALLOWED_HOSTS", cast=Csv(), default=".localhost")
+LITESTAR_ALLOWED_HOSTS: List[str] = config(
+    "ALLOWED_HOSTS", cast=Csv(), default=".localhost"
+)
 
 # ======================================
 # CORS SETTINGS
@@ -26,6 +29,12 @@ LITESTAR_ALLOW_ORIGINS: List[str] = config("ALLOWED_ORIGINS", cast=Csv(), defaul
 # ======================================
 # CSRF SETTINGS
 # ======================================
+
+# ======================================
+# LOGGING SETTINGS
+# ======================================
+
+logging_config = StructLoggingConfig()
 
 # ======================================
 # OPENAPI SETTINGS

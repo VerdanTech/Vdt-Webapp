@@ -17,5 +17,9 @@ def generic_async_client():
 @pytest.fixture
 def aiosmtplib_client():
     return aioSMTPLibEmailClient(
-        hostname="", port=0, username="", password="", sender=""
+        client_hostname="",
+        client_port=0,
+        client_username="",
+        client_password="",
+        sender="",
     )

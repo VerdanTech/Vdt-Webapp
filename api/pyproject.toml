@@ -10,6 +10,7 @@ authors = [
 ]
 dependencies = [
     "litestar[sqlalchemy, cli]",
+    "structlog",
     "passlib",
     "argon2_cffi",
     "aiosmtplib",

@@ -1,8 +1,8 @@
 from email_validator import validate_email
 from email_validator.exceptions_types import EmailNotValidError
-from generic.validators import StringFieldValidator
 
 from ..generic.errors import ValidationError
+from ..generic.validators import StringFieldValidator
 
 
 class EmailValidator(StringFieldValidator):

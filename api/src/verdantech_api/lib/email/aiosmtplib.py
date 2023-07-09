@@ -1,6 +1,6 @@
 from email.mime.multipart import MIMEMultipart
 
-from aiosmtplib import send
+from aiosmtplib import send as aiosmtp_send
 from aiosmtplib.errors import SMTPException
 from litestar.exceptions import InternalServerException
 
@@ -30,7 +30,7 @@ class aioSMTPLibEmailClient(AsyncEmailClient):
                 protocal raises an exception
         """
         try:
-            await send(
+            await aiosmtp_send(
                 message,
                 hostname=self.client_hostname,
                 port=client_port,

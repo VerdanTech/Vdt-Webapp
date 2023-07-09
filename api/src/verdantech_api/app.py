@@ -1,5 +1,4 @@
 from litestar import Litestar
-
 from src.verdantech_api.settings import app_config
 
 

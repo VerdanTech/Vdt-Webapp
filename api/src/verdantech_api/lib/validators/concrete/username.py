@@ -1,4 +1,4 @@
-from generic.validators import StringFieldValidator
+from ..generic.validators import StringFieldValidator
 
 
 class UsernameValidator(StringFieldValidator):

@@ -1,41 +1,43 @@
 import inspect
-from abc import ABC, abstractmethod
 from numbers import Real
-from typing import Callable, Dict, List, Pattern, TypeVar
+from typing import Callable, Dict, List, Pattern, TypeVar, Union
 
 from .errors import ValidationError
 from .validations import (
-    BannedInputValidationMixin,
-    MaxLengthValidationMixin,
-    MaxSizeValidationMixin,
-    MinLengthValidationMixin,
-    MinSizeValidationMixin,
-    RegexValidationMixin,
+    BannedInputValidation,
+    MaxLengthValidation,
+    MaxSizeValidation,
+    MinLengthValidation,
+    MinSizeValidation,
+    RegexValidation,
 )
 
 GenericInputType = TypeVar("GenericInputType")
 
 
-class FieldValidator(ABC):
+class FieldValidator:
     """Generic class for implementing validations. Can be combined
     with ValidationMixins for base behavior."""
 
     field_name: str = "generic_field"
 
-    @abstractmethod
     def __init__(self):
         """Must set all variables required by ValidationMixins"""
 
     def _get_base_validations(self) -> List[Callable[[Dict[str, str]], Dict[str, str]]]:
         """Returns a callable validation function for every
-            ValidationMixin
+            Validation class
 
         Returns:
             List[Callable]: a list of validation methods
         """
-        methods = inspect.getmembers(FieldValidator, predicate=(inspect.ismethod))
+        validation_classes = inspect.getmembers(
+            self.__class__, predicate=(inspect.isclass)
+        )
         return [
-            method(1) for method in methods if method(0).endswith("base_validation")
+            validation_class[1].base_validation
+            for validation_class in validation_classes
+            if validation_class[0].endswith("Validation")
         ]
 
     def _validate(self, input: GenericInputType) -> Dict[str, str]:
@@ -68,7 +70,6 @@ class FieldValidator(ABC):
             raise ValidationError(error)
         return True
 
-    @abstractmethod
     def normalize(self, input: GenericInputType) -> GenericInputType:
         """Convert input to a normalized form
 
@@ -83,58 +84,73 @@ class FieldValidator(ABC):
 
 class NumberFieldValidator(
     FieldValidator,
-    MinSizeValidationMixin,
-    MaxSizeValidationMixin,
-    BannedInputValidationMixin,
 ):
     field_name = "generic_number_field"
+
+    min_size_validation: Union[MinSizeValidation, None] = None
+    max_size_validation: Union[MinSizeValidation, None] = None
+    banned_input_validation: Union[MinSizeValidation, None] = None
 
     def __init__(
         self,
         min_size: int = None,
+        min_size_message: str = "Requires minimum {validate_against}",
         max_size: int = None,
-        blacklist: List[Real] = [],
-        whitelist: List[Real] = [],
-        min_size_message: str = "Requires minimum {message}",
-        max_size_message: str = "Allows maximum {message}",
+        max_size_message: str = "Allows maximum {validate_against}",
+        banned_inputs: List[Real] = [],
         banned_input_message: str = "Input not allowed",
     ):
-        self.min_size = min_size
-        self.max_size = max_size
-        self.blacklist = blacklist
-        self.whitelist = whitelist
-        self.min_size_message = min_size_message
-        self.max_size_message = max_size_message
-        self.banned_input_message = banned_input_message
+        if min_size:
+            self.min_size_validation = MinSizeValidation(
+                validate_against=min_size, error_message=min_size_message
+            )
+        if max_size:
+            self.max_size_validation = MaxSizeValidation(
+                validate_against=max_size, error_message=max_size_message
+            )
+        if banned_inputs:
+            self.banned_input_validation = BannedInputValidation(
+                validate_against=banned_inputs, error_message=banned_input_message
+            )
 
 
 class StringFieldValidator(
     FieldValidator,
-    MinLengthValidationMixin,
-    MaxLengthValidationMixin,
-    RegexValidationMixin,
-    BannedInputValidationMixin,
 ):
     field_name = "generic_string_field"
+
+    min_length_validation: Union[MinLengthValidation, None] = None
+    max_length_validation: Union[MaxLengthValidation, None] = None
+    regex_validation: Union[RegexValidation, None] = None
+    banned_input_validation: Union[BannedInputValidation, None] = None
 
     def __init__(
         self,
         min_length: int = None,
+        min_length_message: str = "Requires minimum {validate_against} characters",
         max_length: int = None,
+        max_length_message: str = "Allows minimum {validate_against} characters",
         regex: Pattern = None,
-        blacklist: List[str] = [],
-        whitelist: List[str] = [],
-        min_length_message: str = "Requires minimum {message} characters",
-        max_length_message: str = "Allows minimum {message} characters",
-        regex_message: str = "Must fit pattern: {message}",
+        regex_message: str = "Must fit pattern: {validate_against}",
+        banned_inputs: List[str] = None,
         banned_input_message: str = "Input not allowed",
+        normalize_banned_input_validation: bool = False,
     ):
-        self.min_length = min_length
-        self.max_length = max_length
-        self.regex = regex
-        self.blacklist = blacklist
-        self.whitelist = whitelist
-        self.min_length_message = min_length_message
-        self.max_length_message = max_length_message
-        self.regex_message = regex_message
-        self.banned_input_message = banned_input_message
+        if min_length:
+            self.min_length_validation = MinLengthValidation(
+                validate_against=min_length, error_message=min_length_message
+            )
+        if max_length:
+            self.max_length_validation = MaxLengthValidation(
+                validate_against=max_length, error_message=max_length_message
+            )
+        if regex:
+            self.regex_validation = RegexValidation(
+                validate_against=regex, error_message=regex_message
+            )
+        if banned_inputs:
+            self.banned_input_validation = BannedInputValidation(
+                validate_against=banned_inputs,
+                error_message=banned_input_message,
+                normalize_banned_input_validation=normalize_banned_input_validation,
+            )

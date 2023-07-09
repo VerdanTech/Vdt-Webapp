@@ -1,4 +1,4 @@
-from verdantech_api import settings
+from src.verdantech_api import settings
 
 from .concrete.email import EmailValidator
 from .concrete.password import PasswordValidator
@@ -12,9 +12,9 @@ def provide_email_validator():
         regex=None,
         blacklist=[],
         whitelist=[],
-        min_length_message="Requires minimum {message} characters",
-        max_length_message="Allows minimum {message} characters",
-        regex_message="Must fit pattern: {message}",
+        min_length_message="Requires minimum {validate_against} characters",
+        max_length_message="Allows minimum {validate_against} characters",
+        regex_message="Must fit pattern: {validate_against}",
         banned_input_message="Input not allowed",
     )
 
@@ -26,9 +26,9 @@ def provide_username_validator():
         regex=None,
         blacklist=[],
         whitelist=[],
-        min_length_message="Requires minimum {message} characters",
-        max_length_message="Allows minimum {message} characters",
-        regex_message="Must fit pattern: {message}",
+        min_length_message="Requires minimum {validate_against} characters",
+        max_length_message="Allows minimum {validate_against} characters",
+        regex_message="Must fit pattern: {validate_against}",
         banned_input_message="Username unsafe or offensive",
     )
 
@@ -40,8 +40,8 @@ def provide_password_validator():
         regex=None,
         blacklist=[],
         whitelist=[],
-        min_length_message="Requires minimum {message} characters",
-        max_length_message="Allows minimum {message} characters",
-        regex_message="Must fit pattern: {message}",
+        min_length_message="Requires minimum {validate_against} characters",
+        max_length_message="Allows minimum {validate_against} characters",
+        regex_message="Must fit pattern: {validate_against}",
         banned_input_message="Choose a stronger password!",
     )

@@ -1,142 +1,168 @@
 import re
-from abc import ABC, abstractmethod
 from numbers import Real
-from typing import Any, Dict, Pattern, Union
+from typing import Any, Dict, List, Pattern, Type, TypeVar, Union
+
+input_type = TypeVar("input_type")
 
 
-class ValidationMixin(ABC):
-    """Base validation functionality. Corresponding validate_against and
-    error_message must be set in Validator class __init__"""
+class Validation:
+    """Base validation functionality. Only base_validation
+    must be replaced in concrete classes"""
 
     name = "GenericValidation"
-    # validate_against: Any
-    # error_message: str
+    input_type: Type = input_type
+    validate_against_type: Type = Any
+    validate_against: validate_against_type
+    error_message: str
 
-    @abstractmethod
-    def validation_base_validation(
-        self, input: Any, error: Dict[str, str]
+    def __init__(self, validate_against: Any, error_message: str):
+        self.validate_against = validate_against
+        self.error_message = error_message
+
+    def check_type(self, input: Any, expected_type: Type = input_type):
+        """Ensure the input type is correct
+
+        Args:
+            input (Any): the input to check
+
+        Raises:
+            ValueError: raised if input type not input_type
+        """
+        if not isinstance(input, expected_type):
+            raise ValueError(
+                f"""Validator {self.name}: 
+                expected input type {self.input_type}, 
+                got {type(input)}"""
+            )
+
+    def base_validation(
+        self, input: input_type, error: Dict[str, str]
     ) -> Dict[str, str]:
         """Validate input against self.validate_against
 
         Args:
             input (Any): Input to validate
             error (dict[str, str]): An error dict containing
-                ValidationMixin class name and error_message for
+                Validation class name and error_message for
                 each error that has been raised so far in the flow
-
-        Raises:
-            ValueError: if an improper type is passed in
 
         Returns:
             Dict[str, str]: the input error dict, with any new errors
         """
-        # if input == self.validate_against:
-        # error[self.name] = self.error_message.format(
-        # message=self.validate_against_message
-        # )
+        self.check_type(input=input, expected_type=input_type)
+        if not self._base_validation(input=input):
+            error[self.name] = self.error_message.format(
+                validate_against=self.validate_against
+            )
         return error
 
+    def _base_validation(self, input: input_type) -> bool:
+        """Validate input against self.validate_against
 
-class MinSizeValidationMixin(ValidationMixin):
+        Args:
+            input (input_type): the input to validate
+
+        Returns:
+            bool: the status of the validation
+        """
+        return False
+
+
+class MinSizeValidation(Validation):
     """Minimum size validation functionality"""
 
     name = "MinSize"
-    min_size: int
-    min_size_message: str
+    input_type = Real
+    validate_against_type = Real
 
-    def min_size_base_validation(
-        self, input: Real, error: Dict[str, str]
-    ) -> Dict[str, str]:
-        if self.min_size and input < self.min_size:
-            error[self.name] = self.error_message.format(message=self.min_size_message)
-        return error
+    def _base_validation(self, input: Real) -> bool:
+        if input < self.validate_against:
+            return False
+        else:
+            return True
 
 
-class MaxSizeValidationMixin(ValidationMixin):
+class MaxSizeValidation(Validation):
     """Maximum size validation functionality"""
 
     name = "MaxSize"
-    max_size: int
-    max_size_message: str
+    input_type = Real
+    validate_against_type = Real
 
-    def max_size_base_validation(
-        self, input: Real, error: Dict[str, str]
-    ) -> Dict[str, str]:
-        if self.max_size and input > self.max_size:
-            error[self.name] = self.error_message.format(message=self.max_size_message)
-        return error
+    def _base_validation(self, input: Real) -> bool:
+        if input > self.validate_against:
+            return False
+        else:
+            return True
 
 
-class MinLengthValidationMixin(ValidationMixin):
+class MinLengthValidation(Validation):
     """Minimum length validation functionality"""
 
     name = "MinLength"
-    min_length: int
-    min_length_message: str
+    input_type = str
+    validate_against_type = int
 
-    def min_length_base_validation(
-        self, input: str, error: Dict[str, str]
-    ) -> Dict[str, str]:
-        if self.min_length and len(input) < self.min_length:
-            error[self.name] = self.error_message.format(
-                message=self.min_length_message
-            )
-        return error
+    def _base_validation(self, input: str) -> bool:
+        if len(input) < self.validate_against:
+            return False
+        else:
+            return True
 
 
-class MaxLengthValidationMixin(ValidationMixin):
+class MaxLengthValidation(Validation):
     """Maximum length validation functionality"""
 
     name = "MaxLength"
-    max_length: int
-    max_length_message: str
+    input_type = str
+    validate_against_type = int
 
-    def max_length_base_validation(
-        self, input: str, error: Dict[str, str]
-    ) -> Dict[str, str]:
-        if self.max_length and len(input) > self.max_length:
-            error[self.name] = self.error_message.format(
-                message=self.max_length_message
-            )
-        return error
+    def _base_validation(self, input: str) -> bool:
+        if len(input) > self.validate_against:
+            return False
+        else:
+            return True
 
 
-class RegexValidationMixin(ValidationMixin):
+class RegexValidation(Validation):
     """Regex pattern validation functionality"""
 
     name = "RegexPattern"
-    regex: Pattern
-    regex_message: str
+    input_type = str
+    validate_against_type = Pattern
 
-    def regex_base_validation(
-        self, input: str, error: Dict[str, str]
-    ) -> Dict[str, str]:
-        if self.regex and not re.match(self.regex, input):
-            error[self.name] = self.error_message.format(message=self.regex_message)
-        return error
+    def _base_validation(self, input: str) -> bool:
+        if not re.match(self.validate_against, input):
+            return False
+        else:
+            return True
 
 
-class BannedInputValidationMixin(ValidationMixin):
+class BannedInputValidation(Validation):
     """Banned input validation functionality"""
 
     name = "BannedInput"
-    blacklist: list[Union[Real, str]]
-    whitelist: list[Union[Real, str]]
-    banned_input_message: str
+    input_type = Union[Real, str]
+    validate_against_type = [Union[List[Real], List[str]]]
     normalize_banned_input_validation: bool
 
-    def banned_input_base_validation(
-        self, input: Union[Real, str], error: Dict[str, str]
-    ) -> Dict[str, str]:
-        if not self.blacklist:
-            return error
-        banned_inputs = set(self.blacklist) - set(self.whitelist)
+    def __init__(
+        self,
+        validate_against: Any,
+        error_message: str,
+        normalize_banned_input_validation: bool = False,
+    ):
+        super().__init__(validate_against=validate_against, error_message=error_message)
+        self.normalize_banned_input_validation = normalize_banned_input_validation
+
+    def _base_validation(self, input: Union[Real, str]) -> bool:
         if isinstance(input, str):
             if self.normalize_banned_input_validation:
                 input = input.lower()
-                banned_inputs = [banned_input.lower() for banned_input in banned_inputs]
-        if input in banned_inputs:
-            error[self.name] = self.error_message.format(
-                message=self.banned_input_message
-            )
-        return error
+                self.validate_against = [
+                    banned_input.lower() for banned_input in self.validate_against
+                ]
+        if input in self.validate_against:
+            return False
+        else:
+            return True

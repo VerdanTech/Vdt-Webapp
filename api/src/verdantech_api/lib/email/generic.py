@@ -1,6 +1,6 @@
 import html
 import re
-from abc import ABC, abstractmethod
+from builtins import NotImplementedError
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from typing import Any, Dict
@@ -119,8 +119,8 @@ class AsyncEmailClient:
         message["To"] = receiver
         message["Subject"] = subject
 
-        plain_text_message = MIMEText(plain_text_message)
-        html_message = MIMEText(html_message)
+        plain_text_message = MIMEText(plain_text_message, "plain", "utf-8")
+        html_message = MIMEText(html_message, "html", "utf-8")
         message.attach(plain_text_message)
         message.attach(html_message)
 
@@ -160,4 +160,4 @@ class AsyncEmailClient:
             username (str): client username
             password (str): client password
         """
-        return
+        raise NotImplementedError

@@ -1,6 +1,9 @@
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
 from typing import Any, ContextManager, Dict
 
 import pytest
+from pytest_mock import MockerFixture
 from src.verdantech_api.lib.email.generic import AsyncEmailClient
 
 
@@ -69,14 +72,117 @@ class TestGenericAsyncClient:
             error_context (ContextManager): An instance of nullcontext() if
                 error_context = None and pytest.raises(error_context) otherwise
                 See: tests/conftest.py
-            generic_async_client (AsyncEmailClient): The client to test on
+            generic_async_client (AsyncEmailClient): provider of a AsyncEmailClient
+                to test on
         """
         with error_context:
             html = generic_async_client.template_html(html_content=input_html, **kwargs)
             assert html == expected_output
 
-    # def test_html_to_plain_test(self, generic_async_client):
-    # pass
+    @pytest.mark.parametrize(["html", "expected_output"], [("<p>Test</p>", "Test")])
+    def test_html_to_plain(
+        self,
+        html: str,
+        expected_output: str,
+        generic_async_client: AsyncEmailClient,
+        mocker: MockerFixture,
+    ):
+        """Ensure that the html to plain text conversion function
+            properly calls the conversion function it depends on
 
-    # def compile_message(self, generic_async_client):
-    # pass
+        Args:
+            html (str): the input html
+            expected_output (str): the expected output html
+            generic_async_client (AsyncEmailClient): provider of a AsyncEmailClient
+                to test on
+            mocker (MockerFixture): pytest-mock
+        """
+        mocked_processor = mocker.patch(
+            "src.verdantech_api.lib.email.generic.html2text.HTML2Text.handle",
+            return_value=expected_output,
+        )
+        output = generic_async_client.html_to_plain_text(html_content=html)
+        mocked_processor.assert_called_once()
+        assert output == expected_output
+
+    @pytest.mark.parametrize(
+        ["sender", "receiver", "subject", "plain_text_message", "html_message"],
+        [
+            (
+                "sender@example.com",
+                "receiver@example.com",
+                "Test Subject",
+                "Plain text message content",
+                "<p>HTML message content</p>",
+            )
+        ],
+    )
+    def test_compile_message(
+        self,
+        sender: str,
+        receiver: str,
+        subject: str,
+        plain_text_message: str,
+        html_message: str,
+        generic_async_client: AsyncEmailClient,
+    ):
+        """Ensure the MIMEMultipart message is compiled correctly
+
+        Args:
+            sender (str): sender address of the message
+            receiver (str): recipient address of the message
+            subject (str): subject line of the message
+            plain_text_message (str): message in plain text
+            html_message (str): message in html form
+            generic_async_client (AsyncEmailClient): provider of a AsyncEmailClient
+                to test on
+        """
+        message = generic_async_client.compile_message(
+            sender=sender,
+            receiver=receiver,
+            subject=subject,
+            plain_text_message=plain_text_message,
+            html_message=html_message,
+        )
+        parts = message.get_payload()
+        plain_text_part = parts[0]
+        html_part = parts[1]
+
+        assert isinstance(message, MIMEMultipart)
+        assert message["From"] == sender
+        assert message["To"] == receiver
+        assert message["Subject"] == subject
+
+        assert len(parts) == 2
+
+        assert isinstance(plain_text_part, MIMEText)
+        assert plain_text_part.get_content_type() == "text/plain"
+        assert isinstance(html_part, MIMEText)
+        assert html_part.get_content_type() == "text/html"
+
+    async def test_compile_and_send(
+        self, generic_async_client: AsyncEmailClient, mocker: MockerFixture
+    ):
+        """Ensure that the compile_and_send method sucessfully
+            calls all dependent methods
+
+        Args:
+            generic_async_client (AsyncEmailClient): provider of a AsyncEmailClient
+                to test on
+            mocker (MockerFixture): pytest-mock
+        """
+        file_mock = mocker.patch("src.verdantech_api.lib.email.generic.read_file_async")
+        template_mock = mocker.patch.object(generic_async_client, "template_html")
+        plaintext_mock = mocker.patch.object(generic_async_client, "html_to_plain_text")
+        compile_mock = mocker.patch.object(generic_async_client, "compile_message")
+        send_mock = mocker.patch.object(generic_async_client, "send")
+
+        await generic_async_client.compile_and_send(
+            filepath="", receiver="", subject=""
+        )
+
+        file_mock.assert_called_once()
+        template_mock.assert_called_once()
+        plaintext_mock.assert_called_once()
+        compile_mock.assert_called_once()
+        send_mock.assert_called_once()

@@ -1,6 +1,6 @@
 from decouple import config
-from litestar.config.app import AppConfig
 from litestar.config.allowed_hosts import AllowedHostsConfig
+from litestar.config.app import AppConfig
 from litestar.config.cors import CORSConfig
 from litestar.contrib.sqlalchemy.plugins import SQLAlchemyAsyncConfig, SQLAlchemyPlugin
 
@@ -11,12 +11,14 @@ from litestar.contrib.sqlalchemy.plugins import SQLAlchemyAsyncConfig, SQLAlchem
 environment = config("ENVIRONMENT", default="DEV", cast=str)
 
 if environment == "DEV":
-    from .dev import * # noqa
+    from .dev import *  # noqa
 elif environment == "PROD":
-    from .prod import * # noqa
+    from .prod import *  # noqa
 
 
-sqlalchemy_config = SQLAlchemyAsyncConfig(connection_string="sqlite+aiosqlite:///db.sqlite")
+sqlalchemy_config = SQLAlchemyAsyncConfig(
+    connection_string="sqlite+aiosqlite:///db.sqlite"
+)
 
 allowed_hosts_config = AllowedHostsConfig(allowed_hosts=LITESTAR_ALLOWED_HOSTS)
 
@@ -24,4 +26,4 @@ cors_config = CORSConfig(allow_origins=LITESTAR_ALLOW_ORIGINS)
 
 # csrf_config = CSRFConfig()
 
-app_config = AppConfig()
+app_config = AppConfig(logging_config=logging_config)
