@@ -10,12 +10,6 @@ from src.verdantech_api.lib.utils import read_file_async
 
 
 class AsyncEmailClient:
-    client_hostname: str
-    client_port: int
-    client_username: str
-    client_password: str
-    sender: str
-
     def __init__(
         self,
         client_hostname: str,

@@ -2,10 +2,10 @@ from email_validator import validate_email
 from email_validator.exceptions_types import EmailNotValidError
 
 from ..generic.errors import ValidationError
-from ..generic.validators import StringFieldValidator
+from ..generic.validators import FieldValidator
 
 
-class EmailValidator(StringFieldValidator):
+class EmailValidator(FieldValidator):
     field_name: str = "Email"
     normalized: str
 
@@ -22,7 +22,7 @@ class EmailValidator(StringFieldValidator):
 
         # Raise errors
         if error:
-            raise ValidationError(error)
+            raise ValidationError(message=error)
         return True
 
     def normalize(self, input: str) -> str:

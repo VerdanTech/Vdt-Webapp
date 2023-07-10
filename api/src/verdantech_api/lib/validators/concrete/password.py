@@ -1,5 +1,5 @@
-from ..generic.validators import StringFieldValidator
+from ..generic.validators import FieldValidator
 
 
-class PasswordValidator(StringFieldValidator):
+class PasswordValidator(FieldValidator):
     field_name = "Password"

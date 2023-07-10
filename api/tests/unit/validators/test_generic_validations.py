@@ -3,6 +3,7 @@ from typing import Any, ContextManager, Dict, Type, Union
 
 import pytest
 from pytest_mock import MockerFixture
+from src.verdantech_api.lib.validators.generic.errors import ValidationError
 from src.verdantech_api.lib.validators.generic.validations import (
     BannedInputValidation,
     MaxLengthValidation,
@@ -11,107 +12,75 @@ from src.verdantech_api.lib.validators.generic.validations import (
     MinSizeValidation,
     RegexValidation,
     Validation,
+    ValidationConfig,
 )
 
 
 class TestBaseValidation:
     @pytest.mark.parametrize(
-        ["input", "expected_type", "error_context"],
-        [
-            # Test case: input matches expected type. No error
-            (0, int, None),
-            # Test case: input does not match expected type. ValueError
-            (0, str, ValueError),
-        ],
-        indirect=["error_context"],
-    )
-    def test_check_type(
-        self,
-        input: Any,
-        expected_type: Type,
-        error_context: ContextManager,
-        base_validation: Validation,
-    ):
-        """Ensure the check_type function raises an exception
-            for mismatched type
-
-        Args:
-            input (Any): input to check
-            expected_type (Type): the expected type of the input
-            error_context (ContextManager): An instance of nullcontext() if
-                error_context = None and pytest.raises(error_context) otherwise
-                See: tests/conftest.py
-            base_validation (Validation): validation to test on
-        """
-        with error_context:
-            base_validation.check_type(input=input, expected_type=expected_type)
-
-    @pytest.mark.parametrize(
         [
             "validation_result",
             "validation_against",
             "error_message",
-            "input_error_dict",
-            "expected_output_error_dict",
+            "expected_error_message",
+            "error_context",
         ],
         [
             # Test case: The validation is true,
-            # and output_error dict == input_error_dict
+            # and nothing is raised
             (
                 True,
                 0,
                 "",
-                {"Validator": "error_message"},
-                {"Validator": "error_message"},
+                None,
+                None,
             ),
             # Test case: The validation is false,
-            # and output_error_dict is appended with
-            # validation name and error message
+            # and error is raised with error message
             (
                 False,
                 0,
                 "minimum",
-                {"Validator": "error_message"},
-                {"Validator": "error_message", "GenericValidation": "minimum"},
+                {"GenericValidation": "minimum"},
+                ValidationError,
             ),
             # Test case: The validation is false,
-            # and output_error_dict is appended with
-            # validation name and error message, formatted
-            # with validate_against
+            # and error is raised with error message, f
+            # formatted with validate_against
             (
                 False,
                 0,
                 "minimum {validate_against}",
-                {},
                 {"GenericValidation": "minimum 0"},
+                ValidationError,
             ),
         ],
+        indirect=["error_context"],
     )
     def test_base_validation(
         self,
         validation_result: bool,
         validation_against: Any,
         error_message: str,
-        input_error_dict: Dict[str, str],
-        expected_output_error_dict: Dict[str, str],
+        expected_error_message: str,
+        error_context: ContextManager,
         base_validation: Validation,
         mocker: MockerFixture,
     ):
-        """Ensure the base_validation function checks type,
-            validates, and appends validation message to the error dict
+        """Ensure the base_validation function validates,
+            and raises error with error message
 
         Args:
             validation_result (bool): the mock result of self._base_validation
             validation_against (Any): parameter to use for validation
             error_message (str): the message to be appended onto the error dict
-            input_error_dict (Dict[str, str]): the input error dict
-            expected_output_error_dict (Dict[str, str]): the expected output
+            expected_error_message (str): expected error message raised
+            error_context (ContextManager): An instance of nullcontext() if
+                error_context = None and pytest.raises(error_context) otherwise
+                See: tests/conftest.py
             base_validation (Validation): provider of a Validation class to test on
             mocker (MockerFixture): pytest-mock
         """
-        check_type_mock = mocker.patch(
-            "src.verdantech_api.lib.validators.generic.validations.Validation.check_type"
-        )
         validation_mock = mocker.patch(
             "src.verdantech_api.lib.validators.generic.validations.Validation._base_validation",
             return_value=validation_result,
@@ -119,13 +88,11 @@ class TestBaseValidation:
         base_validation.validate_against = validation_against
         base_validation.error_message = error_message
 
-        output_error_dict = base_validation.base_validation(
-            input=0, error=input_error_dict
-        )
-
-        check_type_mock.assert_called_once()
-        validation_mock.assert_called_once()
-        assert output_error_dict == expected_output_error_dict
+        with error_context as error:
+            base_validation.base_validation(input=0)
+            validation_mock.assert_called_once()
+            if error is not None:
+                assert error.message == expected_error_message
 
 
 class TestGenericValidations:
@@ -154,7 +121,7 @@ class TestGenericValidations:
             expected_output (bool): the expected result of the validation
         """
         validation = MinSizeValidation(
-            validate_against=validate_against, error_message=""
+            ValidationConfig(validate_against=validate_against, error_message="")
         )
         assert validation._base_validation(input=input) == expected_output
 
@@ -183,7 +150,7 @@ class TestGenericValidations:
             expected_output (bool): the expected result of the validation
         """
         validation = MaxSizeValidation(
-            validate_against=validate_against, error_message=""
+            ValidationConfig(validate_against=validate_against, error_message="")
         )
         assert validation._base_validation(input=input) == expected_output
 
@@ -208,7 +175,7 @@ class TestGenericValidations:
             expected_output (bool): the expected result of the validation
         """
         validation = MinLengthValidation(
-            validate_against=validate_against, error_message=""
+            ValidationConfig(validate_against=validate_against, error_message="")
         )
         assert validation._base_validation(input=input) == expected_output
 
@@ -233,7 +200,7 @@ class TestGenericValidations:
             expected_output (bool): the expected result of the validation
         """
         validation = MaxLengthValidation(
-            validate_against=validate_against, error_message=""
+            ValidationConfig(validate_against=validate_against, error_message="")
         )
         assert validation._base_validation(input=input) == expected_output
 
@@ -252,7 +219,7 @@ class TestGenericValidations:
             return_value=validation_result,
         )
         validation = RegexValidation(
-            validate_against="regex", error_message="error_message"
+            ValidationConfig(validate_against="regex", error_message="error_message")
         )
 
         assert validation._base_validation(input="input") == validation_result
@@ -302,8 +269,12 @@ class TestGenericValidations:
                 strings before comparison with banned_inputs
         """
         validation = BannedInputValidation(
-            validate_against=validate_against,
-            error_message="",
-            normalize_banned_input_validation=normalize_banned_input_validation,
+            ValidationConfig(
+                validate_against=validate_against,
+                error_message="",
+                extra={
+                    "normalize_banned_input_validation": normalize_banned_input_validation
+                },
+            )
         )
         assert validation._base_validation(input=input) == expected_output
