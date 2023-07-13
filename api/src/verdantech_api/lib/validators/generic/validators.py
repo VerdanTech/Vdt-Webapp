@@ -102,3 +102,15 @@ class FieldValidator:
             GenericInputType: The normalized input
         """
         return input
+
+
+class MockFieldValidator:
+    """Mock validator class for testing"""
+
+    field_name: str = "generic_field"
+
+    def validate(self, input: GenericInputType) -> bool:
+        return True
+
+    def normalize(self, input: GenericInputType) -> GenericInputType:
+        return input

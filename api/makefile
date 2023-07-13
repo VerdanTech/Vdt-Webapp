@@ -68,6 +68,10 @@ test:
 	$(BIN)/$(PY) -m coverage run --source tests -m pytest --html=reports/pytest/index.html
 	$(BIN)/$(PY) -m coverage html -d reports/coverage
 
+.PHONY: docs
+docs:
+	$(BIN)/mkdocs serve
+
 .PHONY: migrations
 migrations:
 	$(BIN)/$(PY) manage.py makemigrations

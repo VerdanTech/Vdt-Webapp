@@ -1,0 +1,17 @@
+site_name: VerdanTech-API
+
+nak:
+    - Home
+    - Contributing
+    - Architecture
+    - Source
+
+theme:
+  name: material
+  palette:
+    scheme: slate
+
+plugins:
+- search
+- mkdocstrings:
+    default_handler: python

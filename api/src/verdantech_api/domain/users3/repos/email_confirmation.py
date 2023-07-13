@@ -7,6 +7,3 @@ class EmailConfirmationRepo(SQLAlchemyAsyncRepository[EmailConfirmationModel]):
     """SQLAlchemy Repository for the EmailConfirmationModel"""
 
     model_type = EmailConfirmationModel
-
-    async def clean_expired(self):
-        pass

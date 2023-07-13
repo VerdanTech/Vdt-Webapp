@@ -30,6 +30,9 @@ test = [
     "coverage[toml]",
 ]
 dev = [
+    "mkdocs",
+    "mkdocstrings[python]",
+    "mkdocs-material",
     "black",
     "isort",
     "ruff",

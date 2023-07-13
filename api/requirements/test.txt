@@ -149,6 +149,8 @@ sqlalchemy==2.0.17
     # via
     #   alembic
     #   litestar
+structlog==23.1.0
+    # via verdantech-api (pyproject.toml)
 tomli==2.0.1
     # via
     #   coverage
