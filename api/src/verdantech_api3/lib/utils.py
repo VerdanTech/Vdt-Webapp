@@ -1,11 +1,14 @@
 import random
 import string
+from typing import Callable
 
 from aiofiles import open as async_open
 
+StringIDGeneratorT = (Callable[[int, str], str],)
+
 
 def key_generator(
-    size: int, chars: str = string.ascii_uppercase + string.digits
+    length: int, chars: str = string.ascii_uppercase + string.digits
 ) -> str:
     """Generate a random string
 
@@ -18,7 +21,7 @@ def key_generator(
     Returns:
         str: the generated string
     """
-    return "".join(random.choice(chars) for _ in range(size))
+    return "".join(random.choice(chars) for _ in range(length))
 
 
 async def read_file_async(filepath: str) -> str:

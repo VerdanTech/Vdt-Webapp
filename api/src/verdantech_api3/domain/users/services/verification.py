@@ -1,13 +1,16 @@
+from __future__ import annotations
+
 from typing import TYPE_CHECKING, Callable
 
+from litestar.contrib.repository.abc import AbstractAsyncRepository
 from litestar.exceptions import ValidationException
+from src.verdantech_api import settings
+from src.verdantech_api.lib.email.generic import AsyncEmailClient
+from src.verdantech_api.lib.utils import StringIDGeneratorT
 
-from verdantech_api import settings
-from verdantech_api.lib.email.generic import AsyncEmailClient
-from verdantech_api.lib.utils import StringIDGeneratorT
-
-from ..models import EmailConfirmationModel, EmailModel
-from ..models.repos import EmailConfirmationRepo
+from ..models.models import EmailConfirmationModel, EmailModel
+from ..models.repos import EmailConfirmationRepo, EmailRepo
+from .email_confirmation import EmailConfirmationService
 
 if TYPE_CHECKING:
     from litestar import Litestar
@@ -21,11 +24,13 @@ class VerificationService:
         email_client: AsyncEmailClient,
         email_repo: EmailRepo,
         email_confirmation_repo: EmailConfirmationRepo,
-        key_generator: Callable[[int, str], str],
+        email_confirmation_service: EmailConfirmationService,
+        key_generator: StringIDGeneratorT,
     ):
         self.email_client = email_client
         self.email_repo = email_repo
         self.email_confirmation_repo = email_confirmation_repo
+        self.email_confirmation_service = email_confirmation_service
         self.key_generator = key_generator
 
     async def send_email_verification(self, email: EmailModel, app: Litestar) -> None:
@@ -38,35 +43,43 @@ class VerificationService:
             Exception: _description_
         """
 
-        # Prevent re-verification
-        if email.is_verified:
-            raise ValidationException(detail="Email is already verified")
+        self.email_unverified_or_exception(email=email)
 
-        # Remove any active email confirmations
+        await self.email_confirmation_service.remove_active_confirmations()
 
-        # Generate verification key
-        key = self.key_generator(size=settings.EMAIL_VERIFICATION_KEY_LENGTH)
-        while await self.email_confirmation_repo.get_one_or_none(key=key) is not None:
-            key = self.key_generator(size=settings.EMAIL_VERIFICATION_KEY_LENGTH)
+        key = await self.generate_open_key(
+            repo=self.email_repo, length=settings.EMAIL_VERIFICATION_KEY_LENGTH
+        )
 
-        # Create database object
-        email_confirmation = EmailConfirmationModel(key=key)
-        email.confirmations = {email_confirmation}
-
-        # Add to repo
-        await self.email_repo.update(email)
-        await self.email_confirmation_repo.add(email_confirmation)
+        (
+            email,
+            email_confirmation,
+        ) = await self.email_confirmation_service.create_email_confirmation(
+            key=key, email=email
+        )
 
         # Emit email
         app.emit(
             "emit_email",
-            receiver=email.email,
+            receiver=email.address,
             subject="Email verification - VerdanTech",
             filepath=settings.email_path("email_verification.html"),
             username=email.user.username,
             client_base_url=settings.CLIENT_BASE_URL,
             verification_url=settings.EMAIL_VERIFICATION_CLIENT_URL + key,
         )
+
+    def email_unverified_or_exception(self, email: EmailModel) -> None:
+        if email.is_verified:
+            raise ValidationException(detail="Email is already verified")
+
+    async def generate_open_key(
+        self, repo: AbstractAsyncRepository, length: int
+    ) -> str:
+        key = self.key_generator(length=length)
+        while await repo.exists(key=key):
+            key = self.key_generator(length=length)
+        return key
 
     async def verify_email(self, key: str) -> None:
         """Verifies the email and updates user emails

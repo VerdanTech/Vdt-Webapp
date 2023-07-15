@@ -26,6 +26,10 @@ class UserModel(BigIntAuditBase):
     is_active: Mapped[bool] = mapped_column(default=True)
     is_superuser: Mapped[bool] = mapped_column(default=False)
 
+    password_reset_confirmation: Mapped[
+        "PasswordResetConfirmationModel"
+    ] = relationship("PasswordResetConfirmationModel", back_populates="user")
+
     async def is_verified():
         pass
 
@@ -45,7 +49,7 @@ class EmailModel(BigIntAuditBase):
     # deleting oldest email
     set_at: Mapped[datetime] = mapped_column(DateTime(), default=func.now())
 
-    confirmation: Mapped["EmailAddressConfirmationModel"] = relationship(
+    confirmation: Mapped["EmailConfirmationModel"] = relationship(
         back_populates="email", lazy="selectin"
     )
 
@@ -89,7 +93,7 @@ class EmailConfirmationModel(BigIntAuditBase, VerificationModelMixin):
     """Email address confirmation model"""
 
     email_id: Mapped[int] = mapped_column(
-        ForeignKey("email_address_model.id", ondelete="CASCADE")
+        ForeignKey("email_model.id", ondelete="CASCADE")
     )
     email: Mapped[EmailModel] = relationship(back_populates="confirmation")
 
@@ -100,7 +104,7 @@ class PasswordResetConfirmationModel(BigIntAuditBase, VerificationModelMixin):
     user_id: Mapped[int] = mapped_column(
         ForeignKey("user_model.id", ondelete="CASCADE")
     )
-    user: Mapped[UserModel] = relationship(back_populates="password_confirmation")
+    user: Mapped[UserModel] = relationship(back_populates="password_reset_confirmation")
     password_hash: Mapped[str | None] = mapped_column(
         String(), info=dto_field("private")
     )

@@ -25,7 +25,7 @@ class UserService:
         self.user_repo = user_repo
         self.email_repo = email_repo
 
-    async def create_new_user(
+    async def create_user(
         self, username: str, email: str, hashed_password: str
     ) -> Tuple[UserModel, EmailModel]:
         # assumes fields are validated
