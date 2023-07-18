@@ -1,10 +1,4 @@
-site_name: VerdanTech-API
-
-nak:
-    - Home
-    - Contributing
-    - Architecture
-    - Source
+site_name: VerdanTech-API 
 
 theme:
   name: material
@@ -15,3 +9,11 @@ plugins:
 - search
 - mkdocstrings:
     default_handler: python
+
+
+markdown_extensions:
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format

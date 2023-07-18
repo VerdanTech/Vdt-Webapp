@@ -46,99 +46,16 @@ CLIENT_PASSWORD_RESET_URL_POSTFIX: `str`, `default="password/reset/"`
 
 Periodic tasks:
 delete user models with unverified emails that don't have a confirmation
-```
-api
-├─ .gitignore
-├─ README.md
-├─ makefile
-├─ pyproject.toml
-├─ requirements
-│  ├─ dev.txt
-│  ├─ main.txt
-│  └─ test.txt
-├─ src
-│  └─ verdantech_api
-│     ├─ domain
-│     │  └─ users
-│     │     ├─ __init__.py
-│     │     ├─ controllers
-│     │     │  ├─ __init__.py
-│     │     │  ├─ auth.py
-│     │     │  ├─ email_verification.py
-│     │     │  ├─ password_reset.py
-│     │     │  └─ users.py
-│     │     ├─ dependencies.py
-│     │     ├─ models.py
-│     │     ├─ repos
-│     │     │  ├─ email.py
-│     │     │  ├─ email_confirmation.py
-│     │     │  ├─ password_confirmation.py
-│     │     │  └─ user.py
-│     │     ├─ schemas.py
-│     │     ├─ services
-│     │     │  ├─ __init__.py
-│     │     │  ├─ auth.py
-│     │     │  ├─ email_verification.py
-│     │     │  ├─ password_reset.py
-│     │     │  └─ users.py
-│     │     └─ urls.py
-│     ├─ lib
-│     │  ├─ crypt
-│     │  │  ├─ __init__.py
-│     │  │  ├─ generic.py
-│     │  │  └─ passlib_crypt.py
-│     │  ├─ email
-│     │  │  ├─ __init__.py
-│     │  │  ├─ aiosmtplib.py
-│     │  │  ├─ generic.py
-│     │  │  └─ litestar.py
-│     │  ├─ utils.py
-│     │  └─ validators
-│     │     ├─ __init__.py
-│     │     ├─ concrete
-│     │     │  ├─ __init__.py
-│     │     │  ├─ email.py
-│     │     │  ├─ password.py
-│     │     │  └─ username.py
-│     │     └─ generic
-│     │        ├─ __init__.py
-│     │        ├─ errors.py
-│     │        ├─ validations.py
-│     │        └─ validators.py
-│     ├─ main.py
-│     ├─ settings
-│     │  ├─ __init__.py
-│     │  ├─ base.py
-│     │  ├─ dev.py
-│     │  └─ prod.py
-│     └─ static
-│        └─ email
-│           ├─ email_verification.html
-│           └─ password_reset.html
-└─ tests
-   ├─ __init__.py
-   ├─ conftest.py
-   └─ unit
-      ├─ conftest.py
-      ├─ domain
-      │  └─ users
-      │     └─ services_test.py
-      └─ lib
-         ├─ crypt
-         │  ├─ __init__.py
-         │  ├─ conftest.py
-         │  └─ passlib_crypt_test.py
-         └─ email
-            ├─ __init__.py
-            ├─ conftest.py
-            └─ test_generic_async_client.py
 
-```
 ```
 api
 ├─ .gitignore
 ├─ README.md
 ├─ docs
+│  ├─ architecture
+│  │  └─ architecture.md
+│  ├─ contributing.md
+│  ├─ goals.md
 │  └─ index.md
 ├─ makefile
 ├─ mkdocs.yml
@@ -148,130 +65,55 @@ api
 │  ├─ main.txt
 │  └─ test.txt
 ├─ src
-│  └─ verdantech_api
-│     ├─ app.py
-│     ├─ domain
-│     │  ├─ __init__.py
-│     │  ├─ users
-│     │  │  ├─ __init__.py
-│     │  │  ├─ api
-│     │  │  │  ├─ __init__.py
-│     │  │  │  ├─ controllers
-│     │  │  │  │  ├─ __init__.py
-│     │  │  │  │  ├─ auth.py
-│     │  │  │  │  ├─ read.py
-│     │  │  │  │  ├─ verification.py
-│     │  │  │  │  └─ write.py
-│     │  │  │  ├─ schemas.py
-│     │  │  │  └─ urls.py
-│     │  │  ├─ models
-│     │  │  │  ├─ __init__.py
-│     │  │  │  ├─ models.py
-│     │  │  │  └─ repos.py
-│     │  │  ├─ operations
-│     │  │  │  ├─ auth.py
-│     │  │  │  ├─ read.py
-│     │  │  │  ├─ verification.py
-│     │  │  │  └─ write.py
-│     │  │  └─ services
-│     │  │     ├─ email.py
-│     │  │     ├─ user.py
-│     │  │     ├─ validation.py
-│     │  │     └─ verification.py
-│     │  └─ users3
-│     │     ├─ __init__.py
-│     │     ├─ controllers
-│     │     │  ├─ __init__.py
-│     │     │  ├─ auth.py
-│     │     │  ├─ email_verification.py
-│     │     │  ├─ password_reset.py
-│     │     │  └─ users.py
-│     │     ├─ dependencies.py
-│     │     ├─ models.py
-│     │     ├─ repos
-│     │     │  ├─ __init__.py
-│     │     │  ├─ conftest.py
-│     │     │  ├─ email.py
-│     │     │  ├─ email_confirmation.py
-│     │     │  ├─ password_confirmation.py
-│     │     │  └─ user.py
-│     │     ├─ schemas.py
-│     │     ├─ services
-│     │     │  ├─ __init__.py
-│     │     │  ├─ auth.py
-│     │     │  ├─ email_verification.py
-│     │     │  ├─ password_reset.py
-│     │     │  └─ users.py
-│     │     └─ urls.py
-│     ├─ lib
-│     │  ├─ __init__.py
-│     │  ├─ crypt
-│     │  │  ├─ __init__.py
-│     │  │  ├─ generic.py
-│     │  │  └─ passlib_crypt.py
-│     │  ├─ email
-│     │  │  ├─ __init__.py
-│     │  │  ├─ aiosmtplib.py
-│     │  │  ├─ generic.py
-│     │  │  └─ litestar.py
-│     │  ├─ utils.py
-│     │  └─ validators
-│     │     ├─ __init__.py
-│     │     ├─ concrete
-│     │     │  ├─ __init__.py
-│     │     │  ├─ email.py
-│     │     │  ├─ password.py
-│     │     │  └─ username.py
-│     │     ├─ generic
-│     │     │  ├─ __init__.py
-│     │     │  ├─ errors.py
-│     │     │  ├─ validations.py
-│     │     │  └─ validators.py
-│     │     └─ user_fields
-│     ├─ settings
-│     │  ├─ __init__.py
-│     │  ├─ base.py
-│     │  ├─ dev.py
-│     │  └─ prod.py
-│     └─ static
-│        └─ email
-│           ├─ email_verification.html
-│           └─ password_reset.html
-└─ tests
-   ├─ __init__.py
-   ├─ conftest.py
-   └─ unit
-      ├─ __init.py
-      ├─ domain
-      │  ├─ __init__.py
-      │  ├─ conftest.py
-      │  └─ users
-      │     ├─ __init__.py
-      │     ├─ api_test
-      │     │  └─ controllers_test
-      │     ├─ operations_test
-      │     └─ services_test
-      │        ├─ __init__.py
-      │        ├─ conftest.py
-      │        ├─ test_user.py
-      │        └─ test_validation.py
-      └─ lib
-         ├─ __init__.py
-         ├─ crypt
-         │  ├─ __init__.py
-         │  ├─ conftest.py
-         │  └─ passlib_crypt_test.py
-         ├─ email
-         │  ├─ __init__.py
-         │  ├─ aiosmtplib_client_test.py
-         │  ├─ conftest.py
-         │  └─ generic_async_client_test.py
-         ├─ utils_test.py
-         └─ validators
-            ├─ __init__.py
-            ├─ conftest.py
-            ├─ test_concrete_validators.py
-            ├─ test_generic_validations.py
-            └─ test_generic_validators.py
-
+│  ├─ verdantech_api
+│  │  ├─ api
+│  │  │  ├─ app.py
+│  │  │  ├─ garden
+│  │  │  ├─ plants
+│  │  │  ├─ urls.py
+│  │  │  ├─ user
+│  │  │  │  ├─ __init__.py
+│  │  │  │  ├─ controllers
+│  │  │  │  │  ├─ __init__.py
+│  │  │  │  │  ├─ auth.py
+│  │  │  │  │  ├─ read.py
+│  │  │  │  │  ├─ verification.py
+│  │  │  │  │  └─ write.py
+│  │  │  │  ├─ schema.py
+│  │  │  │  └─ urls.py
+│  │  │  └─ workspace
+│  │  ├─ application
+│  │  ├─ domain
+│  │  │  ├─ __init__.py
+│  │  │  ├─ common
+│  │  │  │  ├─ __init__.py
+│  │  │  │  ├─ entities.py
+│  │  │  │  └─ values.py
+│  │  │  ├─ garden
+│  │  │  │  ├─ __init__.py
+│  │  │  │  ├─ entities.py
+│  │  │  │  └─ values.py
+│  │  │  ├─ planner
+│  │  │  │  ├─ __init__.py
+│  │  │  │  ├─ entities.py
+│  │  │  │  └─ values.py
+│  │  │  ├─ plants
+│  │  │  │  ├─ __init__.py
+│  │  │  │  ├─ entities.py
+│  │  │  │  └─ values.py
+│  │  │  ├─ user
+│  │  │  │  ├─ __init__.py
+│  │  │  │  ├─ entities.py
+│  │  │  │  ├─ services.py
+│  │  │  │  └─ values.py
+│  │  │  └─ workspace
+│  │  │     ├─ __init__.py
+│  │  │     ├─ entities.py
+│  │  │     └─ values.py
+│  │  └─ interfaces
+│  │     └─ crypt
+│  │        ├─ __init__.py
+│  │        ├─ abstract.py
+│  │        └─ passlib.py
+│  └─
 ```
