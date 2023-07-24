@@ -1,11 +1,13 @@
-from typing import Dict, List, Any, Type
+from typing import Any, Dict, List, Type
 
 from src.verdantech_api.domain.common.entities import EntityT
 
-from .field_validators import FieldValidator, NormalizationMixin
+from .field_validators import FieldValidator, FieldValidatorConfig, NormalizationMixin
+
 
 class AbstractObjectValidator:
     pass
+
 
 class ObjectValidator:
     """Generic class for implementing validations on multiple fields"""
@@ -15,7 +17,7 @@ class ObjectValidator:
 
     def __init__(self, field_validators: List[FieldValidator]) -> None:
         self.field_validators = field_validators
-        
+
     def validate(self, *fields: List[str]) -> bool:
         """Validates the input_obj against all validators.
 
@@ -30,7 +32,6 @@ class ObjectValidator:
         for field_validator in self.field_validators:
             if field_validator.field_name not in fields:
                 raise ValueError
-            
 
         """
             try:
@@ -47,3 +48,7 @@ class ObjectValidator:
         """
 
         return True
+
+    @classmethod
+    def factory(cls, field_validator_configs: List[FieldValidatorConfig]):
+        pass

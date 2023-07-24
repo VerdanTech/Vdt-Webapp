@@ -1,9 +1,7 @@
 from typing import Any, Callable, Dict, List, Pattern, Type, TypeVar, Union
 
 from .errors import ValidationError
-from .validations import (
-    Validation,
-)
+from .validations import Validation
 
 GenericInputType = TypeVar("GenericInputType")
 
@@ -47,7 +45,9 @@ class FieldValidator:
             try:
                 validation_method(input=input)
             except ValidationError as error_raised:
-                error[self.field_name][type(error_raised).__name__] = error_raised.message
+                error[self.field_name][
+                    type(error_raised).__name__
+                ] = error_raised.message
 
         return error
 
@@ -59,12 +59,11 @@ class FieldValidator:
 
         # Raise errors
         if error:
-
             raise ValidationError(message=error)
         return True
 
-class NormalizationMixin:
 
+class NormalizationMixin:
     def normalize(self, input: GenericInputType) -> GenericInputType:
         """Convert input to a normalized form
 
@@ -75,6 +74,7 @@ class NormalizationMixin:
             GenericInputType: The normalized input
         """
         return input
+
 
 class MockFieldValidator:
     """Mock validator class for testing"""

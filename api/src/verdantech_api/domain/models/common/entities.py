@@ -3,6 +3,7 @@ from typing import Optional, TypeVar
 
 EntityT = TypeVar("EntityT", bound="Entity")
 
+
 @dataclass
 class Entity:
     """Base entity class for all domain entity models"""
