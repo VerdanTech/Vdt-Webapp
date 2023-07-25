@@ -85,8 +85,6 @@ class FieldValidator:
         # Group exceptions
         error = self._validate(input=input)
 
-        # Custom validation logic
-
         # Raise errors
         if error:
             raise ValidationError(message=error)
@@ -101,7 +99,7 @@ class FieldValidator:
         Returns:
             GenericInputType: The normalized input
         """
-        return input
+        return self.normalize
 
 
 class MockFieldValidator:

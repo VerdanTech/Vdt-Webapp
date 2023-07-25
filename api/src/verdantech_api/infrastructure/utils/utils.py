@@ -1,7 +1,6 @@
 from aiofiles import open as async_open
 
 
-
 async def read_file_async(filepath: str) -> str:
     """Open file with asyncio
 

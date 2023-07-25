@@ -44,15 +44,18 @@ class Email(Value):
 
 class BaseConfirmation(Value):
     """Base value object for verification through email"""
+
     key: str
     created_at: datetime = field(default_factory=datetime.now)
 
 
 class EmailConfirmation(BaseConfirmation):
     """Email confirmation value object"""
+
     pass
 
 
 class PasswordResetConfirmation(BaseConfirmation):
     """Password reset confirmation value object"""
+
     hashed_password: str

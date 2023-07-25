@@ -1,6 +1,6 @@
-from typing import Callable, List
-from datetime import datetime
 from dataclasses import field
+from datetime import datetime
+from typing import Callable, List
 
 from src.verdantech_api.infrastructure.security.interfaces import AbstractPasswordCrypt
 from src.verdantech_api.infrastructure.validators2.interfaces import (
@@ -16,7 +16,7 @@ from .values import Email, PasswordResetConfirmation
 class User(RootEntity):
     """User entity model"""
 
-    username: str
+    username: str = field(metadata={"validators": ["MinLength"]})
     username_norm: str
     _password_hash: str | None = None
     emails: set[Email] = {}

@@ -38,7 +38,9 @@ class UserWriteOperations:
 
         user = User(username=data.username, username_norm=normalized_username)
         user.set_password(password=password, password_crypt=password_crypt)
-        user.add_email(address=normalized_email_address, primary=True, verified=False, key=key)
+        user.add_email(
+            address=normalized_email_address, primary=True, verified=False, key=key
+        )
 
         user = await self.user_repo.add(user)
 

@@ -1,9 +1,11 @@
 from litestar.contrib.repository.abc import AbstractAsyncRepository
+from litestar.contrib.repository.filters import CollectionFilter
 from src.verdantech_api.domain.utils.key_generator import key_generator
 
 
 class VerificationService:
     """Namespace for email verification functions"""
+
     @classmethod
     async def generate_open_email_confirmation_key(
         cls, length: int, user_repo: AbstractAsyncRepository
@@ -54,6 +56,6 @@ class VerificationService:
             str: the unique key
         """
         key = key_generator(length=length)
-        while repo.exists(field_name=field_name, values=key):
+        while repo.exists(CollectionFilter(field_name=field_name, values=key)):
             key = key_generator(length=length)
         return key
