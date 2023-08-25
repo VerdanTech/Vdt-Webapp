@@ -10,6 +10,7 @@ authors = [
 ]
 dependencies = [
     "litestar[sqlalchemy, cli]",
+    "serpyco",
     "structlog",
     "passlib",
     "argon2_cffi",

@@ -1,5 +1,3 @@
-from .passlib_crypt import PasslibPasswordCrypt
+from .password_crypt import AbstractPasswordCrypt, MockPasswordCrypt
 
-
-def provide_passlib_crypt():
-    return PasslibPasswordCrypt()
+__all__ = [AbstractPasswordCrypt, MockPasswordCrypt]

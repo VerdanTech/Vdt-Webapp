@@ -1,11 +1,12 @@
 from dataclasses import dataclass
 
 
-@dataclass(frozen=True)
 class Value:
     """Base value object for all domain value objects"""
 
-    pass
+    @classmethod
+    def __init_subclass__(cls) -> None:
+        dataclass(kw_only=True, frozen=True)(cls)
 
 
 class Ref(Value):

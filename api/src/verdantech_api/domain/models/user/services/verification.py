@@ -1,5 +1,4 @@
 from litestar.contrib.repository.abc import AbstractAsyncRepository
-from litestar.contrib.repository.filters import CollectionFilter
 from src.verdantech_api.domain.utils.key_generator import key_generator
 
 
@@ -56,6 +55,8 @@ class VerificationService:
             str: the unique key
         """
         key = key_generator(length=length)
-        while repo.exists(CollectionFilter(field_name=field_name, values=key)):
+        kwargs = {field_name: key}
+        while await repo.exists(**kwargs):
             key = key_generator(length=length)
+            kwargs = {field_name: key}
         return key

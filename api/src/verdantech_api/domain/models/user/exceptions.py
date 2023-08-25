@@ -1,10 +1,10 @@
-class PasswordAlreadySetException(Exception):
+class PasswordAlreadySetError(Exception):
     """Exception for implicit password overwrite"""
 
     pass
 
 
-class EmailAlreadyVerifiedException(Exception):
+class EmailAlreadyVerifiedError(Exception):
     """Exception for new email confirmations on verified email"""
 
     pass

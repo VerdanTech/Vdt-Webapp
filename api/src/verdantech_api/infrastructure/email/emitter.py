@@ -1,5 +1,5 @@
 from functools import partial
-from typing import Any, Awaitable, Callable, Dict
+from typing import Any, Callable, Dict
 
 from litestar import Request
 from litestar.events import listener

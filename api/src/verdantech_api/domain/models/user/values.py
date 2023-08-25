@@ -1,12 +1,10 @@
-from dataclasses import dataclass, field
-from datetime import datetime
-from typing import List
+from __future__ import annotations
 
-from litestar.contrib.repository.abc import AbstractAsyncRepository
-from src.verdantech_api import settings
+from dataclasses import field, replace
+from datetime import datetime
 
 from ..common.values import Ref, Value
-from .exceptions import EmailAlreadyVerifiedException
+from .exceptions import EmailAlreadyVerifiedError
 
 
 class UserRef(Ref):
@@ -21,10 +19,11 @@ class Email(Value):
     address: str
     verified: bool = False
     primary: bool = False
-    confirmation: "EmailConfirmation" | None
+    confirmation: "EmailConfirmation" | None = None
 
-    def new_confirmation(self, key: str) -> None:
-        """Create a new email confirmation
+    def new_confirmation(self, key: str) -> Email:
+        """Create a new email confirmation and return
+            new email
 
         Args:
             key (str): the verification key to set
@@ -32,14 +31,17 @@ class Email(Value):
         Raises:
             EmailAlreadyVerifiedException: raised when email
                 is already verified
+
+        Returns:
+            Email: A new email object with confirmation replaced
         """
         if self.verified:
-            raise EmailAlreadyVerifiedException(
+            raise EmailAlreadyVerifiedError(
                 "Email confirmation attempt on already verified email"
             )
 
         confirmation = EmailConfirmation(key=key)
-        self.confirmation = confirmation
+        return replace(self, confirmation=confirmation)
 
 
 class BaseConfirmation(Value):
@@ -58,4 +60,4 @@ class EmailConfirmation(BaseConfirmation):
 class PasswordResetConfirmation(BaseConfirmation):
     """Password reset confirmation value object"""
 
-    hashed_password: str
+    password_hash: str

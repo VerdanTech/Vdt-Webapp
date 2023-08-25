@@ -6,8 +6,7 @@ from email.mime.text import MIMEText
 from typing import Any, Dict
 
 import html2text
-
-from verdantech_api.infrastructure.utils.utils import read_file_async
+from src.verdantech_api.infrastructure.utils.utils import read_file_async
 
 
 class AsyncEmailClient:

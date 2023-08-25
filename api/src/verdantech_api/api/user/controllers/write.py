@@ -1,15 +1,17 @@
-from typing import TYPE_CHECKING
-
-from litestar import Controller, Request, delete, get, patch, post
+from litestar import Controller, delete, patch, post
 from litestar.di import Provide
-from src.verdantech_api.application.user.operations.write import UserWriteOperations
+from src.verdantech_api.application.user.operations import (
+    UserWriteOperations,
+    provide_user_write_operations,
+)
+from api.src.verdantech_api.application.user.schemas.api.common import UserSelfDetail
+from api.src.verdantech_api.application.user.schemas.api.write import UserCreateInput
 from src.verdantech_api.infrastructure.email.emitter import (
     EmailEmitter,
     provide_litestar_email_emitter,
 )
 from src.verdantech_api.infrastructure.security.interfaces import AbstractPasswordCrypt
 
-from ..schema import UserCreateInput, UserOutput
 from ..urls import (
     USER_CHANGE_URL,
     USER_CREATE_URL,
@@ -21,14 +23,25 @@ from ..urls import (
 class UserWriteController(Controller):
     """User write operations controller"""
 
+    dependencies = {
+        "user_repo",
+        "",
+        "user_write_operations",
+        Provide(provide_user_write_operations),
+    }
+
     @post(
         name="users:create",
         summary="Register a new user",
         description="Register a new user and send an email verification",
         tags=["users"],
         dto=UserCreateInput,
-        return_dto=UserOutput,
+        return_dto=UserSelfDetail,
         path=USER_CREATE_URL,
+        dependencies={
+            "email_emitter": Provide(provide_litestar_email_emitter),
+            "password_crypt": Provide(),
+        },
     )
     async def user_create(
         data: UserCreateInput,
@@ -42,8 +55,10 @@ class UserWriteController(Controller):
                 password_crypt=password_crypt,
                 email_emitter=email_emitter,
             )
-        except Exception:
-            pass
+        except SanitizationError as error:
+            raise LitestarValidationexception(
+                detail="Field validation failed", extra=str(error)
+            )
         return user
 
     @patch(path=USER_CHANGE_URL)

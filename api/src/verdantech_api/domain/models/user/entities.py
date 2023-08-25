@@ -1,30 +1,41 @@
 from dataclasses import field
 from datetime import datetime
-from typing import Callable, List
+from typing import List
 
-from src.verdantech_api.infrastructure.security.interfaces import AbstractPasswordCrypt
-from src.verdantech_api.infrastructure.validators2.interfaces import (
-    AbstractObjectValidator,
-)
+from src.verdantech_api.domain.interfaces.security.crypt import AbstractPasswordCrypt
 
 from ..common.entities import RootEntity
 from ..garden.values import GardenMembershipRef
-from .exceptions import PasswordAlreadySetException
+from .exceptions import PasswordAlreadySetError
 from .values import Email, PasswordResetConfirmation
 
 
 class User(RootEntity):
     """User entity model"""
 
-    username: str = field(metadata={"validators": ["MinLength"]})
-    username_norm: str
+    username: str
+    username_norm: str = None
     _password_hash: str | None = None
-    emails: set[Email] = {}
-    memberships: set[GardenMembershipRef] = {}
+    emails: List[Email] = None
+    memberships: List[GardenMembershipRef] = None
     is_active: bool = True
     is_superuser: bool = False
     password_reset_confirmation: PasswordResetConfirmation | None = None
     created_at: datetime = field(default_factory=datetime.now)
+
+    def __post_init__(self) -> None:
+        self.set_username(username=self.username)
+        self.emails = []
+        self.memberships = []
+
+    def set_username(self, username: str) -> None:
+        """Manage normalized username setting
+
+        Args:
+            username (str): case sensitive username
+        """
+        self.username = username
+        self.username_norm = username.lower()
 
     def add_email(self, address: str, primary: bool, key: str) -> None:
         """Default new email. Verified is false and new confirmation is
@@ -37,8 +48,8 @@ class User(RootEntity):
             key (str): verification key to assign to email confirmation
         """
         email = Email(address=address, primary=primary, verified=False)
-        email.new_confirmation(key=key)
-        self.emails.add(email)
+        email = email.new_confirmation(key=key)
+        self.emails.append(email)
 
     def add_verified_email(self, address: str, primary: bool) -> None:
         """Bypass verification new email. Verified is true
@@ -49,7 +60,7 @@ class User(RootEntity):
                 be true for user creation and false elsewhere
         """
         email = Email(address=address, primary=primary, verified=True)
-        self.emails.add(email)
+        self.emails.append(email)
 
     async def set_password(
         self,
@@ -68,15 +79,16 @@ class User(RootEntity):
             PasswordAlreadySetException: is password is already set,
                 but the function was called with overwrite=False
         """
-        if not self._password_hash and not overwrite:
-            raise PasswordAlreadySetException(
+        if self._password_hash is not None and not overwrite:
+            raise PasswordAlreadySetError(
                 """Password set attempt failed: 
                 called with overwrite=False 
                 but password already set
                 """
             )
-        password_hash = await password_crypt.get_password_hash(password)
-        self.password_hash = password_hash
+        self._password_hash = await password_crypt.get_password_hash(
+            plain_password=password
+        )
 
     async def verify_password(
         self, password: str, password_crypt: AbstractPasswordCrypt
