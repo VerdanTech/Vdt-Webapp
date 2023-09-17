@@ -1,0 +1,15 @@
+class SerpycoModelAdapter(ModelAdapter):
+    @staticmethod
+    def to_document(
+        entity: List[Entity],
+        serializer: AbstractSerializer,
+        sanitizer: ObjectSanitizer,
+        disabled_fields: Dict[str, List[Type[SanitizationT]] | None] | None,
+        many: bool = False
+    ) -> DocumentType:
+        # sanitize
+        pass
+
+    @staticmethod
+    def from_document(document: DocumentType, serializer: AbstractSerializer, many: bool = False) -> Entity:
+        pass

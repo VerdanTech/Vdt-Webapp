@@ -1,10 +1,10 @@
 import asyncio
-from typing import Callable, Dict, Generic, List, Type
+from typing import Callable, Dict, Generic, List, Type, TypeVarTuple
 
-from .sanitization.generic import GenericInputType, SanitizationError, SanitizationT
+from .sanitization.generic import GenericInputType, SanitizationError, SanitizationT, SanitizationsT
 
 
-class FieldSanitizer(Generic[SanitizationT]):
+class FieldSanitizer(Generic[*SanitizationsT]):
     def __init__(self, *sanitizations: List[SanitizationT]):
         for sanitization in sanitizations:
             sanitization.field = self
@@ -21,10 +21,7 @@ class FieldSanitizer(Generic[SanitizationT]):
             List[Callable]: a list of sanitization methods
         """
         if disabled_sanitizations is None:
-            return [
-                sanitizer.base_sanitization
-                for sanitizer in self.sanitizations
-            ]
+            return [sanitizer.base_sanitization for sanitizer in self.sanitizations]
         else:
             return [
                 sanitizer.base_sanitization
@@ -33,13 +30,15 @@ class FieldSanitizer(Generic[SanitizationT]):
             ]
 
     async def _sanitize(
-        self, input: GenericInputType, disabled_sanitizations: List[Type[SanitizationT]] = None
+        self,
+        input: GenericInputType,
+        disabled_sanitizations: List[Type[SanitizationT]] = None,
     ) -> Dict[str, str]:
         """Sanitizes the input against base sanitization logis
 
         Args:
             input (GenericInputType): the input to sanitize
-            disabled_sanitizations (List[Type[SanitizationT]]): list of 
+            disabled_sanitizations (List[Type[SanitizationT]]): list of
                 sanitization types to skip when performing sanitization
 
         Returns:
@@ -64,20 +63,22 @@ class FieldSanitizer(Generic[SanitizationT]):
         return error
 
     async def sanitize(
-        self, input: GenericInputType, disabled_sanitizations: List[Type[SanitizationT]] = None
+        self,
+        input: GenericInputType,
+        disabled_sanitizations: List[Type[SanitizationT]] = None,
     ) -> bool:
         """Call the sanitization function, and raise error if any failure
 
         Args:
             input (GenericInputType): the input to sanitize
-            disabled_sanitizations (List[Type[SanitizationT]]): list of 
+            disabled_sanitizations (List[Type[SanitizationT]]): list of
                 sanitization types to skip when performing sanitization
 
         Raises:
             SanitizationError: raised if sanitization fails
 
         Returns:
-            bool: true if successful 
+            bool: true if successful
         """
         # Set default normalized value
         self.normalized = input

@@ -17,5 +17,8 @@ class EmailSanitization(Sanitization):
     name = "Email"
     error: Exception = EmailSanitizationError
 
+    def __init__(self) -> None:
+        pass
+
     def _base_sanitization(self, input: str) -> bool:
         raise NotImplementedError

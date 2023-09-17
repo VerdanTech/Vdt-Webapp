@@ -2,6 +2,7 @@ from dataclasses import dataclass
 from typing import Optional, TypeVar
 
 EntityT = TypeVar("EntityT", bound="Entity")
+RootEntityT = TypeVar("RootEntityT", bound="RootEntity")
 
 
 class Entity:

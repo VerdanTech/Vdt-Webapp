@@ -1,0 +1,59 @@
+
+from typing import Dict, List, Type
+from abc import abstractstaticmethod
+
+from litestar.contrib.mongodb_motor._async import (
+    MongoDbMotorAsyncRepository,
+    DocumentType,
+)
+
+from serpyco import SerpycoSerializer
+
+from src.verdantech_api.domain.utils.sanitizers.object import ObjectSanitizer
+from src.verdantech_api.domain.utils.sanitizers.sanitization.generic import (
+    SanitizationT,
+)
+from src.verdantech_api.domain.models.common import Entity
+
+
+class ModelAdapter:
+    @abstractstaticmethod
+    def to_document(
+        model: Entity,
+        serializer: AbstractSerializer,
+        sanitizer: ObjectSanitizer,
+        disabled_fields: Dict[str, List[Type[SanitizationT]] | None] | None,
+        many: bool = False
+    ) -> DocumentType:
+        """Serialize the domain entity to a dictionary, after sanitization
+
+        Args:
+            model (Entity): the model to serialize
+            serializer (AbstractSerializer): serializer class
+            sanitizer (ObjectSanitizer): sanitizer class
+            disabled_fields (Dict[str, List[Type[SanitizationT]]  |  None] | None):
+                keys are field names to skip sanitization on, and values are a
+                list of sanitization types to skip sanitization on that field,
+                or None if all sanitizations are to be skipped
+
+        Returns:
+            DocumentType: the model represented as dict
+        """
+        ...
+
+    @abstractstaticmethod
+    def from_document(document: DocumentType, serializer: AbstractSerializer, many: bool = False) -> Entity:
+        """Deserialize the dictionary into a domain entity
+
+        Args:
+            document (DocumentType): the dictionary to serialize
+            serializer (AbstractSerializer): serializer class
+
+        Returns:
+            Entity: the domain entity
+        """
+        ...
+
+    @abstractstaticmethod
+    def entity_fields_to_kwargs() -> Dict[str, Any]:
+        ...

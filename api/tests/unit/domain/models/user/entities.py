@@ -7,6 +7,15 @@ from src.verdantech_api.domain.models.user.exceptions import PasswordAlreadySetE
 
 
 class TestUser:
+    def test___post_init__(self) -> None:
+        """Ensure the post init hook on the entity
+        is called and sets the normalized username
+        """
+        user = User(username="TestUsername")
+        assert user.username_norm == "testusername"
+        assert user.emails == []
+        assert user.memberships == []
+
     def test_set_username(self, user: User) -> None:
         """Ensure the lowercase username is saved into
         the user object

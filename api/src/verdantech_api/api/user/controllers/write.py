@@ -1,11 +1,11 @@
+from api.src.verdantech_api.application.user.schemas.api.common import UserSelfDetail
+from api.src.verdantech_api.application.user.schemas.api.write import UserCreateInput
 from litestar import Controller, delete, patch, post
 from litestar.di import Provide
 from src.verdantech_api.application.user.operations import (
     UserWriteOperations,
     provide_user_write_operations,
 )
-from api.src.verdantech_api.application.user.schemas.api.common import UserSelfDetail
-from api.src.verdantech_api.application.user.schemas.api.write import UserCreateInput
 from src.verdantech_api.infrastructure.email.emitter import (
     EmailEmitter,
     provide_litestar_email_emitter,

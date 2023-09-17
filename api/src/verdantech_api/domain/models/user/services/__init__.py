@@ -1,3 +1,3 @@
-from .verification import VerificationService
+from .email import EmailAdditionService
 
-__all__ = ["VerificationService"]
+__all__ = ["EmailAdditionService"]

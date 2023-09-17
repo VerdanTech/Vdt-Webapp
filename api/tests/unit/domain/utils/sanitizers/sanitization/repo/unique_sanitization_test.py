@@ -18,16 +18,16 @@ class TestUniqueSanitization:
         [
             # Test case: input field not found
             (
-                0,
-                UniqueSanitizationSpec(field="int_field"),
+                "str_not_existing",
+                UniqueSanitizationSpec(uniqueness_method_argument_name="str_field"),
                 [MockEntity(int_field=1, str_field="")],
                 True,
             ),
             # Test case: input field found
             (
-                0,
-                UniqueSanitizationSpec(field="int_field"),
-                [MockEntity(int_field=0, str_field="")],
+                "str_existing",
+                UniqueSanitizationSpec(uniqueness_method_argument_name="str_field"),
+                [MockEntity(int_field=0, str_field="str_existing")],
                 False,
             ),
         ],
@@ -54,6 +54,11 @@ class TestUniqueSanitization:
         """
         await mock_entity_repo.add_many(existing_entities)
         sanitization = UniqueSanitization(
-            UniqueSanitizationConfig(spec=spec, repo=mock_entity_repo, error_message="")
+            UniqueSanitizationConfig(
+                spec=spec,
+                repo=mock_entity_repo,
+                uniqueness_method_name="str_field_exists",
+                error_message="",
+            )
         )
         assert await sanitization._base_sanitization(input=input) == expected_output

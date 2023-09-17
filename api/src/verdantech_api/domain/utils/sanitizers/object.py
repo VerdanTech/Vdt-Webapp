@@ -1,4 +1,4 @@
-from typing import Any, Dict, Generic, Tuple, TypedDict, TypeVar, List, Type
+from typing import Any, Dict, Generic, List, Tuple, Type, TypedDict, TypeVar
 
 from .field import FieldSanitizer
 from .sanitization.generic import SanitizationError, SanitizationT
@@ -55,7 +55,7 @@ class ObjectSanitizer(Generic[ObjectSanitizerConfigT]):
         sanitized: Dict[str, Any],
         field_sanitizer: FieldSanitizer,
         field_name: str,
-        disabled_sanitizations: List[Type[SanitizationT]] = None
+        disabled_sanitizations: List[Type[SanitizationT]] = None,
     ) -> Dict[str, Any]:
         """Use the field sanitizer to sanitize,
         and if the sanitizer returns a normalized value,
@@ -69,14 +69,16 @@ class ObjectSanitizer(Generic[ObjectSanitizerConfigT]):
                 to use for the sanitization
             field_name (str): the name of the field to sanitize
             disabled_fields (Dict[str, List[Type[SanitizationT]] | None] | None):
-                keys are field names to skip sanitization on, and values are a 
+                keys are field names to skip sanitization on, and values are a
                 list of sanitization types to skip sanitization on that field,
                 or None if all sanitizations are to be skipped
 
         Returns:
             Dict[str, Any]: the output sanitized data
         """
-        await field_sanitizer.sanitize(input=input, disabled_sanitizations=disabled_sanitizations)
+        await field_sanitizer.sanitize(
+            input=input, disabled_sanitizations=disabled_sanitizations
+        )
         normalized = field_sanitizer.normalized()
         if normalized:
             sanitized[field_name] = normalized
@@ -93,7 +95,7 @@ class ObjectSanitizer(Generic[ObjectSanitizerConfigT]):
         Args:
             input (Dict[str, Any]): the input data to sanitize
             disabled_fields (Dict[str, List[Type[SanitizationT]] | None] | None):
-                keys are field names to skip sanitization on, and values are a 
+                keys are field names to skip sanitization on, and values are a
                 list of sanitization types to skip sanitization on that field,
                 or None if all sanitizations are to be skipped
 
@@ -101,11 +103,10 @@ class ObjectSanitizer(Generic[ObjectSanitizerConfigT]):
             Tuple[Dict[str, Any], Dict[str, str]]: the output sanitized
                 data and the error dictionary
         """
-        sanitized = input # Default normalized value is no chang
+        sanitized = input  # Default normalized value is no chang
         error = {}  # Group exceptions
 
         for field_name, input in input.items():
-
             # Grab list of disabled sanitization types if any
             disabled_sanitizations = None
             if disabled_fields is not None and field_name in disabled_fields:
@@ -122,7 +123,7 @@ class ObjectSanitizer(Generic[ObjectSanitizerConfigT]):
                     sanitized=sanitized,
                     field_sanitizer=field_sanitizer,
                     field_name=field_name,
-                    disabled_sanitizations=disabled_sanitizations
+                    disabled_sanitizations=disabled_sanitizations,
                 )
             except SanitizationError as error_raised:
                 error[field_name] = str(error_raised)
@@ -139,7 +140,7 @@ class ObjectSanitizer(Generic[ObjectSanitizerConfigT]):
         Args:
             input (Dict[str, Any]): the input fields to sanitize
             disabled_fields (Dict[str, List[Type[SanitizationT]] | None] | None):
-                keys are field names to skip sanitization on, and values are a 
+                keys are field names to skip sanitization on, and values are a
                 list of sanitization types to skip sanitization on that field,
                 or None if all sanitizations are to be skipped
 

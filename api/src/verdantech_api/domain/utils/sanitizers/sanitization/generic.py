@@ -1,8 +1,9 @@
 from dataclasses import dataclass
-from typing import Any, Dict, Generic, Optional, TypeVar
+from typing import Any, Dict, Generic, Optional, TypeVar, TypeVarTuple
 
 SpecT = TypeVar("SpecT")
 SanitizationT = TypeVar("SanitizationT", bound="Sanitization")
+SanitizationsT = TypeVarTuple("SanitizationsT")
 GenericInputType = TypeVar("GenericInputType")
 
 

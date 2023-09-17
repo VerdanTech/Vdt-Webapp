@@ -1,6 +1,8 @@
 import re
 
-from litestar.contrib.repository.abc import AbstractAsyncRepository
+from src.verdantech_api.domain.interfaces.persistence.user.repository import (
+    AbstractUserRepository,
+)
 from src.verdantech_api.domain.models.user.services.sanitization import (
     UserSanitizer,
     UserSanitizerConfig,
@@ -25,10 +27,10 @@ from src.verdantech_api.domain.utils.sanitizers.sanitization.repo.unique import 
     UniqueSanitizationSpec,
 )
 
-from .email import EmailSanitization, EmailSanitizationConfig
+from ..fields.email import EmailSanitization, EmailSanitizationConfig
 
 
-def provide_user_sanitizer(user_repo: AbstractAsyncRepository) -> UserSanitizer:
+def provide_user_sanitizer(user_repo: AbstractUserRepository) -> UserSanitizer:
     return UserSanitizer(
         config=UserSanitizerConfig(
             username=FieldSanitizer(
