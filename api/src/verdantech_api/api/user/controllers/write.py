@@ -1,74 +1,86 @@
-from api.src.verdantech_api.application.user.schemas.api.common import UserSelfDetail
-from api.src.verdantech_api.application.user.schemas.api.write import UserCreateInput
 from litestar import Controller, delete, patch, post
 from litestar.di import Provide
+from src.verdantech_api.api.exceptions import litestar_exception_map
 from src.verdantech_api.application.user.operations import (
     UserWriteOperations,
     provide_user_write_operations,
 )
+from src.verdantech_api.application.user.schemas.api.common import UserSelfDetail
+from src.verdantech_api.application.user.schemas.api.write import UserCreateInput
+from src.verdantech_api.domain.interfaces.security.crypt import AbstractPasswordCrypt
+from src.verdantech_api.domain.models.user.services.sanitization import UserSanitizer
 from src.verdantech_api.infrastructure.email.emitter import (
     EmailEmitter,
     provide_litestar_email_emitter,
 )
-from src.verdantech_api.infrastructure.security.interfaces import AbstractPasswordCrypt
 
-from ..urls import (
-    USER_CHANGE_URL,
-    USER_CREATE_URL,
-    USER_DELETE_URL,
-    USER_EMAIL_CHANGE_REQUEST_URL,
-)
+from ..urls import urls
 
 
 class UserWriteController(Controller):
     """User write operations controller"""
 
     dependencies = {
-        "user_repo",
-        "",
-        "user_write_operations",
-        Provide(provide_user_write_operations),
+        "user_repo": Provide(),
+        "user_write_operations": Provide(provide_user_write_operations),
     }
 
     @post(
         name="users:create",
-        summary="Register a new user",
+        summary="User registration",
         description="Register a new user and send an email verification",
         tags=["users"],
+        path=urls.USER_CREATE_URL,
         dto=UserCreateInput,
         return_dto=UserSelfDetail,
-        path=USER_CREATE_URL,
         dependencies={
-            "email_emitter": Provide(provide_litestar_email_emitter),
+            "user_sanitizer": Provide(),
             "password_crypt": Provide(),
+            "email_emitter": Provide(provide_litestar_email_emitter),
         },
     )
     async def user_create(
+        self,
         data: UserCreateInput,
         user_write_operations: UserWriteOperations,
+        user_sanitizer: UserSanitizer,
         email_emitter: EmailEmitter,
         password_crypt: AbstractPasswordCrypt,
-    ):
-        try:
+    ) -> UserSelfDetail:
+        """Call the main user creation application operation
+
+        Args:
+            data (UserCreateInput): input DTO
+            user_write_operations (UserWriteOperations):
+                application operations
+            user_sanitizer (UserSanitizer): user sanitizer
+            email_emitter (EmailEmitter): email emitter
+            password_crypt (AbstractPasswordCrypt): password crypt
+
+        Returns:
+            UserSelfDetail: user self-reference DTO
+        """
+        async with litestar_exception_map:
             user = await user_write_operations.create(
                 data=data,
+                user_sanitizer=user_sanitizer,
                 password_crypt=password_crypt,
                 email_emitter=email_emitter,
             )
-        except SanitizationError as error:
-            raise LitestarValidationexception(
-                detail="Field validation failed", extra=str(error)
-            )
         return user
 
-    @patch(path=USER_CHANGE_URL)
-    async def user_change():
+    @patch(path=urls.USER_CHANGE_USERNAME_URL)
+    async def user_change_username():
         pass
 
-    @post(path=USER_EMAIL_CHANGE_REQUEST_URL)
+    @patch(path=urls.USER_CHANGE_PASSWORD_URL)
+    async def user_change_password():
+        pass
+
+    @post(path=urls.USER_EMAIL_CHANGE_REQUEST_URL)
     async def user_email_change_request():
         pass
 
-    @delete(path=USER_DELETE_URL)
+    @delete(path=urls.USER_DELETE_URL)
     async def user_delete():
         pass

@@ -3,6 +3,8 @@ from src.verdantech_api.domain.interfaces.persistence.user.repository import (
 )
 from src.verdantech_api.domain.utils.key_generator import key_generator
 
+from ..entities import User
+
 
 class VerificationService:
     """Namespace for email and password verification functions"""
@@ -66,4 +68,50 @@ class VerificationService:
             method_name=uniqueness_method_name, key=key
         ):
             key = key_generator(length=length)
+        return key
+
+
+class EmailVerificationService:
+    @staticmethod
+    async def new_verification(
+        user: User, address: str, key_length: int, user_repo: AbstractUserRepository
+    ) -> str:
+        """Generate new email confirmation key, and add a new email confirmation
+
+        Args:
+            user (User): user to add a new confirmation on
+            address (str): email to add a new confirmation on
+            key_length (int): application setting
+            user_repo (AbstractUserRepository): user repository
+
+        Returns:
+            str: generated key
+        """
+        key = await VerificationService.generate_open_email_confirmation_key(
+            length=key_length, user_repo=user_repo
+        )
+        user.new_email_verification(address=address, key=key)
+        return key
+
+
+class PasswordResetService:
+    @staticmethod
+    async def new_password_reset(
+        user: User, key_length: int, user_repo: AbstractUserRepository
+    ) -> str:
+        """Generate a new password reset confirmation key, and add a new
+            password reset confirmation
+
+        Args:
+            user (User): user to add a new confirmation on
+            key_length (int): application setting
+            user_repo (AbstractUserRepository): user repository
+
+        Returns:
+            str: generated key
+        """
+        key = await VerificationService.generate_open_password_reset_key(
+            length=key_length, user_repo=user_repo
+        )
+        user.new_password_reset(key=key)
         return key

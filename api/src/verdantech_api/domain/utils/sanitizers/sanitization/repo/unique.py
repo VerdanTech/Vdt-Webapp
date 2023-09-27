@@ -1,7 +1,9 @@
 from dataclasses import dataclass
-from typing import Any, List, TypedDict
+from typing import Any, TypedDict
 
-from litestar.contrib.repository.abc import AbstractAsyncRepository
+from src.verdantech_api.domain.interfaces.persistence.generic import (
+    AbstractAsyncRepository,
+)
 
 from ..generic import Sanitization, SanitizationConfig, SanitizationError
 

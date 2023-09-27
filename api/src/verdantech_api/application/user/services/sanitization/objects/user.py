@@ -11,15 +11,14 @@ from src.verdantech_api.domain.utils.sanitizers import FieldSanitizer
 from src.verdantech_api.domain.utils.sanitizers.sanitization.basic.ban import (
     BanSanitization,
     BanSanitizationConfig,
-)
-from src.verdantech_api.domain.utils.sanitizers.sanitization.basic.length import (
     LengthSanitization,
     LengthSanitizationConfig,
     LengthSanitizationSpec,
-)
-from src.verdantech_api.domain.utils.sanitizers.sanitization.basic.regex import (
     RegexSanitization,
     RegexSanitizationConfig,
+)
+from src.verdantech_api.domain.utils.sanitizers.sanitization.custom.email import (
+    EmailSanitizationConfig,
 )
 from src.verdantech_api.domain.utils.sanitizers.sanitization.repo.unique import (
     UniqueSanitization,
@@ -27,7 +26,7 @@ from src.verdantech_api.domain.utils.sanitizers.sanitization.repo.unique import 
     UniqueSanitizationSpec,
 )
 
-from ..fields.email import EmailSanitization, EmailSanitizationConfig
+from ..fields.email import EmailSanitization
 
 
 def provide_user_sanitizer(user_repo: AbstractUserRepository) -> UserSanitizer:

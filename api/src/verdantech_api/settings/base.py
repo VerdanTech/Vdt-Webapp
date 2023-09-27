@@ -2,39 +2,10 @@ from pathlib import Path
 from typing import List
 
 from decouple import Csv, config
-from litestar.logging import StructLoggingConfig
 
-# ==============================================================================
-# LITESTAR SETTINGS
-# ==============================================================================
-
-# ======================================
-# DATABASE SETTINGS
-# ======================================
-
-# ======================================
-# ALLOWED HOSTS SETTINGS
-# ======================================
-
-LITESTAR_ALLOWED_HOSTS: List[str] = config(
-    "ALLOWED_HOSTS", cast=Csv(), default=".localhost"
-)
-
-# ======================================
-# CORS SETTINGS
-# ======================================
-
-LITESTAR_ALLOW_ORIGINS: List[str] = config("ALLOWED_ORIGINS", cast=Csv(), default="")
-
-# ======================================
-# CSRF SETTINGS
-# ======================================
-
-# ======================================
-# LOGGING SETTINGS
-# ======================================
-
-logging_config = StructLoggingConfig()
+# ============================================================================
+# API SETTINGS
+# ============================================================================
 
 # ======================================
 # OPENAPI SETTINGS
@@ -45,60 +16,13 @@ OPENAPI_VERSION: str = "v0.0.1"
 OPENAPI_DOCUMENTATION_URL: str = "https://github.com/nathanielarking/VerdanTech"
 OPENAPI_LICENSE: str = "GPL-3.0-or-later"
 
-
-# ==============================================================================
-# VERDANTECH SETTINGS
-# ==============================================================================
-
 # ======================================
-# FILE SETTINGS
-# ======================================
-
-BASE_DIR = Path(__file__).resolve().parent.parent.parent
-
-
-def email_path(*paths: str) -> Path:
-    """Appends input path to static email directory"""
-    return BASE_DIR.join("verdantech_api/static/emails/", *paths)
-
-
-# ======================================
-# API SETTINGS
+# URL SETTINGS
 # ======================================
 
 USING_HTTPS: bool = config("USING_HTTPS", default=False, cast=bool)
 BASE_DOMAIN: str = config("BASE_DOMAIN", cast=str, default="127.0.0.1")
 API_URL_BASE: str = "api/"
-
-# ======================================
-# MODEL SETTINGS
-# ======================================
-
-# UserModel
-EMAIL_MIN_LENGTH: int = 1
-EMAIL_MAX_LENGTH: int = 255
-USERNAME_MIN_LENGTH: int = 3
-USERNAME_MAX_LENGTH: int = 50
-PASSWORD_MIN_LENGTH: int = 6
-PASSWORD_MAX_LENGTH: int = 255
-USER_MAX_EMAILS: int = 3
-VERIFICATION_KEY_MAX_LENGTH: int = 64
-
-# GardenModel
-GARDEN_STR_ID_MAX_LENGTH: int = 6
-
-# ======================================
-# EMAIL SETTINGS
-# ======================================
-
-EMAIL_CLIENT_HOSTNAME: str = ""
-EMAIL_CLIENT_PORT: int = 0
-EMAIL_CLIENT_USERNAME: int = ""
-EMAIL_CLIENT_PASSWORD: int = ""
-EMAIL_CLIENT_SENDER: str = "verdantech@gmail.com"
-
-EMAIL_VERIFICATION_KEY_LENGTH: int = 32
-EMAIL_VERIFICATON_EXPIRY_TIME_HOURS: int = 72
 
 # ======================================
 # CLIENT RELATED SETTINGS
@@ -110,4 +34,79 @@ if USING_HTTPS:
 else:
     CLIENT_BASE_URL: str = "http://" + CLIENT_DOMAIN + "/"
 CLIENT_EMAIL_VERIFICATION_URL: str = CLIENT_BASE_URL + "register/verify/"
-CLIENT_PASSWORD_RESET_URL: str = CLIENT_BASE_URL + "register/verify/"
+CLIENT_PASSWORD_RESET_URL: str = CLIENT_BASE_URL + "password_reset/"
+
+# ======================================
+# ALLOWED HOSTS SETTINGS
+# ======================================
+
+ALLOWED_HOSTS: List[str] = config("ALLOWED_HOSTS", cast=Csv(), default=".localhost")
+
+# ======================================
+# CORS SETTINGS
+# ======================================
+
+ALLOW_ORIGINS: List[str] = config("ALLOWED_ORIGINS", cast=Csv(), default="")
+
+# ======================================
+# CSRF SETTINGS
+# ======================================
+
+# ============================================================================
+# APPLICATION SETTINGS
+# ============================================================================
+
+# ======================================
+# DATABASE SETTINGS
+# ======================================
+
+# ======================================
+# FILE SETTINGS
+# ======================================
+
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
+
+EMAIL_BASE_DIR: str = "verdantech_api/static/emails/"
+
+
+def email_path(*paths: str) -> Path:
+    """Appends input path to static email directory"""
+    return BASE_DIR.join(EMAIL_BASE_DIR, *paths)
+
+
+# ======================================
+# EMAIL SETTINGS
+# ======================================
+
+EMAIL_CLIENT_HOSTNAME: str = ""
+EMAIL_CLIENT_PORT: int = 0
+EMAIL_CLIENT_USERNAME: int = ""
+EMAIL_CLIENT_PASSWORD: int = ""
+EMAIL_CLIENT_SENDER: str = "verdantech@gmail.com"
+
+REQUIRE_EMAIL_VERIFICATION = True
+EMAIL_VERIFICATION_KEY_LENGTH: int = 32
+EMAIL_VERIFICATON_EXPIRY_TIME_HOURS: int = 72
+
+# ============================================================================
+# DOMAIN MODEL SETTINGS
+# ============================================================================
+
+# ======================================
+# USER SETTINGS
+# ======================================
+
+EMAIL_MIN_LENGTH: int = 1
+EMAIL_MAX_LENGTH: int = 255
+USERNAME_MIN_LENGTH: int = 3
+USERNAME_MAX_LENGTH: int = 50
+PASSWORD_MIN_LENGTH: int = 6
+PASSWORD_MAX_LENGTH: int = 255
+USER_MAX_EMAILS: int = 3
+VERIFICATION_KEY_MAX_LENGTH: int = 64
+
+# ======================================
+# GARDEN SETTINGS
+# ======================================
+
+GARDEN_STR_ID_MAX_LENGTH: int = 6

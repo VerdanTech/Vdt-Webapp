@@ -103,7 +103,7 @@ class ObjectSanitizer(Generic[ObjectSanitizerConfigT]):
             Tuple[Dict[str, Any], Dict[str, str]]: the output sanitized
                 data and the error dictionary
         """
-        sanitized = input  # Default normalized value is no chang
+        sanitized = input  # Default normalized value is no change
         error = {}  # Group exceptions
 
         for field_name, input in input.items():
@@ -157,3 +157,17 @@ class ObjectSanitizer(Generic[ObjectSanitizerConfigT]):
             raise SanitizationError(error)
 
         return sanitized
+
+
+class MockObjectSanitizer(ObjectSanitizer):
+    """Mock object sanitizer for testing"""
+
+    def __init__(self) -> None:
+        pass
+
+    async def sanitize(
+        self,
+        input: Dict[str, Any],
+        disabled_fields: Dict[str, List[Type[SanitizationT]] | None] | None = None,
+    ) -> Dict[str, Any]:
+        return input

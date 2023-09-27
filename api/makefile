@@ -53,7 +53,7 @@ schema:
 
 .PHONY: lint
 lint:
-	$(BIN)/ruff check ./verdantech_api
+	$(BIN)/ruff check ./src/verdantech_api
 	$(BIN)/ruff check ./tests
 
 .PHONY: format
@@ -71,11 +71,3 @@ test:
 .PHONY: docs
 docs:
 	$(BIN)/mkdocs serve
-
-.PHONY: migrations
-migrations:
-	$(BIN)/$(PY) manage.py makemigrations
-
-.PHONY: migrate
-migrate:
-	$(BIN)/$(PY) manage.py migrate

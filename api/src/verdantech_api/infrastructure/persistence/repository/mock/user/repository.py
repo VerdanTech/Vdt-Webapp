@@ -1,5 +1,9 @@
 from typing import List
 
+from src.verdantech_api.domain.interfaces.persistence.user.exceptions import (
+    UserDoesNotExistError,
+)
+from src.verdantech_api.domain.models.common.entities import EntityIDType
 from src.verdantech_api.domain.models.user.entities import User
 
 from ..generic import MockBaseRepository
@@ -31,6 +35,83 @@ class MockUserRepository(MockBaseRepository[User]):
             List[User]: the resultant persisted user objects
         """
         return self._add_many(users)
+
+    async def update(self, user: User) -> User:
+        """Persist an existing user object to the repository
+
+        Args:
+            user (User): user object to update
+
+        Returns:
+            User: the resultant persisted user object
+        """
+        for i, existing_user in enumerate(self.collection):
+            if existing_user.id == user.id:
+                self.collection[i] = user
+                return user
+        raise UserDoesNotExistError(
+            "The user does not presently exist in the repository"
+        )
+
+    async def get_user_by_email_address(self, email_address: str) -> User | None:
+        """Given an email address, return the user with the
+            email to whom it belongs
+
+        Args:
+            email_address (str): the address to search for
+
+        Returns:
+            User | None: the found user, or None if no user was found
+        """
+        for user in self.collection:
+            for email in user.emails:
+                if email.address == email_address:
+                    return user
+        return None
+
+    async def get_user_by_email_confirmation_key(
+        self, email_confirmation_key: str
+    ) -> User | None:
+        """Given an email confirmation key, return the user with
+            the email to whom it belongs
+
+        Args:
+            key (str): email confirmation key
+
+        Returns:
+            User | None: the found user, or None if no user was found
+        """
+        for user in self.collection:
+            for email in user.emails:
+                if (
+                    email.confirmation is not None
+                    and email.confirmation.key == email_confirmation_key
+                ):
+                    return user
+        return None
+
+    async def get_user_by_password_reset_confirmation(
+        self, user_id: EntityIDType, password_reset_confirmation_key: str
+    ) -> User | None:
+        """Given a password reset key and user ID, return the user with
+            the password reset confirmation and ID to whom they belong
+
+        Args:
+            user_id (EntityIDType): the user's ID
+            key (str): password reset confirmation key
+
+        Returns:
+            User | None: the found user, or None if no user was found
+        """
+        for user in self.collection:
+            if user.password_reset_confirmation is not None:
+                if (
+                    user.id == user_id
+                    and user.password_reset_confirmation.key
+                    == password_reset_confirmation_key
+                ):
+                    return user
+        return None
 
     async def username_exists(self, username: str) -> bool:
         """Check the existence of a username in the repository

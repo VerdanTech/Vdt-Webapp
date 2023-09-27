@@ -1,4 +1,3 @@
-from src.verdantech_api import settings
 from src.verdantech_api.domain.interfaces.persistence.user.repository import (
     AbstractUserRepository,
 )

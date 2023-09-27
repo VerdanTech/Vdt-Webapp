@@ -1,27 +1,16 @@
 from typing import TypedDict
 
 from src.verdantech_api.domain.utils.sanitizers import FieldSanitizer, ObjectSanitizer
-from src.verdantech_api.domain.utils.sanitizers.sanitization.basic.ban import (
+from src.verdantech_api.domain.utils.sanitizers.sanitization.basic import (
     BanSanitization,
-    BanSanitizationConfig,
-)
-from src.verdantech_api.domain.utils.sanitizers.sanitization.basic.length import (
     LengthSanitization,
-    LengthSanitizationConfig,
-    LengthSanitizationSpec,
-)
-from src.verdantech_api.domain.utils.sanitizers.sanitization.basic.regex import (
     RegexSanitization,
-    RegexSanitizationConfig,
 )
-from src.verdantech_api.domain.utils.sanitizers.sanitization.custom.email import (
+from src.verdantech_api.domain.utils.sanitizers.sanitization.custom import (
     EmailSanitization,
-    EmailSanitizationConfig,
 )
-from src.verdantech_api.domain.utils.sanitizers.sanitization.repo.unique import (
+from src.verdantech_api.domain.utils.sanitizers.sanitization.repo import (
     UniqueSanitization,
-    UniqueSanitizationConfig,
-    UniqueSanitizationSpec,
 )
 
 

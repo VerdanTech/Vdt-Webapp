@@ -1,7 +1,7 @@
 [project]
 name = "verdantech_api"
 version = "1.0.0"
-requires-python = ">=3.10.6"
+requires-python = ">=3.11"
 license = {text = "GPL-3.0-or-later"}
 description = 'API of the VerdanTech web application.'
 readme = "README.md"
@@ -9,8 +9,7 @@ authors = [
   { name = "Nathaniel King", email = "nathanielarking@gmail.com" }
 ]
 dependencies = [
-    "litestar[sqlalchemy, cli]",
-    "serpyco",
+    "litestar[cli]",
     "structlog",
     "passlib",
     "argon2_cffi",

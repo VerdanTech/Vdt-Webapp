@@ -1,7 +1,16 @@
 import asyncio
-from typing import Callable, Dict, Generic, List, Type, TypeVarTuple
+from typing import Callable, Dict, Generic, List, Type
 
-from .sanitization.generic import GenericInputType, SanitizationError, SanitizationT, SanitizationsT
+from .sanitization.generic import (
+    GenericInputType,
+    SanitizationError,
+    SanitizationsT,
+    SanitizationT,
+)
+
+# Use this in disabled_fields to disable all sanitization
+# in a field, as its clearer than just using None
+DISABLE_FIELD = None
 
 
 class FieldSanitizer(Generic[*SanitizationsT]):

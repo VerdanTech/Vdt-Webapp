@@ -67,7 +67,10 @@ class MockBaseRepository(BaseRepository[RootEntityT], Generic[RootEntityT]):
             # Existing entity
             if entity.id is not None:
                 raise ValueError(
-                    f"ID field of {str(entity)} of type {str(type(entity))} already exists"
+                    f"""
+                    ID field of {str(entity)} of type 
+                    {str(type(entity))} already exists
+                    """
                 )
 
             # New entity

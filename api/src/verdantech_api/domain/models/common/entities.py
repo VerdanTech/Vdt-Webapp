@@ -4,11 +4,13 @@ from typing import Optional, TypeVar
 EntityT = TypeVar("EntityT", bound="Entity")
 RootEntityT = TypeVar("RootEntityT", bound="RootEntity")
 
+EntityIDType = str
+
 
 class Entity:
     """Base entity class for all domain entity models"""
 
-    id: Optional[str] = None
+    id: Optional[EntityIDType] = None
 
     @classmethod
     def __init_subclass__(cls):
