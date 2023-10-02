@@ -10,7 +10,7 @@ EntityIDType = str
 class Entity:
     """Base entity class for all domain entity models"""
 
-    id: Optional[EntityIDType] = None
+    _id: Optional[EntityIDType] = None
 
     @classmethod
     def __init_subclass__(cls):

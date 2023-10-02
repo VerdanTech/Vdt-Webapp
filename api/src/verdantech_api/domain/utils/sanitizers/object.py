@@ -14,18 +14,10 @@ class ObjectSanitizerConfig(TypedDict):
 
 ObjectSanitizerConfigT = TypeVar("ObjectSanitizerConfigT", bound=ObjectSanitizerConfig)
 
-object_mapping = {
-    "username": "username",
-    "email_address": "emails.address",
-    "password": None,
-}
-
 
 class ObjectSanitizer(Generic[ObjectSanitizerConfigT]):
     """This class allows assigning multiple FieldSanitizers to
     multiple object fields, and to validate all fields while grouping errors"""
-
-    object_mapping: Dict[str, str]
 
     def __init__(self, config: ObjectSanitizerConfig):
         self.config = config
@@ -135,7 +127,8 @@ class ObjectSanitizer(Generic[ObjectSanitizerConfigT]):
         input: Dict[str, Any],
         disabled_fields: Dict[str, List[Type[SanitizationT]] | None] | None = None,
     ) -> Dict[str, Any]:
-        """Call the sanitization function, and raise error if any failure
+        """Call the sanitization function on a dict input,
+            and raise error if any failure
 
         Args:
             input (Dict[str, Any]): the input fields to sanitize
@@ -158,6 +151,15 @@ class ObjectSanitizer(Generic[ObjectSanitizerConfigT]):
 
         return sanitized
 
+    async def sanitize_object(self, object: Any) -> None:
+        """Implement object-specific logic for validating object
+            instances as opposed to dicts.
+
+        Args:
+            object (Any): the object to sanitize
+        """
+        raise NotImplementedError
+
 
 class MockObjectSanitizer(ObjectSanitizer):
     """Mock object sanitizer for testing"""
@@ -171,3 +173,6 @@ class MockObjectSanitizer(ObjectSanitizer):
         disabled_fields: Dict[str, List[Type[SanitizationT]] | None] | None = None,
     ) -> Dict[str, Any]:
         return input
+
+    async def sanitize_object(self, object: Any) -> None:
+        return

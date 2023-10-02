@@ -9,7 +9,9 @@ authors = [
   { name = "Nathaniel King", email = "nathanielarking@gmail.com" }
 ]
 dependencies = [
-    "litestar[cli]",
+    "litestar[cli]>=2.1.1",
+    "motor",
+    "serpyco",
     "structlog",
     "passlib",
     "argon2_cffi",

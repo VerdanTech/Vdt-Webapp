@@ -1,6 +1,6 @@
 from src.verdantech_api import settings
 from src.verdantech_api.domain.models.common.entities import EntityIDType
-from src.verdantech_api.infrastructure.email.emitter import EmailEmitter
+from src.verdantech_api.infrastructure.email.litestar_emitter import EmailEmitter
 
 
 async def emit_email_verification_email(

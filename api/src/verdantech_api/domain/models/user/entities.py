@@ -1,6 +1,6 @@
 from dataclasses import field
 from datetime import datetime, timedelta
-from typing import List
+from typing import List, Optional
 
 from src.verdantech_api.domain.interfaces.security.crypt import AbstractPasswordCrypt
 
@@ -14,13 +14,13 @@ class User(RootEntity):
     """User entity model"""
 
     username: str
-    username_norm: str = None
-    _password_hash: str | None = None
-    emails: List[Email] = None
-    memberships: List[GardenMembershipRef] = None
+    username_norm: Optional[str] = None
+    _password_hash: Optional[str] = None
+    emails: Optional[List[Email]] = None
+    memberships: Optional[List[GardenMembershipRef]] = None
     is_active: bool = True
     is_superuser: bool = False
-    password_reset_confirmation: PasswordResetConfirmation | None = None
+    password_reset_confirmation: Optional[PasswordResetConfirmation] = None
     created_at: datetime = field(default_factory=datetime.now)
 
     def __post_init__(self) -> None:

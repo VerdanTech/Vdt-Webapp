@@ -1,13 +1,10 @@
 import inspect
 from typing import Any, Dict, Generic
 
-from litestar.contrib.repository.abc import (
-    AbstractAsyncRepository as LitestarAbstractAsyncRepository,
-)
 from src.verdantech_api.domain.models.common.entities import RootEntityT
 from src.verdantech_api.domain.utils.sanitizers.object import ObjectSanitizer
 
-# from ..serializer.generic import ModelAdapter
+from ..serializer.generic import AbstractSerializer
 
 
 class BaseRepository(Generic[RootEntityT]):
@@ -17,13 +14,9 @@ class BaseRepository(Generic[RootEntityT]):
 
     def __init__(
         self,
-        sanitizer: ObjectSanitizer,
-        # adapter: ModelAdapter,
-        litestar_repo: LitestarAbstractAsyncRepository[RootEntityT],
+        serializer: AbstractSerializer,
     ) -> None:
-        self.sanitizer = sanitizer
-        # self.adapter = adapter
-        self.litestar_repo = litestar_repo
+        self.adapter = serializer
 
     async def async_dynamic_call(
         self, method_name: str, **kwargs: Dict[str, Any]

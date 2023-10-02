@@ -6,7 +6,7 @@ from src.verdantech_api.domain.models.user.services import EmailAdditionService
 from src.verdantech_api.domain.models.user.services.verification import (
     EmailVerificationService,
 )
-from src.verdantech_api.infrastructure.email.emitter import EmailEmitter
+from src.verdantech_api.infrastructure.email.litestar_emitter import EmailEmitter
 
 from .verification import emit_email_verification_email
 

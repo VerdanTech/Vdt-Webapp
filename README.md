@@ -29,7 +29,7 @@ There are three steps to building a system like this. The plan looks like this:
 2. (The input stage) While the software model exists, it still relies primary on humans to gather the information to sustain it, and update the model state. Technologies must be made to automate the process of acquiring information. In the model level, the model will have an interface for plugging in external information and control devices. The simplest are weather APIs, and then there's physical sensors in the garden space, and finally there are quadcopters with cameras conducting daily complete 3D scans of the area and computer vision systems categorizing that information into inputs into the model. The end game of this is that the entire informational side of agriculture is automated, and the barrier to entry with a system like this to growing your own food is setting up the model and the input-gatherers and then performing the physical "actions" which are outputs of the model to optimize state.  
 3. (The output stage) Complete automation can be achieved at such a time as there are robotic systems capable of carrying out the vast complexity of operations humans perfore in agriculture. This is still totally sci-fi, but there are companies working on it today for specialized tasks.
 
-## Features
+## Roadmap
 
 ### Completed
 
@@ -77,6 +77,8 @@ There are two ways to deploy: manual mode on linux and docker mode. Even if you 
 The application implements a decoupled backend/frontent arhitecture. The backend is an asynchronous python3.11 running on uvicore, and the frontend is a SvelteKit spa-mode static file generator with Skeleton UI.
 
 ## Download and Installation
+
+Recommended VS code theme: Solarized Dark
 
 ## Backend
 

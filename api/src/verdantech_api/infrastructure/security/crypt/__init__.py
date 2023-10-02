@@ -1,3 +1,12 @@
-from .passlib import PasslibPasswordCrypt
+from .passlib import passlib_crypt_provider
 
-__all__ = ["PasslibPasswordCrypt"]
+# ============================================================================
+# PROVIDER METHODS
+# ============================================================================
+
+# ============================================================================
+# PROVIDER DICTS
+# ============================================================================
+
+# Choice provider
+password_crypt_provider = passlib_crypt_provider

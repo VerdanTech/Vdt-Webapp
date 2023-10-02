@@ -6,10 +6,15 @@ from email.mime.text import MIMEText
 from typing import Any, Dict
 
 import html2text
-from src.verdantech_api.infrastructure.utils.utils import read_file_async
+from src.verdantech_api.infrastructure.utils.file import read_file_async
 
 
-class AsyncEmailClient:
+class BaseEmailClient:
+    """Partially implement the AbstractAsyncEmailClient interface defined in
+    domain.interfaces, leaving the implementation of the "send" awaitable to
+    subclasses.
+    """
+
     def __init__(
         self,
         client_hostname: str,

@@ -1,11 +1,13 @@
 import pytest
-from src.verdantech_api.infrastructure.email.aiosmtplib import aioSMTPLibEmailClient
-from src.verdantech_api.infrastructure.email.generic import AsyncEmailClient
+from src.verdantech_api.infrastructure.email.aiosmtplib.client import (
+    aioSMTPLibEmailClient,
+)
+from src.verdantech_api.infrastructure.email.generic import BaseEmailClient
 
 
 @pytest.fixture
-def generic_async_client():
-    return AsyncEmailClient(
+def base_email_client():
+    return BaseEmailClient(
         client_hostname="",
         client_port=0,
         client_username="",

@@ -4,7 +4,8 @@ BIN=$(VENV)/bin
 
 .PHONY: init-venv
 init-venv:
-	sudo apt install python3 && sudo apt install python3-pip && sudo apt install python3-venv
+	sudo add-apt-repository ppa:deadsnakes/ppa
+	sudo apt install python3.11 && sudo apt install python3-pip && sudo apt install python3-venv && sudo apt install python3-dev
 	$(PY) -m venv $(VENV)
 	$(BIN)/$(PY) -m pip install --upgrade pip pip-tools wheel
 
@@ -45,7 +46,7 @@ build: init-venv sync-dependencies
 
 .PHONY: run
 run:
-	$(BIN)/litestar --app src.verdantech_api.app:create_app run
+	$(BIN)/litestar --app src.verdantech_api.api.litestar.app:create_app run --reload-dir 
 
 .PHONY: schema
 schema:

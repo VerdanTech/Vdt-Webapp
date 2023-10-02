@@ -35,7 +35,7 @@ class TestAIOSMTPLibClient:
             mocker (MockerFixture): pytest-mock
         """
         aiosmtp_send_mock = mocker.patch(
-            "src.verdantech_api.infrastructure.email.aiosmtplib.aiosmtp_send"
+            "src.verdantech_api.infrastructure.email.aiosmtplib.client.aiosmtp_send"
         )
         if exception is not None:
             aiosmtp_send_mock.side_effect = exception

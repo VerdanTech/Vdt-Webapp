@@ -1,5 +1,13 @@
-from .crypt.passlib import PasslibPasswordCrypt
+from .crypt import password_crypt_provider
+
+# ============================================================================
+# PROVIDER METHODS
+# ============================================================================
 
 
-def provide_passlib_crypt():
-    return PasslibPasswordCrypt()
+# ============================================================================
+# PROVIDER DICTS
+# ============================================================================
+
+# Merge provider
+security_provider = password_crypt_provider

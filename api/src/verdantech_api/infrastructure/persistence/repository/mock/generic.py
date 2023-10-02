@@ -23,7 +23,7 @@ class MockBaseRepository(BaseRepository[RootEntityT], Generic[RootEntityT]):
         Args:
             entity (Entity): the entity to update with ID
         """
-        entity.id = self.id_factory()
+        entity._id = self.id_factory()
 
     def _add(self, entity: RootEntityT) -> RootEntityT:
         """Add a generic entity to the repository
@@ -39,7 +39,7 @@ class MockBaseRepository(BaseRepository[RootEntityT], Generic[RootEntityT]):
         """
 
         # Existing entity
-        if entity.id is not None:
+        if entity._id is not None:
             raise ValueError(
                 f"ID field of {str(entity)} of type {str(type(entity))} already exists"
             )
@@ -65,7 +65,7 @@ class MockBaseRepository(BaseRepository[RootEntityT], Generic[RootEntityT]):
 
         for entity in entities:
             # Existing entity
-            if entity.id is not None:
+            if entity._id is not None:
                 raise ValueError(
                     f"""
                     ID field of {str(entity)} of type 

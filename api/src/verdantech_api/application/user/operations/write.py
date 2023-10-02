@@ -5,7 +5,7 @@ from src.verdantech_api.domain.interfaces.persistence.user.repository import (
 from src.verdantech_api.domain.interfaces.security.crypt import AbstractPasswordCrypt
 from src.verdantech_api.domain.models.user.entities import User
 from src.verdantech_api.domain.models.user.services.sanitization import UserSanitizer
-from src.verdantech_api.infrastructure.email.emitter import EmailEmitter
+from src.verdantech_api.infrastructure.email.litestar_emitter import EmailEmitter
 
 from ..schemas.api.write import UserCreateInput
 from ..services.email.addition import add_first_email

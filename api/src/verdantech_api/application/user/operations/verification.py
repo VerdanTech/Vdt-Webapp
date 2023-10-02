@@ -9,7 +9,7 @@ from src.verdantech_api.domain.models.user.exceptions import (
     UserNotFound,
 )
 from src.verdantech_api.domain.models.user.services.sanitization import UserSanitizer
-from src.verdantech_api.infrastructure.email.emitter import EmailEmitter
+from src.verdantech_api.infrastructure.email.litestar_emitter import EmailEmitter
 
 from ..schemas.api.verification import (
     UserPasswordResetConfirmInput,

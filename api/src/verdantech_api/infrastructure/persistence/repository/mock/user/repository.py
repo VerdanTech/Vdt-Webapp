@@ -46,7 +46,7 @@ class MockUserRepository(MockBaseRepository[User]):
             User: the resultant persisted user object
         """
         for i, existing_user in enumerate(self.collection):
-            if existing_user.id == user.id:
+            if existing_user._id == user._id:
                 self.collection[i] = user
                 return user
         raise UserDoesNotExistError(
@@ -106,7 +106,7 @@ class MockUserRepository(MockBaseRepository[User]):
         for user in self.collection:
             if user.password_reset_confirmation is not None:
                 if (
-                    user.id == user_id
+                    user._id == user_id
                     and user.password_reset_confirmation.key
                     == password_reset_confirmation_key
                 ):

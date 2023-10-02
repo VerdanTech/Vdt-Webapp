@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from dataclasses import field, replace
 from datetime import datetime, timedelta
+from typing import Optional
 
 from ..common.values import Ref, Value
 from .exceptions import EmailAlreadyVerifiedError, EmailConfirmationExpired
@@ -19,8 +20,8 @@ class Email(Value):
     address: str
     verified: bool = False
     primary: bool = False
-    confirmation: "EmailConfirmation" | None = None
-    verified_at: datetime | None = None
+    confirmation: Optional["EmailConfirmation"]
+    verified_at: Optional[datetime]
 
     def new_confirmation(self, key: str) -> Email:
         """Create a new email confirmation and return

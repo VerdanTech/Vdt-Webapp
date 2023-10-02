@@ -8,6 +8,8 @@ aiofiles==23.1.0
     # via verdantech-api (pyproject.toml)
 aiosmtplib==2.0.2
     # via verdantech-api (pyproject.toml)
+alembic==1.12.0
+    # via litestar
 anyio==3.7.1
     # via
     #   httpcore
@@ -29,7 +31,9 @@ click==8.1.6
     #   rich-click
     #   uvicorn
 dnspython==2.4.1
-    # via email-validator
+    # via
+    #   email-validator
+    #   pymongo
 editorconfig==0.12.3
     # via jsbeautifier
 email-validator==2.0.0.post2
@@ -38,6 +42,8 @@ faker==19.2.0
     # via polyfactory
 fast-query-parsers==1.0.2
     # via litestar
+greenlet==2.0.2
+    # via sqlalchemy
 h11==0.14.0
     # via
     #   httpcore
@@ -57,16 +63,24 @@ idna==3.4
     #   httpx
 jsbeautifier==1.14.9
     # via litestar
-litestar[cli]==2.0.0rc1
+litestar[cli]==2.1.1
     # via verdantech-api (pyproject.toml)
+mako==1.2.4
+    # via alembic
 markdown-it-py==3.0.0
     # via rich
+markupsafe==2.1.3
+    # via mako
 mdurl==0.1.2
     # via markdown-it-py
-msgspec==0.17.0
+motor==3.3.1
+    # via verdantech-api (pyproject.toml)
+msgspec==0.18.2
     # via litestar
 multidict==6.0.4
     # via litestar
+mypy-extensions==1.0.0
+    # via typing-inspect
 passlib==1.7.4
     # via verdantech-api (pyproject.toml)
 polyfactory==2.7.0
@@ -75,12 +89,18 @@ pycparser==2.21
     # via cffi
 pygments==2.15.1
     # via rich
+pymongo==4.5.0
+    # via motor
 python-dateutil==2.8.2
-    # via faker
+    # via
+    #   faker
+    #   serpyco
 python-decouple==3.8
     # via verdantech-api (pyproject.toml)
 python-dotenv==1.0.0
     # via uvicorn
+python-rapidjson==1.11
+    # via serpyco
 pyyaml==6.0.1
     # via
     #   litestar
@@ -91,6 +111,8 @@ rich==13.5.2
     #   rich-click
 rich-click==1.6.1
     # via litestar
+serpyco==1.3.12
+    # via verdantech-api (pyproject.toml)
 six==1.16.0
     # via
     #   jsbeautifier
@@ -100,12 +122,21 @@ sniffio==1.3.0
     #   anyio
     #   httpcore
     #   httpx
+sqlalchemy==2.0.21
+    # via
+    #   alembic
+    #   litestar
 structlog==23.1.0
     # via verdantech-api (pyproject.toml)
 typing-extensions==4.7.1
     # via
+    #   alembic
     #   litestar
     #   polyfactory
+    #   sqlalchemy
+    #   typing-inspect
+typing-inspect==0.9.0
+    # via serpyco
 uvicorn[standard]==0.23.2
     # via litestar
 uvloop==0.17.0

@@ -13,6 +13,8 @@ from src.verdantech_api.domain.utils.sanitizers.sanitization.repo import (
     UniqueSanitization,
 )
 
+from ..entities import User
+
 
 class UserSanitizerConfig(TypedDict):
     username: FieldSanitizer[
@@ -29,4 +31,12 @@ class UserSanitizerConfig(TypedDict):
 
 
 class UserSanitizer(ObjectSanitizer[UserSanitizerConfig]):
-    pass
+    async def sanitize_object(self, user: User) -> None:
+        """Sanitize a user object
+
+        Args:
+            user (User): user to sanitize
+        """
+        self.username.sanitize(input=user.username)
+        for email in user.emails:
+            self.email_address.sanitize(input=email.address)

@@ -7,7 +7,7 @@ from src.verdantech_api.domain.models.user.exceptions import UserNotAuthenticate
 from src.verdantech_api.domain.models.user.services.verification import (
     PasswordResetService,
 )
-from src.verdantech_api.infrastructure.email.emitter import EmailEmitter
+from src.verdantech_api.infrastructure.email.litestar_emitter import EmailEmitter
 
 from ..email.verification import emit_password_reset_email
 
@@ -39,7 +39,7 @@ async def new_password_reset(
     await emit_password_reset_email(
         email_address=email_address,
         username=user.username,
-        user_id=user.id,
+        user_id=user._id,
         key=key,
         email_emitter=email_emitter,
     )

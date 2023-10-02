@@ -27,7 +27,7 @@ async def test_new_password_reset(mocker: MockerFixture) -> None:
     )
     mock_user = mocker.MagicMock()
     mock_user.username = "username"
-    mock_user.id = "test_id"
+    mock_user._id = "test_id"
     address = "test@test.com"
     key_length = 0
     mock_user_repo = mocker.Mock()
@@ -47,7 +47,7 @@ async def test_new_password_reset(mocker: MockerFixture) -> None:
     mock_emit_password_reset_email.assert_awaited_once_with(
         email_address=address,
         username=mock_user.username,
-        user_id=mock_user.id,
+        user_id=mock_user._id,
         key=generated_key,
         email_emitter=mock_email_emitter,
     )
