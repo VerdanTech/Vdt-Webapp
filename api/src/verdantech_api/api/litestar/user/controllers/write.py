@@ -1,5 +1,6 @@
 from litestar import Controller, delete, patch, post
-from src.verdantech_api import providers, settings
+from src.verdantech_api import settings
+from src.verdantech_api.api.litestar import dependencies
 from src.verdantech_api.api.litestar.exceptions import litestar_exception_map
 from src.verdantech_api.api.litestar.user.schemas.common import UserSelfDetail
 from src.verdantech_api.application.user.operations import UserWriteOperations
@@ -19,6 +20,7 @@ class UserWriteController(Controller):
     """dependencies = providers.select(
         settings.USER_REPOSITORY_PK, settings.USER_WRITE_OP_PK
     )"""
+    dependencies = dependencies.select(settings.USER_SERIALIZER_PK)
 
     @post(
         name="users:create",
@@ -27,12 +29,12 @@ class UserWriteController(Controller):
         tags=["users"],
         path=urls.USER_CREATE_URL,
         return_dto=UserSelfDetail,
-        #dependencies=providers.select(
-            #settings.USER_SANITIZER_PK,
-            #settings.PASSWORD_CRYPT_PK,
-            #settings.EMAIL_CLIENT_PK,
-            #settings.EMAIL_EMITTER_PK,
-        #),
+        # dependencies=providers.select(
+        # settings.USER_SANITIZER_PK,
+        # settings.PASSWORD_CRYPT_PK,
+        # settings.EMAIL_CLIENT_PK,
+        # settings.EMAIL_EMITTER_PK,
+        # ),
     )
     async def user_create(
         self,

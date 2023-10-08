@@ -4,7 +4,7 @@ from typing import Any, Dict, Generic
 from src.verdantech_api.domain.models.common.entities import RootEntityT
 from src.verdantech_api.domain.utils.sanitizers.object import ObjectSanitizer
 
-from ..serializer.generic import AbstractSerializer
+from ..mapper.generic import AbstractMapper, DatabaseModelT
 
 
 class BaseRepository(Generic[RootEntityT]):
@@ -14,9 +14,9 @@ class BaseRepository(Generic[RootEntityT]):
 
     def __init__(
         self,
-        serializer: AbstractSerializer,
+        mapper: AbstractMapper,
     ) -> None:
-        self.adapter = serializer
+        self.mapper = mapper
 
     async def async_dynamic_call(
         self, method_name: str, **kwargs: Dict[str, Any]

@@ -39,7 +39,7 @@ async def new_password_reset(
     await emit_password_reset_email(
         email_address=email_address,
         username=user.username,
-        user_id=user._id,
+        user_id=user.id,
         key=key,
         email_emitter=email_emitter,
     )

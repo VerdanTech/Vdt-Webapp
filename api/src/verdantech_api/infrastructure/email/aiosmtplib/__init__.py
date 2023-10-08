@@ -15,11 +15,3 @@ async def provide_aiosmtplib_client() -> aioSMTPLibEmailClient:
         password=settings.EMAIL_CLIENT_PASSWORD,
         sender=settings.EMAIL_CLIENT_SENDER,
     )
-
-
-# ============================================================================
-# PROVIDER DICTS
-# ============================================================================
-
-# Base provider
-aiosmtplib_client_provider = {settings.EMAIL_CLIENT_PK: provide_aiosmtplib_client}

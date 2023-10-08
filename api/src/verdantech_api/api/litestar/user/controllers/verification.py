@@ -1,5 +1,6 @@
 from litestar import Controller, post
-from src.verdantech_api import providers, settings
+from src.verdantech_api import settings
+from src.verdantech_api.api.litestar import dependencies
 from src.verdantech_api.api.litestar.exceptions import litestar_exception_map
 from src.verdantech_api.application.user.operations import UserVerificationOperations
 from src.verdantech_api.application.user.schemas.api.verification import (
@@ -21,9 +22,9 @@ class UserVerificationController(Controller):
     """User verification controller"""
 
     path = urls.USER_VERIFICATION_CONTROLLER_BASE
-    #dependencies = providers.select(
-        #settings.USER_REPOSITORY_PK, settings.USER_VERIFICATION_OP_PK
-    #)
+    # dependencies = dependencies.select(
+    # settings.USER_REPOSITORY_PK, settings.USER_VERIFICATION_OP_PK
+    # )
 
     @post(
         name="users:email_verify_request",
@@ -31,11 +32,11 @@ class UserVerificationController(Controller):
         description="Open new email confirmation and send confirmation email",
         tags=["users"],
         path=urls.USER_EMAIL_VERIFICATION_REQUEST_URL,
-        #dependencies=providers.select(
-            #settings.USER_SANITIZER_PK,
-            #settings.EMAIL_CLIENT_PK,
-            #settings.EMAIL_EMITTER_PK,
-        #),
+        # dependencies=providers.select(
+        # settings.USER_SANITIZER_PK,
+        # settings.EMAIL_CLIENT_PK,
+        # settings.EMAIL_EMITTER_PK,
+        # ),
     )
     async def user_email_verification_request(
         self,
@@ -86,11 +87,11 @@ class UserVerificationController(Controller):
         description="Open a new password reset request and send confirmation email",
         tags=["users"],
         path=urls.USER_PASSWORD_RESET_REQUEST_URL,
-        #dependencies=providers.select(
-            #settings.USER_SANITIZER_PK,
-            #settings.EMAIL_CLIENT_PK,
-            #settings.EMAIL_EMITTER_PK,
-        #),
+        # dependencies=providers.select(
+        # settings.USER_SANITIZER_PK,
+        # settings.EMAIL_CLIENT_PK,
+        # settings.EMAIL_EMITTER_PK,
+        # ),
     )
     async def user_password_reset_request(
         self,
@@ -121,9 +122,9 @@ class UserVerificationController(Controller):
         description="Close a password reset request and change password",
         tags=["users"],
         path=urls.USER_PASSWORD_RESET_CONFIRM_URL,
-        #dependencies=providers.select(
-            #settings.USER_SANITIZER_PK, settings.PASSWORD_CRYPT_PK
-        #),
+        # dependencies=providers.select(
+        # settings.USER_SANITIZER_PK, settings.PASSWORD_CRYPT_PK
+        # ),
     )
     async def user_password_reset_confirm(
         self,

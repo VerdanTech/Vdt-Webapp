@@ -1,8 +1,7 @@
 from litestar import Request
-from src.verdantech_api import settings
 from src.verdantech_api.domain.interfaces.email.client import AbstractEmailClient
 
-from .aiosmtplib import aiosmtplib_client_provider
+from .aiosmtplib import provide_aiosmtplib_client
 from .litestar_emitter import EmailEmitter
 
 # ============================================================================
@@ -24,17 +23,3 @@ async def provide_litestar_email_emitter(
         EmailEmitter: email emitter callable
     """
     return EmailEmitter(client=email_client, request=request)
-
-
-# ============================================================================
-# PROVIDER DICTS
-# ============================================================================
-
-# Base provider
-email_emitter_provider = {settings.EMAIL_EMITTER_PK: provide_litestar_email_emitter}
-
-# Choice provider
-email_client_provider = aiosmtplib_client_provider
-
-# Merge provider
-email_provider = email_emitter_provider | aiosmtplib_client_provider

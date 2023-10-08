@@ -20,8 +20,8 @@ class Email(Value):
     address: str
     verified: bool = False
     primary: bool = False
-    confirmation: Optional["EmailConfirmation"]
-    verified_at: Optional[datetime]
+    confirmation: Optional["EmailConfirmation"] = None
+    verified_at: Optional[datetime] = None
 
     def new_confirmation(self, key: str) -> Email:
         """Create a new email confirmation and return

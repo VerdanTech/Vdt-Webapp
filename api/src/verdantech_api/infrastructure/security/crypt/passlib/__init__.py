@@ -10,11 +10,3 @@ from .passlib import PasslibPasswordCrypt
 async def provide_passlib_crypt():
     """Provide passlib password crypt for dependency injection"""
     return PasslibPasswordCrypt()
-
-
-# ============================================================================
-# PROVIDER DICTS
-# ============================================================================
-
-# Base provider
-passlib_crypt_provider = {settings.PASSWORD_CRYPT_PK: provide_passlib_crypt}

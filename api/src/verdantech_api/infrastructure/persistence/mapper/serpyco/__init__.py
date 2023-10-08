@@ -1,8 +1,5 @@
-from src.verdantech_api import settings
-
-from .litestar_lifecycle import MotorLitestarDBLifecycleManager
-from .user import provide_user_motor_repository
-
 # ============================================================================
 # PROVIDER METHODS
 # ============================================================================
+
+from .user import provide_user_serpyco_serializer

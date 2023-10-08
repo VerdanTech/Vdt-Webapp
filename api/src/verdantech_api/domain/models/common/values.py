@@ -13,4 +13,4 @@ class Ref(Value):
     """Base class for inter-object reference, aka a
     container around an object ID"""
 
-    _id: str
+    id: str

@@ -24,7 +24,8 @@ class User(RootEntity):
     created_at: datetime = field(default_factory=datetime.now)
 
     def __post_init__(self) -> None:
-        self.set_username(username=self.username)
+        if self.username_norm is None:
+            self.set_username(username=self.username)
         self.emails = []
         self.memberships = []
 

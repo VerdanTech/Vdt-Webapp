@@ -1,7 +1,7 @@
 from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorClientSession
 from src.verdantech_api import settings
 from src.verdantech_api.domain.models.user.entities import User
-from src.verdantech_api.infrastructure.persistence.serializer.generic import (
+from src.verdantech_api.infrastructure.persistence.mapper.generic import (
     AbstractSerializer,
 )
 
@@ -26,11 +26,3 @@ async def provide_user_motor_repository(
         client_session=client_session,
         serializer=user_serializer,
     )
-
-
-# ============================================================================
-# PROVIDER DICTS
-# ============================================================================
-
-# Base provider
-user_repo_provider = {settings.USER_REPOSITORY_PK: provide_user_motor_repository}

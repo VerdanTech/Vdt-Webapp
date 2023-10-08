@@ -1,4 +1,4 @@
-PY = python3
+PY = python3.11
 VENV = venv
 BIN=$(VENV)/bin
 
@@ -46,7 +46,7 @@ build: init-venv sync-dependencies
 
 .PHONY: run
 run:
-	$(BIN)/litestar --app src.verdantech_api.api.litestar.app:create_app run --reload-dir 
+	$(BIN)/litestar --app src.verdantech_api.api.litestar.app:create_app run --reload
 
 .PHONY: schema
 schema:

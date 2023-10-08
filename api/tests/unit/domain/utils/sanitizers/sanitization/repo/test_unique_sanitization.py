@@ -1,14 +1,14 @@
 from typing import Any, List
 
 import pytest
-from litestar.contrib.repository.testing.generic_mock_repository import (
-    GenericAsyncMockRepository,
-)
 from src.verdantech_api.domain.models.common.entities import MockEntity
 from src.verdantech_api.domain.utils.sanitizers.sanitization.repo.unique import (
     UniqueSanitization,
     UniqueSanitizationConfig,
     UniqueSanitizationSpec,
+)
+from src.verdantech_api.infrastructure.persistence.repository.mock.mock_entity import (
+    MockEntityRepository,
 )
 
 
@@ -38,7 +38,7 @@ class TestUniqueSanitization:
         spec: UniqueSanitizationSpec,
         existing_entities: List[MockEntity],
         expected_output: bool,
-        mock_entity_repo: GenericAsyncMockRepository,
+        mock_entity_repo: MockEntityRepository,
     ):
         """Ensure the uniquness validation works as expected
 

@@ -390,7 +390,7 @@ class TestUserVerificationOperations:
                 existing_user
             )
         input_data = UserPasswordResetConfirmInput(
-            user_id=(existing_user._id if existing_user is not None else "abc"),
+            user_id=(existing_user.id if existing_user is not None else "abc"),
             key=key_to_search,
             old_password="old_password",
             new_password1="new_password",

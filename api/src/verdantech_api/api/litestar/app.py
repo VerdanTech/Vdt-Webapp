@@ -1,17 +1,20 @@
-from litestar import Litestar, get
+from typing import TYPE_CHECKING
 
-from .dependencies import application_layer_dependencies
-from .lifecycle import lifecycle
-from .router import base_router
+from litestar import Router, get
 
-@get("/")
-async def hello_world() -> dict[str, str]:
-    """Handler function that returns a greeting dictionary."""
-    return {"hello": "world"}
+if TYPE_CHECKING:
+    from litestar import Litestar
 
-def create_app() -> Litestar:
-    return Litestar(
-        # lifespan=[lifecycle],
-        route_handlers=[hello_world],
-        #dependencies=application_layer_dependencies,
-    )
+# from .dependencies import application_layer_dependencies
+# from .lifecycle import lifecycle
+# from .router import base_router
+
+
+def create_app() -> "Litestar":
+    from litestar import Litestar
+    from src.verdantech_api.api.litestar.router import create_base_router
+
+    base_router = create_base_router()
+
+    app = Litestar(route_handlers=[base_router])
+    return app
