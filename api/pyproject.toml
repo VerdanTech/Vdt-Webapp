@@ -1,18 +1,14 @@
 [project]
 name = "verdantech_api"
 version = "1.0.0"
-requires-python = ">=3.11"
-license = {text = "GPL-3.0-or-later"}
 description = 'API of the VerdanTech web application.'
-readme = "README.md"
 authors = [
-  { name = "Nathaniel King", email = "nathanielarking@gmail.com" }
+    { name = "Nathaniel King", email = "nathanielarking@gmail.com" }
 ]
 dependencies = [
-    "litestar[cli]==2.1.1",
-    "motor",
+    "litestar",
+    "sqlalchemy",
     "serpyco",
-    "structlog",
     "passlib",
     "argon2_cffi",
     "aiosmtplib",
@@ -21,6 +17,9 @@ dependencies = [
     "email-validator",
     "python-decouple",
 ]
+requires-python = ">=3.11"
+readme = "README.md"
+license = {text = "GPL-3.0-or-later"}
 
 [project.optional-dependencies]
 test = [
