@@ -1,117 +1,238 @@
-# VerdanTech - The Collaborative Garden Productivity Tool
+<!-- This readme was informed by this template: https://github.com/othneildrew/Best-README-Template/tree/master -->
+<a name="readme-top"></a>
 
-Intro
 
-What's the problem?
+<!-- PROJECT SHIELDS -->
+<!--
+*** I'm using markdown "reference style" links for readability.
+*** Reference links are enclosed in brackets [ ] instead of parentheses ( ).
+*** See the bottom of this document for the declaration of the reference variables  
+*** https://www.markdownguide.org/basic-syntax/#reference-style-links
+-->
+[![Contributors][contributors-shield]][contributors-url]
+[![Stargazers][stars-shield]][stars-url]
+[![Issues][issues-shield]][issues-url]
+[![Pull Requests][prs-shield]][prs-url]
+[![MIT License][license-shield]][license-url]
+[![LinkedIn][linkedin-shield]][linkedin-url]
 
-Problem is that modern agriculture is extremely unsustainable. While we produce enough food to feed the world, and world hunger is largely a result of the inefficencies or malpractice by mis-aligned social systems, the way in which we product it is not aligned with continuing production for future people.
 
-The state of having such a small percentage of our society being involved in food production is a modern phenomona made possible by the energy density of fossil fuels. Assuming a shift to reliance on renewable power systems, a future agriculture system will be different in two key ways:
 
-- The first is that the structure of labour that goes into how we product our food will have to change. More people will have to be involved in the process. With what technology do we most empower humans to adapt to this world?  
-- The second is that the way in which we actually bio-physically grow will have to change. We can't rely on monocultures and the big machines that plow them. We'll have to spacially and genetically diversify our agriculture systems. This adds more complexity, which makes the task of more people getting involved in agriculture more difficult. 
+<!-- PROJECT LOGO -->
+<br />
+<div align="center">
+  <a href="https://github.com/github_username/repo_name">
+    <img src="images/logo.png" alt="Logo" width="80" height="80">
+  </a>
 
-VDT has pursues three main goals:
+<h3 align="center">project_title</h3>
 
-- Create technology that lowers the barriers toward the labour transition of future sustainable agriculture cause by a dependence on the use of energy dense fossil fuels to maintain a smaller and smaller highly specialized proffesional industry that is efficient, but brittle.
-- Create a software platform for modelling what a sustainable agriculture looks like, including optimums along as many axes as possible like poly vs. monoculture, irrigation, microclimates.
-- Promote to the highest extent possible the flourishing of horizontal networks cooperation to solve these problems.
+  <p align="center">
+    project_description
+    <br />
+    <a href="https://github.com/github_username/repo_name"><strong>Explore the docs »</strong></a>
+    <br />
+    <br />
+    <a href="https://github.com/github_username/repo_name">View Demo</a>
+    ·
+    <a href="https://github.com/github_username/repo_name/issues">Report Bug</a>
+    ·
+    <a href="https://github.com/github_username/repo_name/issues">Request Feature</a>
+  </p>
+</div>
 
-There are three steps to building a system like this. The plan looks like this:
-1. (The model stage) Create a dual agriculture biophysical modelling software and web application. This will try to occupy the spectrum in and between "biophysical modelling software" and "garden productivity tool." The application fulfills the following:
-- Something which can be useful in any capacity, from planning the planting calendar for a single pot on your deck, to managing and optimizing entire plots with tens of thousands of plants.
-- Something which seeks, as a driving force, the off-loading of informational complexity requirements away from humans and onto software systems, and the immortalization of vital human knowledge into algorithms and databases. The purpose of these things is not to take these things away from humans but to enable the sharing of this knowledge between humans through smart tools that enable people to learn and reflect the knowledge within and not just producing the right outputs.
-- The tool must have a high degree of co-operation-ability, as in the modelling systems should be made to work like google docs over notepad, it should be as seamless as possible to collaborate in real time with others in the process of using the model.
-- The software must be as maintainable, extensible, and transparent as possible. The slope of the graph of complexity over time should be as flat as possible due to high cohesion and minimal coupling in the software.
-- The software must be performant and make use of the best available technologies to as to minimize technical debt (why I chose Litestar and Svelte)
-- The software must be open-source and if it is to succeed, foster a community around it with shared values and a horizontal structure of labour and cooperation to make the software better over time.
-- The software should depend on other software as much as possible with values that is aligned with it, such as Litestar which is a community driven project.
-2. (The input stage) While the software model exists, it still relies primary on humans to gather the information to sustain it, and update the model state. Technologies must be made to automate the process of acquiring information. In the model level, the model will have an interface for plugging in external information and control devices. The simplest are weather APIs, and then there's physical sensors in the garden space, and finally there are quadcopters with cameras conducting daily complete 3D scans of the area and computer vision systems categorizing that information into inputs into the model. The end game of this is that the entire informational side of agriculture is automated, and the barrier to entry with a system like this to growing your own food is setting up the model and the input-gatherers and then performing the physical "actions" which are outputs of the model to optimize state.  
-3. (The output stage) Complete automation can be achieved at such a time as there are robotic systems capable of carrying out the vast complexity of operations humans perfore in agriculture. This is still totally sci-fi, but there are companies working on it today for specialized tasks.
 
+
+<!-- TABLE OF CONTENTS -->
+<details>
+  <summary>Table of Contents</summary>
+  <ol>
+    <li>
+      <a href="#about-the-project">About The Project</a>
+      <ul>
+        <li><a href="#built-with">Built With</a></li>
+      </ul>
+    </li>
+    <li>
+      <a href="#getting-started">Getting Started</a>
+      <ul>
+        <li><a href="#prerequisites">Prerequisites</a></li>
+        <li><a href="#installation">Installation</a></li>
+      </ul>
+    </li>
+    <li><a href="#usage">Usage</a></li>
+    <li><a href="#roadmap">Roadmap</a></li>
+    <li><a href="#contributing">Contributing</a></li>
+    <li><a href="#license">License</a></li>
+    <li><a href="#contact">Contact</a></li>
+    <li><a href="#acknowledgments">Acknowledgments</a></li>
+  </ol>
+</details>
+
+
+
+<!-- ABOUT THE PROJECT -->
+## About The Project
+
+[![Product Name Screen Shot][product-screenshot]](https://example.com)
+
+Here's a blank template to get started: To avoid retyping too much info. Do a search and replace with your text editor for the following: `github_username`, `repo_name`, `twitter_handle`, `linkedin_username`, `email_client`, `email`, `project_title`, `project_description`
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+
+
+### Built With
+
+* [![Next][Next.js]][Next-url]
+* [![React][React.js]][React-url]
+* [![Vue][Vue.js]][Vue-url]
+* [![Angular][Angular.io]][Angular-url]
+* [![Svelte][Svelte.dev]][Svelte-url]
+* [![Laravel][Laravel.com]][Laravel-url]
+* [![Bootstrap][Bootstrap.com]][Bootstrap-url]
+* [![JQuery][JQuery.com]][JQuery-url]
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+
+
+<!-- GETTING STARTED -->
+## Getting Started
+
+This is an example of how you may give instructions on setting up your project locally.
+To get a local copy up and running follow these simple example steps.
+
+### Prerequisites
+
+This is an example of how to list things you need to use the software and how to install them.
+* npm
+  ```sh
+  npm install npm@latest -g
+  ```
+
+### Installation
+
+1. Get a free API Key at [https://example.com](https://example.com)
+2. Clone the repo
+   ```sh
+   git clone https://github.com/github_username/repo_name.git
+   ```
+3. Install NPM packages
+   ```sh
+   npm install
+   ```
+4. Enter your API in `config.js`
+   ```js
+   const API_KEY = 'ENTER YOUR API';
+   ```
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+
+
+<!-- USAGE EXAMPLES -->
+## Usage
+
+Use this space to show useful examples of how a project can be used. Additional screenshots, code examples and demos work well in this space. You may also link to more resources.
+
+_For more examples, please refer to the [Documentation](https://example.com)_
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+
+
+<!-- ROADMAP -->
 ## Roadmap
 
-### Completed
+- [ ] Feature 1
+- [ ] Feature 2
+- [ ] Feature 3
+    - [ ] Nested Feature
 
-### In progress
+See the [open issues](https://github.com/github_username/repo_name/issues) for a full list of proposed features (and known issues).
 
-- User management system
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-### Planned
 
-- Garden creation and social features
 
-- Workspace creation and planting area definition
+<!-- CONTRIBUTING -->
+## Contributing
 
-- Plant type and variety functionality
+Contributions are what make the open source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
 
-- Planting scheme creation, switching between, etc
+If you have a suggestion that would make this better, please fork the repo and create a pull request. You can also simply open an issue with the tag "enhancement".
+Don't forget to give the project a star! Thanks again!
 
-- Plant instance planting, pulling, deleting, forecasting, change of forcasting based on new input data
+1. Fork the Project
+2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the Branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
 
-- Differential synchronization
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-- Bulk planting 
 
-- Rolling planting scheme generation
 
-- Actions output
-
-## Media
-
-youtube channel
-totalveganic futurism
-
+<!-- LICENSE -->
 ## License
 
-gnu gpl 3.0
+Distributed under the MIT License. See `LICENSE.txt` for more information.
 
-# Deployment
-
-There are two ways to deploy: manual mode on linux and docker mode. Even if you don't know docker I recommend it more cause its easy with docker desktop. More likely you want to run this on a raspbery pi and it's easy there two. But idk how you would manually install tihs on non-linux
-
-# The Codebase
-
-## Repository Structure
-
-The application implements a decoupled backend/frontent arhitecture. The backend is an asynchronous python3.11 running on uvicore, and the frontend is a SvelteKit spa-mode static file generator with Skeleton UI.
-
-## Download and Installation
-
-Recommended VS code theme: Solarized Dark
-
-## Backend
-
-### Background and Architecture
-
-The python backend implements a clean architecture pattern, meaning that the functions of the application are segregated in a way that minimizes coupling. Quick summaries for the layers:
-- The domain layer holds the core business logic and is made up of four components: Entities, which are objects with IDs and individuality that represent concepts in the problem space, RootEntities which are entities that make up Collections of documents or SQL tables in the database, meaning they represent consistency boundaries of data, value objects, which are ID-less and immutable, and represent individual-less states, and services, which encapsulate core logic in the problem domain that can't be relegated to any of the other options. All these concepts are implemented using native Python dataclasses. The domain layer also holds interfaces that are relied upon by the domain layer and application layer
-- The application layer orchestrates the domain layer and connects it to implementations of the interfaces. The application layer has two parts: the operaions sections, which are high level application functions and make up the main API (are-one to one with http API routes), and the services sections, which comprise more granular orchestrations of the domain logic and are called in the operations.
-- The infrastrure contains implementations of the domain service interfaces, such as database implementations of the repository interface. The only repository in use so far is a MongoDB Motor (async pymongo) implementation. The repository abstraction makes it possible to use different implementations in the future, but I havent investigated the potential compatibility with a sql database (plan to stick with mongo)
-- The API layer is the http and websocket wrapping around the application layer, and is implemented using the Litestar 
-
-### Documentation
-
-### Contributing
-
-## Frontend
-
-### Background and Architecture
-
-Why I chose Svelte and Skeleton.
-
-### Documentation
-
-### Contributing
-
-# Contributors
-
-# Extended Project
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 
-# Old draft:
-This is the home repository for the VerdanTech web application - an application striving towards creating software tools to automate gardening in a collaborative way - including planning, tracking, optimizing, and automating growing plants. This project is still in its early stages and lacks documentation. You can see the previous version of this project (here)[https://github.com/nathanielarking/Autonomous-Agriculture].
 
-In terms of infrastructure, the project aims to create a REST api using Django Rest Framework, and a frontend Svelte SPA.
+<!-- CONTACT -->
+## Contact
 
-Eventually, the application will be integrated with embedded automation projects. Those have a seperate repository, which you can find (here)[https://github.com/nathanielarking/VerdanTech-Devices/tree/main/VerdanTech%20Drip%2
+Your Name - [@twitter_handle](https://twitter.com/twitter_handle) - email@email_client.com
+
+Project Link: [https://github.com/github_username/repo_name](https://github.com/github_username/repo_name)
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+
+
+<!-- ACKNOWLEDGMENTS -->
+## Acknowledgments
+
+* []()
+* []()
+* []()
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+
+
+<!-- MARKDOWN LINKS & IMAGES -->
+<!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
+[contributors-shield]: https://img.shields.io/github/contributors/github_username/repo_name.svg?style=for-the-badge
+[contributors-url]: https://github.com/github_username/repo_name/graphs/contributors
+[stars-shield]: https://img.shields.io/github/stars/github_username/repo_name.svg?style=for-the-badge
+[stars-url]: https://github.com/github_username/repo_name/stargazers
+[issues-shield]: https://img.shields.io/github/issues/github_username/repo_name.svg?style=for-the-badge
+[issues-url]: https://github.com/github_username/repo_name/issues
+[prs-shield]: https://img.shields.io/github/issues/github_username/repo_name.svg?style=for-the-badge
+[prs-url]: 
+[license-shield]: https://img.shields.io/github/license/github_username/repo_name.svg?style=for-the-badge
+[license-url]: https://github.com/github_username/repo_name/blob/master/LICENSE.txt
+[linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
+[linkedin-url]: https://linkedin.com/in/linkedin_username
+[product-screenshot]: images/screenshot.png
+[Next.js]: https://img.shields.io/badge/next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white
+[Next-url]: https://nextjs.org/
+[React.js]: https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB
+[React-url]: https://reactjs.org/
+[Vue.js]: https://img.shields.io/badge/Vue.js-35495E?style=for-the-badge&logo=vuedotjs&logoColor=4FC08D
+[Vue-url]: https://vuejs.org/
+[Angular.io]: https://img.shields.io/badge/Angular-DD0031?style=for-the-badge&logo=angular&logoColor=white
+[Angular-url]: https://angular.io/
+[Svelte.dev]: https://img.shields.io/badge/Svelte-4A4A55?style=for-the-badge&logo=svelte&logoColor=FF3E00
+[Svelte-url]: https://svelte.dev/
+[Laravel.com]: https://img.shields.io/badge/Laravel-FF2D20?style=for-the-badge&logo=laravel&logoColor=white
+[Laravel-url]: https://laravel.com
+[Bootstrap.com]: https://img.shields.io/badge/Bootstrap-563D7C?style=for-the-badge&logo=bootstrap&logoColor=white
+[Bootstrap-url]: https://getbootstrap.com
+[JQuery.com]: https://img.shields.io/badge/jQuery-0769AD?style=for-the-badge&logo=jquery&logoColor=white
+[JQuery-url]: https://jquery.com 
