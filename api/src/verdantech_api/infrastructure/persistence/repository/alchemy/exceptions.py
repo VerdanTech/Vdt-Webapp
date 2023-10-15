@@ -5,8 +5,8 @@ from src.verdantech_api.domain.interfaces.persistence import exceptions
 
 
 @asynccontextmanager
-async def motor_exception_map():
-    """Map motor/pymongo exceptions to native domain equivalents"""
+async def alchemy_exception_map():
+    """Map sqlalchemy exceptions to native domain equivalents"""
     try:
         yield
     except alchemy_exceptions.IntegrityError as error:

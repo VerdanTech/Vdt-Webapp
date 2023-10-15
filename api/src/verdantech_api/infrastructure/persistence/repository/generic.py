@@ -1,5 +1,5 @@
 import inspect
-from typing import Any, Dict, Generic
+from typing import Any, Dict, Generic, Optional
 
 from src.verdantech_api.domain.models.common.entities import RootEntityT
 from src.verdantech_api.domain.utils.sanitizers.object import ObjectSanitizer
@@ -14,9 +14,10 @@ class BaseRepository(Generic[RootEntityT]):
 
     def __init__(
         self,
-        mapper: AbstractMapper,
+        mapper: Optional[AbstractMapper] = None,
     ) -> None:
-        self.mapper = mapper
+        if mapper:
+            self.mapper = mapper
 
     async def async_dynamic_call(
         self, method_name: str, **kwargs: Dict[str, Any]

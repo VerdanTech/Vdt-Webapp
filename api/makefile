@@ -1,52 +1,87 @@
-PY = python3.11
-VENV = venv
+# Python version
+PY-VER=python3.12
+# Virtual environment directory
+VENV=.venv
+# Python bin directory
 BIN=$(VENV)/bin
+# Python interpreter directory
+PY=$(BIN)/$(PY-VER)
+# Provided environment variable defaults directory
+ENV-VARS-DEFAULT=.env-default
+# Environment variables directory
+ENV-VARS=.env
+# Dependency lockfile directory
+LOCKFILE=requirements/.pdm-lockfile
 
-.PHONY: init-venv
-init-venv:
+#
+# If an environment variable file does not already exist,
+# create one by copying over the development defaults
+#
+.PHONY: setup-env-vars
+setup-env-vars:
+	@if [ ! -f $(ENV-VARS) ]; then \
+		cp $(ENV-VARS-DEFAULT) $(ENV-VARS); \
+		echo "Copied $(ENV-VARS-DEFAULT) to $(ENV-VARS)"; \
+	fi
+
+#
+# Install required python version and all python application depedencies
+#
+.PHONY: init-app
+init-app: setup-env-vars
 	sudo add-apt-repository ppa:deadsnakes/ppa
-	sudo apt install python3.11 && sudo apt install python3-pip && sudo apt install python3-venv && sudo apt install python3-dev
-	$(PY) -m venv $(VENV)
-	$(BIN)/$(PY) -m pip install --upgrade pip pip-tools wheel
+	sudo apt-get update && sudo apt-get upgrade
+	sudo apt-get install $(PY-VER) && sudo apt-get install python3.12-dev && curl -sS https://bootstrap.pypa.io/get-pip.py | python3.12
+	$(PY) -m pip install pdm
+	$(PY) -m pdm sync --clean --lockfile $(LOCKFILE)
 
-.PHONY: sync-dependencies
-sync-dependencies:
-	$(BIN)/$(PY) -m pip install --upgrade pip pip-tools wheel
-	$(BIN)/$(PY) -m piptools sync requirements/dev.txt
-	$(BIN)/$(PY) -m pip check
+#
+# Install, start and configure postgreql server with database
+# configuration values set in environment variable
+#
+.PHONY: init-db
+init-db: setup-env-vars
+	$(eval POSTGRES_DB_NAME=$(shell grep 'POSTGRES_DB_NAME=' $(ENV-VARS) | sed 's/POSTGRES_DB_NAME=//'))
+	$(eval POSTGRES_DB_USER=$(shell grep 'POSTGRES_DB_USER=' $(ENV-VARS) | sed 's/POSTGRES_DB_USER=//'))
+	$(eval POSTGRES_DB_PASSWORD=$(shell grep 'POSTGRES_DB_PASSWORD=' $(ENV-VARS) | sed 's/POSTGRES_DB_PASSWORD=//'))
+	chmod +x ./scripts/postgres/install.sh
+	sudo ./scripts/postgres/install.sh
+	chmod +x ./scripts/postgres/start.sh
+	sudo ./scripts/postgres/start.sh
+	chmod +x ./scripts/postgres/create_db.sh
+	sudo ./scripts/postgres/create_db.sh $(POSTGRES_DB_NAME) $(POSTGRES_DB_USER) $(POSTGRES_DB_PASSWORD)
 
-.PHONY: upgrade-dependencies
-upgrade-dependencies:
-	$(BIN)/$(PY) -m pip install --upgrade pip pip-tools wheel
-	$(BIN)/$(PY) -m piptools compile --upgrade --resolver backtracking -o requirements/main.txt pyproject.toml
-	$(BIN)/$(PY) -m piptools compile --extra test --upgrade --resolver backtracking -o requirements/test.txt pyproject.toml
-	$(BIN)/$(PY) -m piptools compile --extra test --extra dev --upgrade --resolver backtracking -o requirements/dev.txt pyproject.toml
+.PHONY: build
+init-app: init-app init-db
 
-.PHONY: update-dependencies
-update-dependencies:
-	$(BIN)/$(PY) -m piptools compile --resolver backtracking -o requirements/main.txt pyproject.toml
-	$(BIN)/$(PY) -m piptools compile --extra test --resolver backtracking -o requirements/test.txt pyproject.toml
-	$(BIN)/$(PY) -m piptools compile --extra test --extra dev --resolver backtracking -o requirements/dev.txt pyproject.toml
+.PHONY: update
+update: 
+	$(PY-VER) -m pdm update --lockfile requirements/.pdm-lock
 
 .PHONY: clean
 clean:
-	rm -rf verdantech_api.egg-info/
 	rm -rf reports/
 	rm .coverage
 	find . -type f -name '*.py[co]' -delete -o -type d -name __pycache__ -delete
 
-.PHONY: upgrade
-upgrade: upgrade-dependencies sync-dependencies clean
-
-.PHONY: update
-update: update-dependencies sync-dependencies clean
-
-.PHONY: build
-build: init-venv sync-dependencies
-
 .PHONY: run
 run:
 	$(BIN)/litestar --app src.verdantech_api.api.litestar.app:create_app run --reload
+
+.PHONY: migrations
+migrations:
+	export PYTHONPATH=$(shell pwd); \
+	$(PY) src/verdantech_api/infrastructure/persistence/migrations/create.py -m "$(filter-out $@,$(MAKECMDGOALS))"
+
+.PHONY: migrate
+migrate:
+	export PYTHONPATH=$(shell pwd); \
+	$(PY) src/verdantech_api/infrastructure/persistence/migrations/apply.py
+
+.PHONY: reset-migrations
+reset-migrations:
+	export PYTHONPATH=$(shell pwd); \
+	$(PY) src/verdantech_api/infrastructure/persistence/migrations/reset.py --reset
 
 .PHONY: schema
 schema:
@@ -66,8 +101,8 @@ format:
 
 .PHONY: test
 test:
-	$(BIN)/$(PY) -m coverage run --source tests -m pytest --html=reports/pytest/index.html
-	$(BIN)/$(PY) -m coverage html -d reports/coverage
+	$(PY) -m coverage run --source tests -m pytest --html=reports/pytest/index.html
+	$(PY) -m coverage html -d reports/coverage
 
 .PHONY: docs
 docs:

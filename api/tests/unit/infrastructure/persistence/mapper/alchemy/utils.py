@@ -173,7 +173,7 @@ def assert_equivalent_entities(entity1: RootEntity, entity2: RootEntity) -> None
         Returns:
             bool: the result of the comparison
         """
-        
+
         # Cap comparison if depth goes too far
         if depth > 50:
             raise RecursionError("Max depth exceeded")

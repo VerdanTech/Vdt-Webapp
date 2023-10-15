@@ -10,6 +10,10 @@ class UserMake(factory.Factory):
 
     username = factory.Faker("name")
 
+    @factory.post_generation
+    def _password_hash(self, create, extracted, **kwargs):
+        self._password_hash = "some_password"
+
 
 @pytest.fixture
 def user():

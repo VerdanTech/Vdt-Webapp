@@ -8,6 +8,8 @@ authors = [
 dependencies = [
     "litestar",
     "sqlalchemy",
+    "asyncpg",
+    "alembic",
     "serpyco",
     "passlib",
     "argon2_cffi",
@@ -17,11 +19,11 @@ dependencies = [
     "email-validator",
     "python-decouple",
 ]
-requires-python = ">=3.11"
+requires-python = ">=3.12"
 readme = "README.md"
 license = {text = "GPL-3.0-or-later"}
 
-[project.optional-dependencies]
+[tool.pdm.dev-dependencies]
 test = [
     "pytest",
     "pytest-asyncio",

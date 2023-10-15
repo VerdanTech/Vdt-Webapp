@@ -13,6 +13,8 @@ from sqlalchemy.ext.asyncio import (
 )
 from src.verdantech_api import settings
 
+from src.verdantech_api.infrastructure.persistence.mapper.alchemy.model import Base
+
 from ..exceptions import ClientLifecycleError
 from .exceptions import alchemy_exception_map
 
@@ -65,6 +67,11 @@ class AlchemyLitestarDBLifecycleManager(Protocol):
         """
         await client.engine.dispose()
 
+    @staticmethod
+    def _schema_init(client: AlchemyClient) -> None:
+        """Create database metadata"""
+        Base.metadata.create_all(client.engine)
+
     @asynccontextmanager
     @staticmethod
     async def client_lifecycle(app: Litestar) -> AsyncGenerator[None, None]:
@@ -80,6 +87,7 @@ class AlchemyLitestarDBLifecycleManager(Protocol):
         existing_client = AlchemyLitestarDBLifecycleManager.get_client(state=app.state)
         if existing_client is None:
             engine = create_async_engine(settings.ALCHEMY_URI)
+            AlchemyLitestarDBLifecycleManager.schema_init(client=client)
             sessionmaker = async_sessionmaker(expire_on_commit=False)
             client = AlchemyClient(engine=engine, sessionmaker=sessionmaker)
             AlchemyLitestarDBLifecycleManager.set_client(state=app.State, client=client)
@@ -101,7 +109,7 @@ class AlchemyLitestarDBLifecycleManager(Protocol):
             Iterator[AsyncGenerator[AsyncSession, None]]:
                 the created session
         """
-        with alchemy_exception_map:
+        async with alchemy_exception_map:
             client = AlchemyLitestarDBLifecycleManager.provide_client(state=state)
             async with client.sessionmaker(bind=client.engine) as session:
                 async with session.begin():

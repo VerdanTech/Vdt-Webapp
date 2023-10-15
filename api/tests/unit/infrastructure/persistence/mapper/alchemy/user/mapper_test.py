@@ -21,8 +21,8 @@ from ..utils import assert_equivalent_entities, assert_equivalent_models
 class TestUserAlchemyMapper:
     def test_to_model(self) -> None:
         """Ensure that the method maps a user
-            domain entity into a sqlalchemy model
-            with the proper attributes and relations
+        domain entity into a sqlalchemy model
+        with the proper attributes and relations
         """
         user = User(
             username="U",
@@ -78,8 +78,8 @@ class TestUserAlchemyMapper:
 
     def test_from_model(self) -> None:
         """Ensure that the method maps a sqlalchemy user
-            model into a domain entity with the proper
-            attributes and nested structure        
+        model into a domain entity with the proper
+        attributes and nested structure
         """
         user_model = UserAlchemyModel(
             id=0,

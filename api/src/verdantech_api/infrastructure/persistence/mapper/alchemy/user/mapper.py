@@ -66,7 +66,7 @@ class UserAlchemyMapper(BaseAlchemyMapper[User]):
         Returns:
             User: the resultant user
         """
-
+        """
         def from_email_model(email_model: EmailAlchemyModel) -> Email:
             email = Email(
                 address=email_model.address,
@@ -76,14 +76,13 @@ class UserAlchemyMapper(BaseAlchemyMapper[User]):
                 verified_at=email_model.verified_at,
             )
             return email
-
         user = User(
             username=model.username,
             username_norm=model.username_norm,
             _password_hash=model._password_hash,
             is_active=model.is_active,
             is_superuser=model.is_superuser,
-            password_reset_confirmation=model.password_reset_confirmation,
+            password_reset_confirmation=model.password_reset_confirmation or None,
             created_at=model.created_at,
         )
         user.id = model.id
@@ -92,5 +91,7 @@ class UserAlchemyMapper(BaseAlchemyMapper[User]):
             for email_model in sorted(
                 model.emails, key=lambda email_model: email_model.list_index
             )
-        ]
+        ]"""
+        print(f"IRSENTIRSTNOIRSTNIRSTNIRESTNIERSTNIERSNTIRNTIENT{model.password_reset_confirmation}AIONESIOERSTNIRSTNIRSNTOIERSNTIRSTNIERSTN")
+        user = User(username="username")
         return user
