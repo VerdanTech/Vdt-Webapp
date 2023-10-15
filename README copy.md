@@ -103,13 +103,15 @@ There are three steps to building a system like this. The plan looks like this:
 youtube channel
 totalveganic futurism
 
-## License
 
-gnu gpl 3.0
 
 # Deployment
 
 There are two ways to deploy: manual mode on linux and docker mode. Even if you don't know docker I recommend it more cause its easy with docker desktop. More likely you want to run this on a raspbery pi and it's easy there two. But idk how you would manually install tihs on non-linux
+
+# Built With
+
+* [![Svelte][Svelte.dev]][Svelte-url]
 
 # The Codebase
 
@@ -146,8 +148,6 @@ Why I chose Svelte and Skeleton.
 ### Contributing
 
 # Contributors
-
-# Extended Project
 
 
 # Old draft:
