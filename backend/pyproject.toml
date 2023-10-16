@@ -1,0 +1,91 @@
+[project]
+name = "verdantech_api"
+version = "1.0.0"
+description = 'API of the VerdanTech web application.'
+authors = [
+    { name = "Nathaniel King", email = "nathanielarking@gmail.com" }
+]
+dependencies = [
+    "litestar",
+    "sqlalchemy",
+    "asyncpg",
+    "alembic",
+    "serpyco",
+    "passlib",
+    "argon2_cffi",
+    "aiosmtplib",
+    "html2text",
+    "aiofiles",
+    "email-validator",
+    "python-decouple",
+]
+requires-python = ">=3.12"
+readme = "README.md"
+license = {text = "GPL-3.0-or-later"}
+
+[tool.pdm.dev-dependencies]
+test = [
+    "pytest",
+    "pytest-asyncio",
+    "factory_boy",
+    "pytest-mock",
+    "pytest-html",
+    "coverage[toml]",
+]
+dev = [
+    "mkdocs",
+    "mkdocstrings[python]",
+    "mkdocs-material",
+    "black",
+    "isort",
+    "ruff",
+    "validate-pyproject",
+]
+
+[project.urls]
+"Repository" = "https://github.com/nathanielarking/VerdanTech"
+
+[tool.setuptools]
+py-modules = ["verdantech_api"]
+
+[tool.black]
+include = '\.pyi?$'
+exclude = '''
+  /(
+      \.eggs
+    | \.git
+    | \.hg
+    | \.mypy_cache
+    | \.tox
+    | \.venv
+    | _build
+    | buck-out
+    | build
+    | dist
+    | migrations
+  )/
+'''
+
+
+[tool.isort]
+profile = "black"
+combine_as_imports = true
+src_paths = ["verdantech_api"]
+known_first_party = ["verdantech_api"]
+skip_gitignore = true
+skip_glob = ["**/migrations/*"]
+
+[tool.pytest.ini_options]
+addopts = "-vv -x -rx"
+pythonpath = ". src tests"
+testpaths = ["tests/"]
+python_files = ["tests.py", "test_*.py", "*_test.py", "*_tests.py", "**/tests/*", "**/test/*"]
+markers = [
+    "unit: Isolated tests of individual functions",
+    "integration: Integrated tests of one or multiple functions",
+]
+asyncio_mode="auto"
+
+[tool.pytest.mark]
+". tests/unit/" = "unit"
+". tests/integration/" = "integration"

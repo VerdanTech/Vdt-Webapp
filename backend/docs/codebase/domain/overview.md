@@ -1,0 +1,12 @@
+``` mermaid
+erDiagram
+  USER }o..o{ GARDEN : "N-N"
+  GARDEN ||..|{ PLANTSET : "1-N"
+  PLANTSET ||--|{ PLANT_TYPE : "1-N"
+  PLANT_TYPE ||--|{ PLANT_ATTRIBUTE_PROFILE : "1-N"
+  GARDEN ||..|{ WORKSPACE : "1-N"
+  WORKSPACE ||--|{ PLANTING_AREA: "1-N"
+  WORKSPACE ||..o{ PLANTING_SCHEMA : "1-N"
+  PLANTING_SCHEMA ||..o{ PLANT_INSTANCE : "1-N"
+```
+
