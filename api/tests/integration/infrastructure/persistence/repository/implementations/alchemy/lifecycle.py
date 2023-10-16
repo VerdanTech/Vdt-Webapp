@@ -1,11 +1,9 @@
-from typing import AsyncGenerator
 import subprocess
+from typing import AsyncGenerator
 
 import pytest
-
 from sqlalchemy import event
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
-
 from src.verdantech_api import settings
 from src.verdantech_api.infrastructure.persistence.repository.alchemy import (
     AlchemyClient,
@@ -14,6 +12,7 @@ from src.verdantech_api.infrastructure.persistence.repository.alchemy import (
 # ======================================
 # SQLALCHEMY
 # ======================================
+
 
 @pytest.fixture
 async def alchemy_db_session(
@@ -41,32 +40,39 @@ async def alchemy_db_session(
     await session.close()
     await connection.close()
 
+
 @pytest.fixture
 def alchemy_db_client() -> AlchemyClient:
     engine = create_async_engine(settings.ALCHEMY_URI, echo=True)
     sessionmaker = async_sessionmaker(autocommit=False, autoflush=False, bind=engine)
     return AlchemyClient(engine=engine, sessionmaker=sessionmaker)
 
+
 # ======================================
 # POSTGRES
 # ======================================
 
+
 def check_postgres_running():
     try:
-        existing_services = subprocess.run(["pgrep", "postgres"], stdout=subprocess.PIPE, check=True)
-        pids = existing_services.stdout.decode().strip().split('\n')
+        existing_services = subprocess.run(
+            ["pgrep", "postgres"], stdout=subprocess.PIPE, check=True
+        )
+        pids = existing_services.stdout.decode().strip().split("\n")
         print(f"PostgreSQL is running with PIDs: {', '.join(pids)}")
         return True
     except subprocess.CalledProcessError as e:
         print("PostgreSQL is not running")
         return False
 
+
 def start_postgres():
     try:
-        subprocess.run(['sudo', 'service', 'postgresql', 'start'], check=True)
+        subprocess.run(["sudo", "service", "postgresql", "start"], check=True)
         print("Successfully started PostgreSQL")
     except subprocess.CalledProcessError as error:
         print(f"Failed to start PostgreSQL: {error}")
+
 
 @pytest.fixture(scope="session", autouse=True)
 def postgres_setup():

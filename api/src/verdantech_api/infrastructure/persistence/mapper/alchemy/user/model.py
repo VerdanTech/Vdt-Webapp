@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import List, Optional
 
-from sqlalchemy import Boolean, ForeignKey, String, DateTime
+from sqlalchemy import Boolean, DateTime, ForeignKey, String
 from sqlalchemy.orm import Mapped, composite, mapped_column, relationship
 from src.verdantech_api import settings
 from src.verdantech_api.domain.models.user.values import (
@@ -30,14 +30,10 @@ class UserAlchemyModel(BaseAlchemyModel):
     # memberships:
     is_active: Mapped[bool]
     is_superuser: Mapped[bool]
-    password_reset_confirmation: Mapped[Optional[PasswordResetConfirmation]] = composite(
-        mapped_column(
-            "password_reset_confirmation_key",
-            String(length=settings.VERIFICATION_KEY_MAX_LENGTH),
-            nullable=True,
-        ),
-        mapped_column("password_reset_confirmation_created_at", DateTime(), nullable=True),
+    password_reset_confirmation_key: Mapped[Optional[str]] = mapped_column(
+        String(length=settings.VERIFICATION_KEY_MAX_LENGTH), nullable=True
     )
+    password_reset_confirmation_created_at: Mapped[Optional[datetime]]
     created_at: Mapped[datetime]
 
 
@@ -59,12 +55,8 @@ class EmailAlchemyModel(BaseAlchemyModel):
     address: Mapped[str] = mapped_column(String(length=settings.EMAIL_MAX_LENGTH))
     verified: Mapped[bool]
     primary: Mapped[bool]
-    confirmation: Mapped[Optional[EmailConfirmation]] = composite(
-        mapped_column(
-            "confirmation_key",
-            String(length=settings.VERIFICATION_KEY_MAX_LENGTH),
-            nullable=True,
-        ),
-        mapped_column("confirmation_created_at", DateTime, nullable=True),
+    confirmation_key: Mapped[Optional[str]] = mapped_column(
+        String(length=settings.VERIFICATION_KEY_MAX_LENGTH), nullable=True
     )
-    verified_at: Mapped[datetime]
+    confirmation_created_at: Mapped[Optional[datetime]]
+    verified_at: Mapped[Optional[datetime]]

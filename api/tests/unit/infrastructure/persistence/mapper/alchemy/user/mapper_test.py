@@ -45,7 +45,8 @@ class TestUserAlchemyMapper:
             _password_hash=user._password_hash,
             is_active=user.is_active,
             is_superuser=user.is_superuser,
-            password_reset_confirmation=user.password_reset_confirmation,
+            password_reset_confirmation_key=user.password_reset_confirmation.key,
+            password_reset_confirmation_created_at=user.password_reset_confirmation.created_at,
             created_at=user.created_at,
         )
         expected_email_models = [
@@ -56,7 +57,8 @@ class TestUserAlchemyMapper:
                 address=user.emails[0].address,
                 verified=user.emails[0].verified,
                 primary=user.emails[0].primary,
-                confirmation=user.emails[0].confirmation,
+                confirmation_key=user.emails[0].confirmation.key,
+                confirmation_created_at=user.emails[0].confirmation.created_at,
                 verified_at=user.emails[0].verified_at,
             ),
             EmailAlchemyModel(
@@ -66,7 +68,8 @@ class TestUserAlchemyMapper:
                 address=user.emails[1].address,
                 verified=user.emails[1].verified,
                 primary=user.emails[1].primary,
-                confirmation=user.emails[1].confirmation,
+                confirmation_key=None,
+                confirmation_created_at=None,
                 verified_at=user.emails[1].verified_at,
             ),
         ]
@@ -88,7 +91,8 @@ class TestUserAlchemyMapper:
             _password_hash="p",
             is_active=False,
             is_superuser=True,
-            password_reset_confirmation=PasswordResetConfirmation(key="2"),
+            password_reset_confirmation_key="2",
+            password_reset_confirmation_created_at=datetime(2000, 1, 1),
             created_at=datetime(2000, 1, 1),
         )
         email_models = [
@@ -99,7 +103,8 @@ class TestUserAlchemyMapper:
                 address="e1",
                 verified=False,
                 primary=False,
-                confirmation=EmailConfirmation(key="1"),
+                confirmation_key="1",
+                confirmation_created_at=datetime(2001, 1, 1),
                 verified_at=datetime(2001, 1, 1),
             ),
             EmailAlchemyModel(
@@ -119,20 +124,27 @@ class TestUserAlchemyMapper:
             _password_hash=user_model._password_hash,
             is_active=user_model.is_active,
             is_superuser=user_model.is_superuser,
-            password_reset_confirmation=user_model.password_reset_confirmation,
+            password_reset_confirmation=PasswordResetConfirmation(
+                key=user_model.password_reset_confirmation_key,
+                created_at=user_model.password_reset_confirmation_created_at,
+            ),
             created_at=user_model.created_at,
         )
         expected_user.id = user_model.id
         expected_user.emails = [
             Email(
                 address=user_model.emails[0].address,
-                confirmation=user_model.emails[0].confirmation,
+                confirmation=EmailConfirmation(
+                    key=user_model.emails[0].confirmation_key,
+                    created_at=user_model.emails[0].confirmation_created_at,
+                ),
                 verified=user_model.emails[0].verified,
                 primary=user_model.emails[0].primary,
                 verified_at=user_model.emails[0].verified_at,
             ),
             Email(
                 address=user_model.emails[1].address,
+                confirmation=None,
                 verified=user_model.emails[1].verified,
                 primary=user_model.emails[1].primary,
                 verified_at=user_model.emails[1].verified_at,

@@ -104,6 +104,14 @@ test:
 	$(PY) -m coverage run --source tests -m pytest --html=reports/pytest/index.html
 	$(PY) -m coverage html -d reports/coverage
 
+.PHONY: test-unit
+test-unit:
+	$(PY) -m coverage run --source tests/unit -m pytest
+
+.PHONY: test-int
+test-int:
+	$(PY) -m coverage run --source tests/integration -m pytest
+
 .PHONY: docs
 docs:
 	$(BIN)/mkdocs serve

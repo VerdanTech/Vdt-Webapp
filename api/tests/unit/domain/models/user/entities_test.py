@@ -45,6 +45,7 @@ class TestUser:
         Args:
             user (User): user (User): user object to test on (pytest fixture)
         """
+        user.emails = []
         address = "TestEmail@Test.com"
         primary = False
         key = "aBcDeFg"
@@ -63,7 +64,7 @@ class TestUser:
         Args:
             user (User): user (User): user object to test on (pytest fixture)
         """
-
+        user.emails = []
         address = "TestEmail@Test.com"
         primary = False
 
@@ -439,8 +440,7 @@ class TestUser:
             user (User): user object to test on (pytest fixture)
             mock_password_crypt (AbstractPasswordCrypt): (pytest fixture)
         """
-        if existing_password:
-            user._password_hash = existing_password
+        user._password_hash = existing_password
 
         with expected_error_context as error:
             await user.set_password(

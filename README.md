@@ -42,10 +42,6 @@
   </p>
 </div>
 
-<div align="center">
-    <h4> 
-</div>
-
 VerdanTech is an open source software application best described as a fusion between:
 
 1. **Garden productivity**: A model of the problem space of agriculture which allows us to manipulate it in a way which produces information that is useful to the horizontal organization of our physical labour. 

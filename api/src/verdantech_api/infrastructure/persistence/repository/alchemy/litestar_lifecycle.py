@@ -12,7 +12,6 @@ from sqlalchemy.ext.asyncio import (
     create_async_engine,
 )
 from src.verdantech_api import settings
-
 from src.verdantech_api.infrastructure.persistence.mapper.alchemy.model import Base
 
 from ..exceptions import ClientLifecycleError

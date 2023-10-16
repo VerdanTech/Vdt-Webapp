@@ -127,8 +127,8 @@ class MockUserRepository(MockBaseRepository[User]):
                 return True
         return False
 
-    async def email_exists(self, email: str) -> bool:
-        """Check the existence of an email in the repository
+    async def email_exists(self, email_address: str) -> bool:
+        """Check the existence of an email address in the repository
 
         Args:
             email (str): the email to check uniqueness of
