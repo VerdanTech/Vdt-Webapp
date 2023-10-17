@@ -202,6 +202,8 @@ There are three steps to building a system like this. The plan looks like this:
 
 # Features
 
+The (Outline)[outline/overview.md] folder contains conceptual design documents and is used to continuously plan and document the application at a high level. Refer to it for user interface wireframes, use-flows, data transfer objects, and domain models. This section summarizes the completion state of objectives
+
 ## Completed
 
 ## In progress
