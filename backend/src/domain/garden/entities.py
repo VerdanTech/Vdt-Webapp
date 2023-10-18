@@ -9,7 +9,7 @@ from .values import GardenMembershipRefGarden, GardenRef, RoleEnum, VisibilityEn
 
 
 class Garden(RootEntity):
-    short_id: str
+    key_id: str
     name: str
     creator: UserRef | None
     visibility: VisibilityEnum
