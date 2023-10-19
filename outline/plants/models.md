@@ -1,4 +1,4 @@
-# Garden - Models
+# Plants - Models
 
 ```mermaid
 ---
@@ -11,15 +11,18 @@ classDiagram
     Cultivar --> PlantAttributeProfile : composed of N
     PlantAttributeProfile --> LifecycleProfile
     PlantAttributeProfile --> EcoTemporalProfile
+    EcoTemporalProfile -- FrostDateEcoTemporalProfile
     PlantAttributeProfile --> TemperatureProfile
     PlantAttributeProfile --> GrowthPatternProfile
+    PlantAttributeProfile --> HarvestProfile
     PlantAttributeProfile --> NutrientProfile
-    PlantAttributeProfile --> ChemicalProfile
+    Plant --> Cultivar : refers to one
+    Plant --> Coordinate
 
     class CultivarSet{
         name: string
         owner: UserID or GardenID
-        cultivars: list of CultivarReference
+        cultivars: set of CultivarReference
     }
     class CultivarReference{
         cultivar: CultivarID
@@ -37,18 +40,21 @@ classDiagram
     }
     class LifecycleProfile{
         <<PlantAttributeProfile>>
-        seed_to_germ: decimal
-        germ_to_sprout: decimal
-        sprout_to_harvest: decimal
-        harvest_to_expiry: decimal
+        sow_to_germ: timedelta
+        germ_to_sprout: timedelta
+        sprout_to_first_harvest: timedelta
+        first_to_last_harvest: timedelta
+        last_harvest_to_expiry: timedelta
     }
     class EcoTemporalProfile{
         <<PlantAttributeProfile>>
-        first_frost_window_open: decimal
-        first_frost_window_close: decimal
-        last_frost_window_open: decimal
-        last_frost_window_close: decimal
-
+    }
+    class FrostDateEcoTemporalProfile{
+        <<EcoTemporalProfile>>
+        first_frost_window_open: timedelta
+        first_frost_window_close: timedelta
+        last_frost_window_open: timedelta
+        last_frost_window_close: timedelta
     }
     class TemperatureProfile{
         <<PlantAttributeProfile>>
@@ -58,13 +64,28 @@ classDiagram
     class GrowthPatternProfile{
         <<PlantAttributeProfile>>
     }
+    class HarvestProfile{
+        <<PlantAttributeProfile>>
+        expected_annual_mass: decimal
+
+    }
     class NutrientProfile{
         <<PlantAttributeProfile>>
 
     }
-    class ChemicalProfile{
-        <<PlantAttributeProfile>>
 
+    class Plant{
+        cultivar: CultivarID
+        workspace: WorkspaceID
+        position: Coordinate
+        sow_date: datetime
+        germ_date: datetime
+        first_harvest_date: datetime
+        last_harvest_date: datetime
+        expiry_date: datetime
+    }
+    class Coordinate{
+        See Workspace feature category
     }
 
 ```

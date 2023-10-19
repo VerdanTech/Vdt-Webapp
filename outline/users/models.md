@@ -6,10 +6,10 @@ title: User Domain Model
 ---
 classDiagram
     User
-    User --> Email : composed of one or N
+    User --> Email : composed of one to N
     User --> PasswordReset : composed of one or none
     Email --> EmailConfirmation : composed of one or none
-    User --> GardenMembership : refers to N or none
+    User --> GardenMembership : refers to N
     class User{
         username: string
         emails: list of Emails
