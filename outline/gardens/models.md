@@ -100,8 +100,8 @@ A Garden should keep track of the User that created it, but have no reliance on 
 
 A Garden should be able to have these levels of visibility:
 - Private: View permissions and up are restricted to invitees.
-- Unlisted: Edit permissions and up are restricted to invitees.
-- Public: Admin permissions are restricted to invitees.
+- Unlisted: Edit permissions and up are restricted to invitees. Anyone with a link can view, but can't be found with a search.
+- Public: Edit permissions and up are restricted to invitees. Anyone with a link can view, and potentially find on the site without a link.
 
 ## admins, editors, and viewers
 
@@ -109,7 +109,7 @@ Gardens should delete themselves after a set amount of time if they have no admi
 
 ## cultivar_sets
 
-U should be able to create CultivarSets connected to a garden, and copy them to and from their User profiles.
+CultivarSets can be connected to a garden, and from there be copied to and from User profiles.
 
 ## workspaces
 
@@ -153,6 +153,8 @@ A GardenMembership should be able to grant these levels of access:
 - Admins:
     - Invite viewers, editors, and admins.
     - Demote or revoke editors and viewers.
+    - Change the garden name, key_id.
+    - Add and remove Workspaces, CultivarSets
     - Manipulate all model state.
 - Edit:
     - Invite viewers.

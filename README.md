@@ -27,7 +27,8 @@
 <h3 align="center">VerdanTech</h3>
 
   <p align="center">
-    An open source agriculture productivity and agro-ecology modelling tool. 
+    A garden productivity tool, agro-ecology model, and IOT platform
+    for a sustainable and cooperative future.
     <br />
     <a href=""><strong>Try it yourself »</strong></a>
     <br />
@@ -56,7 +57,13 @@ The key technical features of VerdanTech are:
 1. The backend is an asyncronous python HTTP and websocket application, using the (Litestar)[] ASGI framework for API, Posgresql for persisted model state, Redis for in-memory model state, a (differential synchronization)[] algorithm for multi-client synchronization, and a clean architecture with core domain logic in pure Python.
 2. The frontend is a SvelteKit application configured in static adapter (pure SPA) mode, using (Orval)[] for client generation with (Svelte Query) and Tailwind + (Skeleton UI)[] for UI/UX. 
 
-[![Watch the video](https://img.youtube.com/vi/jGFHhRVdxRM/maxresdefault.jpg)](https://youtu.be/jGFHhRVdxRM)
+<div align="center">
+<iframe width="420" height="315"
+src="https://youtu.be/jGFHhRVdxRM">
+</iframe> 
+</div>
+
+# Background
 
 <div>
 <!-- TABLE OF CONTENTS -->

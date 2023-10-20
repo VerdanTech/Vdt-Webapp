@@ -19,9 +19,24 @@ Each subfolder represents a feature category. Obviously, most features overlap, 
 | [Static Pages](static-pages/README.md) | Website pages that are not part of the application, including the landing page, project description page, donation page, etc. |
 | [User](user/README.md) | User management system including email management, password management, authentication, etc.  | 
 | [Garden](gardens/README.md) | Gardens are containers for multiple Workspaces, as well as general environments for all other model state, and a connection between users to interact with it. |
-| [Plant](plants/README.md) | Plants are represented in two ways: as collections of attribute models defining expected behaviours of plant species, and as instances of those species with known locations in space and time. |
 | [Workspace](workspaces/README.md) | Workspaces are containers which give spatial context to objects such as plants, planting containers, and devices. |
+| [Plants and Cultivars](plants/README.md) | Plants are represented in two ways: as collections of attribute models defining expected behaviours of plant species, and as instances of those species with known locations in space and time. |
 | [Planner](planner/README.md) | Planner models are tools for describing past, present, and planned plant instances together, as well as generating plans based on constraints and objectives.
 | [Differential synchronization](differential-synchronization/README.md) | The differential synchronization algorithm is used to allow smooth collaborative editing between multiple clients. |
-| [Actions](/README.md) | . |
-| [Devices](/README.md) | . |
+| [Environment](environment/README.md) | . |
+| [Actions](actions/README.md) | . |
+| [Devices, Controllers, and Sensors](devices/README.md) | . |
+
+Sensors:
+soil temperature
+air temperature
+soil moisture
+rainfall
+light level
+
+Controllers:
+Irrigation
+autonomous Quadcopter
+Robot
+
+Environment
