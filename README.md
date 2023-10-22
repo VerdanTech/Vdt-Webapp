@@ -14,7 +14,6 @@
 [![Stargazers][stars-shield]][stars-url]
 [![Issues][issues-shield]][issues-url]
 [![Pull Requests][prs-shield]][prs-url]
-[![MIT License][license-shield]][license-url]
 
 
 <!-- PROJECT LOGO -->
@@ -40,14 +39,15 @@
     <a href="link to discord">Discord</a>
     ·
     <a href="https://youtu.be/jGFHhRVdxRM">YouTube</a>
+    <br />
   </p>
 </div>
 
 VerdanTech is an open source software application best described as a fusion between:
 
-1. **Garden productivity**: A model of the problem space of agriculture which allows us to manipulate it in a way which produces information that is useful to the horizontal organization of our physical labour. 
-- **Agro-ecology modelling**: A model of the relationship between agriculture and the broader ecological system which allows us optimize the objective of producing a healthy abundance and diversity of food for all people while minimizing the unsustainable condition of our reliance on both large quantities of non-renewable resources and the destruction of the ecological context of the Earth system.  
-- **Internet-of-things automation suite**: A suite of embedded devices aimed at automating the process of both the collection of input data which describes the state of the system and the enactment of the physical outputs required for optimization. Input devices include temperature, moisture, rain, wind, and soil sensors, as well as autonomous camera drones capable of determining system state through computer vision. Output devices include irrigation controllers and general purpose robotic cultivators. These devices live in a different repository called [VerdanTech-Devices][devices].
+1. **Garden productivity tool**: A model of the problem space of agriculture which allows us to manipulate it in a way which produces information that is useful to the horizontal organization of our physical labour. 
+- **Agro-ecology model**: A model of the relationship between agriculture and the broader ecological system which allows us optimize the objective of producing a healthy abundance and diversity of food for all people while minimizing the unsustainable condition of our reliance on both large quantities of non-renewable resources and the destruction of the ecological context of the Earth system.  
+- **Internet-of-things automation platform**: A suite of embedded devices aimed at automating the process of both the collection of input data which describes the state of the system and the enactment of the physical outputs required for optimization. Input devices include temperature, moisture, rain, wind, and soil sensors, as well as autonomous camera drones capable of determining system state through computer vision. Output devices include irrigation controllers and general purpose robotic cultivators. These devices live in a different repository called [VerdanTech-Devices][devices].
 
 VerdanTech is a very immature application, and most of these goals have not been completed. See (Roadmap)[## Roadmap] for further information. VerdanTech has been in development since late 2022, or early 2021 if you count the (first attempt)[https://www.youtube.com/watch?v=w0TwPI7bLp8&ab_channel=TotalVeganicFuturism] at a similar idea. It currently has only one contributor. VerdanTech has been built with (sentientist values)[https://sentientism.info/] in mind, and as such does not consider sentient beings as acceptable subjects of exploitation for food or any other purpose.
 
@@ -57,10 +57,8 @@ The key technical features of VerdanTech are:
 1. The backend is an asyncronous python HTTP and websocket application, using the (Litestar)[] ASGI framework for API, Posgresql for persisted model state, Redis for in-memory model state, a (differential synchronization)[] algorithm for multi-client synchronization, and a clean architecture with core domain logic in pure Python.
 2. The frontend is a SvelteKit application configured in static adapter (pure SPA) mode, using (Orval)[] for client generation with (Svelte Query) and Tailwind + (Skeleton UI)[] for UI/UX. 
 
-See the video introduction to VerdanTech here: (currently placeholder) 
-
-
-[![Watch the video](https://img.youtube.com/vi/jGFHhRVdxRM/maxresdefault.jpg)](https://youtu.be/jGFHhRVdxRM)
+<!--- See the video introduction to VerdanTech here: --->
+<!--- [![Watch the video](https://img.youtube.com/vi/jGFHhRVdxRM/maxresdefault.jpg)](https://youtu.be/jGFHhRVdxRM) --->
 
 <br />
 <div>
@@ -144,7 +142,6 @@ See the video introduction to VerdanTech here: (currently placeholder)
     </ul>
 </details>
 </div>
-<br />
 
 # Background
 
