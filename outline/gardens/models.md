@@ -44,6 +44,7 @@ classDiagram
         user: one UserReference
         garden: one GardenReference
         permissions: PermissionsEnum
+        favorite: bool
         created_at: date
 
     }
@@ -162,3 +163,7 @@ A GardenMembership should be able to grant these levels of access:
     - Update CultivarSets and Workspaces.
 - View: 
     - Restricted to read-only.
+
+## favorite
+
+A garden membership should be able to be marked as a favorite, so it can show up at the top of the Gardens menu

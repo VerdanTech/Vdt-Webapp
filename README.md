@@ -1,4 +1,4 @@
-<!-- This readme was informed by this template: https://github.com/othneildrew/Best-README-Template/tree/master -->
+<!-- This readme was built off of this template: https://github.com/othneildrew/Best-README-Template/tree/master -->
 <a name="readme-top"></a>
 
 
@@ -43,19 +43,22 @@
   </p>
 </div>
 
-VerdanTech is an open source software application best described as a fusion between:
+VerdanTech is an open source software project best summarized as a fusion between:
 
-1. **Garden productivity tool**: A model of the problem space of agriculture which allows us to manipulate it in a way which produces information that is useful to the horizontal organization of our physical labour. 
-- **Agro-ecology model**: A model of the relationship between agriculture and the broader ecological system which allows us optimize the objective of producing a healthy abundance and diversity of food for all people while minimizing the unsustainable condition of our reliance on both large quantities of non-renewable resources and the destruction of the ecological context of the Earth system.  
-- **Internet-of-things automation platform**: A suite of embedded devices aimed at automating the process of both the collection of input data which describes the state of the system and the enactment of the physical outputs required for optimization. Input devices include temperature, moisture, rain, wind, and soil sensors, as well as autonomous camera drones capable of determining system state through computer vision. Output devices include irrigation controllers and general purpose robotic cultivators. These devices live in a different repository called [VerdanTech-Devices][devices].
+1. **Garden Productivity Engine**: A fine-grained and interactive model of agriculture which facilitates the data-driven planning of productive spaces at any scale and the collaborative organization of labour.
+- **Agro-Ecology Optimization Model**: The model captures the relationship between agriculture and the broader ecological system, with the goal of producing a healthy abundance and diversity of food with minimal reliance on non-renewable resources and conditions of ecological destruction.
+- **IoT Automation Suite**: The model is complemented by an Internet-of-Things (IoT) platform, which serves as an extensible interface for integration of external APIs with the inputs and outputs of the model. Alongside the platform is a suite of embedded devices aimed at automating the process of obtaining measurements and executing tasks. These devices live in a different repository called [VerdanTech-Devices](https://github.com/nathanielarking/VerdanTech-Devices).
 
-VerdanTech is a very immature application, and most of these goals have not been completed. See (Roadmap)[## Roadmap] for further information. VerdanTech has been in development since late 2022, or early 2021 if you count the (first attempt)[https://www.youtube.com/watch?v=w0TwPI7bLp8&ab_channel=TotalVeganicFuturism] at a similar idea. It currently has only one contributor. VerdanTech has been built with (sentientist values)[https://sentientism.info/] in mind, and as such does not consider sentient beings as acceptable subjects of exploitation for food or any other purpose.
+For a high level conceptual overview of the features of this application, see the [Outline](outline/README.md) folder.
 
-The application is intended to be built for as many use cases as possible, both in the versatility of the model, scalability for large deployments, and ease of use for localized deployments. If you wish to deploy this application yourself, see the (Deployment)[] section. If the instructions are not adequate in guiding you to a successful deployment, please reach out for assistance and suggestions for improvements to the workflow. 
+VerdanTech is a very young application, and most of these goals have not been completed. See [Roadmap](#features) for further information. VerdanTech has been in development since late 2022, or early 2021 if you count the [first attempt](https://www.youtube.com/watch?v=w0TwPI7bLp8&ab_channel=TotalVeganicFuturism) at a similar idea. VerdanTech is built with (sentientist values)[https://sentientism.info/] in mind, and as such does not consider sentient beings as acceptable subjects of exploitation for food or any other purpose.
+
+**Streamlined deploylment not implemented yet**
+If you wish to deploy this application yourself, see the [Deployment](#deployment) section. If the instructions are not adequate in guiding you to a successful deployment, please reach out to the [Community](#community).
 
 The key technical features of VerdanTech are:
-1. The backend is an asyncronous python HTTP and websocket application, using the (Litestar)[] ASGI framework for API, Posgresql for persisted model state, Redis for in-memory model state, a (differential synchronization)[] algorithm for multi-client synchronization, and a clean architecture with core domain logic in pure Python.
-2. The frontend is a SvelteKit application configured in static adapter (pure SPA) mode, using (Orval)[] for client generation with (Svelte Query) and Tailwind + (Skeleton UI)[] for UI/UX. 
+1. The backend is an asyncronous python HTTP and websocket application, using the [Litestar](https://litestar.dev/) ASGI framework for API, Posgresql for persisted model state, Redis for in-memory model state, a [differential synchronization](https://neil.fraser.name/writing/sync/) algorithm for multi-client synchronization, and a clean architecture with core domain logic in plain Python.
+2. The frontend is a SvelteKit application configured in static adapter mode, using [Orval](https://orval.dev/) for client generation with [Svelte Query](https://tanstack.com/query/latest/docs/react/overview) and Tailwind + [Skeleton UI](https://www.skeleton.dev/) for UI/UX. 
 
 <!--- See the video introduction to VerdanTech here: --->
 <!--- [![Watch the video](https://img.youtube.com/vi/jGFHhRVdxRM/maxresdefault.jpg)](https://youtu.be/jGFHhRVdxRM) --->
@@ -147,15 +150,16 @@ The key technical features of VerdanTech are:
 
 *This section contains a description of the problem VerdanTech is built to solve, and a list of goals for the solution.*
 
-## The problem
+Agriculture is a realm of production which is absolutely essential to our existence. Like all human activity, it takes place within an ecological system and the character of the exchanges of energy and materials those activities product creates a pathway our systems take within the broad ecological system of the earth.
 
-Agriculture is a realm of production which is absolutely essential to our existence. Like all human activity, it takes place within an ecological system. 
-
-The interaction between our cultivation and and ecology determines what pathways we take within the model of the system.
+Our current mode of production is organized around fossil fuels. The extreme energy density of coal, oil, and gas is relied on to power machines and to synthesize fertilizer and pesticides.   
 
 
+Like all human activity, it takes place within an ecological system. 
 
-## The solution
+The interaction between our cultivation and ecology determines what pathways we take within the model of the system.
+
+
 
 Agriculture is an realm of human production which is absolutely essential to our existence. Like all activities, it takes place not in an isolated context but within a broad ecological system. The way we do agriculture places us in a certain pathway within the model of the system, and this model can tend towards long term sustainability or it cannot.
 
@@ -201,11 +205,13 @@ There are three steps to building a system like this. The plan looks like this:
 2. (The input stage) While the software model exists, it still relies primary on humans to gather the information to sustain it, and update the model state. Technologies must be made to automate the process of acquiring information. In the model level, the model will have an interface for plugging in external information and control devices. The simplest are weather APIs, and then there's physical sensors in the garden space, and finally there are quadcopters with cameras conducting daily complete 3D scans of the area and computer vision systems categorizing that information into inputs into the model. The end game of this is that the entire informational side of agriculture is automated, and the barrier to entry with a system like this to growing your own food is setting up the model and the input-gatherers and then performing the physical "actions" which are outputs of the model to optimize state.  
 3. (The output stage) Complete automation can be achieved at such a time as there are robotic systems capable of carrying out the vast complexity of operations humans perfore in agriculture. This is still totally sci-fi, but there are companies working on it today for specialized tasks.
 
+Input devices include temperature, moisture, rain, wind, and soil sensors, as well as autonomous camera drones capable of determining system state through computer vision. Output devices include irrigation controllers and general purpose robotic cultivators. 
+
 <p align="right"><a href="#readme-top">back to top</a></p>
 
 # Features
 
-The (Outline)[outline/overview.md] folder contains conceptual design documents and is used to continuously plan and document the application at a high level. Refer to it for user interface wireframes, use-flows, data transfer objects, and domain models. This section summarizes the completion state of objectives
+The (Outline)[outline/overview.md] folder contains conceptual design documents and is used to continuously plan and document the application at a high level. Refer to it for user interface wireframes and domain models. This section summarizes the completion state of the features.
 
 ## Completed
 
@@ -255,7 +261,7 @@ The (Outline)[outline/overview.md] folder contains conceptual design documents a
 
 # Deployment
 
-There are two ways to deploy: manual mode on linux and docker mode. Even if you don't know docker I recommend it more cause its easy with docker desktop. More likely you want to run this on a raspbery pi and it's easy there two. But idk how you would manually install tihs on non-linux
+There are two ways (planning) to deploy: manual mode on linux and docker mode. Even if you don't know docker I recommend it more cause its easy with docker desktop. More likely you want to run this on a raspbery pi and it's easy there two. But idk how you would manually install tihs on non-linux
 
 
 # Codebase
