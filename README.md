@@ -45,20 +45,19 @@
 
 VerdanTech is an open source software project best summarized as a fusion between:
 
-1. **Garden Productivity Engine**: A fine-grained and interactive model of agriculture which facilitates the data-driven planning of productive spaces at any scale and the collaborative organization of labour.
+1. **Garden Productivity Engine**: An intricate and interactive model of agriculture which facilitates the data-driven planning of productive spaces at any scale and the collaborative organization of labour.
 - **Agro-Ecology Optimization Model**: The model captures the relationship between agriculture and the broader ecological system, with the goal of producing a healthy abundance and diversity of food with minimal reliance on non-renewable resources and conditions of ecological destruction.
-- **IoT Automation Suite**: The model is complemented by an Internet-of-Things (IoT) platform, which serves as an extensible interface for integration of external APIs with the inputs and outputs of the model. Alongside the platform is a suite of embedded devices aimed at automating the process of obtaining measurements and executing tasks. These devices live in a different repository called [VerdanTech-Devices](https://github.com/nathanielarking/VerdanTech-Devices).
+- **IoT Automation Suite**: The model is complemented by an Internet-of-Things (IoT) platform, which serves as an extensible interface for integration of external APIs with inputs to and outputs of the model. Alongside the platform is a suite of embedded devices aimed at automating the process of obtaining measurements and executing tasks. These devices live in a different repository called [VerdanTech-Devices](https://github.com/nathanielarking/VerdanTech-Devices).
 
 For a high level conceptual overview of the features of this application, see the [Outline](outline/README.md) folder.
 
-VerdanTech is a very young application, and most of these goals have not been completed. See [Roadmap](#features) for further information. VerdanTech has been in development since late 2022, or early 2021 if you count the [first attempt](https://www.youtube.com/watch?v=w0TwPI7bLp8&ab_channel=TotalVeganicFuturism) at a similar idea. VerdanTech is built with (sentientist values)[https://sentientism.info/] in mind, and as such does not consider sentient beings as acceptable subjects of exploitation for food or any other purpose.
+VerdanTech is a very young application, and most of these goals have not been completed. See the [Features](#features) section for further information. VerdanTech has been in development since late 2022, or early 2021 if you count the [first attempt](https://www.youtube.com/watch?v=w0TwPI7bLp8&ab_channel=TotalVeganicFuturism) at a similar idea. VerdanTech is built with (sentientist values)[https://sentientism.info/] in mind, and as such does not consider sentient beings as acceptable subjects of exploitation for food or any other purpose.
 
-**Streamlined deploylment not implemented yet**
 If you wish to deploy this application yourself, see the [Deployment](#deployment) section. If the instructions are not adequate in guiding you to a successful deployment, please reach out to the [Community](#community).
 
 The key technical features of VerdanTech are:
 1. The backend is an asyncronous python HTTP and websocket application, using the [Litestar](https://litestar.dev/) ASGI framework for API, Posgresql for persisted model state, Redis for in-memory model state, a [differential synchronization](https://neil.fraser.name/writing/sync/) algorithm for multi-client synchronization, and a clean architecture with core domain logic in plain Python.
-2. The frontend is a SvelteKit application configured in static adapter mode, using [Orval](https://orval.dev/) for client generation with [Svelte Query](https://tanstack.com/query/latest/docs/react/overview) and Tailwind + [Skeleton UI](https://www.skeleton.dev/) for UI/UX. 
+2. The frontend is a SvelteKit application configured in static adapter mode, using [Orval](https://orval.dev/) for typed client generation with [Svelte Query](https://tanstack.com/query/latest/docs/react/overview) and Tailwind + [Skeleton UI](https://www.skeleton.dev/) for UI/UX. 
 
 <!--- See the video introduction to VerdanTech here: --->
 <!--- [![Watch the video](https://img.youtube.com/vi/jGFHhRVdxRM/maxresdefault.jpg)](https://youtu.be/jGFHhRVdxRM) --->
@@ -150,10 +149,46 @@ The key technical features of VerdanTech are:
 
 *This section contains a description of the problem VerdanTech is built to solve, and a list of goals for the solution.*
 
-Agriculture is a realm of production which is absolutely essential to our existence. Like all human activity, it takes place within an ecological system and the character of the exchanges of energy and materials those activities product creates a pathway our systems take within the broad ecological system of the earth.
+Agriculture is a realm of production which is absolutely essential to our existence. Like all human activity, it takes place within an ecological system and the character of the interaction between these systems has implications for how they will tend to evolve into the future. 
+
+the exchanges of energy and materials those activities product creates a pathway our systems take within the broad ecological system of the earth.
 
 Our current mode of production is organized around fossil fuels. The extreme energy density of coal, oil, and gas is relied on to power machines and to synthesize fertilizer and pesticides.   
 
+
+The Food and Agriculture Organization lists ten elements of agroecology(https://www.fao.org/agroecology/overview/overview10elements/en/) :
+
+Diversity: diversification is key to agroecological transitions to ensure food security and nutrition while conserving, protecting and enhancing natural resources.
+
+
+Co-creation of knowledge and transdisciplinary approaches for innovation
+
+Co-creation and sharing of knowledge: agricultural innovations respond better to local challenges when they are co-created through participatory processes.
+Synergies
+
+Synergies: building synergies enhances key functions across food systems, supporting production and multiple ecosystem services.
+Efficiency
+
+Efficiency: innovative agroecological practices produce more using less external resources.
+Recycling
+
+Recycling: more recycling means agricultural production with lower economic and environmental costs.
+Balance
+
+Resilience: enhanced resilience of people, communities and ecosystems is key to sustainable food and agricultural systems.
+
+Human and social value
+
+Human and social values: protecting and improving rural livelihoods, equity and social well-being is essential for sustainable food and agricultural systems.
+Culture and food traditions
+
+Culture and food traditions: by supporting healthy, diversified and culturally appropriate diets, agroecology contributes to food security and nutrition while maintaining the health of ecosystems.
+Land and natural resources governance
+
+Responsible governance: sustainable food and agriculture requires responsible and effective governance mechanisms at different scales – from local to national to global.
+Circular economy
+
+Circular and solidarity economy: circular and solidarity economies that reconnect producers and consumers provide innovative solutions for living within our planetary boundaries while ensuring the social foundation for inclusive and sustainable development.
 
 Like all human activity, it takes place within an ecological system. 
 
