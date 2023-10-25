@@ -46,12 +46,12 @@
 VerdanTech is an open source software project best summarized as a fusion between:
 
 1. **Garden Productivity Engine**: An intricate and interactive model of agriculture which facilitates the data-driven planning of productive spaces at any scale and the collaborative organization of labour.
-- **Agro-Ecology Optimization Model**: The model captures the relationship between agriculture and the broader ecological system, with the goal of producing a healthy abundance and diversity of food with minimal reliance on non-renewable resources and conditions of ecological destruction.
-- **IoT Automation Suite**: The model is complemented by an Internet-of-Things (IoT) platform, which serves as an extensible interface for integration of external APIs with inputs to and outputs of the model. Alongside the platform is a suite of embedded devices aimed at automating the process of obtaining measurements and executing tasks. These devices live in a different repository called [VerdanTech-Devices](https://github.com/nathanielarking/VerdanTech-Devices).
+- **Agro-Ecology Optimization Model**: A model which captures the relationship between agriculture and the broader ecological system, with the goal of producing a healthy abundance and diversity of food with minimal reliance on non-renewable resources and conditions of ecological destruction.
+- **IoT Automation Suite**: A model which is complemented by an Internet-of-Things (IoT) platform, serving as an extensible interface for integration with external APIs. Alongside the platform is a set of embedded devices designed to automate the process of obtaining measurements and executing tasks. These devices exist in a different repository called [VerdanTech-Devices](https://github.com/nathanielarking/VerdanTech-Devices).
 
-For a high level conceptual overview of the features of this application, see the [Outline](outline/README.md) folder.
+For a high level conceptual overview of the application's features, refer to the [Outline](outline/README.md) folder.
 
-VerdanTech is a very young application, and most of these goals have not been completed. See the [Features](#features) section for further information. VerdanTech has been in development since late 2022, or early 2021 if you count the [first attempt](https://www.youtube.com/watch?v=w0TwPI7bLp8&ab_channel=TotalVeganicFuturism) at a similar idea. VerdanTech is built with (sentientist values)[https://sentientism.info/] in mind, and as such does not consider sentient beings as acceptable subjects of exploitation for food or any other purpose.
+VerdanTech is a very young application, and most of these goals have not been completed. Refer to the [Features](#features) section for further information. VerdanTech has been in development since late 2022, or early 2021 if we count the [initial attempt](https://www.youtube.com/watch?v=w0TwPI7bLp8&ab_channel=TotalVeganicFuturism) at a similar idea. VerdanTech is built with (sentientist values)[https://sentientism.info/] in mind, and as such does not consider sentient beings as acceptable subjects of exploitation for food or any other purpose.
 
 If you wish to deploy this application yourself, see the [Deployment](#deployment) section. If the instructions are not adequate in guiding you to a successful deployment, please reach out to the [Community](#community).
 
@@ -147,33 +147,30 @@ The key technical features of VerdanTech are:
 
 # Background
 
-*This section contains a description of the problem VerdanTech is built to solve, and a list of goals for the solution.*
+Agriculture is absolutely essential to our existence. Like all human activity, it s
 
-Agriculture is a realm of production which is absolutely essential to our existence. Like all human activity, it takes place within an ecological system and the character of the interaction between these systems has implications for how they will tend to evolve into the future. 
+Agriculture is a realm of production which is absolutely essential to our existence. Like all human activity, it takes place within an ecological system and interacts with that system in a way that isn't usually simple. The 
+and the character of the interaction between these systems has implications for how they will tend to evolve into the future. they will set the course for our collective future..
 
 the exchanges of energy and materials those activities product creates a pathway our systems take within the broad ecological system of the earth.
 
 Our current mode of production is organized around fossil fuels. The extreme energy density of coal, oil, and gas is relied on to power machines and to synthesize fertilizer and pesticides.   
 
+To communicate the intent of VerdanTech to contribute to agroecology, here is how it relates to [ten elements of agroecology (FAO)](https://www.fao.org/agroecology/overview/overview10elements/en/): 
 
-The Food and Agriculture Organization lists ten elements of agroecology(https://www.fao.org/agroecology/overview/overview10elements/en/) :
-
-Diversity: diversification is key to agroecological transitions to ensure food security and nutrition while conserving, protecting and enhancing natural resources.
+Diversity: the reason behind the uniformity of modern industrial agriculture is that simple monoculture strategies are incredibly good at maximizing output (when paried with energy dense fuels and our modern machines) and thus, optimizing agriculture - when the objective of optimization is to produce as much product as possible. When we step into an ecological perspective - the benefit that diversity provides in terms of system resilience and sustainability also contributes to our objective. The problem that this brings is that diversity isn't easy - simple strategies require simple models, and this is true as we move more polyculture. How do we quantify diverstiy, how do we optimize for it? the inclustion of diversity into our practices means a complexification of models (relative to industrial monocropping), and how do we adapt to that? VerdanTech seeks to quantify both what diverity looks like in terms of its benefits and how it is achieved with technique, and apply that objective to real world problems so as to assist us. The better an informational model we have, the less is required of us in terms of physical precision and energy of action. Paths from a current ecosystem to one which meets the objective should be accessible to as many people as possible, even those who don't   
 
 
-Co-creation of knowledge and transdisciplinary approaches for innovation
+Co-creation and sharing of knowledge: The prospect of humans surviving ecological catastrophe through the creation of cooperative society requires the integration of knowledge across people and across the disciplines of biology, ecology, sociology, engineering. VerdanTech aims to be a platform that serves exactly the purpose of being a tool that enables cooperative human adaptation by allowing integrated models of biology and ecologoy to directly take on, add to, and share the knowledge of the human brain of agro-ecology theory and practice from those who have it and are willing to add to the probject and anyone who has access to the software and the tools.   
 
-Co-creation and sharing of knowledge: agricultural innovations respond better to local challenges when they are co-created through participatory processes.
-Synergies
 
-Synergies: building synergies enhances key functions across food systems, supporting production and multiple ecosystem services.
-Efficiency
 
-Efficiency: innovative agroecological practices produce more using less external resources.
-Recycling
+Synergies: The benefit of diversity is synergy, and mapping out the web of relations between all the species we have access to is a large task. VerdanTech aims to be an application which can take on this information in a digital model and be updated according to new knowledge. We can learn how to optimize biodiversity for synergy and spread that knowledge to anyone who has access to the tools.
 
-Recycling: more recycling means agricultural production with lower economic and environmental costs.
-Balance
+
+Efficiency: Modern industrial agriculture relies on the extreme energy density and abundance of fossil fuels to maintain its productivity. A world with less or no fossil fuels implies a extreme need to produce similar amounts of food with less energy. This implies three things: less use of energy overall especially liquid fuels, more use of renewable energy, which tends to be lower in magnitude and thus we should prefer more precise and efficient use of electricityr, and more human labour than we do now. X percent of people were farmers 100 years ago, X are today. By creating an integrated-model of agro ecology we can constrain and also optimize  for the use of energy and labour, and create a horizontal basis for the collaboration of different peoples labour to maintain the same complex systems.
+
+Recycling: nothing specific on this
 
 Resilience: enhanced resilience of people, communities and ecosystems is key to sustainable food and agricultural systems.
 
@@ -185,10 +182,13 @@ Culture and food traditions
 Culture and food traditions: by supporting healthy, diversified and culturally appropriate diets, agroecology contributes to food security and nutrition while maintaining the health of ecosystems.
 Land and natural resources governance
 
-Responsible governance: sustainable food and agriculture requires responsible and effective governance mechanisms at different scales – from local to national to global.
-Circular economy
+9 Responsible governance and 10 Circular and solidarity economy: by creating a platform that can be hosted by anyone, the organization of efforts can be made as horizontal as the users are able to be. The creation of effective modelling and producitivy tools that can be used by anyone is in the direction of puting the power of food soverignetly into more hands.  the people who consume the food, the people who create the food, and the people who control the efforts of making the food can increasingly become the same group of people. 
 
 Circular and solidarity economy: circular and solidarity economies that reconnect producers and consumers provide innovative solutions for living within our planetary boundaries while ensuring the social foundation for inclusive and sustainable development.
+Publications
+
+
+
 
 Like all human activity, it takes place within an ecological system. 
 
