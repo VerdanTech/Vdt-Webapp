@@ -51,7 +51,7 @@ VerdanTech is an open source software project best summarized as a fusion betwee
 
 For a high level conceptual overview of the application's features, refer to the [Outline](outline/README.md) folder.
 
-VerdanTech is a very young application, and most of these goals have not been completed. Refer to the [Features](#features) section for further information. VerdanTech has been in development since late 2022, or early 2021 if we count the [initial attempt](https://www.youtube.com/watch?v=w0TwPI7bLp8&ab_channel=TotalVeganicFuturism) at a similar idea. VerdanTech is built with (sentientist values)[https://sentientism.info/] in mind, and as such does not consider sentient beings as acceptable subjects of exploitation for food or any other purpose.
+VerdanTech is a very young application, and most of these goals have not been completed. Refer to the [Features](#features) section for further information. VerdanTech has been in development since late 2022, or early 2021 if we count the [initial attempt](https://www.youtube.com/watch?v=w0TwPI7bLp8&ab_channel=TotalVeganicFuturism) at a similar idea. VerdanTech is built with [sentientist values](https://sentientism.info/) in mind, and as such does not consider sentient beings as acceptable subjects of exploitation for food or any other purpose.
 
 If you wish to deploy this application yourself, see the [Deployment](#deployment) section. If the instructions are not adequate in guiding you to a successful deployment, please reach out to the [Community](#community).
 
@@ -147,17 +147,32 @@ The key technical features of VerdanTech are:
 
 # Background
 
-*What is agriculture?*
+*This section highlights the problems that VerdanTech aims to solve and the nature of the solutions.*
 
-*What is ecology?*
+## What is agriculture?
 
-*How does agriculture interact with ecology?*
+Dictionary.com [defines agriculture as](https://www.dictionary.com/browse/agriculture):
+> the science, art, or occupation concerned with cultivating land, raising crops, and feeding, breeding, and raising livestock; farming.
+
+VerdanTech is built with [sentientist values](https://sentientism.info/) in mind, and as such does not consider sentient beings as acceptable subjects of exploitation for food or any other purpose. As a result, the word agriculture in the context of any VerdanTech documentation uses this definition:
+> the science, art, or occupation concerned with cultivating land and raising crops; farming.
+
+## What is ecology?
+
+Merriam Webster [defines ecology as](https://www.merriam-webster.com/dictionary/ecology)
+> a branch of science concerned with the interrelationship of organisms and their environments, the totality or pattern of relations between organisms and their environment.
+
+
+
+Humans are organisms and are dependent on continuous exchanges of energy and materials with surrounding ecological systems, called [social metabolism]().
+
+## What is agro-ecology?
 
 Reliance on unsustainability means eventual collapse
 
-*What is the character of the relationship between modern industrial agriculture and ecology?*
+## What is the Relationship Between Modern Industrial Agriculture and Ecology?
 
-*What human adaptation is required to shift our production into a sustainable ecological range?*
+## What Adaptation is Required to Shift Our Agriculture Systems Into Ecological Sustainability?
 
 Use less energy totsl
 Usr less fossil energy
@@ -165,15 +180,17 @@ Create more biodiverse systems
 Create more decentralized systems
 Increased human labour
 
-*What are the social elements of this required adaptation?*
+## What Are the social elements of this required adaptation?*
 
-*How could a technological innovation best serve to maximize the ability of humans to undertake this adaptation?*
 
-*What is VerdanTech? How does it aim to move in this direction?*
+## *How could a technological innovation best serve to maximize the ability of humans to undertake this adaptation?*
+being able to expirement systematically with various types of growing systemr
 
-*What are the core values of VerdanTech as a project? 
+## *What is VerdanTech? How does it aim to move in this direction?*
 
-*What are the core values of VerdanTech as a software system?"
+## *What are the core values of VerdanTech as a project?*
+
+## *What are the core values of VerdanTech as a software system?*
 
 
 

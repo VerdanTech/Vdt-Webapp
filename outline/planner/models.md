@@ -7,6 +7,7 @@ classDiagram
     Agroplan --> Plant : refers to N
     Agroplan --> Workspace: refers to one
     Agroplan --> AgroplanGenerator : composed of one or none
+    Agroplan --> Geometry : composed of one
     AgroplanStrategyEnum --> AgroplanGenerator
     AgroplanGenerator --> AgroplanCompositeObjective : composed of one
     AgroplanObjectiveEnum --> AgroplanCompositeObjective
@@ -14,6 +15,7 @@ classDiagram
         name: string
         plants: set of PlantID
         workspace: WorkspaceID
+        borders: Geometry
     }
     class Plant{
         See Plants feature category
