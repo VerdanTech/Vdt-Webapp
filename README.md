@@ -147,6 +147,41 @@ The key technical features of VerdanTech are:
 
 # Background
 
+*What is agriculture?*
+
+*What is ecology?*
+
+*How does agriculture interact with ecology?*
+
+Reliance on unsustainability means eventual collapse
+
+*What is the character of the relationship between modern industrial agriculture and ecology?*
+
+*What human adaptation is required to shift our production into a sustainable ecological range?*
+
+Use less energy totsl
+Usr less fossil energy
+Create more biodiverse systems
+Create more decentralized systems
+Increased human labour
+
+*What are the social elements of this required adaptation?*
+
+*How could a technological innovation best serve to maximize the ability of humans to undertake this adaptation?*
+
+*What is VerdanTech? How does it aim to move in this direction?*
+
+*What are the core values of VerdanTech as a project? 
+
+*What are the core values of VerdanTech as a software system?"
+
+
+
+
+
+Agriculture is essential to our existence, and interacts with ecology. The
+
+
 Agriculture is absolutely essential to our existence. Like all human activity, it s
 
 Agriculture is a realm of production which is absolutely essential to our existence. Like all human activity, it takes place within an ecological system and interacts with that system in a way that isn't usually simple. The 
