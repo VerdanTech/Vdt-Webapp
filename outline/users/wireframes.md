@@ -1,6 +1,11 @@
 # User - Wireframes
 
-The User wireframes allow creating and logging into an account, viewing one's own profile, and viewing other profiles.
+The User wireframes allow:
+- Creating and logging into an account
+- Viewing and editing one's own profile
+- Viewing other profiles.
+- Viewing and editing lists of Friends.
+- Viewing GardenMembership invites.
 
 # Accounts
 
@@ -29,3 +34,9 @@ The User wireframes allow creating and logging into an account, viewing one's ow
 ## Others Profiles
 
 ## Friends
+
+# Garden
+
+## GardenMembership Invites 
+
+![Invites](./wireframes/invites.excalidraw.png)

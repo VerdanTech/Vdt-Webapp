@@ -66,7 +66,7 @@ classDiagram
         admin
     }
     class CultivarSet{
-        See Plants feature category
+        See Cultivars feature category
     }
     class Workspace{
         See Workspaces feature category

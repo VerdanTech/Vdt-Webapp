@@ -162,9 +162,13 @@ VerdanTech is built with [sentientist values](https://sentientism.info/) in mind
 Merriam Webster [defines ecology as](https://www.merriam-webster.com/dictionary/ecology)
 > a branch of science concerned with the interrelationship of organisms and their environments, the totality or pattern of relations between organisms and their environment.
 
+In our world today, the relationship between ecology and human society is more important than ever. We rely on ecological systems for services that are vital to our existence and maintain relationships with them that are largely unsustainable. A system is unsustainable when its consumption of resources and emission of waste exceeds the regenerative and absorbative capacities of its environment. A society of these conditions undermines not only its own wellbeing but the wellbeing of all the lives reliant on these services. Our environment is planet Earth, and the combined ecological impact of all our systems of extraction, production, pollution, and emission amounts to a truly devastating level of resource depletion, biosphere destruction, climate change, and more. 
 
+The situation is intolerable. It falls on us to figure out how we need to adapt and then to undertake it.
 
-Humans are organisms and are dependent on continuous exchanges of energy and materials with surrounding ecological systems, called [social metabolism]().
+A truly ecological, sustainable society requires many adaptations. Some are technological, including changes to what resources we depend on and what procceses we use to achieve our goals. Technological adaptations involve some combination of meeting our energy and material needs through renewable sources and finding ways to reduce the amount of resources required for the same services we demand. Some adaptations are social, including changes to what our goals are, and how we organize ourselves to enable those goals to be met. Social adaptations involve the creation of human organization centered around solidarity, equality, and cooperation towards collective success. Politcal and economic forms which allow us to move away from the current conditions of ecological sustainablity and towards the equal interest of all individuals
+
+Almost all of these adaptations are interconnected, and massive in scope. VerdanTech focuses specifically on agriculture, and its relation to ecology and the organization of human labour.
 
 ## What is agro-ecology?
 
