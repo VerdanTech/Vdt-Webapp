@@ -168,33 +168,65 @@ The situation is intolerable. It falls on us to figure out how we need to adapt 
 
 A truly ecological, sustainable society requires many adaptations. Some are technological, including changes to what resources we depend on and what procceses we use to achieve our goals. Technological adaptations involve some combination of meeting our energy and material needs through renewable sources and finding ways to reduce the amount of resources required for the same services we demand. Some adaptations are social, including changes to what our goals are, and how we organize ourselves to enable those goals to be met. Social adaptations involve the creation of human organization centered around solidarity, equality, and cooperation towards collective success. Politcal and economic forms which allow us to move away from the current conditions of ecological sustainablity and towards the equal interest of all individuals
 
-Almost all of these adaptations are interconnected, and massive in scope. VerdanTech focuses specifically on agriculture, and its relation to ecology and the organization of human labour.
+Almost all of these adaptations are interconnected, and massive in scope. VerdanTech focuses specifically on agriculture and its relation to ecology and the organization of human labour.
+
+## How does modern industrial agriculture interact with ecology?
+
+agriculture needs:
+- some modification or addition to the biosphere as a result of cultivation
+- a physical medium, like soil, to hold the plants
+- some way of ensuring that there exists enough material in the medium to get the plants to uptake it and grow (nutrients, water)
+- mechanical work, by humuans or machines
+- a stable climate that doesn't kill the plants 
+
+in nature:
+- the material balance of the soil is kept in balance by many mechanisms, including weathering and the rhizosphere
+
+our modern industrial agriculture system:
+- the material balance of the soil is kept in balance by intensive input 
+- the bioshere modification has served to devastate the biodiversity required for natural procceses like soil building, and make our bioshpheres go against that of nature, for example growing water intesive crops in deserts by importing loads of water.
+- the physical work is extremely simple and requires massive amounts of fossil fuels to keep going, and as a consequence our society structures itself around being able to produce limitless food with a small percentage of the population
+- reliant on fossil fuels which destabalize and destroy the climactic conditions we need
+
+- reliance on fossil fuels, an unrenewable resource with existential externalities, for fertilizer, chemical treatments like pesticide, and fuel for machines.
+- reliance on intensive input 
+
+what is the nature of the adaptations we need to get out of this?
 
 ## What is agro-ecology?
 
-Reliance on unsustainability means eventual collapse
+The United Nations Food and Agriculture Organization (FAO) [defines agro-ecology as](https://www.fao.org/3/i9037en/i9037en.pdf):
+>Agroecology is an integrated approach that simultaneously applies ecological and social concepts and principles to the design and management of food and agricultural systems. It seeks to optimize the interactions between plants, animals, humans and the environment while taking into consideration the social aspects that need to be addressed for a sustainable and fair food system. Rather than tweaking the practices of unsustainable agricultural systems, agroecology seeks to transform food and agricultural systems, addressing the root causes of problems in an integrated way and providing holistic and long-term solutions. [Agroecology] is based on bottom-up and territorial processes, helping to deliver contextualised solutions to local problems. Agroecological innovations are based on the co-creation of knowledge, combining science with the traditional, practical and local knowledge of producers. By enhancing their autonomy and adaptive capacity, agroecology empowers producers and communities as key agents of change.
 
-## What is the Relationship Between Modern Industrial Agriculture and Ecology?
-
-## What Adaptation is Required to Shift Our Agriculture Systems Into Ecological Sustainability?
-
-Use less energy totsl
-Usr less fossil energy
-Create more biodiverse systems
-Create more decentralized systems
-Increased human labour
-
-## What Are the social elements of this required adaptation?*
+Goals:
+- Use less energy totsl
+- Usr less fossil energy
+- Create more biodiverse systems
+- Create more decentralized systems
+- Increased human labour
 
 
-## *How could a technological innovation best serve to maximize the ability of humans to undertake this adaptation?*
+## How could a technological innovation best empower humans to undertake this adaptation?
 being able to expirement systematically with various types of growing systemr
 
-## *What is VerdanTech? How does it aim to move in this direction?*
+## What is VerdanTech? How does it aim to move in this direction?
 
-## *What are the core values of VerdanTech as a project?*
+From the FAO on [what makes agroecology distinct?](https://www.fao.org/3/i9037en/i9037en.pdf):
+> Agroecology is fundamentally different from other approaches to sustainable development. It is based on bottom-up and territorial processes, helping to deliver contextualised solutions to local problems. Agroecological innovations are based on the co-creation of knowledge, combining science with the traditional, practical and local knowledge of producers. By enhancing their autonomy and adaptive capacity, agroecology empowers producers and communities as key agents of change.
 
-## *What are the core values of VerdanTech as a software system?*
+VerdanTech aims to be a tool that enhances the adaptive capacity through minimizing the amount of knowledge, experience, time, and resources to transform a local biosystem into the optimal agroecology plot. 
+
+> Rather than tweaking the practices of unsustainable agricultural systems, agroecology seeks to transform food and agricultural systems, addressing the root causes of problems in an integrated way and providing holistic and long-term solutions. This includes an explicit focus on social and economic dimensions of food systems. Agroecology places a strong focus on the rights of women, youth and indigenous peoples.
+
+In terms of general garden productivity
+
+In terms of agro ecology,
+- cocreation of knowledge, enhancing adaptability
+- optimal spatial and temporal diversity planning
+
+## What are the core values of VerdanTech as a project?
+
+## What are the core values of VerdanTech as a software system?
 
 
 
@@ -302,58 +334,29 @@ Input devices include temperature, moisture, rain, wind, and soil sensors, as we
 
 # Features
 
-The (Outline)[outline/overview.md] folder contains conceptual design documents and is used to continuously plan and document the application at a high level. Refer to it for user interface wireframes and domain models. This section summarizes the completion state of the features.
+The (Outline)[outline/overview.md] folder contains conceptual design documents and is used to continuously plan and document the application at a high level. Refer to it for the completion state of these features 
 
-## Completed
-
-## In progress
-
-- User Management
-    - [x] User datastructure as a container for human users of the application.
-    - [] User CRUD.
-    - [x] Email verification.
-    - [x] Password reset.
-    - [] Authentication.
-
-## Planned
-
-- User Management
-    - [] Authentication.
-
-- Garden Management
-    - [ ] Garden datastructure as a top-level container for an environment and GardenMembership as a link between User and Gardens.
-    - [ ] Garden CRUD.
-    - [ ] Garden membership management, including invitation, acceptance, rejection, revoke.
-    - [ ] Garden membership permissions management, including admin, edit, and view roles.
-
-- Workspace Container
-    - [ ] Workspace datastructure as a container for a localized space. PlantingArea datastructure as a container representing space that can be used for cultivation.
-    - [ ] Workspace and PlantingArea CRUD.
-
-- Cultivar Records
-    - [ ] Cultivar as a datastructure for the attributes of plant variations. CultivarSet as a datastructure for grouping Cultivars.
-    - [ ] Cultivar and CultivarSet CRUD.
-    - [ ] Cultivar parent-chield Variety system.
-    - [ ] CultivarSets merging, switching.
-    - [ ] WestCoastSeeds CultivarSet.
-
-- Plant Instancing
-
-- Differential Synchronization
-
-- Bulk Update Tools
-
-- Planting Schema Generation
-
-- Actions Outputs
-
-- Device Management
-
+| Category     | Description |
+|--------------|-------------|
+| [App Shell](app-shell/README.md) | Wireframes of app-wide navigation bars. |
+| [Static Pages](static-pages/README.md) | Wireframes of website pages that are not part of the application, including the landing page, project description page, donation page, etc. |
+| [User](user/README.md) | User management system including email management, password management, authentication, etc.  | 
+| [Garden](gardens/README.md) | Gardens are containers for multiple Workspaces, as well as general environments for all other model state, and a space to connect users. |
+| [Workspace](workspaces/README.md) | Workspaces are containers which give spatial context to objects such as plants, planting containers, and devices. |
+| [Cultivars](cultivars/README.md) | Cultivars are collections of attribute models defining the expected behaviours of plant species. |
+| [Plants](plants/README.md) | Plants are physical instances of plants with known locations in space and time, and a reference to a Cultivar. |
+| [Planner](planner/README.md) | Planner models are tools for describing past, present, and planned plant instances together as a structured plan, as well as generating plans based on constraints and objectives.
+| [Differential Synchronization](differential-synchronization/README.md) | The differential synchronization algorithm is used to allow smooth collaborative editing between multiple clients. |
+| [Environment](environment/README.md) | Collections of inputs to the model state including temperatures, rainfall, and pictures. |
+| [Actions](actions/README.md) | Collections of outputs from the model state including lists of tasks to be performed. |
+| [Devices, Controllers, and Sensors](devices/README.md) | Devices are containers of Controllers and Sensors, which are tools to interface Environmental inputs and Actions outputs with external APIs. |
 
 # Deployment
 
-There are two ways (planning) to deploy: manual mode on linux and docker mode. Even if you don't know docker I recommend it more cause its easy with docker desktop. More likely you want to run this on a raspbery pi and it's easy there two. But idk how you would manually install tihs on non-linux
-
+A non-development deployment workflow doesn't yet exist. Plans include:
+- Include instructions for all manual installation steps on Linux.
+- Dockerize entire application including development workflow and production deployment.
+- Support flexible self-hosting for all service dependencies.  
 
 # Codebase
 

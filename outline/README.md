@@ -2,14 +2,6 @@
 
 The purpose of this folder is to define high-level, abstract designs of application features. Ideally, it should serve as a prototyping space common to backend developers, frontend developers, and users.
 
-## Document Types
-
-Each subfolder contains one or more design documents. Currently, these documents can include:
-- **models.md** - A markdown document containing specifications for domain models. A domain model is a conceptual model designed to be intuitive by mirroring ways the users think about the problem space the application is trying to solve. See the [Backend Background](../README.md#background-1) section of the main readme for further explanation of what domain models are. Model descriptions should roughly pseudocode the required attributes of the Python implementations, and contain general descriptions of the behaviours, including relationships with other models.
-- **dto.md - Still deciding whether to include this** - A markdown document containing specifications for data transfer objects. Data transfer objects are the datastructures that describe the contents of the HTTP bridge between the frontend and backend of the application. DTO descriptions should roughly pseudocode the required attributes of the Python DTO implementations, OpenAPI spec, and generated Typescript client.
-- **wireframes.md** - A markdown document containing descriptions of wireframes and the interactions between them.
-- **wireframes/** - Wireframes are rough sketches of the user interface. Currently, the Excalidraw application is used for its ability to save editable files directly into PNG format. The recommended way to edit these files is to use the [Visual Studio extension](https://marketplace.visualstudio.com/items?itemName=pomdtr.excalidraw-editor) in VS Code or in the browser. For collaborative editing, the [web version](https://excalidraw.com/) can be used.
-
 ## Feature Categories
 
 Each subfolder represents a feature category. Obviously, most features overlap, so the categorization is intended to be loose and only assist in grouping together similar concepts in the application.
@@ -28,3 +20,53 @@ Each subfolder represents a feature category. Obviously, most features overlap, 
 | [Environment](environment/README.md) | Collections of inputs to the model state including temperatures, rainfall, and pictures. |
 | [Actions](actions/README.md) | Collections of outputs from the model state including lists of tasks to be performed. |
 | [Devices, Controllers, and Sensors](devices/README.md) | Devices are containers of Controllers and Sensors, which are tools to interface Environmental inputs and Actions outputs with external APIs. |
+
+## Document Types
+
+Each subfolder contains one or more design documents. Currently, these documents can include:
+- **models.md** - A markdown document containing specifications for domain models. A domain model is a conceptual model designed to be intuitive by mirroring ways the users think about the problem space the application is trying to solve. See the [Backend Background](../README.md#background-1) section of the main readme for further explanation of what domain models are. Model descriptions should roughly pseudocode the required attributes of the Python implementations, and contain general descriptions of the behaviours, including relationships with other models.
+- **wireframes.md** - A markdown document containing descriptions of wireframes and the interactions between them.
+- **wireframes/** - Wireframes are rough sketches of the user interface. Currently, the Excalidraw application is used for its ability to save editable files directly into PNG format. The recommended way to edit these files is to use the [Visual Studio extension](https://marketplace.visualstudio.com/items?itemName=pomdtr.excalidraw-editor) in VS Code or in the browser. For collaborative editing, the [web version](https://excalidraw.com/) can be used.
+
+## Progress
+
+- ***Feature Category***
+    - *Version the feature is included in* **[Percentage completion]** Feature description.
+- ***App Shell***
+    - *v0.1.0* **[100]** Wireframed all combination of auth([x])/unauth([x]) and static-pages([x])/app-base([x])/app-garden([x]) contexts.
+    - *v0.1.0* **[20]** Basic svelte components of all contexts.
+    - *v1.0.0* **[0]** Appropriate icons for navigation bar buttons.
+    - *v1.0.0* **[0]** Advanced svelte dropdown on hover menu navigation button behaviours in applicable contexts.
+
+- ***Static Pages***
+    - []
+
+- ***User***
+    - []
+
+- ***Garden***
+    - []
+
+- ***Workspace***
+    - []
+
+- ***Cultivars***
+    - []
+
+- ***Plants***
+    - []
+
+- ***Planner***
+    - []
+
+- ***Differential Synchronization***
+    - []
+
+- ***Environment***
+    - []
+
+- ***Actions***
+    - []
+
+- ***Devices, Controllers, and Sensors***
+    - []

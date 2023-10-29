@@ -19,6 +19,9 @@ classDiagram
         last_harvest_date: datetime
         expiry_date: datetime
     }
+    class Cultivar{
+        See Cultivar feature category
+    }
     class Coordinate{
         See Workspace feature category
     }

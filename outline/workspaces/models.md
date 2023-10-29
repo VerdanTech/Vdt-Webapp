@@ -23,6 +23,9 @@ classDiagram
     class SoilContainer{
         <<PlantingArea>>
     }
+    class SeedStartingArea{
+        <<PlantingArea>>
+    }
     class Geometry{
         anchor: Coordinate
     }

@@ -20,6 +20,7 @@ classDiagram
     class Garden{
         key_id: string
         name: string
+        description: text
         creator: one or none UserID
         visibility: VisibilityEnum
         admins: list of GardenMembership
@@ -27,7 +28,7 @@ classDiagram
         viewers: list of GardenMembership
         cultivar_sets: one to N CultivarSet
         workspaces: one to N WorkspaceID
-        profiles: set of EnvironmentAttributeProfile
+        attributes: set of EnvironmentAttributeProfile
         created_at: datetime
     }
     class Creator{
@@ -78,6 +79,9 @@ classDiagram
         <<EnvironmentAttributeProfile>>
         first_frost_date: date
         last_frost_date: date
+    }
+    class Widget{
+        
     }
 ```
 

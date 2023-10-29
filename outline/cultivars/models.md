@@ -1,4 +1,4 @@
-# Plants - Models
+# Cultivars - Models
 
 ```mermaid
 ---
@@ -13,7 +13,7 @@ classDiagram
     PlantAttributeProfile --> EcoTemporalProfile
     EcoTemporalProfile -- FrostDateEcoTemporalProfile
     PlantAttributeProfile --> TemperatureProfile
-    PlantAttributeProfile --> GrowthPatternProfile
+    PlantAttributeProfile --> GeometricProfile
     PlantAttributeProfile --> HarvestProfile
     PlantAttributeProfile --> NutrientProfile
 
@@ -59,7 +59,7 @@ classDiagram
         min_temperature: decimal
         max_temperature: decimal
     }
-    class GrowthPatternProfile{
+    class GeometricProfile{
         <<PlantAttributeProfile>>
     }
     class HarvestProfile{
