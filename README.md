@@ -172,21 +172,26 @@ Almost all of these adaptations are interconnected, and massive in scope. Verdan
 
 ## How does modern industrial agriculture interact with ecology?
 
-agriculture needs:
-- some modification or addition to the biosphere as a result of cultivation
-- a physical medium, like soil, to hold the plants
-- some way of ensuring that there exists enough material in the medium to get the plants to uptake it and grow (nutrients, water)
-- mechanical work, by humuans or machines
-- a stable climate that doesn't kill the plants 
+Any agriculture system has several components:
+- **Land and soil.** in nature soil is not dirt, alive and bioshere
+- Soil nutrients, water, and other resources.
+- Modification of the biosphere through cultivation of domestic species.
+- Physical labour performed by some combination of humans and machines.
+- Climate conditions that are suitable for plant growth.
+- A logistical system that can bring products to consumers.
+
+In nature, 
 
 in nature:
 - the material balance of the soil is kept in balance by many mechanisms, including weathering and the rhizosphere
 
 our modern industrial agriculture system:
+- so much land has been converted
 - the material balance of the soil is kept in balance by intensive input 
 - the bioshere modification has served to devastate the biodiversity required for natural procceses like soil building, and make our bioshpheres go against that of nature, for example growing water intesive crops in deserts by importing loads of water.
 - the physical work is extremely simple and requires massive amounts of fossil fuels to keep going, and as a consequence our society structures itself around being able to produce limitless food with a small percentage of the population
 - reliant on fossil fuels which destabalize and destroy the climactic conditions we need
+- on the social side, has centralized and monopolized over time due to the costly inputs
 
 - reliance on fossil fuels, an unrenewable resource with existential externalities, for fertilizer, chemical treatments like pesticide, and fuel for machines.
 - reliance on intensive input 
