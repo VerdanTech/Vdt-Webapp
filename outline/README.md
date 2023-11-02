@@ -8,18 +8,18 @@ Each subfolder represents a feature category. Obviously, most features overlap, 
 
 | Category     | Description |
 |--------------|-------------|
-| [App Shell](app-shell/README.md) | Wireframes of app-wide navigation bars. |
+| [App Shell](app-shell/README.md) | Wireframes of app-wide navigation UI. |
 | [Static Pages](static-pages/README.md) | Wireframes of website pages that are not part of the application, including the landing page, project description page, donation page, etc. |
-| [User](user/README.md) | User management system including email management, password management, authentication, etc.  | 
-| [Garden](gardens/README.md) | Gardens are containers for multiple Workspaces, as well as general environments for all other model state, and a space to connect users. |
-| [Workspace](workspaces/README.md) | Workspaces are containers which give spatial context to objects such as plants, planting containers, and devices. |
+| [User](user/README.md) | User management system including email management, password management, authentication, friends, etc.  | 
+| [Garden](gardens/README.md) | Gardens are containers for multiple Workspaces, as well as general environments for all other model state, and a space to connect Users. |
+| [Workspace](workspaces/README.md) | Workspaces are containers which give spatial context to objects such as plants, planting containers, devices, and other models. |
 | [Cultivars](cultivars/README.md) | Cultivars are collections of attribute models defining the expected behaviours of plant species. |
 | [Plants](plants/README.md) | Plants are physical instances of plants with known locations in space and time, and a reference to a Cultivar. |
 | [Planner](planner/README.md) | Planner models are tools for describing past, present, and planned plant instances together as a structured plan, as well as generating plans based on constraints and objectives.
-| [Differential Synchronization](differential-synchronization/README.md) | The differential synchronization algorithm is used to allow smooth collaborative editing between multiple clients. |
-| [Environment](environment/README.md) | Collections of inputs to the model state including temperatures, rainfall, and pictures. |
+| [Differential Synchronization](differential-synchronization/README.md) | The differential synchronization algorithm is implemented to allow smooth collaborative editing between multiple clients. |
+| [Environment](environment/README.md) | Collections of inputs to the model state including temperatures, rainfall, pictures, and more. |
 | [Actions](actions/README.md) | Collections of outputs from the model state including lists of tasks to be performed. |
-| [Devices, Controllers, and Sensors](devices/README.md) | Devices are containers of Controllers and Sensors, which are tools to interface Environmental inputs and Actions outputs with external APIs. |
+| [Devices, Controllers, and Sensors](devices/README.md) | Devices are containers of Controllers and Sensors, which are tools to interface Environment inputs and Actions outputs with external APIs. |
 
 ## Document Types
 
