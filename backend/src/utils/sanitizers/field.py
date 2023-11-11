@@ -117,7 +117,7 @@ class FieldSanitizer(Generic[*SanitizationsT]):
         self,
         sanitization_select: List[object.SelectEnum],
         apply_sanitization_default: bool = False,
-    ) -> List[Callable[[Dict[str, str]], Dict[str, str]]]:
+    ) -> List[Sanitization]:
         """
         Returns a Sanitization for every Sanitization class
         that is selected based on the arguments.
