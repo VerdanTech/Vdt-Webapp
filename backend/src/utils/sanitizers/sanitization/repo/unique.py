@@ -1,9 +1,7 @@
 from dataclasses import dataclass
 from typing import Any, TypedDict
 
-from src.interfaces.persistence.generic import (
-    AbstractAsyncRepository,
-)
+from src.interfaces.persistence.generic import AbstractAsyncRepository
 
 from ..generic import Sanitization, SanitizationConfig, SanitizationError
 

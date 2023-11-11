@@ -2,10 +2,9 @@ from typing import Any, ContextManager
 
 import pytest
 from pytest_mock import MockerFixture
-from src.utils.sanitizers.sanitization.generic import (
-    Sanitization,
-    SanitizationError,
-)
+from src.utils.sanitizers.sanitization.generic import Sanitization, SanitizationError
+
+pytestmark = [pytest.mark.unit]
 
 
 class TestGenericSanitization:

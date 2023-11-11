@@ -1,8 +1,5 @@
 import pytest
-from src.utils.sanitizers.sanitization.generic import (
-    Sanitization,
-    SanitizationConfig,
-)
+from src.utils.sanitizers.sanitization.generic import Sanitization, SanitizationConfig
 
 
 @pytest.fixture

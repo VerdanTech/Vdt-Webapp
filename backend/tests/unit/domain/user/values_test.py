@@ -8,11 +8,9 @@ from src.domain.user.exceptions import (
     EmailAlreadyVerifiedError,
     EmailConfirmationExpired,
 )
-from src.domain.user.values import (
-    BaseConfirmation,
-    Email,
-    EmailConfirmation,
-)
+from src.domain.user.values import BaseConfirmation, Email, EmailConfirmation
+
+pytestmark = [pytest.mark.unit]
 
 
 class TestEmail:
@@ -71,9 +69,7 @@ class TestEmail:
                 otherwise See: tests/conftest.py
             mocker (MockerFixture): pytest-mock
         """
-        mock_datetime = mocker.patch(
-            "src.domain.user.values.datetime"
-        )
+        mock_datetime = mocker.patch("src.domain.user.values.datetime")
         mock_datetime.now.return_value = datetime(2023, 1, 1, 1, 1)
         email = Email(
             address="test@test.com",
@@ -182,9 +178,7 @@ class TestBaseConfirmation:
             expected_result (bool): expected validation result
             mocker (MockerFixture): pytest-mock
         """
-        mock_datetime = mocker.patch(
-            "src.domain.user.values.datetime"
-        )
+        mock_datetime = mocker.patch("src.domain.user.values.datetime")
         mock_datetime.now.return_value = now
         confirmation = BaseConfirmation(key="abc", created_at=created_at)
 

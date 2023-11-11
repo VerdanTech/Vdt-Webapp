@@ -2,9 +2,7 @@ from contextlib import nullcontext
 from typing import ContextManager
 
 import pytest
-from src.infrastructure.persistence.repository.mock.mock_entity import (
-    MockEntityRepository,
-)
+from src.infra.persistence.repository.mock.mock_entity import MockEntityRepository
 
 
 @pytest.fixture

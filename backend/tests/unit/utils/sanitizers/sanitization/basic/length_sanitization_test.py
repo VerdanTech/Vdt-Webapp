@@ -7,6 +7,8 @@ from src.utils.sanitizers.sanitization.basic.length import (
     LengthSanitizationSpec,
 )
 
+pytestmark = [pytest.mark.unit]
+
 
 class TestLengthSanitization:
     @pytest.mark.parametrize(

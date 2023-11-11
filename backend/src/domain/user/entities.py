@@ -2,11 +2,12 @@ from dataclasses import field
 from datetime import datetime, timedelta
 from typing import List, Optional
 
+from src.domain.common.entities import EntityIDType
 from src.interfaces.security.crypt import AbstractPasswordCrypt
 
 from ..common.entities import RootEntity
 from ..garden.values import GardenMembershipRef
-from .exceptions import EmailConfirmationKeyNotFound, PasswordAlreadySetError
+from . import exceptions
 from .values import Email, PasswordResetConfirmation
 
 
@@ -14,9 +15,8 @@ class User(RootEntity):
     """User entity model"""
 
     username: str
-    username_norm: Optional[str] = None
-    _password_hash: Optional[str] = None
     emails: Optional[List[Email]] = None
+    _password_hash: Optional[str] = None
     memberships: Optional[List[GardenMembershipRef]] = None
     is_active: bool = True
     is_superuser: bool = False
@@ -24,48 +24,86 @@ class User(RootEntity):
     created_at: datetime = field(default_factory=datetime.now)
 
     def __post_init__(self) -> None:
-        if self.username_norm is None:
-            self.set_username(username=self.username)
         self.emails = []
         self.memberships = []
 
-    def set_username(self, username: str) -> None:
-        """Manage normalized username setting
+    def email_create(
+        self,
+        address: str,
+        max_emails: int,
+        verification: Optional[bool] = False,
+        email_confirmation_key: Optional[str] = None,
+    ) -> None:
+        """Add a new email to the user. The verification process is optional.
+            The behaviour of the email creation process depends on whether
+            it is the first email to be created and whether the verification process
+            is being used:
+
+            First email, no verification:
+                - Email begins verified
+                - Email begins primary
+
+            First email, verification:
+                - Email begins unverified
+                - Email begins primary
+
+            Non-first email, no verification:
+                - Email begins verified
+                - Email begins primary
+                - All other emails are made unprimary
+                - Oldest emails are trimmed
+
+            Non-first email, verification:
+                - Email begins verified
+                - Email begins unprimary
+                - Upon verification, is made primary and oldest emails are trimmed
 
         Args:
-            username (str): case sensitive username
+            address (str): the address of the email to add
+            max_emails (int): maximum emails stored in a User, application setting
+            verification (Optional[bool]): whether to undergo email
+                confirmation process on the new email
+            email_confirmation_key (Optional[str]): the confirmation key,
+                if verification is True
         """
-        self.username = username
-        self.username_norm = username.lower()
+        # If verification is not being performed,
+        # the email begins verified
+        begin_verified = not verification
 
-    def add_email(self, address: str, primary: bool, key: str) -> None:
-        """Default new email. Verified is false and new confirmation is
-            created
+        # Email is only made primary if it is the first
+        # to be added or if it is already verified
+        first_email = self.emails == []
+        begin_primary = first_email or begin_verified
 
-        Args:
-            address (str): address of email
-            primary (bool): whether email is the user's primary. Should
-                be true for user creation and false elsewhere
-            key (str): verification key to assign to email confirmation
-        """
-        email = Email(address=address, primary=primary, verified=False)
-        email = email.new_confirmation(key=key)
+        email = Email(address=address, primary=begin_primary, verified=begin_verified)
+
+        # Create a new email confirmation if required
+        if verification:
+            if email_confirmation_key is None:
+                raise ValueError(
+                    """Argument email_confirmation_key is required 
+                    if argument verification is True; None was passed"""
+                )
+            email = email.new_confirmation(key=email_confirmation_key)
+
         self.emails.append(email)
 
-    def add_verified_email(self, address: str, primary: bool) -> None:
-        """Bypass verification new email. Verified is true
+        # If other emails exist, and the new email is already
+        # verified, the primary status of all emails must be
+        # updated and the oldest emails must be trimmed.
+        if not first_email and begin_verified:
+            self._set_primary_email(email)
+            self._trim_oldest_emails(max_emails=max_emails)
 
-        Args:
-            address (str): address of email
-            primary (bool): whether email is the user's primary. Should
-                be true for user creation and false elsewhere
-        """
-        email = Email(address=address, primary=primary, verified=True)
-        self.emails.append(email)
+    def get_primary_email(self) -> Email:
+        for email in self.emails:
+            if email.primary is True:
+                return email
+        raise exceptions.UserIntegrityError("User has zero emails with primary = True")
 
-    def new_email_verification(self, address: str, key: str) -> None:
-        """Given an email address and confirmation key,
-            generate a new confirmation and replace the email
+    def email_confirmation_create(self, address: str, key: str) -> None:
+        """Given an existing email address and confirmation key,
+            generate a new confirmation and replace the email.
 
         Args:
             address (str): email address to make confirmation for
@@ -76,102 +114,113 @@ class User(RootEntity):
                 email = email.new_confirmation(key=key)
                 self.emails[index] = email
 
-    def new_password_reset(self, key: str) -> None:
+    def email_confirmation_confirm(self, key: str, max_emails: int) -> None:
+        """Given a verification key, verify the email
+            and set it as primary, ensuring the email
+            confirmation is not expired.
+
+        Args:
+            key (str): email confirmation key
+            max_emails (int): maximum emails stored in a User, application setting
+        """
+        email = self._get_email_by_confirmation_key(key=key)
+        email.check_confirmation_expired()
+        email = email.verify()
+        self._set_primary_email(email)
+        self._trim_oldest_emails(max_emails=max_emails)
+
+    async def set_password(
+        self,
+        password: str,
+        password_crypt: AbstractPasswordCrypt,
+        overwrite: bool = False,
+    ) -> None:
+        """Generate and set hashed password given plaintext password.
+            Require overwrite as True if password already exists to
+            prevent accidental overwrite.
+
+        Args:
+            password (str): plaintext password to hash and set
+            password_crypt (AbstractPasswordCrypt): encryption interface
+            overwrite (bool): whether to allow overwriting existing password
+
+        Raises:
+            PasswordAlreadySetException: is password is already set,
+                but the function was called with overwrite=False
+        """
+        if self._password_hash is not None and not overwrite:
+            raise exceptions.PasswordAlreadySetError(
+                """Password set attempt failed: 
+                called with overwrite=False 
+                but password already set
+                """
+            )
+        self._password_hash = await password_crypt.get_password_hash(
+            plain_password=password
+        )
+
+    def password_reset_create(self, key: str) -> None:
         """Given a verification key, open a new password reset
-            confirmation request on the user object
+            confirmation request on the user object.
 
         Args:
             key (str): the key to set on the reset confirmation
         """
         self.password_reset_confirmation = PasswordResetConfirmation(key=key)
 
-    def verify_email(self, key: str) -> None:
-        """Given a verification key, verify the email
-            and set it as primary, ensuring the email
-            confirmation is not expired
-
-        Args:
-            key (str): email confirmation key
-        """
-        email = self.get_email_by_confirmation_key(key=key)
-        email.check_confirmation_expired()
-        email = email.verify()
-        self.set_primary_email(email)
-
-    async def reset_password(
-        self, new_password: str, password_crypt: AbstractPasswordCrypt
+    async def password_reset_confirm(
+        self,
+        user_id: EntityIDType,
+        key: str,
+        new_password: str,
+        password_crypt: AbstractPasswordCrypt,
     ) -> None:
-        """Close a password reset request by setting the new password
+        """Confirm and close a password reset request by setting the new password
+            only if the provided old_password is correct.
 
         Args:
+            old_password (str): the existing password
             new_password (str): the new password to set
             password_crypt (AbstractPasswordCrypt): password crypt interface
         """
+        if not user_id == self.id:
+            raise exceptions.PasswordResetConfirmationNotValid(
+                "The provided password is not correct"
+            )
+
+        if self.password_reset_confirmation is None:
+            raise exceptions.PasswordResetConfirmationNotFound(
+                "No password reset requests are associated with this User"
+            )
+
+        if not self.password_reset_confirmation.key == key:
+            raise exceptions.PasswordResetConfirmationNotValid(
+                "The provided password is not correct"
+            )
+
         await self.set_password(
             password=new_password, password_crypt=password_crypt, overwrite=True
         )
         self.password_reset_confirmation = None
 
-    def get_email_by_confirmation_key(self, key: str) -> Email:
-        """Given an email confirmation key, return the
-            email on the user with a matching key,
-            or raise an exception if not found
+    async def verify_password(
+        self, password: str, password_crypt: AbstractPasswordCrypt
+    ) -> bool:
+        """Check input password against user's password
 
         Args:
-            key (str): the key to search for
-
-        Raises:
-            EmailConfirmationKeyNotFound: if a matching
-                email is not found
+            password (str): the password to check
+            password_crypt (AbstractPasswordCrypt): encryption class
 
         Returns:
-            Email: the matching email
+            bool: true if the passwords match
         """
-        email_with_key = None
-        for email in self.emails:
-            if email.confirmation is not None and email.confirmation.key == key:
-                email_with_key = email
-        if email_with_key is None:
-            raise EmailConfirmationKeyNotFound(
-                "The email verification key does not exist"
-            )
-        return email_with_key
-
-    def set_primary_email(self, new_primary_email: Email) -> None:
-        """Make the given email the only email in the user's
-            list of email with primary=True
-
-        Args:
-            new_primary_email (Email): the email to make primary
-        """
-        # Remove primary status on other emails
-        emails = [
-            email.make_unprimary()
-            for email in self.emails
-            if email != new_primary_email
-        ]
-
-        # Add new primary email to emails
-        new_primary_email = new_primary_email.make_primary()
-        emails.insert(0, new_primary_email)
-        self.emails = emails
-
-    def remove_oldest_emails(self, max_emails: int) -> None:
-        """Remove the emails that were verified the longest
-            time ago and which put the user over their max emails
-
-        Args:
-            max_emails (int): application setting
-        """
-        remaining_emails = sorted(
-            self.emails,
-            key=lambda email: email.verified_at,
-            reverse=True,
-        )[:max_emails]
-        self.emails = [email for email in self.emails if email in remaining_emails]
+        return await password_crypt.verify_password(
+            plain_password=password, hashed_password=self._password_hash
+        )
 
     def is_verified(self) -> bool:
-        """True if user has at least one verified email
+        """True if user has at least one verified email.
 
         Returns:
             bool: verified result
@@ -196,46 +245,61 @@ class User(RootEntity):
             datetime.now() - self.created_at
         ) > timedelta(hours=expiry_time_hours)
 
-    async def set_password(
-        self,
-        password: str,
-        password_crypt: AbstractPasswordCrypt,
-        overwrite: bool = False,
-    ) -> None:
-        """Generate and set hashed password given plaintext password
+    def _get_email_by_confirmation_key(self, key: str) -> Email:
+        """Given an email confirmation key, return the
+            email on the user with a matching key,
+            or raise an exception if not found.
 
         Args:
-            password (str): plaintext password to hash and set
-            password_crypt (AbstractPasswordCrypt): encryption class
-            overwrite (bool): whether to allow overwriting existing password
+            key (str): the key to search for
 
         Raises:
-            PasswordAlreadySetException: is password is already set,
-                but the function was called with overwrite=False
-        """
-        if self._password_hash is not None and not overwrite:
-            raise PasswordAlreadySetError(
-                """Password set attempt failed: 
-                called with overwrite=False 
-                but password already set
-                """
-            )
-        self._password_hash = await password_crypt.get_password_hash(
-            plain_password=password
-        )
-
-    async def verify_password(
-        self, password: str, password_crypt: AbstractPasswordCrypt
-    ) -> bool:
-        """Check input password against user's password
-
-        Args:
-            password (str): the password to check
-            password_crypt (AbstractPasswordCrypt): encryption class
+            EmailConfirmationKeyNotFound: if a matching
+                email is not found
 
         Returns:
-            bool: true if the passwords match
+            Email: the matching email
         """
-        return await password_crypt.verify_password(
-            plain_password=password, hashed_password=self._password_hash
-        )
+        email_with_key = None
+        for email in self.emails:
+            if email.confirmation is not None and email.confirmation.key == key:
+                email_with_key = email
+        if email_with_key is None:
+            raise exceptions.EmailConfirmationKeyNotFound(
+                "The email verification key does not exist"
+            )
+        return email_with_key
+
+    def _set_primary_email(self, new_primary_email: Email) -> None:
+        """Make the given email the only email in the user's
+            list of email with primary=True. The email may
+            or may not already exist.
+
+        Args:
+            new_primary_email (Email): the email to make primary
+        """
+        # Remove primary status on other emails
+        emails = [
+            email.make_unprimary()
+            for email in self.emails
+            if email != new_primary_email
+        ]
+
+        # Add new primary email to emails
+        new_primary_email = new_primary_email.make_primary()
+        emails.insert(0, new_primary_email)
+        self.emails = emails
+
+    def _trim_oldest_emails(self, max_emails: int) -> None:
+        """Remove the emails that were verified the longest
+            time ago and which put the user over their max emails.
+
+        Args:
+            max_emails (int): application setting
+        """
+        remaining_emails = sorted(
+            self.emails,
+            key=lambda email: email.verified_at or 0,
+            reverse=True,
+        )[:max_emails]
+        self.emails = [email for email in self.emails if email in remaining_emails]

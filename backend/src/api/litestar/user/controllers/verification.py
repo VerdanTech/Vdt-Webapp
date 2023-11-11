@@ -1,19 +1,17 @@
+from backend.src.domain.user.services.sanitizers import UserSanitizer
 from litestar import Controller, post
 from src import settings
 from src.api.litestar import dependencies
 from src.api.litestar.exceptions import litestar_exception_map
-from src.application.user.operations import UserVerificationOperations
-from src.application.user.schemas.api.verification import (
+from src.infra.email.litestar_emitter import EmailEmitter
+from src.interfaces.security.crypt.password_crypt import AbstractPasswordCrypt
+from src.ops.user.controllers import UserVerificationOpsController
+from src.ops.user.schemas.verification import (
     UserPasswordResetConfirmInput,
     UserPasswordResetRequestInput,
     UserVerifyEmailConfirmInput,
     UserVerifyEmailRequestInput,
 )
-from src.interfaces.security.crypt.password_crypt import (
-    AbstractPasswordCrypt,
-)
-from src.domain.user.services.sanitization import UserSanitizer
-from src.infrastructure.email.litestar_emitter import EmailEmitter
 
 from .. import urls
 
@@ -43,7 +41,7 @@ class UserVerificationController(Controller):
         data: UserVerifyEmailRequestInput,
         user_sanitizer: UserSanitizer,
         email_emitter: EmailEmitter,
-        user_verification_operations: UserVerificationOperations,
+        user_verification_operations: UserVerificationOpsController,
     ) -> None:
         """Call the email confirmation request application operation
 
@@ -51,7 +49,7 @@ class UserVerificationController(Controller):
             data (UserVerifyEmailRequestInput): input DTO
             user_sanitizer (UserSanitizer): user object sanitizer
             email_emitter (EmailEmitter): email emitter awaitable
-            user_verification_operations (UserVerificationOperations):
+            user_verification_operations (UserVerificationOpsController):
                 application operations
         """
         async with litestar_exception_map:
@@ -69,13 +67,13 @@ class UserVerificationController(Controller):
     async def user_email_verification_confirm(
         self,
         data: UserVerifyEmailConfirmInput,
-        user_verification_operations: UserVerificationOperations,
+        user_verification_operations: UserVerificationOpsController,
     ) -> None:
         """Call the email verification confirmation application operation
 
         Args:
             data (UserVerifyEmailConfirmInput): input DTO
-            user_verification_operations (UserVerificationOperations):
+            user_verification_operations (UserVerificationOpsController):
                 application operations
         """
         async with litestar_exception_map:
@@ -98,7 +96,7 @@ class UserVerificationController(Controller):
         data: UserPasswordResetRequestInput,
         user_sanitizer: UserSanitizer,
         email_emitter: EmailEmitter,
-        user_verification_operations: UserVerificationOperations,
+        user_verification_operations: UserVerificationOpsController,
     ) -> None:
         """Call the password reset request application operation
 
@@ -106,7 +104,7 @@ class UserVerificationController(Controller):
             data (UserPasswordResetRequestInput): input DTO
             user_sanitizer (UserSanitizer): user object sanitizer
             email_emitter (EmailEmitter): email emitter awaitable
-            user_verification_operations (UserVerificationOperations):
+            user_verification_operations (UserVerificationOpsController):
                 application operations
         """
         async with litestar_exception_map:
@@ -131,7 +129,7 @@ class UserVerificationController(Controller):
         data: UserPasswordResetConfirmInput,
         user_sanitizer: UserSanitizer,
         password_crypt: AbstractPasswordCrypt,
-        user_verification_operations: UserVerificationOperations,
+        user_verification_operations: UserVerificationOpsController,
     ) -> None:
         """Call the password reset confirm application operation
 
@@ -139,7 +137,7 @@ class UserVerificationController(Controller):
             data (UserPasswordResetConfirmInput): input DTO
             user_sanitizer (UserSanitizer): user object sanitizer
             password_crypt (AbstractPasswordCrypt): password encryption inteface
-            user_verification_operations (UserVerificationOperations):
+            user_verification_operations (UserVerificationOpsController):
                 application operations
         """
         async with litestar_exception_map:

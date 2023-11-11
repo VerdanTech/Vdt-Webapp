@@ -2,14 +2,14 @@ from typing import Any, List
 
 import pytest
 from src.domain.common.entities import MockEntity
+from src.infra.persistence.repository.mock.mock_entity import MockEntityRepository
 from src.utils.sanitizers.sanitization.repo.unique import (
     UniqueSanitization,
     UniqueSanitizationConfig,
     UniqueSanitizationSpec,
 )
-from src.infrastructure.persistence.repository.mock.mock_entity import (
-    MockEntityRepository,
-)
+
+pytestmark = [pytest.mark.unit]
 
 
 class TestUniqueSanitization:

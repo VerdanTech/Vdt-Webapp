@@ -3,17 +3,12 @@ from typing import ContextManager, List
 
 import pytest
 from pytest_mock import MockerFixture
-from src.interfaces.security.crypt import AbstractPasswordCrypt
+from src.domain.user import exceptions
 from src.domain.user.entities import User
-from src.domain.user.exceptions import (
-    EmailConfirmationKeyNotFound,
-    PasswordAlreadySetError,
-)
-from src.domain.user.values import (
-    Email,
-    EmailConfirmation,
-    PasswordResetConfirmation,
-)
+from src.domain.user.values import Email, EmailConfirmation, PasswordResetConfirmation
+from src.interfaces.security.crypt import AbstractPasswordCrypt
+
+pytestmark = [pytest.mark.unit]
 
 
 class TestUser:
@@ -22,60 +17,148 @@ class TestUser:
         is called and sets the normalized username
         """
         user = User(username="TestUsername")
-        assert user.username_norm == "testusername"
         assert user.emails == []
         assert user.memberships == []
 
-    def test_set_username(self, user: User) -> None:
-        """Ensure the lowercase username is saved into
-        the user object
+    def test_email_create_first_no_verification(self, user: User) -> None:
+        """Ensure that when no other emails exist and verification is
+            not required, the email is created with with primary and verified as True.
 
         Args:
-            user (User): user object to test on (pytest fixture)
-        """
-        username = "TestUsername"
-        user.set_username(username=username)
-        assert user.username == username
-        assert user.username_norm == username.lower()
-
-    def test_add_email(self, user: User) -> None:
-        """Ensure the correct values are set
-        and email unverified
-
-        Args:
-            user (User): user (User): user object to test on (pytest fixture)
+            user (User): user fixture
         """
         user.emails = []
-        address = "TestEmail@Test.com"
-        primary = False
-        key = "aBcDeFg"
+        email_address = "test@test.com"
 
-        user.add_email(address=address, primary=primary, key=key)
+        user.email_create(address=email_address, max_emails=0, verification=False)
 
-        assert user.emails[0].address == address
-        assert user.emails[0].primary == primary
-        assert user.emails[0].confirmation.key == key
-        assert not user.emails[0].verified
+        assert (
+            user.emails[0].address == email_address
+            and user.emails[0].primary is True
+            and user.emails[0].verified is True
+        )
 
-    def test_add_verified_email(self, user: User) -> None:
-        """Ensure the correct values are set
-        and email verified
+    @pytest.mark.parametrize(
+        ("key", "expected_error_context"),
+        [
+            # Test case: a confirmation key is provided, and no error is raised
+            ("abc", None),
+            # Test  case: no confirmation key is provided, and an error is raised
+            (None, ValueError),
+        ],
+        indirect=["expected_error_context"],
+    )
+    def test_email_create_first_verification(
+        self,
+        key: str,
+        expected_error_context: ContextManager,
+        user: User,
+    ) -> None:
+        """Ensure that when no other emails exist and verification is
+            required, the email is created with primary as True, verified as False,
+            with an email confirmation, and an error is raised if a confirmation
+            key was not provided.
 
         Args:
-            user (User): user (User): user object to test on (pytest fixture)
+            key (str): confirmation key parameter
+            expected_error_context (ContextManager): An instance of nullcontext() if
+                expected_error_context = None and pytest.raises(expected_error_context)
+                otherwise See: tests/conftest.py
+            user (User): user fixture
         """
         user.emails = []
-        address = "TestEmail@Test.com"
-        primary = False
+        email_address = "test@test.com"
 
-        user.add_verified_email(address=address, primary=primary)
+        with expected_error_context:
+            user.email_create(
+                address=email_address,
+                max_emails=0,
+                verification=True,
+                email_confirmation_key=key,
+            )
 
-        assert user.emails[0].address == address
-        assert user.emails[0].primary == primary
-        assert user.emails[0].confirmation is None
-        assert user.emails[0].verified
+            assert (
+                user.emails[0].address == email_address
+                and user.emails[0].primary is True
+                and user.emails[0].verified is False
+                and user.emails[0].confirmation is not None
+            )
 
-    def test_new_email_verification(self, user: User, mocker: MockerFixture) -> None:
+    def test_email_create_non_first_no_verification(self, user: User) -> None:
+        """Ensure that when other emails do exist and verification is
+            not required, the email is created with primary and verification
+            as True, and the other emails are trimmed and made unprimary.
+
+        Args:
+            user (User): user fixture
+        """
+        user.emails = [
+            Email(address="test2@test.com", primary=True),
+            Email(address="test3@test.com", primary=True),
+        ]
+        email_address = "test@test.com"
+
+        user.email_create(address=email_address, max_emails=2, verification=False)
+
+        assert len(user.emails) == 2
+        assert (
+            user.emails[0].address == email_address
+            and user.emails[0].primary is True
+            and user.emails[0].verified is True
+        )
+        assert user.emails[1].primary is False
+
+    @pytest.mark.parametrize(
+        ("key", "expected_error_context"),
+        [
+            # Test case: a confirmation key is provided, and no error is raised
+            ("abc", None),
+            # Test  case: no confirmation key is provided, and an error is raised
+            (None, ValueError),
+        ],
+        indirect=["expected_error_context"],
+    )
+    def test_email_create_non_first_verification(
+        self,
+        key: str,
+        expected_error_context: ContextManager,
+        user: User,
+    ) -> None:
+        """Ensure that when other emails do exist and verification is
+            not required, the email is created with primary and verification
+            as False, with an email confirmation.
+
+        Args:
+            key (str): confirmation key parameter
+            expected_error_context (ContextManager): An instance of nullcontext() if
+                expected_error_context = None and pytest.raises(expected_error_context)
+                otherwise See: tests/conftest.py
+            user (User): user fixture
+        """
+        user.emails = [
+            Email(address="test2@test.com", primary=True),
+            Email(address="test3@test.com", primary=True),
+        ]
+        email_address = "test@test.com"
+
+        with expected_error_context:
+            user.email_create(
+                address=email_address,
+                max_emails=2,
+                verification=True,
+                email_confirmation_key=key,
+            )
+
+            assert len(user.emails) == 3
+            assert (
+                user.emails[2].address == email_address
+                and user.emails[2].primary is False
+                and user.emails[2].verified is False
+                and user.emails[2].confirmation is not None
+            )
+            assert user.emails[0].primary is True
+
+    def test_email_confirmation_create(self, user: User, mocker: MockerFixture) -> None:
         """Ensure the specified email is replaced with the result of
             email.new_confirmation
 
@@ -109,11 +192,88 @@ class TestUser:
         ]
         user.emails = existing_emails
 
-        user.new_email_verification(address="test2@test.com", key="abc")
+        user.email_confirmation_create(address="test2@test.com", key="abc")
 
         assert user.emails == expected_result
 
-    def test_new_password_reset(self, user: User) -> None:
+    def test_email_confirmation_confirm(
+        self, user: User, mocker: MockerFixture
+    ) -> None:
+        """Ensure the correct user sub-functions are called:
+            -
+
+        Args:
+            user (User): user factory fixture
+            mocker (MockerFixture): pytest-mock
+        """
+        mock_unverified_email = mocker.MagicMock(spec=Email)
+        mock__get_email_by_confirmation_key = mocker.patch.object(
+            user, "_get_email_by_confirmation_key", return_value=mock_unverified_email
+        )
+        mock_verified_email = mocker.MagicMock(spec=Email)
+        mock_unverified_email.verify.return_value = mock_verified_email
+        mock__set_primary_email = mocker.patch.object(user, "_set_primary_email")
+        mock__trim_oldest_emails = mocker.patch.object(user, "_trim_oldest_emails")
+
+        user.email_confirmation_confirm(key="abc", max_emails=0)
+
+        mock__get_email_by_confirmation_key.assert_called_once_with(key="abc")
+        mock_unverified_email.check_confirmation_expired.assert_called_once()
+        mock_unverified_email.verify.assert_called_once()
+        mock__set_primary_email.assert_called_once_with(mock_verified_email)
+        mock__trim_oldest_emails.assert_called_once()
+
+    @pytest.mark.parametrize(
+        ("existing_password", "password", "overwrite", "expected_error_context"),
+        [
+            # Test case: no existing password -> no error
+            (None, "TestPassword", False, None),
+            # Existing password -> error
+            (
+                "ExistingPassword",
+                "TestPassword",
+                False,
+                exceptions.PasswordAlreadySetError,
+            ),
+            # Existing password but overwrite = True -> no error
+            ("ExistingPassword", "TestPassword", True, None),
+        ],
+        indirect=["expected_error_context"],
+    )
+    async def test_set_password(
+        self,
+        existing_password: str,
+        password: str,
+        overwrite: bool,
+        expected_error_context: ContextManager,
+        user: User,
+        mock_password_crypt: AbstractPasswordCrypt,
+    ) -> None:
+        """Ensure the password is set, and error is raised if
+            password already exists and overwrite is not specified
+
+        Args:
+            existing_password (str): pre-existing user password
+            password (str): new password
+            overwrite (bool): explicit password overwrite permission
+            expected_error_context (ContextManager): An instance of nullcontext() if
+                expected_error_context = None and pytest.raises(expected_error_context)
+                otherwise See: tests/conftest.py
+            user (User): user object to test on (pytest fixture)
+            mock_password_crypt (AbstractPasswordCrypt): (pytest fixture)
+        """
+        user._password_hash = existing_password
+
+        with expected_error_context as error:
+            await user.set_password(
+                password=password,
+                password_crypt=mock_password_crypt,
+                overwrite=overwrite,
+            )
+            if error is None:
+                assert user._password_hash == f"{password}::hash"
+
+    def test_password_reset_create(self, user: User) -> None:
         """Ensure the password reset is added to the user object
 
         Args:
@@ -122,53 +282,161 @@ class TestUser:
         user.password_reset_confirmation = None
         key = "abc"
 
-        user.new_password_reset(key=key)
+        user.password_reset_create(key=key)
 
         assert user.password_reset_confirmation.key == key
 
-    def test_verify_email(self, user: User, mocker: MockerFixture) -> None:
-        """Ensure the correct user sub-functions are called
+    async def test_password_reset_confirm_invalid_user_id(
+        self, user: User, mocker: MockerFixture
+    ) -> None:
+        """
+        Ensure that a PasswordResetConfirmationNotValid exception is raised
+        when the the provided user_id does not match the User.
 
         Args:
-            user (User): user factory fixture
+            user (User): User fixture
             mocker (MockerFixture): pytest-mock
         """
-        mock_unverified_email = mocker.MagicMock(spec=Email)
-        mock_get_email_by_confirmation_key = mocker.patch.object(
-            user, "get_email_by_confirmation_key", return_value=mock_unverified_email
-        )
-        mock_verified_email = mocker.MagicMock(spec=Email)
-        mock_unverified_email.verify.return_value = mock_verified_email
-        mock_set_primary_email = mocker.patch.object(user, "set_primary_email")
-
-        user.verify_email(key="abc")
-
-        mock_get_email_by_confirmation_key.assert_called_once_with(key="abc")
-        mock_unverified_email.check_confirmation_expired.assert_called_once()
-        mock_unverified_email.verify.assert_called_once()
-        mock_set_primary_email.assert_called_once_with(mock_verified_email)
-
-    async def test_reset_password(self, user: User, mocker: MockerFixture) -> None:
-        """Ensure that the set password method is called and the password
-            reset confirmation is set to None
-
-        Args:
-            user (User): user factory fixture
-            mocker (MockerFixture): pytest-mock
-        """
-        mock_set_password = mocker.patch.object(user, "set_password")
-        user.password_reset_confirmation = PasswordResetConfirmation(key="abc")
+        user.id = 1
+        user_id = user.id + 1
+        key = "abc"
         new_password = "new_password"
-        mock_password_crypt = mocker.Mock()
-
-        await user.reset_password(
-            new_password=new_password, password_crypt=mock_password_crypt
+        mock_password_crypt = mocker.Mock(spec=AbstractPasswordCrypt)
+        user.password_reset_confirmation = PasswordResetConfirmation(key=key)
+        expected_error_context = pytest.raises(
+            exceptions.PasswordResetConfirmationNotValid
         )
 
-        mock_set_password.assert_awaited_once_with(
-            password=new_password, password_crypt=mock_password_crypt, overwrite=True
+        with expected_error_context:
+            await user.password_reset_confirm(
+                user_id=user_id,
+                key=key,
+                new_password=new_password,
+                password_crypt=mock_password_crypt,
+            )
+
+    async def test_password_reset_confirm_password_reset_confirmation_not_found(
+        self, user: User, mocker: MockerFixture
+    ) -> None:
+        """Ensure that a PasswordResetConfirmationNotFound exception is raised
+            when the method is called on a User with password_reset_confirmation = None
+
+        Args:
+            user (User): User fixture
+            mocker (MockerFixture): pytest-mock
+        """
+        user.id = 1
+        user_id = user.id
+        key = "abc"
+        new_password = "new_password"
+        mock_password_crypt = mocker.Mock(spec=AbstractPasswordCrypt)
+        user.password_reset_confirmation = None
+        expected_error_context = pytest.raises(
+            exceptions.PasswordResetConfirmationNotFound
         )
-        assert user.password_reset_confirmation == None
+
+        with expected_error_context:
+            await user.password_reset_confirm(
+                user_id=user_id,
+                key=key,
+                new_password=new_password,
+                password_crypt=mock_password_crypt,
+            )
+
+    async def test_password_reset_confirm_invalid_key(
+        self, user: User, mocker: MockerFixture
+    ) -> None:
+        """Ensure that a PasswordResetConfirmationNotValid exception is raised
+            when the provided key does not match the existing PasswordResetConfirmation.
+
+        Args:
+            user (User): User fixture
+            mocker (MockerFixture): pytest-mock
+        """
+        user.id = 1
+        user_id = user.id
+        key = "abc"
+        new_password = "new_password"
+        mock_password_crypt = mocker.Mock(spec=AbstractPasswordCrypt)
+        user.password_reset_confirmation = PasswordResetConfirmation(key=key + "def")
+        expected_error_context = pytest.raises(
+            exceptions.PasswordResetConfirmationNotValid
+        )
+
+        with expected_error_context:
+            await user.password_reset_confirm(
+                user_id=user_id,
+                key=key,
+                new_password=new_password,
+                password_crypt=mock_password_crypt,
+            )
+
+    async def test_password_reset_confirm_success(
+        self, user: User, mocker: MockerFixture
+    ) -> None:
+        """
+        Ensure that a the user's password is set to the new hashed password
+        and the user's PasswordResetConfirmation is set to None.
+
+        Args:
+            user (User): User fixture
+            mocker (MockerFixture): pytest-mock
+        """
+        user.id = 1
+        user_id = user.id
+        key = "abc"
+        new_password = "new_password"
+        hashed_new_password = "new_password::hash"
+        mock_password_crypt = mocker.Mock(spec=AbstractPasswordCrypt)
+        mock_password_crypt.verify_password.return_value = True
+        mock_password_crypt.get_password_hash.return_value = hashed_new_password
+        user.password_reset_confirmation = PasswordResetConfirmation(key=key)
+
+        await user.password_reset_confirm(
+            user_id=user_id,
+            key=key,
+            new_password=new_password,
+            password_crypt=mock_password_crypt,
+        )
+
+        assert user._password_hash == hashed_new_password
+        assert user.password_reset_confirmation is None
+
+    @pytest.mark.parametrize(
+        ("existing_password", "password", "expected_result"),
+        [
+            ("TestPassword", "TestPassword", True),
+            ("TestPasword", "NotTestPassword", False),
+        ],
+    )
+    async def test_verify_password(
+        self,
+        existing_password: str,
+        password: str,
+        expected_result: bool,
+        user: User,
+        mock_password_crypt: AbstractPasswordCrypt,
+    ) -> None:
+        """Ensure the function compares the input with
+        password hash correctly
+
+        Args:
+            existing_password (str): existing user password
+            password (str): input for comparison
+            expected_result (bool): expected result of comparison
+            user (User): user object to test on (pytest fixture)
+            mock_password_crypt (AbstractPasswordCrypt): (pytest fixture)
+        """
+        user._password_hash = await mock_password_crypt.get_password_hash(
+            plain_password=existing_password
+        )
+
+        assert (
+            await user.verify_password(
+                password=password, password_crypt=mock_password_crypt
+            )
+            == expected_result
+        )
 
     @pytest.mark.parametrize(
         ("emails", "expected_output"),
@@ -274,9 +542,7 @@ class TestUser:
             user (User): user factory fixture
             mocker (MockerFixture): pytest-mock
         """
-        mock_datetime = mocker.patch(
-            "src.domain.user.entities.datetime"
-        )
+        mock_datetime = mocker.patch("src.domain.user.entities.datetime")
         mock_datetime.now.return_value = now
         user.created_at = created_at
         mock_is_verified = mocker.patch.object(
@@ -325,12 +591,12 @@ class TestUser:
                 ],
                 "123",
                 None,
-                EmailConfirmationKeyNotFound,
+                exceptions.EmailConfirmationKeyNotFound,
             ),
         ],
         indirect=["expected_error_context"],
     )
-    def test_get_email_by_confirmation_key(
+    def test__get_email_by_confirmation_key(
         self,
         emails: List[Email],
         key: str,
@@ -353,11 +619,11 @@ class TestUser:
         user.emails = emails
 
         with expected_error_context as error:
-            email = user.get_email_by_confirmation_key(key=key)
+            email = user._get_email_by_confirmation_key(key=key)
             if error is None:
                 assert email == expected_result
 
-    def test_set_primary_email(self, user: User, mocker: MockerFixture) -> None:
+    def test__set_primary_email(self, user: User, mocker: MockerFixture) -> None:
         """Ensure that the given email is make primary and inserted
             at the front of the email list, while all other emails
             are unprimary
@@ -378,14 +644,14 @@ class TestUser:
         )
         user.emails = [existing_primary_email, existing_unprimary_email]
 
-        user.set_primary_email(existing_unprimary_email)
+        user._set_primary_email(existing_unprimary_email)
 
         assert user.emails == [
             Email(address="test2@test.com", primary=True),
             Email(address="test1@test.com", primary=False),
         ]
 
-    def test_remove_oldest_emails(self, user: User) -> None:
+    def test__trim_oldest_emails(self, user: User) -> None:
         """Ensure the oldest emails over max emails removed
             and email list order is preserved
 
@@ -399,90 +665,9 @@ class TestUser:
             Email(address="test3@test.com", verified_at=datetime(2025, 1, 1, 1, 1)),
         ]
 
-        user.remove_oldest_emails(max_emails)
+        user._trim_oldest_emails(max_emails)
 
         assert user.emails == [
             Email(address="test1@test.com", verified_at=datetime(2024, 1, 1, 1, 1)),
             Email(address="test3@test.com", verified_at=datetime(2025, 1, 1, 1, 1)),
         ]
-
-    @pytest.mark.parametrize(
-        ("existing_password", "password", "overwrite", "expected_error_context"),
-        [
-            # Test case: no existing password -> no error
-            (None, "TestPassword", False, None),
-            # Existing password -> error
-            ("ExistingPassword", "TestPassword", False, PasswordAlreadySetError),
-            # Existing password but overwrite = True -> no error
-            ("ExistingPassword", "TestPassword", True, None),
-        ],
-        indirect=["expected_error_context"],
-    )
-    async def test_set_password(
-        self,
-        existing_password: str,
-        password: str,
-        overwrite: bool,
-        expected_error_context: ContextManager,
-        user: User,
-        mock_password_crypt: AbstractPasswordCrypt,
-    ) -> None:
-        """Ensure the password is set, and error is raised if
-            password already exists and overwrite is not specified
-
-        Args:
-            existing_password (str): pre-existing user password
-            password (str): new password
-            overwrite (bool): explicit password overwrite permission
-            expected_error_context (ContextManager): An instance of nullcontext() if
-                expected_error_context = None and pytest.raises(expected_error_context)
-                otherwise See: tests/conftest.py
-            user (User): user object to test on (pytest fixture)
-            mock_password_crypt (AbstractPasswordCrypt): (pytest fixture)
-        """
-        user._password_hash = existing_password
-
-        with expected_error_context as error:
-            await user.set_password(
-                password=password,
-                password_crypt=mock_password_crypt,
-                overwrite=overwrite,
-            )
-            if error is None:
-                assert user._password_hash == f"{password}::hash"
-
-    @pytest.mark.parametrize(
-        ("existing_password", "password", "expected_result"),
-        [
-            ("TestPassword", "TestPassword", True),
-            ("TestPasword", "NotTestPassword", False),
-        ],
-    )
-    async def test_verify_password(
-        self,
-        existing_password: str,
-        password: str,
-        expected_result: bool,
-        user: User,
-        mock_password_crypt: AbstractPasswordCrypt,
-    ) -> None:
-        """Ensure the function compares the input with
-        password hash correctly
-
-        Args:
-            existing_password (str): existing user password
-            password (str): input for comparison
-            expected_result (bool): expected result of comparison
-            user (User): user object to test on (pytest fixture)
-            mock_password_crypt (AbstractPasswordCrypt): (pytest fixture)
-        """
-        user._password_hash = await mock_password_crypt.get_password_hash(
-            plain_password=existing_password
-        )
-
-        assert (
-            await user.verify_password(
-                password=password, password_crypt=mock_password_crypt
-            )
-            == expected_result
-        )

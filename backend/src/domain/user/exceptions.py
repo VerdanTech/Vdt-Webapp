@@ -1,6 +1,4 @@
-from src.utils.sanitizers.sanitization.generic import (
-    SanitizationError,
-)
+from src.utils.sanitizers.sanitization.generic import SanitizationError
 
 
 class PasswordAlreadySetError(Exception):
@@ -33,8 +31,8 @@ class EmailConfirmationExpired(SanitizationError):
     pass
 
 
-class PasswordResetConfirmationExpired(SanitizationError):
-    """Exception for when a password reset is expired"""
+class PasswordResetConfirmationNotValid(SanitizationError):
+    """Exception for when a password reset is not valid"""
 
     pass
 
@@ -47,3 +45,7 @@ class UserNotFound(SanitizationError):
 
 class UserNotAuthenticated(Exception):
     """Exception for when an authentication attempt failed"""
+
+
+class UserIntegrityError(Exception):
+    """Exception for when a user object exists in a state it isn't allowed to be in"""

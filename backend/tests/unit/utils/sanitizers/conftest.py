@@ -3,10 +3,7 @@ from typing import List
 import pytest
 from pytest_mock import MockerFixture
 from src.utils.sanitizers.field import FieldSanitizer
-from src.utils.sanitizers.object import (
-    ObjectSanitizer,
-    ObjectSanitizerConfig,
-)
+from src.utils.sanitizers.object import ObjectSanitizer, ObjectSanitizerConfig
 from src.utils.sanitizers.sanitization.generic import Sanitization
 
 

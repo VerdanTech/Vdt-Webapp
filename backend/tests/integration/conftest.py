@@ -4,7 +4,8 @@ import pytest
 
 
 @pytest.fixture(scope="session")
-def event_loop():
+def event_loop(request):
+    marker = request.node.get_closest_marker("fixt_data")
     """
     Creates an instance of the default event loop for the test session.
 

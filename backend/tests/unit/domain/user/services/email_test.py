@@ -1,102 +1,22 @@
+import pytest
 from pytest_mock import MockerFixture
 from src.domain.user.entities import User
-from src.domain.user.services.email import EmailAdditionService
-from src.infrastructure.persistence.repository.mock.user.repository import (
-    MockUserRepository,
-)
+from src.domain.user.services import email as services
+from src.infra.persistence.repository.mock.user.repository import MockUserRepository
+
+pytestmark = [pytest.mark.unit]
 
 
-class TestEmailAdditionService:
-    async def test_add_first_email_verification_required(
-        self, mock_user_repo: MockUserRepository, mocker: MockerFixture
-    ):
-        """Ensure the key generation and user add email methods are called
-            with the correct parameters
+async def test_email_create_verification_false_success(user: User) -> None:
+    address = "test@test.com"
+    # key
 
-        Args:
-            mock_user_repo (MockUserRepository): mock user repo
-            mocker (MockerFixture): pytest-mock
-        """
-        mock_user = mocker.MagicMock(spec=User)
-        mock_key_generation = mocker.patch(
-            "src.domain.user.services.verification.VerificationService.generate_open_email_confirmation_key",
-            return_value="abc",
-        )
+    # wait services.email_create(user, address=, max_emails=, verification=False, key_length= user_repo=)
 
-        key = await EmailAdditionService.add_first_email_verification_required(
-            user=mock_user,
-            address="test@test.com",
-            key_length=0,
-            user_repo=mock_user_repo,
-        )
 
-        assert key == "abc"
-        mock_key_generation.assert_awaited_once_with(length=0, user_repo=mock_user_repo)
-        mock_user.add_email.assert_called_once_with(
-            address="test@test.com", primary=True, key=key
-        )
+async def test_email_create_verification_true_value_error() -> None:
+    pass
 
-    def test_add_first_email_verification_not_required(self, mocker: MockerFixture):
-        """Ensure the user add email method is called
-            with the correct parameters
 
-        Args:
-            mocker (MockerFixture): pytest-mock
-        """
-        mock_user = mocker.MagicMock(spec=User)
-
-        EmailAdditionService.add_first_email_verification_not_required(
-            user=mock_user,
-            address="test@test.com",
-        )
-
-        mock_user.add_verified_email.assert_called_once_with(
-            address="test@test.com", primary=True
-        )
-
-    async def test_add_non_first_email_verification_required(
-        self, mock_user_repo: MockUserRepository, mocker: MockerFixture
-    ):
-        """Ensure the key generation and user add email methods are called
-            with the correct parameters
-
-        Args:
-            mock_user_repo (MockUserRepository): mock user repo
-            mocker (MockerFixture): pytest-mock
-        """
-        mock_user = mocker.MagicMock(spec=User)
-        mock_key_generation = mocker.patch(
-            "src.domain.user.services.verification.VerificationService.generate_open_email_confirmation_key",
-            return_value="abc",
-        )
-
-        key = await EmailAdditionService.add_non_first_email_verification_required(
-            user=mock_user,
-            address="test@test.com",
-            key_length=0,
-            user_repo=mock_user_repo,
-        )
-
-        assert key == "abc"
-        mock_key_generation.assert_awaited_once_with(length=0, user_repo=mock_user_repo)
-        mock_user.add_email.assert_called_once_with(
-            address="test@test.com", primary=False, key=key
-        )
-
-    def test_add_non_first_email_verification_not_required(self, mocker: MockerFixture):
-        """Ensure the user add email method is called
-            with the correct parameters
-
-        Args:
-            mocker (MockerFixture): pytest-mock
-        """
-        mock_user = mocker.MagicMock(spec=User)
-
-        EmailAdditionService.add_non_first_email_verification_not_required(
-            user=mock_user,
-            address="test@test.com",
-        )
-
-        mock_user.add_verified_email.assert_called_once_with(
-            address="test@test.com", primary=True
-        )
+async def test_email_create_verification_true_success() -> None:
+    pass

@@ -1,3 +1,4 @@
+from enum import Enum
 from pathlib import Path
 from typing import List
 
@@ -137,9 +138,26 @@ EMAIL_CLIENT_USERNAME: int = ""
 EMAIL_CLIENT_PASSWORD: int = ""
 EMAIL_CLIENT_SENDER: str = "verdantech@gmail.com"
 
-REQUIRE_EMAIL_VERIFICATION = True
+
+class EmailConfirmationOptions(Enum):
+    REQUIRED_FOR_NONE = 0
+    REQUIRED_FOR_WRITE = 1
+    REQUIRED_FOR_ALL = 2
+
+    def verification_required(self) -> bool:
+        return (
+            self.value == self.REQUIRED_FOR_WRITE or self.value == self.REQUIRED_FOR_ALL
+        )
+
+
+EMAIL_CONFIRMATION = EmailConfirmationOptions.REQUIRED_FOR_WRITE
 EMAIL_VERIFICATION_KEY_LENGTH: int = 32
 EMAIL_VERIFICATON_EXPIRY_TIME_HOURS: int = 72
+
+EMAIL_FILEPATH_EMAIL_CONFIRMATION: str = email_path("email_verification.html")
+EMAIL_SUBJECT_EMAIL_CONFIRMATION: str = "Email verification - VerdanTech"
+EMAIL_FILEPATH_PASSWORD_RESET: str = email_path("password_reset.html")
+EMAIL_SUBJECT_PASSWORD_RESET: str = "Password reset - VerdanTech"
 
 # ============================================================================
 # DOMAIN MODEL SETTINGS

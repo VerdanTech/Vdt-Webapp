@@ -17,15 +17,3 @@ class AbstractEmailClient(Protocol):
             kwargs (Dict[str, Any]): arguments to insert into html
         """
         ...
-
-
-class AbstractEmailEmitter(Protocol):
-    """Interface for emitting emails into an event stream"""
-
-    def __call__(
-        self, filepath: str, receiver: str, subject: str, **kwargs: Dict[str, Any]
-    ) -> None:
-        """Call the email emit event. Access to the event emitter is
-        configured in the imlementation.
-        """
-        ...

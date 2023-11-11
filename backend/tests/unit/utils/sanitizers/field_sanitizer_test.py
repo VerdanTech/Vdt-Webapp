@@ -3,12 +3,10 @@ from typing import Any, ContextManager, Dict, List
 import pytest
 from pytest_mock import MockerFixture
 from src.utils.sanitizers.field import FieldSanitizer
-from src.utils.sanitizers.sanitization.basic.size import (
-    SizeSanitizationError,
-)
-from src.utils.sanitizers.sanitization.generic import (
-    SanitizationError,
-)
+from src.utils.sanitizers.sanitization.basic.size import SizeSanitizationError
+from src.utils.sanitizers.sanitization.generic import SanitizationError
+
+pytestmark = [pytest.mark.unit]
 
 
 class TestFieldSanitizer:

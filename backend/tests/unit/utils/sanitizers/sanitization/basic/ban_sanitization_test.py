@@ -7,6 +7,8 @@ from src.utils.sanitizers.sanitization.basic.ban import (
     BanSanitizationConfig,
 )
 
+pytestmark = [pytest.mark.unit]
+
 
 class TestBanSanitization:
     @pytest.mark.parametrize(

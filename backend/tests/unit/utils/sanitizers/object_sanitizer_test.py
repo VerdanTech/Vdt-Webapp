@@ -4,9 +4,9 @@ import pytest
 from pytest_mock import MockerFixture
 from src.utils.sanitizers.field import FieldSanitizer
 from src.utils.sanitizers.object import ObjectSanitizer
-from src.utils.sanitizers.sanitization.generic import (
-    SanitizationError,
-)
+from src.utils.sanitizers.sanitization.generic import SanitizationError
+
+pytestmark = [pytest.mark.unit]
 
 
 class TestObjectSanitizer:

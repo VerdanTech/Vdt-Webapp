@@ -7,6 +7,8 @@ from src.utils.sanitizers.sanitization.basic.size import (
     SizeSanitizationSpec,
 )
 
+pytestmark = [pytest.mark.unit]
+
 
 class TestSizeSanitization:
     @pytest.mark.parametrize(

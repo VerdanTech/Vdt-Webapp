@@ -5,6 +5,8 @@ from src.utils.sanitizers.sanitization.basic.regex import (
     RegexSanitizationConfig,
 )
 
+pytestmark = [pytest.mark.unit]
+
 
 class TestRegexSanitization:
     @pytest.mark.parametrize(["sanitization_result"], [(True,), (False,)])

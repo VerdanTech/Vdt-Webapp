@@ -86,7 +86,8 @@ class AbstractUserRepository(AbstractAsyncRepository[User]):
         ...
 
     async def username_exists(self, username: str) -> bool:
-        """Check the existence of a username in the repository
+        """Check the existence of a username in the repository.
+            Username comparison should be case insensitive.
 
         Args:
             username (str): the username to check uniqueness of

@@ -1,9 +1,7 @@
 from contextlib import asynccontextmanager
 
 from litestar.exceptions import ValidationException as LitestarValidationException
-from src.utils.sanitizers.sanitization.generic import (
-    SanitizationError,
-)
+from src.utils.sanitizers.sanitization.generic import SanitizationError
 
 
 @asynccontextmanager

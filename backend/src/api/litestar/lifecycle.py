@@ -4,7 +4,7 @@
 # a connection to the database.
 # ============================================================================
 
-from src.infrastructure.persistence.repository.motor.litestar_lifecycle import (
+from src.infra.persistence.repository.motor.litestar_lifecycle import (
     MotorLitestarDBLifecycleManager,
 )
 

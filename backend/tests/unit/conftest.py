@@ -1,9 +1,7 @@
 import pytest
+from src.infra.persistence.repository.mock.user.repository import MockUserRepository
 from src.interfaces.security.crypt import MockPasswordCrypt
 from src.utils.sanitizers.object import MockObjectSanitizer
-from src.infrastructure.persistence.repository.mock.user.repository import (
-    MockUserRepository,
-)
 
 
 @pytest.fixture

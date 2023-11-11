@@ -22,14 +22,14 @@ nav:
       - 'Utilities':
         - 'Sanitizers': 'codebase/domain/utilities/sanitizers.md'
     - 'Application':
-      - 'User': 'codebase/application/user.md'
+      - 'User': 'codebase/ops/user.md'
     - 'API':
       - 'Litestar': codebase/api/litestar.md
     - 'Infrastructure':
-      - 'Serializer': 'codebase/infrastructure/serializer.md'
-      - 'Repository': 'codebase/infrastructure/repository.md'
-      - 'Email': 'codebase/infrastructure/email.md'
-      - 'Password Encryption': 'codebase/infrastructure/password_crypt.md'
+      - 'Serializer': 'codebase/infra/serializer.md'
+      - 'Repository': 'codebase/infra/repository.md'
+      - 'Email': 'codebase/infra/email.md'
+      - 'Password Encryption': 'codebase/infra/password_crypt.md'
 
   - Contributing: 'contributing.md'
   - Release Notes: 'release_notes.md'

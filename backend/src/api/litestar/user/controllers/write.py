@@ -1,26 +1,25 @@
+from backend.src.domain.user.services.sanitizers import UserSanitizer
 from litestar import Controller, delete, patch, post
 from src import settings
-from src.api.litestar import dependencies
+from src.api.litestar import select_dependencies
 from src.api.litestar.exceptions import litestar_exception_map
 from src.api.litestar.user.schemas.common import UserSelfDetail
-from src.application.user.operations import UserWriteOperations
-from src.application.user.schemas.api.write import UserCreateInput
-from src.interfaces.security.crypt import AbstractPasswordCrypt
 from src.domain.user.entities import User
-from src.domain.user.services.sanitization import UserSanitizer
-from src.infrastructure.email.litestar_emitter import EmailEmitter
+from src.infra.email.litestar_emitter import EmailEmitter
+from src.interfaces.security.crypt import AbstractPasswordCrypt
+from src.ops.user.controllers import UserWriteOpsController
+from src.ops.user.schemas.write import UserCreateInput
 
 from .. import urls
 
 
-class UserWriteController(Controller):
-    """User write operations controller"""
+class UserWriteApiController(Controller):
+    """User write api controller"""
 
     path = urls.USER_WRITE_CONTROLLER_URL_BASE
-    """dependencies = providers.select(
+    dependencies = select_dependencies(
         settings.USER_REPOSITORY_PK, settings.USER_WRITE_OP_PK
-    )"""
-    dependencies = dependencies.select(settings.USER_SERIALIZER_PK)
+    )
 
     @post(
         name="users:create",
@@ -29,17 +28,17 @@ class UserWriteController(Controller):
         tags=["users"],
         path=urls.USER_CREATE_URL,
         return_dto=UserSelfDetail,
-        # dependencies=providers.select(
-        # settings.USER_SANITIZER_PK,
-        # settings.PASSWORD_CRYPT_PK,
-        # settings.EMAIL_CLIENT_PK,
-        # settings.EMAIL_EMITTER_PK,
-        # ),
+        dependencies=select_dependencies(
+            settings.USER_SANITIZER_PK,
+            settings.PASSWORD_CRYPT_PK,
+            settings.EMAIL_CLIENT_PK,
+            settings.EMAIL_EMITTER_PK,
+        ),
     )
     async def user_create(
         self,
         data: UserCreateInput,
-        user_write_operations: UserWriteOperations,
+        user_write_operations: UserWriteOpsController,
         user_sanitizer: UserSanitizer,
         email_emitter: EmailEmitter,
         password_crypt: AbstractPasswordCrypt,
@@ -48,7 +47,7 @@ class UserWriteController(Controller):
 
         Args:
             data (UserCreateInput): input DTO
-            user_write_operations (UserWriteOperations):
+            user_write_operations (UserWriteOpsController):
                 application operations
             user_sanitizer (UserSanitizer): user sanitizer
             email_emitter (EmailEmitter): email emitter

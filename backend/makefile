@@ -11,7 +11,7 @@ ENV-VARS-DEFAULT=.env-default
 # Environment variables directory
 ENV-VARS=.env
 # Dependency lockfile directory
-LOCKFILE=requirements/.pdm-lockfile
+LOCKFILE=requirements/pdm.lock
 
 #
 # If an environment variable file does not already exist,
@@ -32,8 +32,8 @@ init-app: setup-env-vars
 	sudo add-apt-repository ppa:deadsnakes/ppa
 	sudo apt-get update && sudo apt-get upgrade
 	sudo apt-get install $(PY-VER) && sudo apt-get install python3.12-dev && curl -sS https://bootstrap.pypa.io/get-pip.py | python3.12
-	$(PY) -m pip install pdm
-	$(PY) -m pdm sync --clean --lockfile $(LOCKFILE)
+	$(PY-VER) -m pip install pdm
+	$(PY-VER) -m pdm sync --clean --lockfile $(LOCKFILE)
 
 #
 # Install, start and configure postgreql server with database
@@ -52,7 +52,7 @@ init-db: setup-env-vars
 	sudo ./scripts/postgres/create_db.sh $(POSTGRES_DB_NAME) $(POSTGRES_DB_USER) $(POSTGRES_DB_PASSWORD)
 
 .PHONY: build
-init-app: init-app init-db
+build: init-app init-db
 
 .PHONY: update
 update: 
@@ -66,22 +66,22 @@ clean:
 
 .PHONY: run
 run:
-	$(BIN)/litestar --app src.api.litestar.app:create_app run --reload
+	$(BIN)/litestar --app src.api.litestar.app:create_app run
 
 .PHONY: migrations
 migrations:
 	export PYTHONPATH=$(shell pwd); \
-	$(PY) src/infrastructure/persistence/migrations/create.py -m "$(filter-out $@,$(MAKECMDGOALS))"
+	$(PY) src/infra/persistence/migrations/create.py -m "$(filter-out $@,$(MAKECMDGOALS))"
 
 .PHONY: migrate
 migrate:
 	export PYTHONPATH=$(shell pwd); \
-	$(PY) src/infrastructure/persistence/migrations/apply.py
+	$(PY) src/infra/persistence/migrations/apply.py
 
 .PHONY: reset-migrations
 reset-migrations:
 	export PYTHONPATH=$(shell pwd); \
-	$(PY) src/infrastructure/persistence/migrations/reset.py --reset
+	$(PY) src/infra/persistence/migrations/reset.py --reset
 
 .PHONY: schema
 schema:
@@ -106,11 +106,13 @@ test:
 
 .PHONY: test-unit
 test-unit:
-	$(PY) -m coverage run --source tests/unit -m pytest
+	$(PY) -m coverage run --source tests -m pytest -m unit --html=reports/pytest/index.html
+	$(PY) -m coverage html -d reports/coverage
 
 .PHONY: test-int
 test-int:
-	$(PY) -m coverage run --source tests/integration -m pytest
+	$(PY) -m coverage run --source tests -m pytest -m integration --html=reports/pytest/index.html
+	$(PY) -m coverage html -d reports/coverage
 
 .PHONY: docs
 docs:

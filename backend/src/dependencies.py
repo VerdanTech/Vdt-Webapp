@@ -1,26 +1,26 @@
 from src import settings
-from src.application.user.operations import (
+from src.infra.email import provide_litestar_email_emitter
+from src.infra.email.aiosmtplib import provide_aiosmtplib_client
+from src.infra.persistence.repository.alchemy.litestar_lifecycle import (
+    AlchemyLitestarDBLifecycleManager,
+)
+from src.infra.persistence.repository.alchemy.user import (
+    provide_user_alchemy_repository,
+)
+from src.infra.security.crypt.passlib import provide_passlib_crypt
+from src.ops.user.controllers import (
     provide_user_auth_operations,
     provide_user_read_operations,
     provide_user_verification_operations,
     provide_user_write_operations,
 )
-from src.application.user.sanitizer import provide_user_sanitizer
-from src.infrastructure.email import provide_litestar_email_emitter
-from src.infrastructure.email.aiosmtplib import provide_aiosmtplib_client
-from src.infrastructure.persistence.mapper.serpyco import (
-    provide_user_serpyco_serializer,
-)
-from src.infrastructure.persistence.repository.motor import (
-    MotorLitestarDBLifecycleManager,
-    provide_user_motor_repository,
-)
-from src.infrastructure.security.crypt.passlib import (
-    provide_passlib_crypt,
-)
+from src.ops.user.sanitizer import provide_user_sanitizer
 
 # ============================================================================
 # PROVIDER SELECTION
+#
+# Methods which provide dependencies for injection are called providers.
+# This file provides a centralized location for configuring providers for injection.
 # ============================================================================
 
 
@@ -55,19 +55,14 @@ class ApplicationDependencies:
 
     # Database
     db_client_provider = {
-        settings.DB_CLIENT_PK: MotorLitestarDBLifecycleManager.provide_client
+        settings.DB_CLIENT_PK: AlchemyLitestarDBLifecycleManager.provide_client
     }
     db_session_provider = {
-        settings.DB_SESSION_PK: MotorLitestarDBLifecycleManager.provide_session
-    }
-
-    # Serializer
-    user_serializer_provider = {
-        settings.USER_SERIALIZER_PK: provide_user_serpyco_serializer
+        settings.DB_SESSION_PK: AlchemyLitestarDBLifecycleManager.provide_transaction
     }
 
     # Repositories
-    user_repo_provider = {settings.USER_REPOSITORY_PK: provide_user_motor_repository}
+    user_repo_provider = {settings.USER_REPOSITORY_PK: provide_user_alchemy_repository}
 
     # ======================================
     # EMAIL
@@ -94,7 +89,6 @@ class ApplicationDependencies:
         | user_sanitizer_provider
         | db_client_provider
         | db_session_provider
-        | user_serializer_provider
         | user_repo_provider
         | email_client_provider
         | email_emitter_provider
