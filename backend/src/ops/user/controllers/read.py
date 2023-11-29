@@ -1,3 +1,4 @@
+# VerdanTech Source
 from src.interfaces.persistence.user.repository import AbstractUserRepository
 
 

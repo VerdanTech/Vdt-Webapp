@@ -1,20 +1,8 @@
+# VerdanTech Source
 from src import settings
-from src.infra.email import provide_litestar_email_emitter
-from src.infra.email.aiosmtplib import provide_aiosmtplib_client
-from src.infra.persistence.repository.alchemy.litestar_lifecycle import (
-    AlchemyLitestarDBLifecycleManager,
-)
-from src.infra.persistence.repository.alchemy.user import (
-    provide_user_alchemy_repository,
-)
-from src.infra.security.crypt.passlib import provide_passlib_crypt
-from src.ops.user.controllers import (
-    provide_user_auth_operations,
-    provide_user_read_operations,
-    provide_user_verification_operations,
-    provide_user_write_operations,
-)
-from src.ops.user.sanitizer import provide_user_sanitizer
+from src.infra.email.client.providers import provide_aiosmtplib_client
+from src.infra.email.emitter.providers import provide_litestar_email_emitter
+from src.infra.security.crypt.providers import provide_passlib_crypt
 
 # ============================================================================
 # PROVIDER SELECTION
@@ -26,21 +14,15 @@ from src.ops.user.sanitizer import provide_user_sanitizer
 
 class ApplicationDependencies:
     # ======================================
-    # APPLICATION OPERATIONS
+    # OPERATIONS CONTROLLERS
     # ======================================
 
     # User
-    user_read_operations_provider = {
-        settings.USER_READ_OP_PK: provide_user_read_operations
-    }
-    user_write_operations_provider = {
-        settings.USER_WRITE_OP_PK: provide_user_write_operations
-    }
-    user_verification_operations_provider = {
-        settings.USER_VERIFICATION_OP_PK: provide_user_verification_operations
-    }
-    user_auth_operations_provider = {
-        settings.USER_AUTH_OP_PK: provide_user_auth_operations
+    user_ops_provider = {
+        settings.USER_READ_OP_PK: provide_user_read_ops,
+        settings.USER_WRITE_OP_PK: provide_user_write_ops,
+        settings.USER_VERIFICATION_OP_PK: provide_user_verification_ops,
+        settings.USER_AUTH_OP_PK: provide_user_auth_ops,
     }
 
     # ======================================
@@ -80,7 +62,7 @@ class ApplicationDependencies:
     # ======================================
     # MERGE ALL DEPENDENCIES
     # ======================================
-
+    """
     all_providers = (
         user_read_operations_provider
         | user_write_operations_provider
@@ -93,4 +75,4 @@ class ApplicationDependencies:
         | email_client_provider
         | email_emitter_provider
         | password_crypt_provider
-    )
+    )"""

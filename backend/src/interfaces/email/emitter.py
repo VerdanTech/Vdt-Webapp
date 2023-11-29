@@ -1,12 +1,14 @@
+# Standard Library
 from typing import Protocol
 
-from src.domain.common.entities import EntityIDType
+# VerdanTech Source
+from src.domain.common import EntityIDType
 
 
 class AbstractEmailEmitter(Protocol):
     """Interface for configuring and emitting emails into an event stream"""
 
-    async def emit_user_email_confirmation(
+    def emit_user_email_confirmation(
         self, email_address: str, username: str, key: str
     ) -> None:
         """
@@ -20,7 +22,7 @@ class AbstractEmailEmitter(Protocol):
         """
         ...
 
-    async def emit_user_password_reset(
+    def emit_user_password_reset(
         self, email_address: str, username: str, user_id: EntityIDType, key: str
     ) -> None:
         """

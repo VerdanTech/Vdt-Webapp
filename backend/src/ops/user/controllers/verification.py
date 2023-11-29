@@ -1,3 +1,4 @@
+# VerdanTech Source
 from src import settings
 from src.domain.user import exceptions as domain_exceptions
 from src.domain.user.sanitizers import UserSanitizer
@@ -7,7 +8,6 @@ from src.interfaces.persistence.user.repository import AbstractUserRepository
 from src.interfaces.security.crypt import AbstractPasswordCrypt
 
 from ..schemas import verification as schemas
-from ..services import email as email_services, verification as verification_services
 
 
 class UserVerificationOpsController:
@@ -20,18 +20,19 @@ class UserVerificationOpsController:
         user_sanitizer: UserSanitizer,
         email_emitter: AbstractEmailEmitter,
     ) -> None:
-        """Given an unverified email, create a new email confirmation,
-            and send an email confirmation email
+        """
+        Given an unverified email, create a new email confirmation,
+        and send an email confirmation email.
 
         Args:
             data (UserVerifyEmailRequestInput):
-                verification request DTO
-            user_sanitizer (UserSanitizer): user object sanitizer
-            email_emitter (EmailEmitter): email emitter awaitable
+                verification request DTO.
+            user_sanitizer (UserSanitizer): user object sanitizer.
+            email_emitter (AbstractEmailEmitter): email emitter interface.
 
         Raises:
             UserNotFound: raised if no user with the email
-                was found
+                was found.
         """
         # Sanitize input data
         data.sanitize(user_sanitizer=user_sanitizer)
@@ -60,16 +61,17 @@ class UserVerificationOpsController:
         data: schemas.UserVerifyEmailConfirmInput,
         user_sanitizer: UserSanitizer,
     ) -> None:
-        """Given an email verification key, verify the email
-            if it exists and is in a verifiable state
+        """
+        Given an email confirmation key, verify the email
+        if it exists and is in a verifiable state.
 
         Args:
             data (UserVerifyEmailConfirmInput):
-                verification key DTO
+                verification key DTO.
 
         Raises:
             EmailConfirmationKeyNotFound: raised if no user
-                with matching email confirmation found
+                with matching email confirmation found.
         """
         # Sanitize input data
         data.sanitize(user_sanitizer=user_sanitizer)
@@ -95,18 +97,19 @@ class UserVerificationOpsController:
         user_sanitizer: UserSanitizer,
         email_emitter: AbstractEmailEmitter,
     ) -> None:
-        """Given an email, find the user associated, open up a new
-            password reset request, and send the reset email
+        """
+        Given an email, find the user associated, open up a new
+        password reset request, and emit the reset email.
 
         Args:
             data (UserPasswordResetRequestInput): password reset
-                request DTO
-            user_sanitizer (UserSanitizer): user object sanitizer
-            email_emitter (EmailEmitter): email emitter awaitable
+                request DTO.
+            user_sanitizer (UserSanitizer): user object sanitizer.
+            email_emitter (EmailEmitter): email emitter awaitable.
 
         Raises:
             UserNotFound: raised if a user with the email
-                is nof found
+                is nof found.
         """
         # Sanitize input data
         data.sanitize(user_sanitizer=user_sanitizer)
@@ -136,21 +139,22 @@ class UserVerificationOpsController:
         user_sanitizer: UserSanitizer,
         password_crypt: AbstractPasswordCrypt,
     ):
-        """Given a user ID, password confirmation key, old password
-            and new password, find the user if it exists, validate
-            the old password, and set the new password
+        """
+        Given a user ID, password confirmation key,
+        and new password, find the user if it exists, validate
+        the key, and set the new password.
 
         Args:
             data (UserPasswordResetConfirmInput): password
-                reset confirm DTO
-            user_sanitizer (UserSanitizer): user object sanitizer
+                reset confirm DTO.
+            user_sanitizer (UserSanitizer): user object sanitizer.
             password_crypt (AbstractPasswordCrypt): password
-                encryption service
+                encryption interface.
 
         Raises:
             PasswordResetConfirmationNotFound: raised if the
                 reset confirmation details fail to specify
-                an existing user
+                an existing user.
         """
         # Sanitize input data
         data.sanitize(user_sanitizer=user_sanitizer)

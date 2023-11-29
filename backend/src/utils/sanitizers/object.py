@@ -1,8 +1,8 @@
-from enum import Enum
+# Standard Library
 from typing import Any, Dict, Generic, List, Tuple, Type, TypedDict, TypeVar
 
-from . import field
-from .sanitization.generic import SanitizationError, SanitizationT
+from . import field, spec
+from .options import GroupErrorsByEnum, SelectEnum
 
 
 class ObjectSanitizerConfig(TypedDict):
@@ -17,52 +17,6 @@ class ObjectSanitizerConfig(TypedDict):
 ObjectSanitizerConfigT = TypeVar("ObjectSanitizerConfigT", bound=ObjectSanitizerConfig)
 
 
-class GroupErrorsOptionsEnum(Enum):
-    """
-    Enumerated options for grouping errors.
-
-    OBJECT: An ObjectSanitizer will group together the errors
-        returned by the FieldSanitizers, and raise them together
-        after all FieldSanitizers have been run. FieldSanitizers and
-        Sanitizations will return rather than raise errors.
-    FIELD: A FieldSanitizer will group together the errors returned
-        by the Sanitizions, and raise them together after all Sanitizations
-        have been run. Sanitizations will return rather than raise errors.
-    SANITIZATION: A Sanitization will raise an exception and return no error.
-        No errors will be grouped together, and Sanitizations will be run until one
-        fails to sanitize.
-    """
-
-    OBJECT = 0
-    FIELD = 1
-    SANITIZATION = 2
-
-
-class SelectEnum(Enum):
-    """
-    Enumerated aliases for selecting Sanitizations.
-
-    Options that are specific to a Sanitization type correspond
-    to the id attribute defined on that type.
-    """
-
-    # Options that aren't specific to a Sanitization type.
-    ENABLE_ALL = "enable_all"
-    DISABLE_ALL = "disable_all"
-
-    # Basic sanitizations.
-    LENGTH = "length"
-    SIZE = "size"
-    REGEX = "regex"
-    BAN = "ban"
-
-    # Repo sanitizations.
-    UNIQUE = "unique"
-
-    # Custom sanitizations.
-    EMAIL = "email"
-
-
 class ObjectSanitizer(Generic[ObjectSanitizerConfigT]):
     """This class allows assigning multiple FieldSanitizers to
     multiple object fields, and to validate all fields while grouping errors"""
@@ -72,10 +26,10 @@ class ObjectSanitizer(Generic[ObjectSanitizerConfigT]):
 
     async def sanitize(
         self,
-        input_data: Dict[str, field.GenericInputType],
-        sanitization_select: Dict[str, List[field.SelectEnum]],
-        apply_sanitization_default: bool = False,
-        group_errors_by: GroupErrorsOptionsEnum = GroupErrorsOptionsEnum.OBJECT,
+        input_data: Dict[str, spec.GenericInputType],
+        spec_select: Dict[str, List[SelectEnum]],
+        apply_default: bool = False,
+        group_errors_by: GroupErrorsByEnum = GroupErrorsByEnum.OBJECT,
     ) -> Dict[str, Any]:
         """
         Call the sanitization function on a dict input,
@@ -84,13 +38,13 @@ class ObjectSanitizer(Generic[ObjectSanitizerConfigT]):
         Args:
             input_data (Dict[str, GenericInputType]): keys are field names
                 and values are field values to sanitize.
-            sanitization_select (Dict[str, List[str]]):
+            spec_select (Dict[str, List[str]]):
                 keys are field names and values are lists
                 of values of SelectEnum, which allows filtering
                 the list of Sanitizations registered on each field.
             group_errors_by (GroupErrorsOptionsEnum): see GroupErrorsOptionsEnum
                 for behavior description.
-            apply_sanitization_default (bool) True applies all sanitizations
+            apply_default (bool) True applies all sanitizations
                 registered on a FieldSanitizer by default. The selections in
                 sanitization_select disable Sanitizations from being applied.
                 False applied no sanitizations registered on a FieldSanitizer
@@ -106,12 +60,12 @@ class ObjectSanitizer(Generic[ObjectSanitizerConfigT]):
         """
         sanitized_data, error = await self._sanitize(
             input_data=input_data,
-            sanitization_select=sanitization_select,
+            spec_select=spec_select,
             group_errors_by=group_errors_by,
-            apply_sanitization_default=apply_sanitization_default,
+            apply_default=apply_default,
         )
         if error:
-            raise SanitizationError(error)
+            raise spec.SpecError(error)
 
         return sanitized_data
 
@@ -127,10 +81,10 @@ class ObjectSanitizer(Generic[ObjectSanitizerConfigT]):
 
     async def _sanitize(
         self,
-        input_data: Dict[str, field.GenericInputType],
-        sanitization_select: Dict[str, List[field.SelectEnum]],
-        apply_sanitization_default: bool = False,
-        group_errors_by: GroupErrorsOptionsEnum = GroupErrorsOptionsEnum.OBJECT,
+        input_data: Dict[str, spec.GenericInputType],
+        spec_select: Dict[str, List[SelectEnum]],
+        apply_default: bool = False,
+        group_errors_by: GroupErrorsByEnum = GroupErrorsByEnum.OBJECT,
     ) -> Tuple[Dict[str, Any], Dict[str, str]]:
         """
         Call the field sanitizer for every field in
@@ -138,9 +92,9 @@ class ObjectSanitizer(Generic[ObjectSanitizerConfigT]):
 
         Args:
             input_data (Dict[str, GenericInputType]): see sanitize() method
-            sanitization_select (Dict[str, List[SelectEnum]]): see sanitize() method
+            spec_select (Dict[str, List[SelectEnum]]): see sanitize() method
             group_errors_by (GroupErrorsOptionsEnum): see sanitize() method
-            apply_sanitization_default (bool): see sanitize() method
+            apply_default (bool): see sanitize() method
 
         Returns:
             Tuple[Dict[str, GenericInputType], Dict[str, str]]: the output sanitized
@@ -152,26 +106,26 @@ class ObjectSanitizer(Generic[ObjectSanitizerConfigT]):
         object_error = {}
 
         # For every input field
-        for field_name, field_input_data in input.items():
+        for field_name, field_input_data in input_data.items():
             # Get the FieldSanitizer associated with that field.
             # Raise exception if FieldSanitizer not found.
             field_sanitizer = self._get_field_sanitizer(field_name=field_name)
 
             # Call the FieldSanitizer's sanitize() method.
-            field_sanitization_select = sanitization_select[field_name]
+            field_spec_select = spec_select[field_name]
             field_sanitized_data, field_error = await field_sanitizer.sanitize(
                 input_data=field_input_data,
-                sanitization_select=field_sanitization_select,
+                spec_select=field_spec_select,
                 group_errors_by=group_errors_by,
-                apply_sanitization_default=apply_sanitization_default,
+                apply_default=apply_default,
             )
 
-            if field_error is not None:
+            if field_error:
                 # Update the output error
                 object_error[field_name] = field_error
 
             # Update the output sanitized data if it was safely returned from the FieldSanitizer.
-            if field_sanitized_data is not None:
+            if field_sanitized_data:
                 object_sanitized_data[field_name] = field_sanitized_data
 
         return object_sanitized_data, object_error
@@ -206,7 +160,7 @@ class MockObjectSanitizer(ObjectSanitizer):
         self,
         input: Dict[str, Any],
         sanitization_select: Dict[str, List[field.SelectEnum]],
-        group_errors_by: field.GroupErrorsOptionsEnum = field.GroupErrorsOptionsEnum.OBJECT,
+        group_errors_by: GroupErrorsByEnum = GroupErrorsByEnum.OBJECT,
         apply_sanitization_default: bool = False,
     ) -> Dict[str, Any]:
         return input

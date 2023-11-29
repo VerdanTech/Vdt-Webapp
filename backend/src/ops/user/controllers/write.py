@@ -1,3 +1,4 @@
+# VerdanTech Source
 from src import settings
 from src.domain.user.entities import User
 from src.domain.user.sanitizers import UserSanitizer
@@ -20,16 +21,17 @@ class UserWriteOpsController:
         password_crypt: AbstractPasswordCrypt,
         email_emitter: AbstractEmailEmitter,
     ) -> User:
-        """Main user creation operation.
+        """
+        Main user creation operation.
 
         Args:
-            data (UserCreateInput): user creation data transfer object
-            user_sanitizer (UserSanitizer): user object sanitizer
-            password_crypt (AbstractPasswordCrypt): password encryption interface
-            email_emitter (AbstractEmailEmitter): email emitter interface
+            data (UserCreateInput): user creation data transfer object.
+            user_sanitizer (UserSanitizer): user object sanitizer.
+            password_crypt (AbstractPasswordCrypt): password encryption interface.
+            email_emitter (AbstractEmailEmitter): email emitter interface.
 
         Returns:
-            User: the user model created after persistence
+            User: the user model created after persistence.
         """
         # Sanitize input data
         data.sanitize(user_sanitizer=user_sanitizer)

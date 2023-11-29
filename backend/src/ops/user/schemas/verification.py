@@ -1,9 +1,12 @@
+# Standard Library
 from dataclasses import dataclass
 
-from backend.src.domain.user.services.sanitizers import UserSanitizer
-from src.domain.common.entities import EntityIDType
 
-from ..services.sanitization.password import validate_password_match
+# VerdanTech Source
+from src.domain.common import EntityIDType
+from src.domain.user.sanitizers import UserSanitizer
+
+from ..sanitizers import validate_password_match
 
 
 @dataclass
@@ -15,6 +18,7 @@ class UserVerifyEmailRequestInput:
             input={
                 "email_address": self.email_address,
             },
+            sanitization_select={"email_address": ["length", "regex", "email"]},
         )
         self.email_address = sanitized_data["email_address"]
 
@@ -28,6 +32,7 @@ class UserVerifyEmailConfirmInput:
             input={
                 "confirmation_key": self.key,
             },
+            sanitization_select={"confirmation_key": ["length"]},
         )
         self.key = sanitized_data["confirmation_key"]
 
@@ -41,6 +46,7 @@ class UserPasswordResetRequestInput:
             input={
                 "email_address": self.email_address,
             },
+            sanitization_select={"email_address": ["length", "regex", "email"]},
         )
         self.email_address = sanitized_data["email_address"]
 
@@ -49,7 +55,6 @@ class UserPasswordResetRequestInput:
 class UserPasswordResetConfirmInput:
     user_id: EntityIDType
     key: str
-    old_password: str
     new_password1: str
     new_password2: str
 
@@ -61,6 +66,10 @@ class UserPasswordResetConfirmInput:
             input={
                 "password": self.new_password1,
                 "confirmation_key": self.key,
+            },
+            sanitization_select={
+                "password": ["length", "regex", "ban"],
+                "confirmation_key": ["length"],
             },
         )
         self.new_password1 = sanitized_data["password"]

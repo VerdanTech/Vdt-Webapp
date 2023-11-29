@@ -1,3 +1,4 @@
+# Standard Library
 import html
 import re
 from builtins import NotImplementedError
@@ -5,14 +6,19 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from typing import Any, Dict
 
+# External Libraries
 import html2text
+
+# VerdanTech Source
 from src.infra.utils.file import read_file_async
 
 
 class BaseEmailClient:
-    """Partially implement the AbstractAsyncEmailClient interface defined in
-    interfaces, leaving the implementation of the "send" awaitable to
-    subclasses.
+    """
+    Partial implemention of the AbstractAsyncEmailClient interface defined in
+    interfaces.
+
+    The implementation of the "send" awaitable is the responsibility of subclasses.
     """
 
     def __init__(

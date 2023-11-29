@@ -58,6 +58,10 @@ build: init-app init-db
 update: 
 	$(PY-VER) -m pdm update --lockfile requirements/.pdm-lock
 
+.PHONY: install
+install: 
+	$(PY-VER) -m pdm install --lockfile requirements/.pdm-lock
+
 .PHONY: clean
 clean:
 	rm -rf reports/

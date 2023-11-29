@@ -6,10 +6,10 @@ authors = [
     { name = "Nathaniel King", email = "nathanielarking@gmail.com" }
 ]
 dependencies = [
-    "attrs",
     "litestar[cli]",
     "sqlalchemy",
     "asyncpg",
+    "dnspython",
     "alembic",
     "serpyco",
     "passlib",
@@ -34,6 +34,7 @@ test = [
     "coverage[toml]",
 ]
 dev = [
+    "mypy",
     "mkdocs",
     "mkdocstrings[python]",
     "mkdocs-material",
@@ -71,10 +72,12 @@ exclude = '''
 [tool.isort]
 profile = "black"
 combine_as_imports = true
-src_paths = ["verdantech_api"]
-known_first_party = ["verdantech_api"]
+src_paths = ["src", "tests", "mocks"]
+known_first_party = ["src", "tests", "mocks"]
 skip_gitignore = true
-skip_glob = ["**/migrations/*"]
+import_heading_stdlib="Standard Library"
+import_heading_thirdparty="External Libraries"
+import_heading_firstparty="VerdanTech Source"
 
 [tool.pytest.ini_options]
 addopts = "-vv -x -rx"

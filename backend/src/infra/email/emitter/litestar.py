@@ -1,9 +1,13 @@
+# Standard Library
 from typing import Any, Dict
 
+# External Libraries
 from litestar import Litestar
 from litestar.events import listener
+
+# VerdanTech Source
 from src import settings
-from src.domain.common.entities import EntityIDType
+from src.domain.common import EntityIDType
 from src.interfaces.email.client import AbstractEmailClient
 
 from .generic import BaseEmailEmitter
@@ -50,7 +54,7 @@ class LitestarEmailEmitter(BaseEmailEmitter):
             **kwargs,
         )
 
-    async def emit_user_email_confirmation(
+    def emit_user_email_confirmation(
         self, email_address: str, username: str, key: str
     ) -> None:
         """
@@ -76,7 +80,7 @@ class LitestarEmailEmitter(BaseEmailEmitter):
             verification_url=verification_url,
         )
 
-    async def emit_user_password_reset(
+    def emit_user_password_reset(
         self, email_address: str, username: str, user_id: EntityIDType, key: str
     ) -> None:
         """

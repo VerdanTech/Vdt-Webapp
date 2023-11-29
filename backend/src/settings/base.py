@@ -1,7 +1,9 @@
+# Standard Library
 from enum import Enum
 from pathlib import Path
 from typing import List
 
+# External Libraries
 from decouple import Csv, config
 
 # ============================================================================
@@ -125,7 +127,7 @@ EMAIL_BASE_DIR: str = "verdantech_api/static/emails/"
 
 def email_path(*paths: str) -> Path:
     """Appends input path to static email directory"""
-    return BASE_DIR.join(EMAIL_BASE_DIR, *paths)
+    return BASE_DIR.joinpath(EMAIL_BASE_DIR, *paths)
 
 
 # ======================================
@@ -171,6 +173,7 @@ EMAIL_MIN_LENGTH: int = 1
 EMAIL_MAX_LENGTH: int = 255
 USERNAME_MIN_LENGTH: int = 3
 USERNAME_MAX_LENGTH: int = 50
+# USERNAME_REGEX_PATTERN: str =
 PASSWORD_MIN_LENGTH: int = 6
 PASSWORD_MAX_LENGTH: int = 255
 USER_MAX_EMAILS: int = 3

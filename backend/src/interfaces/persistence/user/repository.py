@@ -1,6 +1,8 @@
+# Standard Library
 from typing import List
 
-from src.domain.common.entities import EntityIDType
+# VerdanTech Source
+from src.domain.common import EntityIDType
 from src.domain.user.entities import User
 
 from ..generic import AbstractAsyncRepository

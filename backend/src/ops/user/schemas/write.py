@@ -1,9 +1,10 @@
+# Standard Library
 from dataclasses import dataclass
 
+# VerdanTech Source
 from src.domain.user.sanitizers import UserSanitizer
-from src.utils import sanitizers
 
-from ..services.sanitization.password import validate_password_match
+from ..sanitizers import validate_password_match
 
 
 @dataclass

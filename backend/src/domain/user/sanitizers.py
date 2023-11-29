@@ -1,5 +1,7 @@
+# Standard Library
 from typing import TypedDict
 
+# VerdanTech Source
 from src.utils import sanitizers
 
 from .entities import User
