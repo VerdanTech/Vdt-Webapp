@@ -6,12 +6,10 @@ authors = [
     { name = "Nathaniel King", email = "nathanielarking@gmail.com" }
 ]
 dependencies = [
-    "litestar[cli]",
+    "litestar",
     "sqlalchemy",
     "asyncpg",
-    "dnspython",
     "alembic",
-    "serpyco",
     "passlib",
     "argon2_cffi",
     "aiosmtplib",
@@ -24,7 +22,7 @@ requires-python = ">=3.12"
 readme = "README.md"
 license = {text = "GPL-3.0-or-later"}
 
-[tool.pdm.dev-dependencies]
+[project.optional-dependencies]
 test = [
     "pytest",
     "pytest-asyncio",
@@ -34,7 +32,6 @@ test = [
     "coverage[toml]",
 ]
 dev = [
-    "mypy",
     "mkdocs",
     "mkdocstrings[python]",
     "mkdocs-material",
@@ -46,9 +43,6 @@ dev = [
 
 [project.urls]
 "Repository" = "https://github.com/nathanielarking/VerdanTech"
-
-[tool.setuptools]
-py-modules = ["verdantech_api"]
 
 [tool.black]
 include = '\.pyi?$'
@@ -68,16 +62,13 @@ exclude = '''
   )/
 '''
 
-
 [tool.isort]
 profile = "black"
 combine_as_imports = true
-src_paths = ["src", "tests", "mocks"]
-known_first_party = ["src", "tests", "mocks"]
+src_paths = ["verdantech_api"]
+known_first_party = ["verdantech_api"]
 skip_gitignore = true
-import_heading_stdlib="Standard Library"
-import_heading_thirdparty="External Libraries"
-import_heading_firstparty="VerdanTech Source"
+skip_glob = ["**/migrations/*"]
 
 [tool.pytest.ini_options]
 addopts = "-vv -x -rx"
@@ -87,6 +78,9 @@ python_files = ["tests.py", "test_*.py", "*_test.py", "*_tests.py", "**/tests/*"
 markers = [
     "unit: Isolated tests of individual functions",
     "integration: Integrated tests of one or multiple functions",
-    "databases: Depends on a database service running"
 ]
 asyncio_mode="auto"
+
+[tool.pytest.mark]
+". tests/unit/" = "unit"
+". tests/integration/" = "integration"
