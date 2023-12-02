@@ -1,6 +1,9 @@
+# Standard Library
+from enum import Enum
 from pathlib import Path
 from typing import List
 
+# External Libraries
 from decouple import Csv, config
 
 # ============================================================================
@@ -102,16 +105,16 @@ PASSWORD_CRYPT_PK = "password_crypt"
 # DATABASE SETTINGS
 # ======================================
 
-POSTGRES_DB_NAME: str = config("POSTGRES_DB_NAME", cast=str)
-POSTGRES_DB_USER: str = config("POSTGRES_DB_USER", cast=str)
-POSTGRES_DB_PASSWORD: str = config("POSTGRES_DB_PASSWORD", cast=str)
-POSTGRES_URI: str = config(
-    "POSTGRES_DB_URI",
-    cast=str,
-    default=f"postgresql+asyncpg://{POSTGRES_DB_USER}:{POSTGRES_DB_PASSWORD}@localhost/{POSTGRES_DB_NAME}",
-)
+#POSTGRES_DB_NAME: str = config("POSTGRES_DB_NAME", cast=str)
+#POSTGRES_DB_USER: str = config("POSTGRES_DB_USER", cast=str)
+#POSTGRES_DB_PASSWORD: str = config("POSTGRES_DB_PASSWORD", cast=str)
+#POSTGRES_URI: str = config(
+#    "POSTGRES_DB_URI",
+#    cast=str,
+#    default=f"postgresql+asyncpg://{POSTGRES_DB_USER}:{POSTGRES_DB_PASSWORD}@localhost/{POSTGRES_DB_NAME}",
+#)
 
-ALCHEMY_URI: str = POSTGRES_URI
+#ALCHEMY_URI: str = POSTGRES_URI
 
 # ======================================
 # FILE SETTINGS
@@ -124,7 +127,7 @@ EMAIL_BASE_DIR: str = "verdantech_api/static/emails/"
 
 def email_path(*paths: str) -> Path:
     """Appends input path to static email directory"""
-    return BASE_DIR.join(EMAIL_BASE_DIR, *paths)
+    return BASE_DIR.joinpath(EMAIL_BASE_DIR, *paths)
 
 
 # ======================================
@@ -137,9 +140,26 @@ EMAIL_CLIENT_USERNAME: int = ""
 EMAIL_CLIENT_PASSWORD: int = ""
 EMAIL_CLIENT_SENDER: str = "verdantech@gmail.com"
 
-REQUIRE_EMAIL_VERIFICATION = True
+
+class EmailConfirmationOptions(Enum):
+    REQUIRED_FOR_NONE = 0
+    REQUIRED_FOR_WRITE = 1
+    REQUIRED_FOR_ALL = 2
+
+    def verification_required(self) -> bool:
+        return (
+            self.value == self.REQUIRED_FOR_WRITE or self.value == self.REQUIRED_FOR_ALL
+        )
+
+
+EMAIL_CONFIRMATION = EmailConfirmationOptions.REQUIRED_FOR_WRITE
 EMAIL_VERIFICATION_KEY_LENGTH: int = 32
 EMAIL_VERIFICATON_EXPIRY_TIME_HOURS: int = 72
+
+EMAIL_FILEPATH_EMAIL_CONFIRMATION: str = email_path("email_verification.html")
+EMAIL_SUBJECT_EMAIL_CONFIRMATION: str = "Email verification - VerdanTech"
+EMAIL_FILEPATH_PASSWORD_RESET: str = email_path("password_reset.html")
+EMAIL_SUBJECT_PASSWORD_RESET: str = "Password reset - VerdanTech"
 
 # ============================================================================
 # DOMAIN MODEL SETTINGS
@@ -153,6 +173,7 @@ EMAIL_MIN_LENGTH: int = 1
 EMAIL_MAX_LENGTH: int = 255
 USERNAME_MIN_LENGTH: int = 3
 USERNAME_MAX_LENGTH: int = 50
+# USERNAME_REGEX_PATTERN: str =
 PASSWORD_MIN_LENGTH: int = 6
 PASSWORD_MAX_LENGTH: int = 255
 USER_MAX_EMAILS: int = 3

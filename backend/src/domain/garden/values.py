@@ -1,6 +1,7 @@
+# Standard Library
 from enum import Enum
 
-from ..common.values import Ref
+from ..common import Ref
 
 
 class VisibilityEnum(Enum):

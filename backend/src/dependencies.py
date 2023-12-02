@@ -1,46 +1,28 @@
+# VerdanTech Source
 from src import settings
-from src.application.user.operations import (
-    provide_user_auth_operations,
-    provide_user_read_operations,
-    provide_user_verification_operations,
-    provide_user_write_operations,
-)
-from src.application.user.sanitizer import provide_user_sanitizer
-from src.infrastructure.email import provide_litestar_email_emitter
-from src.infrastructure.email.aiosmtplib import provide_aiosmtplib_client
-from src.infrastructure.persistence.mapper.serpyco import (
-    provide_user_serpyco_serializer,
-)
-from src.infrastructure.persistence.repository.motor import (
-    MotorLitestarDBLifecycleManager,
-    provide_user_motor_repository,
-)
-from src.infrastructure.security.crypt.passlib import (
-    provide_passlib_crypt,
-)
+from src.infra.email.client.providers import provide_aiosmtplib_client
+from src.infra.email.emitter.providers import provide_litestar_email_emitter
+from src.infra.security.crypt.providers import provide_passlib_crypt
 
 # ============================================================================
 # PROVIDER SELECTION
+#
+# Methods which provide dependencies for injection are called providers.
+# This file provides a centralized location for configuring providers for injection.
 # ============================================================================
 
 
 class ApplicationDependencies:
     # ======================================
-    # APPLICATION OPERATIONS
+    # OPERATIONS CONTROLLERS
     # ======================================
 
     # User
-    user_read_operations_provider = {
-        settings.USER_READ_OP_PK: provide_user_read_operations
-    }
-    user_write_operations_provider = {
-        settings.USER_WRITE_OP_PK: provide_user_write_operations
-    }
-    user_verification_operations_provider = {
-        settings.USER_VERIFICATION_OP_PK: provide_user_verification_operations
-    }
-    user_auth_operations_provider = {
-        settings.USER_AUTH_OP_PK: provide_user_auth_operations
+    user_ops_provider = {
+        settings.USER_READ_OP_PK: provide_user_read_ops,
+        settings.USER_WRITE_OP_PK: provide_user_write_ops,
+        settings.USER_VERIFICATION_OP_PK: provide_user_verification_ops,
+        settings.USER_AUTH_OP_PK: provide_user_auth_ops,
     }
 
     # ======================================
@@ -55,19 +37,14 @@ class ApplicationDependencies:
 
     # Database
     db_client_provider = {
-        settings.DB_CLIENT_PK: MotorLitestarDBLifecycleManager.provide_client
+        settings.DB_CLIENT_PK: AlchemyLitestarDBLifecycleManager.provide_client
     }
     db_session_provider = {
-        settings.DB_SESSION_PK: MotorLitestarDBLifecycleManager.provide_session
-    }
-
-    # Serializer
-    user_serializer_provider = {
-        settings.USER_SERIALIZER_PK: provide_user_serpyco_serializer
+        settings.DB_SESSION_PK: AlchemyLitestarDBLifecycleManager.provide_transaction
     }
 
     # Repositories
-    user_repo_provider = {settings.USER_REPOSITORY_PK: provide_user_motor_repository}
+    user_repo_provider = {settings.USER_REPOSITORY_PK: provide_user_alchemy_repository}
 
     # ======================================
     # EMAIL
@@ -85,7 +62,7 @@ class ApplicationDependencies:
     # ======================================
     # MERGE ALL DEPENDENCIES
     # ======================================
-
+    """
     all_providers = (
         user_read_operations_provider
         | user_write_operations_provider
@@ -94,9 +71,8 @@ class ApplicationDependencies:
         | user_sanitizer_provider
         | db_client_provider
         | db_session_provider
-        | user_serializer_provider
         | user_repo_provider
         | email_client_provider
         | email_emitter_provider
         | password_crypt_provider
-    )
+    )"""

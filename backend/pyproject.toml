@@ -10,7 +10,6 @@ dependencies = [
     "sqlalchemy",
     "asyncpg",
     "alembic",
-    "serpyco",
     "passlib",
     "argon2_cffi",
     "aiosmtplib",
@@ -23,7 +22,7 @@ requires-python = ">=3.12"
 readme = "README.md"
 license = {text = "GPL-3.0-or-later"}
 
-[tool.pdm.dev-dependencies]
+[project.optional-dependencies]
 test = [
     "pytest",
     "pytest-asyncio",
@@ -45,9 +44,6 @@ dev = [
 [project.urls]
 "Repository" = "https://github.com/nathanielarking/VerdanTech"
 
-[tool.setuptools]
-py-modules = ["verdantech_api"]
-
 [tool.black]
 include = '\.pyi?$'
 exclude = '''
@@ -65,7 +61,6 @@ exclude = '''
     | migrations
   )/
 '''
-
 
 [tool.isort]
 profile = "black"

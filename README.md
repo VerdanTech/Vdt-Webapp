@@ -49,9 +49,9 @@ VerdanTech is an open source software project best summarized as a fusion betwee
 - **Agro-Ecology Optimization Model**: A model which captures the relationship between agriculture and the broader ecological system, with the goal of producing a healthy abundance and diversity of food with minimal reliance on conditions of resource depletion and ecological destruction.
 - **IoT Automation Suite**: A model which is complemented by an Internet-of-Things (IoT) platform, serving as an extensible interface for integration with external APIs. Alongside the platform is a set of embedded devices designed to automate the process of obtaining measurements and executing tasks. These devices exist in a different repository called [VerdanTech-Devices](https://github.com/nathanielarking/VerdanTech-Devices).
 
-For a high level conceptual overview of the application's features, refer to the [Outline](outline/README.md) folder.
+For a high level conceptual overview of the application's features, refer to the [Features](features/#features) section.
 
-VerdanTech is a very young application, and most of these goals have not been completed. Refer to the [Features](#features) section for further information. VerdanTech has been in development since late 2022, or early 2021 if we count the [initial attempt](https://www.youtube.com/watch?v=w0TwPI7bLp8&ab_channel=TotalVeganicFuturism) at a similar idea. VerdanTech is built with [sentientist values](https://sentientism.info/) in mind, and as such does not consider sentient beings as acceptable subjects of exploitation for food or any other purpose.
+VerdanTech has been in development since late 2022, or early 2021 if we count the [initial attempt](https://www.youtube.com/watch?v=w0TwPI7bLp8&ab_channel=TotalVeganicFuturism) at a similar idea. VerdanTech is built with [sentientist values](https://sentientism.info/) in mind, and as such does not consider sentient beings as acceptable subjects of exploitation for food or any other purpose.
 
 If you wish to deploy this application yourself, see the [Deployment](#deployment) section. If the instructions are not adequate in guiding you to a successful deployment, please reach out to the [Community](#community).
 
@@ -164,11 +164,18 @@ The specific term "animal agriculture" retains its meaning.
 Merriam Webster [defines ecology as](https://www.merriam-webster.com/dictionary/ecology)
 > a branch of science concerned with the interrelationship of organisms and their environments, the totality or pattern of relations between organisms and their environment.
 
-In our world today, the relationship between ecology and human society is more important than ever. We rely on ecological systems for services that are vital to our existence and maintain relationships with them that are largely unsustainable. A system is unsustainable when its consumption of resources and emission of waste exceeds the regenerative and absorbative capacities of its environment. A society of these conditions undermines not only its own wellbeing but the wellbeing of all the lives reliant on these services. Our environment is planet Earth, and the combined ecological impact of all our systems of extraction, production, pollution, and emission amounts to a truly devastating level of resource depletion, biosphere destruction, climate change, and more. 
+In our world today, the relationship between ecology and human society is more important than ever. We rely on ecosystem systems for services that are vital to our existence. The Millenium Ecosystem Assessment provides [four categories](https://earth.org/what-are-ecosystem-services/) of ecosystem services:
 
-The situation is intolerable. It falls on us to figure out how we need to adapt and then to undertake it.
+- **Provisioning services** produce material resources such as food, water, fibers, oil, and minerals. 
+- **Regulating services** maintain favorable ecological, climate, and other conditions, such as climate regulation, flood protection, pollination, and water purification. 
+- **Supporting services** maintain the foundation of a functioning ecosytem, including the water cycle, nutrient cycle, and biodiversity.  
+- **Cultural services** provide non-material benefits such as spiritual, intellectual, recreational, and aesthetic values.
 
-A truly ecological, sustainable society requires many adaptations. Some are technological, including changes to what resources we depend on and what procceses we use to achieve our goals. Technological adaptations involve some combination of meeting our energy and material needs through renewable sources and finding ways to reduce the amount of resources required for the same services we demand. Some adaptations are social, including changes to what our goals are, and how we organize ourselves to enable those goals to be met. Social adaptations involve the creation of human organization centered around solidarity, equality, and cooperation towards collective success. Politcal and economic forms which allow us to move away from the current conditions of ecological sustainablity and towards the equal interest of all individuals
+Despite our reliance on these services, we maintain relationships with the ecological systems responsible for them that are largely unsustainable. Keeping in mind the broad and varied scope of ecosystem services, a society cannot be sustained when its consumption of resources or emissions of waste exceeds the regenerative or absorbative capacities of its environment. A society of these conditions undermines not only its own wellbeing but also that of fellow inhabitants and the health of the ecosystem itself. 
+
+Our environment is planet Earth, and the combined ecological impact of all our systems of extraction, production, pollution, and emission amounts to a truly devastating level of resource depletion, biosphere destruction, climate change, and more. The situation is intolerable. It falls on us to figure out how we need to adapt and then to undertake it.
+
+A truly ecological, sustainable society requires many adaptations. Some are technological, including changes to what resources we depend on and what procceses we use to achieve our goals. Technological adaptations involve some combination of meeting our energy and material demands through sustainable resources and finding ways to reduce the amount of those resources required for the services we demand. Some adaptations are social, including changes to what our goals are and thus what services we demand, and how we organize ourselves to enable those goals to be met. Social adaptations involve the creation of human organization centered around solidarity, equality, and cooperation towards collective success. Politcal and economic forms which allow us to move away from the current conditions of ecological sustainablity and towards the equal interest of all individuals across species and generations.
 
 Almost all of these adaptations are interconnected, and massive in scope. VerdanTech focuses specifically on agriculture and its relation to ecology and the organization of human labour.
 
@@ -182,21 +189,19 @@ The relationship between agriculture and ecology spans many interactions between
 - **Land** 
     - The surface of Earth is currently our only option for the foundation of agricultural systems. *Land use patterns* are how we describe the categorization of humanity's use of land.
     - How much land we have relative to how much food we want to produce changes our options for agricultural systems. [*Intensive agriculture*](https://www.britannica.com/topic/intensive-agriculture) is characterized by an increased use of material inputs and a higher expected harvest per unit of land area. [*Extensive agriculture*](https://www.britannica.com/topic/extensive-agriculture) is characterized by a decreased use of material inputs and a lower expected harvest per unit of land. The optimal land intensivity of an agricultural system depends on what land and material inputs are available.
-    - *Land use change* describes how our land use patterns shift over time, including modifying, receding from, and adding new land use. The character of land use change affects the behaviour of the ecosystem in many ways. 
-    ^ destroy ecosystem services, change the climate (https://www.britannica.com/science/urban-climate#ref226368)
-    - The use of land sometimes imples the replacement of what was there before, and that can have major implications for ecological services sustainablility. for example, beef expansion.
-    - shifting cultivation vs others
-    - The categoriztaion into discrete uses doesn't always work when analyzing previous methods of cultivation 
+    - *Land use change* describes how our land use patterns shift over time, including modifying, receding from, and adding new use of land. The character of land use change affects the behaviour of the ecosystem in many ways. Destruction of ecosystems leads to a reduction in the services those ecosystems provide, and the new land use often has side effects as well.
 - **Nutrients and water**
+    - Plants need material resources to grow, and like humans, have nutritional profiles that bring optimal growth. Plants require macronutrients including nitrogen, phosphorus, and potassium, micronutrients including iron, boron, and copper, and water.
+    - These material resources are required not only to be present in the immetdiate environment, but to be accessible for use by plants. This depends on the 
     - plants need npk as macro nutrients
     - list all the micronutrients
     - different plants need different optimal quantities, this is a lot of knowledge
     - need a way of getting these nutrients from the environment and into the plants, this happens in the soil
-    - soil can be destroyed
 - **Soil and the biosphere**
     - Dirt isn't soil, because soil implies some kind of biosphere
     - The soil is a home to networks of plant and fungi species that do a lot of things: list some examples the legume bacteria, mychorrizal fungi
     - The net result is an overall quantity of productive capacity, that is nutrient and regeneration, and a quantity of regenerative capacity, that is abilities to absorb and repurpose various chemical compounds. If there is a new outflow of material out, the system will eventually run out
+    - soil can be destroyed
 - **Suitable climate conditions**.
     - There must be enough sunlight, temperature, free from storms, all the climate factors
 - **Cultivation of the biosphere**
@@ -266,7 +271,7 @@ Goals:
 general agriculture: https://www.ncbi.nlm.nih.gov/pmc/articles/PMC1240832/
 land use strategies: https://www.sciencedirect.com/science/article/abs/pii/S2211912412000363
 
-## How could a technological innovation best empower humans to undertake this adaptation?
+## How could a technological innovation best empower humans to adapt?
 
 ***WIP***
 

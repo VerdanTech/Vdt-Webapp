@@ -21,3 +21,7 @@ In short, this backend is an asynchronous HTTP and websocket application in Pyth
 
 
 # Contributing
+
+
+Notes on testing: 
+- Prefer to use mocker.patch.object over mocker.patch

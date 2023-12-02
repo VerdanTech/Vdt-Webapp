@@ -22,6 +22,13 @@ class FatalRepositoryError(RepositoryError):
     pass
 
 
+class InterfaceRepositoryError(RepositoryError):
+    """Raised when an interface has failed to validate
+    the repository alongside its requirements."""
+
+    pass
+
+
 class ObjectNotFound(RoutineRepositoryError):
     """Raised when an object fails to be found in a repository"""
 

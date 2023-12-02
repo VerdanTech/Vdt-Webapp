@@ -1,6 +1,8 @@
+# Standard Library
 from typing import List
 
-from src.domain.common.entities import EntityIDType
+# VerdanTech Source
+from src.domain.common import EntityIDType
 from src.domain.user.entities import User
 
 from ..generic import AbstractAsyncRepository
@@ -86,7 +88,8 @@ class AbstractUserRepository(AbstractAsyncRepository[User]):
         ...
 
     async def username_exists(self, username: str) -> bool:
-        """Check the existence of a username in the repository
+        """Check the existence of a username in the repository.
+            Username comparison should be case insensitive.
 
         Args:
             username (str): the username to check uniqueness of

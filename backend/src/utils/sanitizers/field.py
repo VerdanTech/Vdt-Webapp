@@ -1,108 +1,147 @@
+# Standard Library
 import asyncio
-from typing import Callable, Dict, Generic, List, Type
+from typing import Dict, Generic, List, Tuple
 
-from .sanitization.generic import (
-    GenericInputType,
-    SanitizationError,
-    SanitizationsT,
-    SanitizationT,
-)
-
-# Use this in disabled_fields to disable all sanitization
-# in a field, as its clearer than just using None
-DISABLE_FIELD = None
+from . import spec
+from .options import GroupErrorsByEnum, SelectEnum
 
 
-class FieldSanitizer(Generic[*SanitizationsT]):
-    def __init__(self, *sanitizations: List[SanitizationT]):
-        for sanitization in sanitizations:
-            sanitization.field = self
-        self.sanitizations = sanitizations
-        self.normalized_input = None
+class FieldSanitizer(Generic[*spec.SpecsT]):
+    """
+    Encapsulate multiple Specs.
+    """
 
-    def _get_base_sanitization_methods(
-        self, disabled_sanitizations: List[Type[SanitizationT]] = None
-    ) -> List[Callable[[Dict[str, str]], Dict[str, str]]]:
-        """Returns a callable sanitization function for every
-            Sanitization class that is not disabled
+    def __init__(self, *specs: List[spec.Spec]):
+        for spec in specs:
+            spec.field = self
+        self.specs = specs
+        self.normalized_data = None
+
+    async def sanitize(
+        self,
+        input_data: spec.GenericInputType,
+        spec_select: List[SelectEnum],
+        apply_default: bool = False,
+        group_errors_by: GroupErrorsByEnum = GroupErrorsByEnum.FIELD,
+    ) -> Tuple[spec.GenericInputType, Dict[str, str]]:
+        """
+        Call the _sanitization function, and raise error if any failure.
+
+        Args:
+            input (GenericInputType): the input to sanitize.
+            spec_select (List[SelectEnum]):
+                list of values of SelectEnum, which allows filtering
+                the list of Specs registered on each field.
+            group_errors_by (GroupErrorsOptionsEnum): see GroupErrorsOptionsEnum
+                for behavior description.
+            apply_default (bool) True applies all specifications
+                registered on a FieldSanitizer by default. The selections in
+                spec_select disable Specs from being applied.
+                False applies no specifcations registered on a FieldSanitizer
+                by default. The selections in spec_select enable
+                Specs from being applied. Defaults to False.
+
+        Raises:
+            SpecError: raised if sanitization fails and group_errors_by
+                is FIELD or SPEC.
 
         Returns:
-            List[Callable]: a list of sanitization methods
+            Tuple[GenericInputType, Dict[str, str]]: GenericInputType is the
+                sanitized output data. Dict[str, str] is the error message, where
+                the keys are names of Sanitizations, and the values are the error messages.
         """
-        if disabled_sanitizations is None:
-            return [sanitizer.base_sanitization for sanitizer in self.sanitizations]
-        else:
-            return [
-                sanitizer.base_sanitization
-                for sanitizer in self.sanitizations
-                if type(sanitizer) not in disabled_sanitizations
-            ]
+        # Set default normalized value
+        self.normalized_data = input_data
+
+        # Group exceptions
+        error = await self._sanitize(
+            input_data=input_data,
+            spec_select=spec_select,
+            apply_default=apply_default,
+        )
+
+        # Raise errors if enabled.
+        if error and (
+            group_errors_by == GroupErrorsByEnum.FIELD
+            or group_errors_by == GroupErrorsByEnum.SPEC
+        ):
+            raise spec.SpecError(error)
+
+        return self.normalized_data, error
 
     async def _sanitize(
         self,
-        input: GenericInputType,
-        disabled_sanitizations: List[Type[SanitizationT]] = None,
+        input_data: spec.GenericInputType,
+        spec_select: List[SelectEnum],
+        apply_default: bool = False,
+        group_errors_by: GroupErrorsByEnum = GroupErrorsByEnum.FIELD,
     ) -> Dict[str, str]:
-        """Sanitizes the input against base sanitization logis
+        """
+        Sanitizes the input against Sanitizations.
 
         Args:
-            input (GenericInputType): the input to sanitize
-            disabled_sanitizations (List[Type[SanitizationT]]): list of
-                sanitization types to skip when performing sanitization
+            input_data (GenericInputType): see sanitize() method.
+            spec_select (List[SelectEnum]): see sanitize() method.
+            group_errors_by (GroupErrorsOptionsEnum): see sanitize() method.
+            apply_default (bool): see sanitize() method.
 
         Returns:
-            Dict[str, str]: Dict containing errors
+            Dict[str, str]: Dict containing errors.
         """
 
         # Group exceptions
         error = {}
 
-        # Base sanitization logic here
-        for sanitization_method in self._get_base_sanitization_methods(
-            disabled_sanitizations=disabled_sanitizations
+        # For every enabled Spec, run the sanitization logic.
+        for spec in self._select_specs(
+            spec_select=spec_select,
+            apply_default=apply_default,
         ):
-            try:
-                if asyncio.iscoroutinefunction(sanitization_method):
-                    await sanitization_method(input=input)
-                else:
-                    sanitization_method(input=input)
-            except SanitizationError as error_raised:
-                error[type(error_raised).__name__] = str(error_raised)
+            spec_error = await spec.sanitize(
+                input_data=input_data, group_errors_by=group_errors_by
+            )
+
+            # Update the output error
+            if spec_error:
+                error[spec.name] = spec_error
 
         return error
 
-    async def sanitize(
+    def _select_specs(
         self,
-        input: GenericInputType,
-        disabled_sanitizations: List[Type[SanitizationT]] = None,
-    ) -> bool:
-        """Call the sanitization function, and raise error if any failure
+        spec_select: List[SelectEnum],
+        apply_default: bool = False,
+    ) -> List[spec.Spec]:
+        """
+        Returns a Spec for every Spec class
+        that is selected based on the arguments.
 
         Args:
-            input (GenericInputType): the input to sanitize
-            disabled_sanitizations (List[Type[SanitizationT]]): list of
-                sanitization types to skip when performing sanitization
-
-        Raises:
-            SanitizationError: raised if sanitization fails
+            spec_select (List[SelectEnum]): see sanitize() method.
+            apply_default (bool): see sanitize() method.
 
         Returns:
-            bool: true if successful
+            List[Spec]: a list of enabled Specs.
         """
-        # Set default normalized value
-        self.normalized = input
+        # A DISABLE_ALL selection results in no specs.
+        if SelectEnum.DISABLE_ALL in spec_select:
+            return []
 
-        # Group exceptions
-        error = await self._sanitize(
-            input=input, disabled_sanitizations=disabled_sanitizations
-        )
+        # An ENABLE_ALL selection results in all specs.
+        if SelectEnum.ENABLE_ALL in spec_select:
+            return self.specs
 
-        # Raise errors
-        if error:
-            raise SanitizationError(error)
-        return True
+        # A False is results in all specs
+        # with IDs that aren't selected within spec_select
+        if apply_default is True:
+            return [spec for spec in self.specs if spec.id not in spec_select]
 
-    def normalized(self) -> GenericInputType:
+        # A False is results in all specs
+        # with IDs that are selected within spec_select
+        else:
+            return [spec for spec in self.specs if spec.id in spec_select]
+
+    def normalized(self) -> spec.GenericInputType:
         """Supply last input to a normalized form
 
         Args:
@@ -111,7 +150,7 @@ class FieldSanitizer(Generic[*SanitizationsT]):
         Returns:
             GenericInputType: The normalized input
         """
-        return self.normalized_input or None
+        return self.normalized_data or None
 
 
 class MockFieldSanitizer(FieldSanitizer):
@@ -119,8 +158,8 @@ class MockFieldSanitizer(FieldSanitizer):
 
     field_name: str = "generic_field"
 
-    def sanitize(self, input: GenericInputType) -> bool:
+    def sanitize(self, input: spec.GenericInputType) -> bool:
         return True
 
-    def normalized(self) -> GenericInputType:
+    def normalized(self) -> spec.GenericInputType:
         return input
