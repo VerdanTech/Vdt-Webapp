@@ -1,4 +1,3 @@
-
 class MockPasswordCrypt:
     async def get_password_hash(
         self,

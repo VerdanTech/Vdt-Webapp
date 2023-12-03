@@ -3,13 +3,13 @@ from typing import List
 
 # External Libraries
 from sqlalchemy import func, select
-from sqlalchemy.orm import joinedload
+from sqlalchemy.orm import joinedload, noload
 
 # VerdanTech Source
-from src.domain.common.entities import EntityIDType
+from src.domain.common import EntityIDType
 from src.domain.user.entities import User
-from src.infra.persistence.mapper.alchemy.user import UserAlchemyMapper
-from src.infra.persistence.mapper.alchemy.user.model import (
+from src.infra.persistence.sqlalchemy.mapper.user import UserAlchemyMapper
+from src.infra.persistence.sqlalchemy.mapper.user.model import (
     EmailAlchemyModel,
     UserAlchemyModel,
 )
@@ -119,8 +119,9 @@ class UserAlchemyRepository(BaseAlchemyRepository[User]):
         ...
 
     async def username_exists(self, username: str) -> bool:
-        """Check the existence of a username in the repository.
-            Username comparison should be case insensitive.
+        """
+        Check the existence of a username in the repository.
+        Username comparison should be case insensitive.
 
         Args:
             username (str): the username to check uniqueness of
@@ -128,8 +129,10 @@ class UserAlchemyRepository(BaseAlchemyRepository[User]):
         Returns:
             bool: true if the username exists
         """
-        statement = select(UserAlchemyModel).filter(
-            func.lower(UserAlchemyModel.username) == func.lower(username)
+        statement = (
+            select(UserAlchemyModel)
+            .filter(func.lower(UserAlchemyModel.username) == func.lower(username))
+            .options(noload(UserAlchemyModel.emails))
         )
         query = await self.session.execute(statement)
         user_model = query.scalar_one_or_none()
@@ -181,8 +184,10 @@ class UserAlchemyRepository(BaseAlchemyRepository[User]):
         Returns:
             bool: true if the password reset confirmation key exists
         """
-        statement = select(UserAlchemyModel).filter(
-            UserAlchemyModel.password_reset_confirmation_key == key
+        statement = (
+            select(UserAlchemyModel)
+            .filter(UserAlchemyModel.password_reset_confirmation_key == key)
+            .options(noload(UserAlchemyModel.emails))
         )
         query = await self.session.execute(statement)
         user_model = query.scalar_one_or_none()

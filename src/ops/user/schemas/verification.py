@@ -1,7 +1,6 @@
 # Standard Library
 from dataclasses import dataclass
 
-
 # VerdanTech Source
 from src.domain.common import EntityIDType
 from src.domain.user.sanitizers import UserSanitizer

@@ -9,8 +9,8 @@ from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config
 
 # VerdanTech Source
-from src.infra.persistence.mapper.alchemy.model import BaseAlchemyModel
-from src.infra.persistence.mapper.alchemy.user import (
+from src.infra.persistence.sqlalchemy.mapper.model import BaseAlchemyModel
+from src.infra.persistence.sqlalchemy.mapper.user import (
     EmailAlchemyModel,
     UserAlchemyModel,
 )

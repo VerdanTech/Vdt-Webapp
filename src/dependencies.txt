@@ -1,8 +1,8 @@
 # VerdanTech Source
 from src import settings
-from src.infra.email.client.providers import provide_aiosmtplib_client
-from src.infra.email.emitter.providers import provide_litestar_email_emitter
-from src.infra.security.crypt.providers import provide_passlib_crypt
+from src.infra.email.client import providers as email_clients
+from src.infra.email.emitter import providers as email_emitters
+from src.infra.security.crypt import providers as crypts
 
 # ============================================================================
 # PROVIDER SELECTION
@@ -50,19 +50,18 @@ class ApplicationDependencies:
     # EMAIL
     # ======================================
 
-    email_client_provider = {settings.EMAIL_CLIENT_PK: provide_aiosmtplib_client}
-    email_emitter_provider = {settings.EMAIL_EMITTER_PK: provide_litestar_email_emitter}
+    email_client_provider = {settings.EMAIL_CLIENT_PK: email_clients.provide_aiosmtplib_client}
+    email_emitter_provider = {settings.EMAIL_EMITTER_PK: email_emitters.provide_litestar_email_emitter}
 
     # ======================================
     # SECURITY
     # ======================================
 
-    password_crypt_provider = {settings.PASSWORD_CRYPT_PK: provide_passlib_crypt}
+    password_crypt_provider = {settings.PASSWORD_CRYPT_PK: crypts.provide_passlib_crypt}
 
     # ======================================
     # MERGE ALL DEPENDENCIES
     # ======================================
-    """
     all_providers = (
         user_read_operations_provider
         | user_write_operations_provider
@@ -75,4 +74,4 @@ class ApplicationDependencies:
         | email_client_provider
         | email_emitter_provider
         | password_crypt_provider
-    )"""
+    )

@@ -1,4 +1,5 @@
 # Standard Library
+import asyncio
 from contextlib import nullcontext
 from typing import ContextManager
 
@@ -49,6 +50,20 @@ def expected_error_context(request) -> ContextManager:
         return nullcontext()
     else:
         return pytest.raises(request.param)
+
+
+@pytest.fixture(scope="session")
+def event_loop(request):
+    marker = request.node.get_closest_marker("fixt_data")
+    """
+    Creates an instance of the default event loop for the test session.
+
+    https://www.core27.co/post/transactional-unit-tests-with-pytest-and-async-sqlalchemy
+    """
+    policy = asyncio.get_event_loop_policy()
+    loop = policy.new_event_loop()
+    yield loop
+    loop.close()
 
 
 @pytest.fixture

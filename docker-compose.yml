@@ -1,0 +1,21 @@
+version: '3.9'
+
+services:
+  verdantech-backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - .:/workspace:cached
+    command: sleep infinity
+    network_mode: service:postgres
+      
+  postgres:
+    image: postgres:latest
+    restart: unless-stopped
+    expose:
+      - 5432
+    environment:
+      POSTGRES_PASSWORD: xkrytusefhrerifuthrh
+      POSTGRES_USER: verdantech_db
+      POSTGRES_DB: dev_db

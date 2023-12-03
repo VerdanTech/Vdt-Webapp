@@ -8,3 +8,5 @@ COPY ./requirements ./requirements
 RUN pip install --upgrade pip pip-tools wheel
 # Install dependencies
 RUN pip-sync requirements/dev.txt
+
+CMD ["litestar", "run"]

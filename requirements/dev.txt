@@ -14,6 +14,7 @@ anyio==4.1.0
     # via
     #   httpx
     #   litestar
+    #   watchfiles
 argon2-cffi==23.1.0
     # via verdantech-api (pyproject.toml)
 argon2-cffi-bindings==21.2.0
@@ -40,6 +41,7 @@ click==8.1.7
     #   mkdocs
     #   mkdocstrings
     #   rich-click
+    #   uvicorn
 colorama==0.4.6
     # via
     #   griffe
@@ -48,6 +50,8 @@ coverage[toml]==7.3.2
     # via verdantech-api (pyproject.toml)
 dnspython==2.4.2
     # via email-validator
+editorconfig==0.12.3
+    # via jsbeautifier
 email-validator==2.1.0.post1
     # via verdantech-api (pyproject.toml)
 factory-boy==3.3.0
@@ -56,6 +60,8 @@ faker==20.1.0
     # via
     #   factory-boy
     #   polyfactory
+fast-query-parsers==1.0.3
+    # via litestar
 fastjsonschema==2.19.0
     # via validate-pyproject
 ghp-import==2.1.0
@@ -65,11 +71,15 @@ greenlet==3.0.1
 griffe==0.38.0
     # via mkdocstrings-python
 h11==0.14.0
-    # via httpcore
+    # via
+    #   httpcore
+    #   uvicorn
 html2text==2020.1.16
     # via verdantech-api (pyproject.toml)
 httpcore==1.0.2
     # via httpx
+httptools==0.6.1
+    # via uvicorn
 httpx==0.25.2
     # via litestar
 idna==3.6
@@ -84,11 +94,14 @@ isort==5.12.0
     # via verdantech-api (pyproject.toml)
 jinja2==3.1.2
     # via
+    #   litestar
     #   mkdocs
     #   mkdocs-material
     #   mkdocstrings
     #   pytest-html
-litestar==2.4.2
+jsbeautifier==1.14.11
+    # via litestar
+litestar[standard]==2.4.2
     # via verdantech-api (pyproject.toml)
 mako==1.3.0
     # via alembic
@@ -133,8 +146,12 @@ msgspec==0.18.4
     # via litestar
 multidict==6.0.4
     # via litestar
+mypy==1.7.1
+    # via verdantech-api (pyproject.toml)
 mypy-extensions==1.0.0
-    # via black
+    # via
+    #   black
+    #   mypy
 packaging==23.2
     # via
     #   black
@@ -188,12 +205,15 @@ python-dateutil==2.8.2
     #   ghp-import
 python-decouple==3.8
     # via verdantech-api (pyproject.toml)
+python-dotenv==1.0.0
+    # via uvicorn
 pyyaml==6.0.1
     # via
     #   litestar
     #   mkdocs
     #   pymdown-extensions
     #   pyyaml-env-tag
+    #   uvicorn
 pyyaml-env-tag==0.1
     # via mkdocs
 regex==2023.10.3
@@ -209,7 +229,9 @@ rich-click==1.7.1
 ruff==0.1.6
     # via verdantech-api (pyproject.toml)
 six==1.16.0
-    # via python-dateutil
+    # via
+    #   jsbeautifier
+    #   python-dateutil
 sniffio==1.3.0
     # via
     #   anyio
@@ -222,15 +244,26 @@ typing-extensions==4.8.0
     # via
     #   alembic
     #   litestar
+    #   mypy
     #   polyfactory
     #   rich-click
     #   sqlalchemy
 urllib3==2.1.0
     # via requests
+uvicorn[standard]==0.24.0.post1
+    # via litestar
+uvloop==0.19.0
+    # via
+    #   litestar
+    #   uvicorn
 validate-pyproject==0.15
     # via verdantech-api (pyproject.toml)
 watchdog==3.0.0
     # via mkdocs
+watchfiles==0.21.0
+    # via uvicorn
+websockets==12.0
+    # via uvicorn
 
 # The following packages are considered to be unsafe in a requirements file:
 # setuptools
