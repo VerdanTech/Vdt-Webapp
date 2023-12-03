@@ -5,11 +5,10 @@ from typing import Any, Dict, Generic
 from sqlalchemy.ext.asyncio import AsyncSession
 
 # VerdanTech Source
-from src.domain.common.entities import RootEntityT
-from src.infra.persistence.mapper.alchemy.generic import BaseAlchemyMapper
-from src.infra.persistence.mapper.alchemy.model import BaseAlchemyModel
-
-from ..generic import BaseRepository
+from src.domain.common import RootEntityT
+from src.infra.persistence.generic.repository import BaseRepository
+from src.infra.persistence.sqlalchemy.mapper.generic import BaseAlchemyMapper
+from src.infra.persistence.sqlalchemy.mapper.model import BaseAlchemyModel
 
 
 class BaseAlchemyRepository(BaseRepository[RootEntityT]):

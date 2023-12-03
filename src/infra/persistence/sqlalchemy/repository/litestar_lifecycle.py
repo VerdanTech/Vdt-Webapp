@@ -16,9 +16,9 @@ from sqlalchemy.ext.asyncio import (
 
 # VerdanTech Source
 from src import settings
-from src.infra.persistence.mapper.alchemy.model import Base
+from src.infra.persistence.generic.repository.exceptions import ClientLifecycleError
+from src.infra.persistence.sqlalchemy.mapper.model import Base
 
-from ..exceptions import ClientLifecycleError
 from .exceptions import alchemy_exception_map
 
 

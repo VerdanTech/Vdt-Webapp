@@ -2,25 +2,56 @@
 // README at: https://github.com/devcontainers/templates/tree/main/src/docker-existing-dockerfile
 {
 	"name": "VerdanTech Backend Devcontainer",
-	"build": {
-		// Sets the run context to one level up instead of the .devcontainer folder.
-		"context": "..",
-		// Update the 'dockerFile' property if you aren't using the standard 'Dockerfile' filename.
-		"dockerfile": "../Dockerfile"
-	}
+    "dockerComposeFile": "../docker-compose.yml",
+    "service": "verdantech-backend",
+    "workspaceFolder": "/workspace",
 
 	// Features to add to the dev container. More info: https://containers.dev/features.
-	// "features": {},
+	"features": {
+		// Used to configure a non-root user.
+		"ghcr.io/devcontainers/features/common-utils:2": {
+			"username": "devuser",
+			"userUid": "1000",
+			"userGid": "1000"
+		}
+	},
 
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
 	// "forwardPorts": [],
 
-	// Uncomment the next line to run commands after the container is created.
-	// "postCreateCommand": "cat /etc/os-release",
+	// Commands to be run after the container is created.
+	"postCreateCommand": {
+		// Give non-root user file permissions. See: (https://github.com/microsoft/vscode-remote-release/issues/4646).
+		"nonroot_permissions": "chown -R 1000:1000 ."
+	},
 
 	// Configure tool-specific properties.
-	// "customizations": {},
+	"customizations": {
+		"vscode": {
+			"settings": {
+				"python.defaultInterpreterPath": "/usr/local/bin/python",
+				"python.analysis.typeCheckingMode": "basic",
+				"python.analysis.completeFunctionParens": true,
+				"python.analysis.autoImportCompletions": true,
+				"python.formatting.blackPath": "/usr/local/bin/black",
+				"python.testing.unittestEnabled": false,
+				"python.testing.pytestEnabled": true,
+				"python.formatting.provider": "black",
+			},
+            "extensions": [
+                "ms-python.python",
+				"christian-kohler.path-intellisense",
+				"ms-python.black-formatter",
+				"charliermarsh.ruff",
+				"ms-python.mypy-type-checker",
+				"ms-python.vscode-pylance",
+				"mikestead.dotenv",
+				"njpwerner.autodocstring"
+
+            ]
+        }
+	},
 
 	// Uncomment to connect as an existing user other than the container default. More info: https://aka.ms/dev-containers-non-root.
-	// "remoteUser": "devcontainer"
+	"remoteUser": "devuser"
 }

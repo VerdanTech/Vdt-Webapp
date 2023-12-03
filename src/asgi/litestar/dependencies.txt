@@ -6,7 +6,7 @@ from litestar.di import Provide
 
 # VerdanTech Source
 from src import settings
-from src.dependencies import ApplicationDependencies
+#from src.dependencies import ApplicationDependencies
 
 # Apply Litestar's dependency injection provider wrapper
 all_wrapped_providers = {

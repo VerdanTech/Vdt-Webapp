@@ -2,13 +2,12 @@ from functools import partial
 from typing import Callable, List
 
 from src.domain.common import EntityT, RootEntityT
-from src.utils.key_generator import key_generator
-
 from src.infra.persistence.generic.repository import BaseRepository
+from src.utils.key_generator import key_generator
 
 
 class MockBaseRepository(BaseRepository[RootEntityT]):
-    
+
     """Base implementation of a mock, in-memory repository for testing"""
 
     def __init__(

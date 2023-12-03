@@ -2,6 +2,7 @@ from typing import List
 
 from src.domain.common import root_entity
 
+
 @root_entity
 class MockRootEntity:
     string_field: str

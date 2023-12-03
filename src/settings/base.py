@@ -105,16 +105,16 @@ PASSWORD_CRYPT_PK = "password_crypt"
 # DATABASE SETTINGS
 # ======================================
 
-#POSTGRES_DB_NAME: str = config("POSTGRES_DB_NAME", cast=str)
-#POSTGRES_DB_USER: str = config("POSTGRES_DB_USER", cast=str)
-#POSTGRES_DB_PASSWORD: str = config("POSTGRES_DB_PASSWORD", cast=str)
-#POSTGRES_URI: str = config(
-#    "POSTGRES_DB_URI",
-#    cast=str,
-#    default=f"postgresql+asyncpg://{POSTGRES_DB_USER}:{POSTGRES_DB_PASSWORD}@localhost/{POSTGRES_DB_NAME}",
-#)
+POSTGRES_DB_NAME: str = config("POSTGRES_DB_NAME", cast=str)
+POSTGRES_DB_USER: str = config("POSTGRES_DB_USER", cast=str)
+POSTGRES_DB_PASSWORD: str = config("POSTGRES_DB_PASSWORD", cast=str)
+POSTGRES_URI: str = config(
+    "POSTGRES_DB_URI",
+    cast=str,
+    default=f"postgresql+asyncpg://{POSTGRES_DB_USER}:{POSTGRES_DB_PASSWORD}@postgres:5432/{POSTGRES_DB_NAME}",
+)
 
-#ALCHEMY_URI: str = POSTGRES_URI
+ALCHEMY_URI: str = POSTGRES_URI
 
 # ======================================
 # FILE SETTINGS
