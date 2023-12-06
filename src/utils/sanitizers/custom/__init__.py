@@ -1,3 +1,3 @@
-from .email import EmailSpec, EmailSpecConfig, EmailSpecError
+from .email import EmailSpec, EmailSpecConfig, EmailSpecError, EmailSpecParams
 
-__all__ = ["EmailSpec", "EmailSpecConfig", "EmailSpecError"]
+__all__ = ["EmailSpec", "EmailSpecConfig", "EmailSpecParams", "EmailSpecError"]

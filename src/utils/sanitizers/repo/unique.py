@@ -1,12 +1,12 @@
 # Standard Library
 from dataclasses import dataclass
-from typing import Any, TypedDict
+from typing import Any
 
 # VerdanTech Source
 from src.interfaces.persistence.generic import AbstractAsyncRepository
 
 from ..options import SelectEnum
-from ..spec import Spec, SpecConfig, SpecError, SpecParams
+from ..spec import Spec, SpecConfig, SpecError
 
 
 @dataclass(kw_only=True)

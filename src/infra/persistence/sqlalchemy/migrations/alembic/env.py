@@ -10,10 +10,8 @@ from sqlalchemy.ext.asyncio import async_engine_from_config
 
 # VerdanTech Source
 from src.infra.persistence.sqlalchemy.mapper.model import BaseAlchemyModel
-from src.infra.persistence.sqlalchemy.mapper.user import (
-    EmailAlchemyModel,
-    UserAlchemyModel,
-)
+from src.infra.persistence.sqlalchemy.mapper.user import (EmailAlchemyModel,
+                                                          UserAlchemyModel)
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

@@ -34,11 +34,11 @@ class UserWriteOpsController:
             User: the user model created after persistence.
         """
         # Sanitize input data
-        data.sanitize(user_sanitizer=user_sanitizer)
+        await data.sanitize(user_sanitizer=user_sanitizer)
 
         # Create a new user
         user = User(username=data.username)
-        await user.set_password(password=data.password, password_crypt=password_crypt)
+        await user.set_password(password=data.password1, password_crypt=password_crypt)
         await email_domain_services.email_create(
             user=user,
             address=data.email_address,

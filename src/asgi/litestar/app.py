@@ -1,4 +1,6 @@
+# External Libraries
 from litestar import Litestar, get
+
 
 @get("/")
 async def hello_world() -> dict[str, str]:

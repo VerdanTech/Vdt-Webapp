@@ -112,6 +112,7 @@ class Spec:
 
         if not sanitization_clear:
             # The error message is formatted with the SpecParams and input data
+            self.config.params = self.config.params or {}
             error_message_format_parameters = {
                 **self.config.params,
                 "input_data": input_data,

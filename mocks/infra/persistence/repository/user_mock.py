@@ -1,5 +1,7 @@
+# Standard Library
 from typing import List
 
+# VerdanTech Source
 from src.domain.common import EntityIDType
 from src.domain.user.entities import User
 from src.interfaces.persistence.user.exceptions import UserDoesNotExistError
@@ -137,7 +139,7 @@ class MockUserRepository(MockBaseRepository[User]):
         """
         for user in self.collection:
             for email in user.emails:
-                if email.address == email:
+                if email.address == email_address:
                     return True
         return False
 

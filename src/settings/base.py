@@ -120,9 +120,16 @@ ALCHEMY_URI: str = POSTGRES_URI
 # FILE SETTINGS
 # ======================================
 
-BASE_DIR = Path(__file__).resolve().parent.parent.parent
+BASE_DIR = Path(__file__).resolve().parent.parent
 
-EMAIL_BASE_DIR: str = "verdantech_api/static/emails/"
+STATIC_BASE_DIR: str = "static/"
+
+EMAIL_BASE_DIR: str = "static/emails/"
+
+
+def static_path(*paths: str) -> Path:
+    """Appends input path to static files directory"""
+    return BASE_DIR.joinpath(STATIC_BASE_DIR, *paths)
 
 
 def email_path(*paths: str) -> Path:
@@ -173,7 +180,6 @@ EMAIL_MIN_LENGTH: int = 1
 EMAIL_MAX_LENGTH: int = 255
 USERNAME_MIN_LENGTH: int = 3
 USERNAME_MAX_LENGTH: int = 50
-# USERNAME_REGEX_PATTERN: str =
 PASSWORD_MIN_LENGTH: int = 6
 PASSWORD_MAX_LENGTH: int = 255
 USER_MAX_EMAILS: int = 3

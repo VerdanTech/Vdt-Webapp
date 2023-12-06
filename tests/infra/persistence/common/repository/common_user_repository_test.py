@@ -1,4 +1,7 @@
+# External Libraries
 import pytest
+
+# VerdanTech Source
 from src.domain.user.entities import User
 from src.domain.user.values import Email, EmailConfirmation, PasswordResetConfirmation
 from src.interfaces.persistence.user import AbstractUserRepository

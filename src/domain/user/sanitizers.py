@@ -9,24 +9,24 @@ from .entities import User
 
 class UserSanitizerConfig(TypedDict):
     username: sanitizers.FieldSanitizer[
-        sanitizers.basic.LengthSanitization,
-        sanitizers.basic.RegexSanitization,
-        sanitizers.basic.BanSanitization,
-        sanitizers.repo.UniqueSanitization,
+        sanitizers.basic.LengthSpec,
+        sanitizers.basic.RegexSpec,
+        sanitizers.basic.BanSpec,
+        sanitizers.repo.UniqueSpec,
     ]
     email_address: sanitizers.FieldSanitizer[
-        sanitizers.basic.LengthSanitization,
-        sanitizers.basic.RegexSanitization,
-        sanitizers.basic.BanSanitization,
-        sanitizers.repo.UniqueSanitization,
-        sanitizers.custom.EmailSanitization,
+        sanitizers.basic.LengthSpec,
+        sanitizers.basic.RegexSpec,
+        sanitizers.basic.BanSpec,
+        sanitizers.repo.UniqueSpec,
+        sanitizers.custom.EmailSpec,
     ]
     password: sanitizers.FieldSanitizer[
-        sanitizers.basic.LengthSanitization,
-        sanitizers.basic.RegexSanitization,
-        sanitizers.basic.BanSanitization,
+        sanitizers.basic.LengthSpec,
+        sanitizers.basic.RegexSpec,
+        sanitizers.basic.BanSpec,
     ]
-    confirmation_key: sanitizers.FieldSanitizer[sanitizers.basic.LengthSanitization]
+    confirmation_key: sanitizers.FieldSanitizer[sanitizers.basic.LengthSpec]
 
 
 class UserSanitizer(sanitizers.ObjectSanitizer[UserSanitizerConfig]):

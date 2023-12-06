@@ -66,8 +66,11 @@ exclude = '''
 [tool.isort]
 profile = "black"
 combine_as_imports = true
-src_paths = ["verdantech_api"]
-known_first_party = ["verdantech_api"]
+src_paths = ["src", "tests", "mocks"]
+known_first_party = ["src"]
+import_heading_stdlib="Standard Library"
+import_heading_thirdparty="External Libraries"
+import_heading_firstparty="VerdanTech Source"
 skip_gitignore = true
 skip_glob = ["**/migrations/*"]
 
@@ -82,7 +85,3 @@ markers = [
     "databases: Tests which require networked access to a database service",
 ]
 asyncio_mode="auto"
-
-[tool.pytest.mark]
-". tests/unit/" = "unit"
-". tests/integration/" = "integration"
