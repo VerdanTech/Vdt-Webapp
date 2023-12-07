@@ -2,7 +2,6 @@
 from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
 from dataclasses import dataclass
-from typing import Protocol
 
 # External Libraries
 from litestar import Litestar
@@ -28,7 +27,7 @@ class AlchemyClient:
     sessionmaker: AsyncSession
 
 
-class AlchemyLitestarDBLifecycleManager(Protocol):
+class AlchemyLitestarDBLifecycleManager:
     @staticmethod
     async def provide_client(state: State) -> AlchemyClient:
         """Given the application state, get the existing sqlalchemy engine
@@ -90,9 +89,9 @@ class AlchemyLitestarDBLifecycleManager(Protocol):
         existing_client = AlchemyLitestarDBLifecycleManager.get_client(state=app.state)
         if existing_client is None:
             engine = create_async_engine(settings.ALCHEMY_URI)
-            AlchemyLitestarDBLifecycleManager.schema_init(client=client)
             sessionmaker = async_sessionmaker(expire_on_commit=False)
             client = AlchemyClient(engine=engine, sessionmaker=sessionmaker)
+            AlchemyLitestarDBLifecycleManager.schema_init(client=client)
             AlchemyLitestarDBLifecycleManager.set_client(state=app.State, client=client)
 
         try:

@@ -2,7 +2,12 @@
 from src import settings
 from src.infra.email.client import providers as email_clients
 from src.infra.email.emitter import providers as email_emitters
+from src.infra.persistence.sqlalchemy.repository.litestar_lifecycle import (
+    AlchemyLitestarDBLifecycleManager,
+)
+from src.infra.persistence.sqlalchemy.repository.user import providers as user_repos
 from src.infra.security.crypt import providers as crypts
+from src.ops.user import providers as user_ops, sanitizers as user_sanitizers
 
 # ============================================================================
 # PROVIDER SELECTION
@@ -19,17 +24,19 @@ class ApplicationDependencies:
 
     # User
     user_ops_provider = {
-        settings.USER_READ_OP_PK: provide_user_read_ops,
-        settings.USER_WRITE_OP_PK: provide_user_write_ops,
-        settings.USER_VERIFICATION_OP_PK: provide_user_verification_ops,
-        settings.USER_AUTH_OP_PK: provide_user_auth_ops,
+        # settings.USER_READ_OP_PK: provide_user_read_ops,
+        settings.USER_WRITE_OP_PK: user_ops.provide_user_write_ops,
+        # settings.USER_VERIFICATION_OP_PK: provide_user_verification_ops,
+        # settings.USER_AUTH_OP_PK: provide_user_auth_ops,
     }
 
     # ======================================
     # SANITIZERS
     # ======================================
 
-    user_sanitizer_provider = {settings.USER_SANITIZER_PK: provide_user_sanitizer}
+    sanitizer_provider = {
+        settings.USER_SANITIZER_PK: user_sanitizers.provide_user_sanitizer
+    }
 
     # ======================================
     # PERSISTENCE
@@ -44,14 +51,18 @@ class ApplicationDependencies:
     }
 
     # Repositories
-    user_repo_provider = {settings.USER_REPOSITORY_PK: provide_user_alchemy_repository}
+    user_repo_provider = {
+        settings.USER_REPOSITORY_PK: user_repos.provide_user_alchemy_repository
+    }
 
     # ======================================
     # EMAIL
     # ======================================
 
-    email_client_provider = {settings.EMAIL_CLIENT_PK: email_clients.provide_aiosmtplib_client}
-    email_emitter_provider = {settings.EMAIL_EMITTER_PK: email_emitters.provide_litestar_email_emitter}
+    email_provider = {
+        settings.EMAIL_CLIENT_PK: email_clients.provide_aiosmtplib_client,
+        settings.EMAIL_EMITTER_PK: email_emitters.provide_litestar_email_emitter,
+    }
 
     # ======================================
     # SECURITY
@@ -62,16 +73,12 @@ class ApplicationDependencies:
     # ======================================
     # MERGE ALL DEPENDENCIES
     # ======================================
-    all_providers = (
-        user_read_operations_provider
-        | user_write_operations_provider
-        | user_verification_operations_provider
-        | user_auth_operations_provider
-        | user_sanitizer_provider
-        | db_client_provider
-        | db_session_provider
-        | user_repo_provider
-        | email_client_provider
-        | email_emitter_provider
-        | password_crypt_provider
-    )
+    all_providers = user_ops_provider 
+        #user_ops_provider
+        #| sanitizer_provider
+        #| db_client_provider
+        #| db_session_provider
+        #| user_repo_provider
+        #| email_provider
+        #| password_crypt_provider
+    #)

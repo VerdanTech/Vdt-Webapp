@@ -8,7 +8,6 @@ from src.interfaces.persistence.user import AbstractUserRepository
 
 pytestmark = [pytest.mark.integration, pytest.mark.databases]
 
-
 class TestAbstractUserRepository:
     async def test_add_success(
         self, user_repo: AbstractUserRepository, user: User

@@ -9,10 +9,14 @@ from src import settings
 
 from .user.router import create_user_router
 
+# List of all router factories
 router_factories = [create_user_router]
 
 
 def create_routers() -> List[Router]:
+    """
+    Create all router instances from factories.
+    """
     routers = []
     for router_factory in router_factories:
         routers.append(router_factory())
@@ -20,6 +24,9 @@ def create_routers() -> List[Router]:
 
 
 def create_base_router() -> Router:
+    """
+    Configure base router to plug into application root.
+    """
     sub_routers = create_routers()
     base_router = Router(path=settings.API_URL_BASE, route_handlers=sub_routers)
     return base_router

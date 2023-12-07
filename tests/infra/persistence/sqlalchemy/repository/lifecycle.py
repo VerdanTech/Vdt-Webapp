@@ -1,5 +1,4 @@
 # Standard Library
-import subprocess
 from typing import AsyncGenerator
 
 # External Libraries

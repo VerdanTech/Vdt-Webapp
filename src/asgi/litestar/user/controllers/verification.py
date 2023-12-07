@@ -1,20 +1,15 @@
 # External Libraries
-from backend.src.domain.user.services.sanitizers import UserSanitizer
+from src.domain.user.sanitizers import UserSanitizer
 from litestar import Controller, post
 
 # VerdanTech Source
 from src import settings
-from src.asgi.litestar import dependencies
+from src.asgi.litestar import select_dependencies
 from src.asgi.litestar.exceptions import litestar_exception_map
-from src.infra.email.litestar_emitter import EmailEmitter
+from src.interfaces.email.emitter import AbstractEmailEmitter
 from src.interfaces.security.crypt.password_crypt import AbstractPasswordCrypt
 from src.ops.user.controllers import UserVerificationOpsController
-from src.ops.user.schemas.verification import (
-    UserPasswordResetConfirmInput,
-    UserPasswordResetRequestInput,
-    UserVerifyEmailConfirmInput,
-    UserVerifyEmailRequestInput,
-)
+from src.ops.user.schemas import verification as schemas
 
 from .. import urls
 
@@ -41,9 +36,9 @@ class UserVerificationController(Controller):
     )
     async def user_email_verification_request(
         self,
-        data: UserVerifyEmailRequestInput,
+        data: schemas.UserVerifyEmailRequestInput,
         user_sanitizer: UserSanitizer,
-        email_emitter: EmailEmitter,
+        email_emitter: AbstractEmailEmitter,
         user_verification_operations: UserVerificationOpsController,
     ) -> None:
         """Call the email confirmation request application operation
@@ -69,7 +64,7 @@ class UserVerificationController(Controller):
     )
     async def user_email_verification_confirm(
         self,
-        data: UserVerifyEmailConfirmInput,
+        data: schemas.UserVerifyEmailConfirmInput,
         user_verification_operations: UserVerificationOpsController,
     ) -> None:
         """Call the email verification confirmation application operation
@@ -96,9 +91,9 @@ class UserVerificationController(Controller):
     )
     async def user_password_reset_request(
         self,
-        data: UserPasswordResetRequestInput,
+        data: schemas.UserPasswordResetRequestInput,
         user_sanitizer: UserSanitizer,
-        email_emitter: EmailEmitter,
+        email_emitter: AbstractEmailEmitter,
         user_verification_operations: UserVerificationOpsController,
     ) -> None:
         """Call the password reset request application operation
@@ -129,7 +124,7 @@ class UserVerificationController(Controller):
     )
     async def user_password_reset_confirm(
         self,
-        data: UserPasswordResetConfirmInput,
+        data: schemas.UserPasswordResetConfirmInput,
         user_sanitizer: UserSanitizer,
         password_crypt: AbstractPasswordCrypt,
         user_verification_operations: UserVerificationOpsController,
