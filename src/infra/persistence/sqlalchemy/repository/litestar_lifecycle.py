@@ -112,6 +112,7 @@ class AlchemyLitestarDBLifecycleManager:
             AlchemyLitestarDBLifecycleManager.set_client(state=app.state, client=client)
 
         try:
+            #await AlchemyLitestarDBLifecycleManager.close_client(client=client)
             yield
         finally:
             await AlchemyLitestarDBLifecycleManager.close_client(client=client)
