@@ -58,7 +58,7 @@ class AlchemyLitestarDBLifecycleManager:
             state (State): litestar application state
             engine (AsyncEngine): new sqlalchemy engine
         """
-        setattr(state, settings.ALCHEMY_ENGINE_NAME, client)
+        setattr(state, settings.ALCHEMY_CLIENT_NAME, client)
 
     @staticmethod
     async def close_client(client: AlchemyClient) -> None:
@@ -70,9 +70,10 @@ class AlchemyLitestarDBLifecycleManager:
         await client.engine.dispose()
 
     @staticmethod
-    def _schema_init(client: AlchemyClient) -> None:
-        """Create database metadata"""
-        Base.metadata.create_all(client.engine)
+    async def _schema_init(client: AlchemyClient) -> None:
+        """Create database tables"""
+        async with client.engine.begin() as connection:
+            await connection.run_sync(Base.metadata.create_all)
 
     @asynccontextmanager
     @staticmethod
@@ -86,13 +87,11 @@ class AlchemyLitestarDBLifecycleManager:
         Returns:
             AsyncGenerator[None, None]: yielded lifecycle
         """
-        existing_client = AlchemyLitestarDBLifecycleManager.get_client(state=app.state)
-        if existing_client is None:
-            engine = create_async_engine(settings.ALCHEMY_URI)
-            sessionmaker = async_sessionmaker(expire_on_commit=False)
-            client = AlchemyClient(engine=engine, sessionmaker=sessionmaker)
-            AlchemyLitestarDBLifecycleManager.schema_init(client=client)
-            AlchemyLitestarDBLifecycleManager.set_client(state=app.State, client=client)
+        engine = create_async_engine(settings.ALCHEMY_URI)
+        sessionmaker = async_sessionmaker(expire_on_commit=False)
+        client = AlchemyClient(engine=engine, sessionmaker=sessionmaker)
+        await AlchemyLitestarDBLifecycleManager._schema_init(client=client)
+        AlchemyLitestarDBLifecycleManager.set_client(state=app.state, client=client)
 
         try:
             yield

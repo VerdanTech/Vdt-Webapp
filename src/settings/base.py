@@ -115,6 +115,8 @@ POSTGRES_URI: str = config(
 )
 
 ALCHEMY_URI: str = POSTGRES_URI
+# Name of the client attribute in the global app state
+ALCHEMY_CLIENT_NAME: str = "sqlalchemy_client"
 
 # ======================================
 # FILE SETTINGS

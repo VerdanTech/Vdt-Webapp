@@ -12,31 +12,31 @@ from src.interfaces.security.crypt import AbstractPasswordCrypt
 from src.ops.user.controllers import UserWriteOpsController
 from src.ops.user.schemas import write as write_schemas
 
-from .. import schemas, urls
+from .. import schemas, urls, routes
 
 
 class UserWriteApiController(Controller):
     """User write api controller"""
 
     path = urls.USER_WRITE_CONTROLLER_URL_BASE
-    #dependencies = select_dependencies(
-        #settings.USER_REPOSITORY_PK, 
-        #settings.USER_WRITE_OP_PK
-    #)
+    dependencies = select_dependencies(
+        settings.USER_REPOSITORY_PK, 
+        settings.USER_WRITE_OP_PK
+    )
 
     @post(
-        name="users:create",
+        name=routes.USER_CREATE_NAME,
         summary="User registration",
         description="Register a new user and send an email verification",
         tags=["users"],
         path=urls.USER_CREATE_URL,
         return_dto=schemas.UserSelfDetail,
-        #dependencies=select_dependencies(
-            #settings.USER_SANITIZER_PK,
-            #settings.PASSWORD_CRYPT_PK,
-            #settings.EMAIL_CLIENT_PK,
-            #settings.EMAIL_EMITTER_PK,
-        #),
+        dependencies=select_dependencies(
+            settings.USER_SANITIZER_PK,
+            settings.PASSWORD_CRYPT_PK,
+            settings.EMAIL_CLIENT_PK,
+            settings.EMAIL_EMITTER_PK,
+        ),
     )
     async def user_create(
         self,
