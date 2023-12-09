@@ -1,5 +1,5 @@
 # VerdanTech Source
-from src import settings
+from src import providers
 from src.infra.email.client import providers as email_clients
 from src.infra.email.emitter import providers as email_emitters
 from src.infra.persistence.sqlalchemy.repository.litestar_lifecycle import (
@@ -24,10 +24,10 @@ class ApplicationDependencies:
 
     # User
     user_ops_provider = {
-        # settings.USER_READ_OP_PK: provide_user_read_ops,
-        settings.USER_WRITE_OP_PK: user_ops.provide_user_write_ops,
-        # settings.USER_VERIFICATION_OP_PK: provide_user_verification_ops,
-        # settings.USER_AUTH_OP_PK: provide_user_auth_ops,
+        # settings.USER_READ_OPS_PK: provide_user_read_ops,
+        providers.USER_WRITE_OPS_PK: user_ops.provide_user_write_ops,
+        # settings.USER_VERIFICATION_OPS_PK: provide_user_verification_ops,
+        # settings.USER_AUTH_OPS_PK: provide_user_auth_ops,
     }
 
     # ======================================
@@ -35,7 +35,7 @@ class ApplicationDependencies:
     # ======================================
 
     sanitizer_provider = {
-        settings.USER_SANITIZER_PK: user_sanitizers.provide_user_sanitizer
+        providers.USER_SANITIZER_PK: user_sanitizers.provide_user_sanitizer
     }
 
     # ======================================
@@ -44,15 +44,15 @@ class ApplicationDependencies:
 
     # Database
     db_client_provider = {
-        settings.DB_CLIENT_PK: AlchemyLitestarDBLifecycleManager.provide_client
+        providers.DB_CLIENT_PK: AlchemyLitestarDBLifecycleManager.provide_client
     }
     db_session_provider = {
-        settings.DB_SESSION_PK: AlchemyLitestarDBLifecycleManager.provide_transaction
+        providers.DB_SESSION_PK: AlchemyLitestarDBLifecycleManager.provide_transaction
     }
 
     # Repositories
     user_repo_provider = {
-        settings.USER_REPOSITORY_PK: user_repos.provide_user_alchemy_repository
+        providers.USER_REPOSITORY_PK: user_repos.provide_user_alchemy_repository
     }
 
     # ======================================
@@ -60,25 +60,27 @@ class ApplicationDependencies:
     # ======================================
 
     email_provider = {
-        settings.EMAIL_CLIENT_PK: email_clients.provide_aiosmtplib_client,
-        settings.EMAIL_EMITTER_PK: email_emitters.provide_litestar_email_emitter,
+        providers.EMAIL_CLIENT_PK: email_clients.provide_aiosmtplib_client,
+        providers.EMAIL_EMITTER_PK: email_emitters.provide_litestar_email_emitter,
     }
 
     # ======================================
     # SECURITY
     # ======================================
 
-    password_crypt_provider = {settings.PASSWORD_CRYPT_PK: crypts.provide_passlib_crypt}
+    password_crypt_provider = {
+        providers.PASSWORD_CRYPT_PK: crypts.provide_passlib_crypt
+    }
 
     # ======================================
     # MERGE ALL DEPENDENCIES
     # ======================================
-    all_providers = user_ops_provider 
-        #user_ops_provider
-        #| sanitizer_provider
-        #| db_client_provider
-        #| db_session_provider
-        #| user_repo_provider
-        #| email_provider
-        #| password_crypt_provider
-    #)
+    all_providers = (
+        user_ops_provider
+        | sanitizer_provider
+        | db_client_provider
+        | db_session_provider
+        | user_repo_provider
+        | email_provider
+        | password_crypt_provider
+    )

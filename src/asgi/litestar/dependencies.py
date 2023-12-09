@@ -5,8 +5,7 @@ from typing import Any, Dict
 from litestar.di import Provide
 
 # VerdanTech Source
-from src import settings
-
+from src import providers
 from src.dependencies import ApplicationDependencies
 
 # Apply Litestar's dependency injection provider wrapper
@@ -30,4 +29,6 @@ def select_dependencies(*keys: str) -> Dict[str, Any]:
 
 
 # Select application-wide dependencies
-application_layer_dependencies = select_dependencies(settings.DB_CLIENT_PK, settings.DB_SESSION_PK)
+application_layer_dependencies = select_dependencies(
+    providers.DB_CLIENT_PK, providers.DB_SESSION_PK
+)

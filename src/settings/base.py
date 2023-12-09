@@ -60,48 +60,6 @@ ALLOW_ORIGINS: List[str] = config("ALLOWED_ORIGINS", cast=Csv(), default="")
 # ============================================================================
 
 # ======================================
-# PROVIDER KEY (PK) NAMES
-# These key names automatically configure all provided dependencies
-# in the provider key. The route handlers of the API, which is what the
-# dependencies are injected into, still need to have arguments with
-# names matching these keys to receive them.
-# ======================================
-
-# ========== Operations ========== #
-
-# User
-USER_READ_OP_PK = "user_read_operations"
-USER_WRITE_OP_PK = "user_write_operations"
-USER_VERIFICATION_OP_PK = "user_verification_operations"
-USER_AUTH_OP_PK = "user_auth_operations"
-
-# ========== Sanitizers ========== #
-
-USER_SANITIZER_PK = "user_sanitizer"
-
-# ========== Persistence ========== #
-
-# Database
-DB_CLIENT_PK = "db_client"
-DB_SESSION_PK = "db_session"
-
-# Serializer
-USER_SERIALIZER_PK = "user_serializer"
-
-# Repositories
-USER_REPOSITORY_PK = "user_repo"
-
-# ========== Email ========== #
-
-EMAIL_CLIENT_PK = "email_client"
-EMAIL_EMITTER_PK = "email_emitter"
-
-# ========== Security ========== #
-
-# Crypt
-PASSWORD_CRYPT_PK = "password_crypt"
-
-# ======================================
 # DATABASE SETTINGS
 # ======================================
 

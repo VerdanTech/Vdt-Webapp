@@ -1,11 +1,11 @@
 # External Libraries
-from src.domain.user.sanitizers import UserSanitizer
 from litestar import Controller, post
 
 # VerdanTech Source
-from src import settings
+from src import providers
 from src.asgi.litestar import select_dependencies
 from src.asgi.litestar.exceptions import litestar_exception_map
+from src.domain.user.sanitizers import UserSanitizer
 from src.interfaces.email.emitter import AbstractEmailEmitter
 from src.interfaces.security.crypt.password_crypt import AbstractPasswordCrypt
 from src.ops.user.controllers import UserVerificationOpsController
@@ -19,7 +19,7 @@ class UserVerificationController(Controller):
 
     path = urls.USER_VERIFICATION_CONTROLLER_BASE
     # dependencies = dependencies.select(
-    # settings.USER_REPOSITORY_PK, settings.USER_VERIFICATION_OP_PK
+    # providers.USER_REPOSITORY_PK, providers.USER_VERIFICATION_OP_PK
     # )
 
     @post(
@@ -29,9 +29,9 @@ class UserVerificationController(Controller):
         tags=["users"],
         path=urls.USER_EMAIL_VERIFICATION_REQUEST_URL,
         # dependencies=providers.select(
-        # settings.USER_SANITIZER_PK,
-        # settings.EMAIL_CLIENT_PK,
-        # settings.EMAIL_EMITTER_PK,
+        # providers.USER_SANITIZER_PK,
+        # providers.EMAIL_CLIENT_PK,
+        # providers.EMAIL_EMITTER_PK,
         # ),
     )
     async def user_email_verification_request(
@@ -84,9 +84,9 @@ class UserVerificationController(Controller):
         tags=["users"],
         path=urls.USER_PASSWORD_RESET_REQUEST_URL,
         # dependencies=providers.select(
-        # settings.USER_SANITIZER_PK,
-        # settings.EMAIL_CLIENT_PK,
-        # settings.EMAIL_EMITTER_PK,
+        # providers.USER_SANITIZER_PK,
+        # providers.EMAIL_CLIENT_PK,
+        # providers.EMAIL_EMITTER_PK,
         # ),
     )
     async def user_password_reset_request(
@@ -119,7 +119,7 @@ class UserVerificationController(Controller):
         tags=["users"],
         path=urls.USER_PASSWORD_RESET_CONFIRM_URL,
         # dependencies=providers.select(
-        # settings.USER_SANITIZER_PK, settings.PASSWORD_CRYPT_PK
+        # providers.USER_SANITIZER_PK, settings.PASSWORD_CRYPT_PK
         # ),
     )
     async def user_password_reset_confirm(

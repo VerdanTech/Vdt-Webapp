@@ -2,8 +2,10 @@
 from contextlib import asynccontextmanager
 
 # External Libraries
-from src.utils.sanitizers.spec import SpecError
 from litestar.exceptions import ValidationException as LitestarValidationException
+
+# VerdanTech Source
+from src.utils.sanitizers.spec import SpecError
 
 
 @asynccontextmanager

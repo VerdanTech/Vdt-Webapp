@@ -9,7 +9,7 @@ USER_ROUTER_NAME_BASE: str = "users:"
 # ======================================
 
 USER_LIST_NAME: str = USER_ROUTER_NAME_BASE + "list"
-USER_DETAIL_NAME: str = USER_ROUTER_NAME_BASE +"detail"
+USER_DETAIL_NAME: str = USER_ROUTER_NAME_BASE + "detail"
 USER_CHECK_USERNAME_NAME: str = USER_ROUTER_NAME_BASE + "check_username"
 USER_CHECK_EMAIL_NAME: str = USER_ROUTER_NAME_BASE + "check_email/"
 USER_CHECK_PASSWORD_NAME: str = USER_ROUTER_NAME_BASE + "check_password/"
