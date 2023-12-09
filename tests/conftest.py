@@ -52,7 +52,7 @@ def expected_error_context(request) -> ContextManager:
         return pytest.raises(request.param)
 
 
-@pytest.fixture(scope="session", autouse=True)
+@pytest.fixture(scope="session", autouse=False)
 def event_loop(request):
     marker = request.node.get_closest_marker("fixt_data")
     """

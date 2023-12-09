@@ -75,11 +75,11 @@ class UserAlchemyRepository(BaseAlchemyRepository[User]):
         """
         statement = (
             select(EmailAlchemyModel)
-            # .options(joinedload(EmailAlchemyModel.user))
+            .options(joinedload(EmailAlchemyModel.user))
             .filter(EmailAlchemyModel.address == email_address)
         )
         query = await self.transaction.execute(statement)
-        email_model = query.scalar_one_or_none()
+        email_model = query.unique().scalar_one_or_none()
 
         if email_model is None:
             return None

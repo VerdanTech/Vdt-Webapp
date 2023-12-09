@@ -29,6 +29,7 @@ def select_dependencies(*keys: str) -> Dict[str, Any]:
 
 
 # Select application-wide dependencies
-application_layer_dependencies = select_dependencies(
-    providers.SQL_CLIENT_PK, providers.SQL_TRANSACTION_PK
-)
+#application_layer_dependencies = select_dependencies(
+    #providers.SQL_CLIENT_PK, providers.SQL_TRANSACTION_PK
+#)
+application_layer_dependencies = {}

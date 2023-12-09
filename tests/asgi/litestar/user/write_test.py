@@ -12,7 +12,6 @@ from src.ops.user.schemas.write import UserCreateInput
 
 
 class TestUserWriteApiController:
-    @pytest.mark.skip
     async def test_create(self, litestar_client: AsyncTestClient) -> None:
         path = litestar_client.app.route_reverse(routes.USER_CREATE_NAME)
         input_data = UserCreateInput(

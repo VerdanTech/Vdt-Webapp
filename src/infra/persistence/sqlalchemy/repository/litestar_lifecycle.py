@@ -103,6 +103,7 @@ class AlchemyLitestarDBLifecycleManager:
         Returns:
             AsyncGenerator[None, None]: yields to application.
         """
+        """
         client = getattr(app.state, settings.ALCHEMY_CLIENT_NAME, None)
         if client is None:
             engine = create_async_engine(settings.ALCHEMY_URI)
@@ -112,10 +113,15 @@ class AlchemyLitestarDBLifecycleManager:
             AlchemyLitestarDBLifecycleManager.set_client(state=app.state, client=client)
 
         try:
-            #await AlchemyLitestarDBLifecycleManager.close_client(client=client)
+            await AlchemyLitestarDBLifecycleManager.close_client(client=client)
             yield
         finally:
             await AlchemyLitestarDBLifecycleManager.close_client(client=client)
+        """
+        try:
+            yield
+        finally:
+            pass
 
     @staticmethod
     async def provide_transaction(

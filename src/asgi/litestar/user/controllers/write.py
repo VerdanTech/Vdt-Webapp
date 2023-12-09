@@ -45,7 +45,7 @@ class UserWriteApiController(Controller):
     async def user_create(
         self,
         data: write_schemas.UserCreateInput,
-        user_store_repo: AbstractUserRepository,
+        #user_store_repo: AbstractUserRepository,
         # user_write_ops: UserWriteOpsController,
         # user_sanitizer: UserSanitizer,
         # email_emitter: AbstractEmailEmitter,
