@@ -20,6 +20,6 @@ def create_app() -> "Litestar":
     app = Litestar(
         route_handlers=[base_router],
         lifespan=lifecycle,
-        # dependencies=application_layer_dependencies
+        #dependencies=application_layer_dependencies
     )
     return app

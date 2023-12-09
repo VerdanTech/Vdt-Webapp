@@ -76,7 +76,7 @@ schema:
 #
 .PHONY: run
 run:
-	litestar --app src.asgi.litestar.app:create_app run
+	litestar --app src.asgi.litestar.app:create_app run -d
 
 #
 # Run Alembic's "revision" command to create database migrations from the current sqlalchemy metadata.

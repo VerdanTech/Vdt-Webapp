@@ -59,7 +59,7 @@ class TestUserWriteOpsController:
         )
 
         user_sanitizer = await provide_user_sanitizer(
-            user_repo=user_write_ops_controller.user_repo
+            user_store_repo=user_write_ops_controller.user_repo
         )
         mock_email_emitter = mocker.Mock(spec=AbstractEmailEmitter)
 
@@ -114,7 +114,7 @@ class TestUserWriteOpsController:
             password2="Mismatched_password12",
         )
         user_sanitizer = await provide_user_sanitizer(
-            user_repo=user_write_ops_controller.user_repo
+            user_store_repo=user_write_ops_controller.user_repo
         )
         mock_email_emitter = mocker.Mock(spec=AbstractEmailEmitter)
 
@@ -154,7 +154,7 @@ class TestUserWriteOpsController:
             password2="New_password12",
         )
         user_sanitizer = await provide_user_sanitizer(
-            user_repo=user_write_ops_controller.user_repo
+            user_store_repo=user_write_ops_controller.user_repo
         )
         mock_email_emitter = mocker.Mock(spec=AbstractEmailEmitter)
 

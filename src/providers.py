@@ -22,14 +22,14 @@ USER_SANITIZER_PK = "user_sanitizer"
 # ========== Persistence ========== #
 
 # Database
-DB_CLIENT_PK = "db_client"
-DB_SESSION_PK = "db_session"
+SQL_CLIENT_PK = "sql_client"
+SQL_TRANSACTION_PK = "sql_transaction"
 
 # Serializer
 USER_SERIALIZER_PK = "user_serializer"
 
 # Repositories
-USER_REPOSITORY_PK = "user_repo"
+USER_STORE_REPO_PK = "user_store_repo"
 
 # ========== Email ========== #
 

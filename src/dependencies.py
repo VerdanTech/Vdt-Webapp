@@ -43,16 +43,14 @@ class ApplicationDependencies:
     # ======================================
 
     # Database
-    db_client_provider = {
-        providers.DB_CLIENT_PK: AlchemyLitestarDBLifecycleManager.provide_client
-    }
-    db_session_provider = {
-        providers.DB_SESSION_PK: AlchemyLitestarDBLifecycleManager.provide_transaction
+    sql_provider = {
+        providers.SQL_CLIENT_PK: AlchemyLitestarDBLifecycleManager.provide_client,
+        providers.SQL_TRANSACTION_PK: AlchemyLitestarDBLifecycleManager.provide_transaction,
     }
 
     # Repositories
     user_repo_provider = {
-        providers.USER_REPOSITORY_PK: user_repos.provide_user_alchemy_repository
+        providers.USER_STORE_REPO_PK: user_repos.provide_user_alchemy_repository
     }
 
     # ======================================
@@ -78,8 +76,7 @@ class ApplicationDependencies:
     all_providers = (
         user_ops_provider
         | sanitizer_provider
-        | db_client_provider
-        | db_session_provider
+        | sql_provider
         | user_repo_provider
         | email_provider
         | password_crypt_provider

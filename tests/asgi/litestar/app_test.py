@@ -5,7 +5,6 @@ from litestar.testing import AsyncTestClient
 # VerdanTech Source
 from src.asgi.litestar.app import create_app
 
-
 def test_create_app() -> None:
     """
     Ensure the litestar app can be instantiated with no errors.
@@ -19,5 +18,5 @@ async def test_test_client() -> None:
     Ensure a test client can be created.
     """
     app = create_app()
-    async with AsyncTestClient(app=app):
+    async with AsyncTestClient(app=app, raise_server_exceptions=True):
         pass

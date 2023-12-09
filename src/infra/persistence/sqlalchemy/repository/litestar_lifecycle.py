@@ -2,10 +2,11 @@
 from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
 from dataclasses import dataclass
+from types import NoneType
 
 # External Libraries
 from litestar import Litestar
-from litestar.datastructures import State
+from litestar.datastructures import State as LitestarGlobalState
 from sqlalchemy.ext.asyncio import (
     AsyncEngine,
     AsyncSession,
@@ -24,23 +25,24 @@ from .exceptions import alchemy_exception_map
 @dataclass
 class AlchemyClient:
     engine: AsyncEngine
-    sessionmaker: AsyncSession
+    sessionmaker: async_sessionmaker[AsyncSession]
 
 
 class AlchemyLitestarDBLifecycleManager:
     @staticmethod
-    async def provide_client(state: State) -> AlchemyClient:
-        """Given the application state, get the existing sqlalchemy engine
+    async def provide_client(state: LitestarGlobalState) -> AlchemyClient:
+        """
+        Given the application state, get the existing sqlalchemy client.
 
         Args:
-            state (State): litestar application state
+            state (LitestarGlobalState): litestar global application state.
 
         Raises:
             ClientLifecycleError: raised if the client does not
-                already exist in the application state
+                already exist in the application state.
 
         Returns:
-            AlchemyClient: existing sqlalchemy client
+            AlchemyClient: existing sqlalchemy client.
         """
         existing_client = getattr(state, settings.ALCHEMY_CLIENT_NAME, None)
         if existing_client is None:
@@ -50,48 +52,64 @@ class AlchemyLitestarDBLifecycleManager:
         return existing_client
 
     @staticmethod
-    def set_client(state: State, client: AlchemyClient) -> None:
-        """Given the application state and a sqlalchemy client, set the client
-            on the application state
+    def set_client(state: LitestarGlobalState, client: AlchemyClient) -> None:
+        """
+        Given the application state and a sqlalchemy client, set the client
+        on the application state.
 
         Args:
-            state (State): litestar application state
-            engine (AsyncEngine): new sqlalchemy engine
+            state (LitestarGlobalState): litestar global application state.
+            client (AlchemyClient): new sqlalchemy client to set.
         """
         setattr(state, settings.ALCHEMY_CLIENT_NAME, client)
 
     @staticmethod
     async def close_client(client: AlchemyClient) -> None:
-        """Given a sqlalchemy client, close the client
+        """Given a sqlalchemy client, close the client.
 
         Args:
-            client (AlchemyClient): existing sqlalchemy client
+            client (AlchemyClient): existing sqlalchemy client.
         """
         await client.engine.dispose()
 
     @staticmethod
     async def _schema_init(client: AlchemyClient) -> None:
-        """Create database tables"""
+        """
+        Given a sqlalchemy client, initialize table metadata on that client.
+
+        Args:
+            client(AlchemyClient): existing sqlalchemy client.
+        """
         async with client.engine.begin() as connection:
             await connection.run_sync(Base.metadata.create_all)
 
     @asynccontextmanager
     @staticmethod
     async def client_lifecycle(app: Litestar) -> AsyncGenerator[None, None]:
-        """Async lifecycle context manager used in Litestar's lifecycle
-            attribute, to open and finally close a sqlalchemy client
+        """
+        Async lifecycle context manager used in Litestar's lifecycle attribute,
+        set in src.asgi.litestar.lifecycle.py.
+
+        1. Creates the engine, transaction factory, and initializes
+            table metadata, if no client exists already.
+        2. Yields to the application.
+        3. Closes the client.
+
+        See: (https://docs.litestar.dev/2/usage/applications.html)
 
         Args:
-            app (Litestar): litestar application
+            app (Litestar): litestar application.
 
         Returns:
-            AsyncGenerator[None, None]: yielded lifecycle
+            AsyncGenerator[None, None]: yields to application.
         """
-        engine = create_async_engine(settings.ALCHEMY_URI)
-        sessionmaker = async_sessionmaker(expire_on_commit=False)
-        client = AlchemyClient(engine=engine, sessionmaker=sessionmaker)
-        await AlchemyLitestarDBLifecycleManager._schema_init(client=client)
-        AlchemyLitestarDBLifecycleManager.set_client(state=app.state, client=client)
+        client = getattr(app.state, settings.ALCHEMY_CLIENT_NAME, None)
+        if client is None:
+            engine = create_async_engine(settings.ALCHEMY_URI)
+            Session = async_sessionmaker(expire_on_commit=False, bind=engine)
+            client = AlchemyClient(engine=engine, sessionmaker=Session)
+            await AlchemyLitestarDBLifecycleManager._schema_init(client=client)
+            AlchemyLitestarDBLifecycleManager.set_client(state=app.state, client=client)
 
         try:
             yield
@@ -99,19 +117,26 @@ class AlchemyLitestarDBLifecycleManager:
             await AlchemyLitestarDBLifecycleManager.close_client(client=client)
 
     @staticmethod
-    async def provide_transaction(state: State) -> AsyncGenerator[AsyncSession, None]:
-        """Given an existing client, start a session and
-            transaction, and yield the session object
+    async def provide_transaction(
+        state: LitestarGlobalState,
+    ) -> AsyncGenerator[AsyncSession, None]:
+        """
+        Given an existing client, begin and yield a transaction.
+
+        Yields within a context manager mapping sqlalchemy exceptions
+        to native application exceptions.
 
         Args:
-            client (AlchemyClient): existing sqlalchemy client
+            state (LitestarGlobalState): litestar global application
+                state provided by default as a dependency injected
+                into route handlers.
 
         Yields:
             Iterator[AsyncGenerator[AsyncSession, None]]:
-                the created session
+                the created transaction.
         """
-        async with alchemy_exception_map:
-            client = AlchemyLitestarDBLifecycleManager.provide_client(state=state)
-            async with client.sessionmaker(bind=client.engine) as session:
-                async with session.begin():
-                    yield session
+        client = await AlchemyLitestarDBLifecycleManager.provide_client(state=state)
+        async with client.sessionmaker() as transaction:
+            async with alchemy_exception_map():
+                async with transaction.begin():
+                    yield transaction

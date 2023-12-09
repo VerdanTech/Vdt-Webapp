@@ -12,9 +12,9 @@ from .repository import UserAlchemyRepository
 
 
 async def provide_user_alchemy_repository(
-    db_session: AsyncSession,
+    sql_transaction: AsyncSession,
 ) -> UserAlchemyRepository:
     """Configure and provide a user sqlalchemy repository for dependency injection"""
     return UserAlchemyRepository(
-        session=db_session,
+        transaction=sql_transaction,
     )

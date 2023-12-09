@@ -37,7 +37,9 @@ def validate_password_match(password1: str, password2: str) -> None:
         )
 
 
-async def provide_user_sanitizer(user_repo: AbstractUserRepository) -> UserSanitizer:
+async def provide_user_sanitizer(
+    user_store_repo: AbstractUserRepository,
+) -> UserSanitizer:
     """Configure and return a user sanitizer with application settings for dependency injection."""
     return UserSanitizer(
         config=UserSanitizerConfig(
@@ -70,7 +72,7 @@ async def provide_user_sanitizer(user_repo: AbstractUserRepository) -> UserSanit
                 ),
                 sanitizers.repo.UniqueSpec(
                     sanitizers.repo.UniqueSpecConfig(
-                        repo=user_repo,
+                        repo=user_store_repo,
                         existence_method_name="username_exists",
                         existence_method_argument_name="username",
                         error_message="Username already exists.",
@@ -80,7 +82,7 @@ async def provide_user_sanitizer(user_repo: AbstractUserRepository) -> UserSanit
             email_address=sanitizers.FieldSanitizer(
                 sanitizers.repo.UniqueSpec(
                     sanitizers.repo.UniqueSpecConfig(
-                        repo=user_repo,
+                        repo=user_store_repo,
                         existence_method_name="email_exists",
                         existence_method_argument_name="email_address",
                         error_message="Email already exists.",
