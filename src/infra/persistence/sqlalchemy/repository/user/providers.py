@@ -2,6 +2,7 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 
 # VerdanTech Source
+from src.interfaces.persistence.user import AbstractUserRepository
 from src.domain.user.entities import User
 
 from .repository import UserAlchemyRepository

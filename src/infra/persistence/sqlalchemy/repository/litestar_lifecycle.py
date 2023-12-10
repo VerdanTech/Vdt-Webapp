@@ -21,11 +21,11 @@ from src.infra.persistence.sqlalchemy.mapper.model import Base
 
 from .exceptions import alchemy_exception_map
 
+sessionmaker = async_sessionmaker(expire_on_commit=False)
 
 @dataclass
 class AlchemyClient:
     engine: AsyncEngine
-    sessionmaker: async_sessionmaker[AsyncSession]
 
 
 class AlchemyLitestarDBLifecycleManager:
@@ -90,7 +90,7 @@ class AlchemyLitestarDBLifecycleManager:
         Async lifecycle context manager used in Litestar's lifecycle attribute,
         set in src.asgi.litestar.lifecycle.py.
 
-        1. Creates the engine, transaction factory, and initializes
+        1. Creates the engine and initializes
             table metadata, if no client exists already.
         2. Yields to the application.
         3. Closes the client.
@@ -103,25 +103,18 @@ class AlchemyLitestarDBLifecycleManager:
         Returns:
             AsyncGenerator[None, None]: yields to application.
         """
-        """
         client = getattr(app.state, settings.ALCHEMY_CLIENT_NAME, None)
         if client is None:
             engine = create_async_engine(settings.ALCHEMY_URI)
-            Session = async_sessionmaker(expire_on_commit=False, bind=engine)
-            client = AlchemyClient(engine=engine, sessionmaker=Session)
-            await AlchemyLitestarDBLifecycleManager._schema_init(client=client)
+            client = AlchemyClient(engine=engine)
             AlchemyLitestarDBLifecycleManager.set_client(state=app.state, client=client)
 
-        try:
-            await AlchemyLitestarDBLifecycleManager.close_client(client=client)
-            yield
-        finally:
-            await AlchemyLitestarDBLifecycleManager.close_client(client=client)
-        """
+        await AlchemyLitestarDBLifecycleManager._schema_init(client=client)
+
         try:
             yield
         finally:
-            pass
+            await AlchemyLitestarDBLifecycleManager.close_client(client=client)
 
     @staticmethod
     async def provide_transaction(
@@ -143,7 +136,7 @@ class AlchemyLitestarDBLifecycleManager:
                 the created transaction.
         """
         client = await AlchemyLitestarDBLifecycleManager.provide_client(state=state)
-        async with client.sessionmaker() as transaction:
+        async with sessionmaker(bind=client.engine) as transaction:
             async with alchemy_exception_map():
                 async with transaction.begin():
                     yield transaction

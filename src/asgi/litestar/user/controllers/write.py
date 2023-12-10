@@ -17,16 +17,24 @@ from src.ops.user.schemas import write as write_schemas
 
 from .. import routes, schemas, urls
 
+from src.infra.persistence.sqlalchemy.repository.litestar_lifecycle import AlchemyLitestarDBLifecycleManager
+from sqlalchemy.ext.asyncio import (
+    AsyncEngine,
+    AsyncSession,
+    async_sessionmaker,
+    create_async_engine,
+)
+from src.infra.persistence.sqlalchemy.repository.user.repository import UserAlchemyRepository
 
 class UserWriteApiController(Controller):
     """User write api controller"""
 
     path = urls.USER_WRITE_CONTROLLER_URL_BASE
-    dependencies = select_dependencies(
-        providers.SQL_TRANSACTION_PK,
-        providers.USER_STORE_REPO_PK,
+    #dependencies = select_dependencies(
+        #providers.SQL_TRANSACTION_PK,
+        #providers.USER_STORE_REPO_PK,
         # providers.USER_WRITE_OPS_PK,
-    )
+    #)
 
     @post(
         name=routes.USER_CREATE_NAME,
@@ -35,7 +43,10 @@ class UserWriteApiController(Controller):
         tags=["users"],
         path=urls.USER_CREATE_URL,
         return_dto=schemas.UserSelfDetail,
+        #dependencies={providers.SQL_TRANSACTION_PK: Provide(AlchemyLitestarDBLifecycleManager.provide_transaction)}
         dependencies=select_dependencies(
+            providers.SQL_TRANSACTION_PK,
+            providers.USER_STORE_REPO_PK
             # providers.USER_SANITIZER_PK,
             # providers.PASSWORD_CRYPT_PK,
             # providers.EMAIL_CLIENT_PK,
@@ -45,7 +56,8 @@ class UserWriteApiController(Controller):
     async def user_create(
         self,
         data: write_schemas.UserCreateInput,
-        #user_store_repo: AbstractUserRepository,
+        sql_transaction: AsyncSession,
+        user_store_repo: AbstractUserRepository,
         # user_write_ops: UserWriteOpsController,
         # user_sanitizer: UserSanitizer,
         # email_emitter: AbstractEmailEmitter,

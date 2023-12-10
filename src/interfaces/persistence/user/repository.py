@@ -1,5 +1,5 @@
 # Standard Library
-from typing import List
+from typing import List, Protocol
 
 # VerdanTech Source
 from src.domain.common import EntityIDType
@@ -8,7 +8,7 @@ from src.domain.user.entities import User
 from ..generic import AbstractAsyncRepository
 
 
-class AbstractUserRepository(AbstractAsyncRepository[User]):
+class AbstractUserRepository(AbstractAsyncRepository[User], Protocol):
     """Data persistence interface for the User domain model"""
 
     entity = User

@@ -16,31 +16,16 @@ from src.infra.persistence.sqlalchemy.repository import AlchemyClient
 
 engine = create_async_engine(settings.ALCHEMY_URI, echo=True)
 
-TestAsyncSession = async_sessionmaker(
-    engine,
+sessionmaker = async_sessionmaker(
     expire_on_commit=False,
     autoflush=False,
     autocommit=False,
-    class_=AsyncSession,
 )
 
-client = AlchemyClient(engine=engine, sessionmaker=TestAsyncSession)
-
-
-@pytest.fixture
-def sql_client() -> AlchemyClient:
-    engine = create_async_engine(settings.ALCHEMY_URI, echo=True)
-    sessionmaker = async_sessionmaker(
-        autocommit=False,
-        autoflush=False,
-        bind=engine,
-    )
-    return AlchemyClient(engine=engine, sessionmaker=sessionmaker)
-
+client = AlchemyClient(engine=engine)
 
 @pytest.fixture
 async def sql_transaction(
-    sql_client: AlchemyClient,
 ) -> AsyncGenerator[AsyncSession, None]:
     """Yield a session with a savepoint, that
     rolls back after every test case
@@ -48,9 +33,9 @@ async def sql_transaction(
     https://www.core27.co/post/transactional-unit-tests-with-pytest-and-async-sqlalchemy
     <https://github.com/sqlalchemy/sqlalchemy/issues/5811>
     """
-    connection = await sql_client.engine.connect()
+    connection = await client.engine.connect()
     db_transaction = await connection.begin()
-    transaction = sql_client.sessionmaker(bind=connection)
+    transaction = sessionmaker(bind=connection)
     nested = await connection.begin_nested()
 
     @event.listens_for(transaction.sync_session, "after_transaction_end")

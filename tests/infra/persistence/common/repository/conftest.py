@@ -7,7 +7,6 @@ from src.infra.persistence.sqlalchemy.repository.user import UserAlchemyReposito
 from src.interfaces.persistence.user.repository import AbstractUserRepository
 from tests.domain.user.conftest import user
 from tests.infra.persistence.sqlalchemy.repository.lifecycle import (
-    sql_client,
     sql_transaction,
 )
 
