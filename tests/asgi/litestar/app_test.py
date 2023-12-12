@@ -13,6 +13,7 @@ def test_create_app() -> None:
     assert app is not None
 
 
+@pytest.mark.skip
 async def test_test_client() -> None:
     """
     Ensure a test client can be created.

@@ -1,5 +1,5 @@
 # Standard Library
-from typing import Any, Dict
+from typing import Optional
 
 # External Libraries
 from litestar import Litestar
@@ -19,15 +19,16 @@ async def emit_email_emitter(
     filepath: str,
     receiver: str,
     subject: str,
-    **kwargs: Dict[str, Any],
+    **kwargs,
 ) -> None:
-    """Register the email client send function in Litestar's event system
+    """
+    Register the email client send function in Litestar's event system.
 
     Args:
         filepath (str): the path to the email file
         receiver (str): the receiver of the message
         subject (str): the subject of the message
-        kwargs (Dict[str, Any]): arguments to insert into html
+        kwargs: arguments to insert into html
     """
     await client.compile_and_send(
         filepath=filepath, receiver=receiver, subject=subject, **kwargs
@@ -41,20 +42,40 @@ class LitestarEmailEmitter(BaseEmailEmitter):
         self.client = client
         self.app = app
 
-    def _emit(
-        self, filepath: str, receiver: str, subject: str, **kwargs: Dict[str, Any]
+    async def _send(
+        self,
+        filepath: str,
+        receiver: str,
+        subject: str,
+        queue: Optional[bool] = False,
+        **kwargs,
     ) -> None:
-        """Call the email emit event using request and client configured in __init__"""
-        self.app.emit(
-            "emit_email",
-            client=self.client,
-            filepath=filepath,
-            receiver=receiver,
-            subject=subject,
-            **kwargs,
-        )
+        """
+        Send the email or emit the email send event into litestar's event queue.
 
-    def emit_user_email_confirmation(
+        Args:
+            filepath (str): filepath of the email.
+            receiver (str): recipient email address.
+            subject (str): email subject line.
+            queue (Optional[bool]): if True, emits the email send
+                into litestar's event queue. If false, awaits the
+                sending of the email within this method. Defaults to False.
+        """
+        if queue:
+            self.app.emit(
+                "emit_email",
+                client=self.client,
+                filepath=filepath,
+                receiver=receiver,
+                subject=subject,
+                **kwargs,
+            )
+        else:
+            await self.client.compile_and_send(
+                filepath=filepath, receiver=receiver, subject=subject, **kwargs
+            )
+
+    async def emit_user_email_confirmation(
         self, email_address: str, username: str, key: str
     ) -> None:
         """
@@ -71,16 +92,17 @@ class LitestarEmailEmitter(BaseEmailEmitter):
         client_base_url = settings.CLIENT_BASE_URL
         verification_url = settings.CLIENT_EMAIL_VERIFICATION_URL + key
 
-        self._emit(
+        await self._send(
             filepath=filepath,
             receiver=email_address,
             subject=subject,
+            queue=False,
             username=username,
             client_base_url=client_base_url,
             verification_url=verification_url,
         )
 
-    def emit_user_password_reset(
+    async def emit_user_password_reset(
         self, email_address: str, username: str, user_id: EntityIDType, key: str
     ) -> None:
         """
@@ -98,10 +120,11 @@ class LitestarEmailEmitter(BaseEmailEmitter):
         client_base_url = settings.CLIENT_BASE_URL
         verification_url = settings.CLIENT_EMAIL_VERIFICATION_URL + key
 
-        self._emit(
+        await self._send(
             filepath=filepath,
             receiver=email_address,
             subject=subject,
+            queue=True,
             username=username,
             user_id=user_id,
             client_base_url=client_base_url,

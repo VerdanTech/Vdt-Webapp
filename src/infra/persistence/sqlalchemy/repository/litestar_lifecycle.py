@@ -2,7 +2,6 @@
 from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
 from dataclasses import dataclass
-from types import NoneType
 
 # External Libraries
 from litestar import Litestar
@@ -22,6 +21,7 @@ from src.infra.persistence.sqlalchemy.mapper.model import Base
 from .exceptions import alchemy_exception_map
 
 sessionmaker = async_sessionmaker(expire_on_commit=False)
+
 
 @dataclass
 class AlchemyClient:

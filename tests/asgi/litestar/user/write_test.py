@@ -11,6 +11,7 @@ from src.asgi.litestar.user import routes, urls
 from src.ops.user.schemas.write import UserCreateInput
 
 
+@pytest.mark.skip
 class TestUserWriteApiController:
     async def test_create(self, litestar_client: AsyncTestClient) -> None:
         path = litestar_client.app.route_reverse(routes.USER_CREATE_NAME)

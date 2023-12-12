@@ -8,7 +8,7 @@ from src.domain.common import EntityIDType
 class AbstractEmailEmitter(Protocol):
     """Interface for configuring and emitting emails into an event stream"""
 
-    def emit_user_email_confirmation(
+    async def emit_user_email_confirmation(
         self, email_address: str, username: str, key: str
     ) -> None:
         """
@@ -22,7 +22,7 @@ class AbstractEmailEmitter(Protocol):
         """
         ...
 
-    def emit_user_password_reset(
+    async def emit_user_password_reset(
         self, email_address: str, username: str, user_id: EntityIDType, key: str
     ) -> None:
         """

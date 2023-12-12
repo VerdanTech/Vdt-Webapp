@@ -1,9 +1,8 @@
 # VerdanTech Source
 from src import settings
+from src.infra.email.client.aiosmtplib import AioSmtplibEmailClient
 
-from .aiosmtplib import AioSmtplibEmailClient
-
-
+"""
 async def provide_aiosmtplib_client() -> AioSmtplibEmailClient:
     return AioSmtplibEmailClient(
         hostname=settings.EMAIL_CLIENT_HOSTNAME,
@@ -12,3 +11,4 @@ async def provide_aiosmtplib_client() -> AioSmtplibEmailClient:
         password=settings.EMAIL_CLIENT_PASSWORD,
         sender=settings.EMAIL_CLIENT_SENDER,
     )
+"""

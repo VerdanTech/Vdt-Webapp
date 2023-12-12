@@ -1,19 +1,24 @@
 # External Libraries
 import pytest
 from pytest_mock import MockerFixture
-from regex import P
+from svcs import Container
 
 # VerdanTech Source
+from mocks.infra.persistence.repository.user_mock import MockUserRepository
+from mocks.infra.security.mock_crypt import MockPasswordCrypt
+from src.dependencies.factories.ops.user.sanitizers import provide_user_sanitizer
 from src.domain.user.entities import User
+from src.domain.user.sanitizers import UserSanitizer
 from src.interfaces.email.emitter import AbstractEmailEmitter
+from src.interfaces.persistence.user.repository import AbstractUserRepository
 from src.interfaces.security.crypt import AbstractPasswordCrypt
 from src.ops.user.controllers.write import UserWriteOpsController
-from src.ops.user.sanitizers import provide_user_sanitizer
 from src.ops.user.schemas.write import UserCreateInput
 from src.utils.sanitizers import basic, custom, repo
 from src.utils.sanitizers.spec import SpecError
 
 pytestmark = [pytest.mark.integration]
+
 
 
 class TestUserWriteOpsController:
@@ -24,7 +29,7 @@ class TestUserWriteOpsController:
     async def test_create_invalid_input(
         self,
         user_write_ops_controller: UserWriteOpsController,
-        mock_password_crypt: AbstractPasswordCrypt,
+        svcs_container: Container,
         mocker: MockerFixture,
     ) -> None:
         """
@@ -58,17 +63,9 @@ class TestUserWriteOpsController:
             password2=invalid_password,
         )
 
-        user_sanitizer = await provide_user_sanitizer(
-            user_store_repo=user_write_ops_controller.user_repo
-        )
-        mock_email_emitter = mocker.Mock(spec=AbstractEmailEmitter)
-
         with pytest.raises(SpecError) as error:
             await user_write_ops_controller.create(
-                data=input_data,
-                user_sanitizer=user_sanitizer,
-                password_crypt=mock_password_crypt,
-                email_emitter=mock_email_emitter,
+                data=input_data, svcs_container=svcs_container
             )
 
         error_message = error.value.args[0]
@@ -93,7 +90,7 @@ class TestUserWriteOpsController:
     async def test_create_password_mismatch(
         self,
         user_write_ops_controller: UserWriteOpsController,
-        mock_password_crypt: AbstractPasswordCrypt,
+        svcs_container: Container,
         mocker: MockerFixture,
     ) -> None:
         """
@@ -113,17 +110,10 @@ class TestUserWriteOpsController:
             password1="New_password12",
             password2="Mismatched_password12",
         )
-        user_sanitizer = await provide_user_sanitizer(
-            user_store_repo=user_write_ops_controller.user_repo
-        )
-        mock_email_emitter = mocker.Mock(spec=AbstractEmailEmitter)
 
         with pytest.raises(SpecError) as error:
             await user_write_ops_controller.create(
-                data=input_data,
-                user_sanitizer=user_sanitizer,
-                password_crypt=mock_password_crypt,
-                email_emitter=mock_email_emitter,
+                data=input_data, svcs_container=svcs_container
             )
 
         error_message = error.value.args[0]
@@ -133,7 +123,7 @@ class TestUserWriteOpsController:
     async def test_create_success(
         self,
         user_write_ops_controller: UserWriteOpsController,
-        mock_password_crypt: AbstractPasswordCrypt,
+        svcs_container: Container,
         mocker: MockerFixture,
     ) -> None:
         """
@@ -153,16 +143,9 @@ class TestUserWriteOpsController:
             password1="New_password12",
             password2="New_password12",
         )
-        user_sanitizer = await provide_user_sanitizer(
-            user_store_repo=user_write_ops_controller.user_repo
-        )
-        mock_email_emitter = mocker.Mock(spec=AbstractEmailEmitter)
 
         result = await user_write_ops_controller.create(
-            data=input_data,
-            user_sanitizer=user_sanitizer,
-            password_crypt=mock_password_crypt,
-            email_emitter=mock_email_emitter,
+            data=input_data, svcs_container=svcs_container
         )
 
         persisted_user = (

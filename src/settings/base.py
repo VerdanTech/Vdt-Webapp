@@ -103,8 +103,8 @@ def email_path(*paths: str) -> Path:
 
 EMAIL_CLIENT_HOSTNAME: str = ""
 EMAIL_CLIENT_PORT: int = 0
-EMAIL_CLIENT_USERNAME: int = ""
-EMAIL_CLIENT_PASSWORD: int = ""
+EMAIL_CLIENT_USERNAME: str = ""
+EMAIL_CLIENT_PASSWORD: str = ""
 EMAIL_CLIENT_SENDER: str = "verdantech@gmail.com"
 
 

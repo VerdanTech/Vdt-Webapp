@@ -174,7 +174,7 @@ async def test_generate_unique_email_confirmation_key(
     )
     mock_generate_unique_key.assert_called_once_with(
         length=key_length,
-        repo=mock_user_repo,
+        user_repo=mock_user_repo,
         existence_method_name="email_confirmation_key_exists",
     )
 
@@ -212,7 +212,7 @@ async def test__generate_unique_password_reset_key(
     )
     mock_generate_unique_key.assert_called_once_with(
         length=key_length,
-        repo=mock_user_repo,
+        user_repo=mock_user_repo,
         existence_method_name="password_reset_confirmation_key_exists",
     )
 

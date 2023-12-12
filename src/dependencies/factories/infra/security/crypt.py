@@ -1,4 +1,5 @@
-from .passlib import PasslibPasswordCrypt
+# VerdanTech Source
+from src.infra.security.crypt.passlib import PasslibPasswordCrypt
 
 
 async def provide_passlib_crypt():

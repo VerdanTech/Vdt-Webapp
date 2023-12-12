@@ -59,6 +59,6 @@ async def email_create(
     )
 
     if verification:
-        email_emitter.emit_user_email_confirmation(
+        await email_emitter.emit_user_email_confirmation(
             email_address=address, username=user.username, key=key
         )

@@ -1,3 +1,6 @@
+# External Libraries
+from svcs import Container
+
 # VerdanTech Source
 from src import settings
 from src.domain.user.entities import User
@@ -17,22 +20,25 @@ class UserWriteOpsController:
     async def create(
         self,
         data: schemas.UserCreateInput,
-        user_sanitizer: UserSanitizer,
-        password_crypt: AbstractPasswordCrypt,
-        email_emitter: AbstractEmailEmitter,
+        svcs_container: Container,
     ) -> User:
         """
         Main user creation operation.
 
         Args:
             data (UserCreateInput): user creation data transfer object.
-            user_sanitizer (UserSanitizer): user object sanitizer.
-            password_crypt (AbstractPasswordCrypt): password encryption interface.
-            email_emitter (AbstractEmailEmitter): email emitter interface.
+            svcs_container (Container): svcs dependency container
+                for service location.
 
         Returns:
             User: the user model created after persistence.
         """
+        # Retrieve dependencies
+        user_sanitizer = await svcs_container.aget(UserSanitizer)
+        password_crypt, email_emitter = await svcs_container.aget_abstract(
+            AbstractPasswordCrypt, AbstractEmailEmitter
+        )
+
         # Sanitize input data
         await data.sanitize(user_sanitizer=user_sanitizer)
 
@@ -54,14 +60,14 @@ class UserWriteOpsController:
 
         return user
 
-    async def username_change():
+    async def username_change(self):
         pass
 
-    async def email_change():
+    async def email_change(self):
         pass
 
-    async def password_change():
+    async def password_change(self):
         pass
 
-    async def delete():
+    async def delete(self):
         pass

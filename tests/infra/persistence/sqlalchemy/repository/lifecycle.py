@@ -24,9 +24,9 @@ sessionmaker = async_sessionmaker(
 
 client = AlchemyClient(engine=engine)
 
+
 @pytest.fixture
-async def sql_transaction(
-) -> AsyncGenerator[AsyncSession, None]:
+async def sql_transaction() -> AsyncGenerator[AsyncSession, None]:
     """Yield a session with a savepoint, that
     rolls back after every test case
 
