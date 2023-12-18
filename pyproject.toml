@@ -9,6 +9,7 @@ dependencies = [
     "litestar[standard]",
     "svcs",
     "litestar-svcs",
+    "saq",
     "sqlalchemy",
     "asyncpg",
     "alembic",
@@ -77,7 +78,7 @@ skip_gitignore = true
 skip_glob = ["**/migrations/*"]
 
 [tool.pytest.ini_options]
-addopts = "-vv -x -rx --lf"
+addopts = "-vv -x -rx"
 pythonpath = ". src tests"
 testpaths = ["tests/"]
 python_files = ["tests.py", "test_*.py", "*_test.py", "*_tests.py", "**/tests/*", "**/test/*"]

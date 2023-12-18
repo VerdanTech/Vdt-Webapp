@@ -6,8 +6,7 @@ from litestar.testing import AsyncTestClient
 from src.asgi.litestar.app import create_app
 
 
-@pytest.fixture(scope="function")
+@pytest.fixture
 async def litestar_client() -> AsyncTestClient:
     app = create_app()
-    async with AsyncTestClient(app=app, raise_server_exceptions=True) as client:
-        yield client
+    return AsyncTestClient(app=app, raise_server_exceptions=True)

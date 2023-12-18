@@ -1,3 +1,6 @@
+# Standard Library
+import pdb
+
 # External Libraries
 from svcs import Container
 
@@ -20,25 +23,23 @@ class UserWriteOpsController:
     async def create(
         self,
         data: schemas.UserCreateInput,
-        svcs_container: Container,
+        user_sanitizer: UserSanitizer,
+        password_crypt: AbstractPasswordCrypt,
+        email_emitter: AbstractEmailEmitter,
     ) -> User:
         """
         Main user creation operation.
 
         Args:
             data (UserCreateInput): user creation data transfer object.
-            svcs_container (Container): svcs dependency container
-                for service location.
+            user_sanitizer (UserSanitizer): user object sanitizer.
+            password_crypt (AbstractPasswordCrypt): password encryption interface.
+            email_emitter (AbstractEmailEmitter): email emitter interface.
 
         Returns:
             User: the user model created after persistence.
         """
-        # Retrieve dependencies
-        user_sanitizer = await svcs_container.aget(UserSanitizer)
-        password_crypt, email_emitter = await svcs_container.aget_abstract(
-            AbstractPasswordCrypt, AbstractEmailEmitter
-        )
-
+        pdb.set_trace()
         # Sanitize input data
         await data.sanitize(user_sanitizer=user_sanitizer)
 

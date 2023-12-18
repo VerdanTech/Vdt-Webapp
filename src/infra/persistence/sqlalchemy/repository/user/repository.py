@@ -101,7 +101,7 @@ class UserAlchemyRepository(BaseAlchemyRepository[User]):
         Returns:
             User | None: the found user, or None if no user was found
         """
-        ...
+        return None
 
     async def get_user_by_password_reset_confirmation(
         self, user_id: EntityIDType, password_reset_confirmation_key: str
@@ -116,7 +116,7 @@ class UserAlchemyRepository(BaseAlchemyRepository[User]):
         Returns:
             User | None: the found user, or None if no user was found
         """
-        ...
+        return None
 
     async def username_exists(self, username: str) -> bool:
         """
@@ -148,8 +148,10 @@ class UserAlchemyRepository(BaseAlchemyRepository[User]):
         Returns:
             bool: true if the email exists
         """
-        statement = select(EmailAlchemyModel).filter(
-            EmailAlchemyModel.address == email_address
+        statement = (
+            select(EmailAlchemyModel)
+            .filter(EmailAlchemyModel.address == email_address)
+            .options(noload(EmailAlchemyModel.user))
         )
         query = await self.transaction.execute(statement)
         email_model = query.scalar_one_or_none()
@@ -165,8 +167,10 @@ class UserAlchemyRepository(BaseAlchemyRepository[User]):
         Returns:
             bool: true if the email confirmation key exists
         """
-        statement = select(EmailAlchemyModel).filter(
-            EmailAlchemyModel.confirmation_key == key
+        statement = (
+            select(EmailAlchemyModel)
+            .filter(EmailAlchemyModel.confirmation_key == key)
+            .options(noload(EmailAlchemyModel.user))
         )
         query = await self.transaction.execute(statement)
         email_model = query.scalar_one_or_none()

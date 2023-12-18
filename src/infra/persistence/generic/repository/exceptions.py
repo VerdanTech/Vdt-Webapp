@@ -1,4 +1,7 @@
 class ClientLifecycleError(Exception):
-    """Raised when a client object should exist in the app state but doesn't"""
+    """
+    Raised when an error occurs in the lifespan management
+    of a database client.
+    """
 
     pass

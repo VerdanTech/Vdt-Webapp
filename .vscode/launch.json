@@ -1,0 +1,17 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python: Litestar app",
+            "type": "python",
+            "request": "launch",
+            "module": "litestar",
+            "justMyCode": true,
+            "args": ["--app", "src.asgi.litestar.app:create_app", "run", "-d", "--pdb"],
+            "pythonArgs": ["-Xfrozen_modules=off"],
+        }   
+    ]
+}

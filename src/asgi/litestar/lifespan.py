@@ -5,8 +5,8 @@
 # ============================================================================
 
 # VerdanTech Source
-from src.infra.persistence.sqlalchemy.repository.litestar_lifecycle import (
-    AlchemyLitestarDBLifecycleManager,
+from src.infra.persistence.sqlalchemy.repository.litestar_lifespan import (
+    litestar_alchemy_client_lifespan,
 )
 
-lifecycle = [AlchemyLitestarDBLifecycleManager.client_lifecycle]
+lifespan = [litestar_alchemy_client_lifespan]

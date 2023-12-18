@@ -6,7 +6,7 @@ from src.domain.user.entities import User
 from src.domain.user.values import Email, EmailConfirmation, PasswordResetConfirmation
 from src.interfaces.persistence.user import AbstractUserRepository
 
-pytestmark = [pytest.mark.integration, pytest.mark.databases]
+pytestmark = [pytest.mark.databases]
 
 
 class TestAbstractUserRepository:
@@ -38,6 +38,7 @@ class TestAbstractUserRepository:
                 repository to test
             user (User): factory fixture providing user
         """
+        pass
 
     async def test_get_user_by_email_address(
         self, user_repo: AbstractUserRepository, user: User

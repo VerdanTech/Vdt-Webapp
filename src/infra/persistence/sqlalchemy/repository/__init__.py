@@ -1,3 +1,3 @@
-from .litestar_lifecycle import AlchemyClient
+from .litestar_lifespan import AlchemyClient
 
 __all__ = ["AlchemyClient"]

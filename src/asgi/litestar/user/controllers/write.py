@@ -1,16 +1,23 @@
+# Standard Library
+import pdb
+from unittest.mock import MagicMock
+
 # External Libraries
-from litestar import Controller, delete, patch, post
+import svcs
+from click import password_option
+from litestar import Controller, post
+from litestar.datastructures import State
 from litestar.di import Provide
-from sqlalchemy.ext.asyncio import (
-    AsyncEngine,
-    AsyncSession,
-    async_sessionmaker,
-    create_async_engine,
-)
+from litestar.params import Dependency
 from svcs import Container
 
 # VerdanTech Source
 from src.asgi.litestar.exceptions import litestar_exception_map
+from src.domain.user.entities import User
+from src.domain.user.sanitizers import UserSanitizer
+from src.interfaces.email.emitter import AbstractEmailEmitter
+from src.interfaces.security.crypt.password_crypt import AbstractPasswordCrypt
+from src.ops.user.controllers.write import UserWriteOpsController
 from src.ops.user.schemas import write as write_schemas
 
 from .. import routes, schemas, urls
@@ -29,11 +36,12 @@ class UserWriteApiController(Controller):
         path=urls.USER_CREATE_URL,
         return_dto=schemas.UserSelfDetail,
     )
-    async def user_create(
+    async def create(
         self,
         data: write_schemas.UserCreateInput,
-        svcs_container: Container,
-    ) -> None:
+        state: State,
+        svcs_container: Container = Dependency(skip_validation=True),
+    ) -> User:
         """
         Call the main user creation application operation.
 
@@ -45,15 +53,21 @@ class UserWriteApiController(Controller):
         Returns:
             UserSelfDetail: user self-reference DTO.
         """
-        pass
-        # async with litestar_exception_map:
-        # user = await user_write_operations.create(
-        # data=data,
-        # user_sanitizer=user_sanitizer,
-        # password_crypt=password_crypt,
-        # email_emitter=email_emitter,
-        # )
-        # return user
+        svcs_container.register_local_value(State, state)
+        user_write_ops_controller, user_sanitizer = await svcs_container.aget(
+            UserWriteOpsController, UserSanitizer
+        )
+        email_emitter, password_crypt = await svcs_container.aget_abstract(
+            AbstractEmailEmitter, AbstractPasswordCrypt
+        )
+        async with litestar_exception_map():
+            user = await user_write_ops_controller.create(
+                data=data,
+                user_sanitizer=user_sanitizer,
+                password_crypt=password_crypt,
+                email_emitter=email_emitter,
+            )
+            return user
 
     """
     @patch(path=urls.USER_CHANGE_USERNAME_URL)

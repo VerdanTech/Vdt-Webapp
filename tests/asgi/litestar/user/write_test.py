@@ -10,22 +10,22 @@ from litestar.testing import AsyncTestClient
 from src.asgi.litestar.user import routes, urls
 from src.ops.user.schemas.write import UserCreateInput
 
+pytestmark = [pytest.mark.integration]
 
-@pytest.mark.skip
+
 class TestUserWriteApiController:
     async def test_create(self, litestar_client: AsyncTestClient) -> None:
-        path = litestar_client.app.route_reverse(routes.USER_CREATE_NAME)
-        input_data = UserCreateInput(
-            username="new_username",
-            email_address="new_email@gmail.com",
-            password1="New_password*1",
-            password2="New_password*1",
-        )
-        print(asdict(input_data))
-        response = await litestar_client.post(
-            path,
-            json=asdict(input_data),
-        )
-        print(response)
-        assert response.status_code == 201
-        pass
+        async with litestar_client as client:
+            path = client.app.route_reverse(routes.USER_CREATE_NAME)
+            input_data = UserCreateInput(
+                username="new_username",
+                email_address="new_email@gmail.com",
+                password1="New_password*1",
+                password2="New_password*1",
+            )
+            response = await client.post(
+                path,
+                json=asdict(input_data),
+            )
+            assert response.status_code == 201
+            pass

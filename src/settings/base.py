@@ -60,9 +60,16 @@ ALLOW_ORIGINS: List[str] = config("ALLOWED_ORIGINS", cast=Csv(), default="")
 # ============================================================================
 
 # ======================================
+# QUEUE SETTINGS
+# ======================================
+
+SAQ_WORKERS = 1
+
+# ======================================
 # DATABASE SETTINGS
 # ======================================
 
+# SQL
 POSTGRES_DB_NAME: str = config("POSTGRES_DB_NAME", cast=str)
 POSTGRES_DB_USER: str = config("POSTGRES_DB_USER", cast=str)
 POSTGRES_DB_PASSWORD: str = config("POSTGRES_DB_PASSWORD", cast=str)
@@ -75,6 +82,9 @@ POSTGRES_URI: str = config(
 ALCHEMY_URI: str = POSTGRES_URI
 # Name of the client attribute in the global app state
 ALCHEMY_CLIENT_NAME: str = "sqlalchemy_client"
+
+# Redis
+REDIS_URI: str = "redis://localhost"
 
 # ======================================
 # FILE SETTINGS

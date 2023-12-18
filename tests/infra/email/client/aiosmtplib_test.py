@@ -14,7 +14,6 @@ from src.interfaces.email.exceptions import EmailError
 pytestmark = [pytest.mark.unit]
 
 
-@pytest.mark.skip
 @pytest.mark.parametrize(
     ["exception", "expected_error_context"],
     [(None, None), (SMTPException(""), EmailError)],

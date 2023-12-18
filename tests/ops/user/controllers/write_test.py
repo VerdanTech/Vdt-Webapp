@@ -17,8 +17,7 @@ from src.ops.user.schemas.write import UserCreateInput
 from src.utils.sanitizers import basic, custom, repo
 from src.utils.sanitizers.spec import SpecError
 
-pytestmark = [pytest.mark.integration]
-
+pytestmark = [pytest.mark.unit]
 
 
 class TestUserWriteOpsController:
@@ -43,6 +42,12 @@ class TestUserWriteOpsController:
                 providing mock password crypt.
             mocker (MockerFixture): pytest_mock.
         """
+        # Retrieve dependencies
+        user_sanitizer = await svcs_container.aget(UserSanitizer)
+        password_crypt, email_emitter = await svcs_container.aget_abstract(
+            AbstractPasswordCrypt, AbstractEmailEmitter
+        )
+
         # Fails length, regex, ban, and uniqueness sanitization.
         existing_invalid_username = "$a"
 
@@ -65,7 +70,10 @@ class TestUserWriteOpsController:
 
         with pytest.raises(SpecError) as error:
             await user_write_ops_controller.create(
-                data=input_data, svcs_container=svcs_container
+                data=input_data,
+                user_sanitizer=user_sanitizer,
+                password_crypt=password_crypt,
+                email_emitter=email_emitter,
             )
 
         error_message = error.value.args[0]
@@ -104,6 +112,12 @@ class TestUserWriteOpsController:
                 providing mock password crypt.
             mocker (MockerFixture): pytest_mock.
         """
+        # Retrieve dependencies
+        user_sanitizer = await svcs_container.aget(UserSanitizer)
+        password_crypt, email_emitter = await svcs_container.aget_abstract(
+            AbstractPasswordCrypt, AbstractEmailEmitter
+        )
+
         input_data = UserCreateInput(
             username="new_username",
             email_address="new_email_address@test.com",
@@ -113,7 +127,10 @@ class TestUserWriteOpsController:
 
         with pytest.raises(SpecError) as error:
             await user_write_ops_controller.create(
-                data=input_data, svcs_container=svcs_container
+                data=input_data,
+                user_sanitizer=user_sanitizer,
+                password_crypt=password_crypt,
+                email_emitter=email_emitter,
             )
 
         error_message = error.value.args[0]
@@ -137,6 +154,12 @@ class TestUserWriteOpsController:
                 providing mock password crypt.
             mocker (MockerFixture): pytest_mock.
         """
+        # Retrieve dependencies
+        user_sanitizer = await svcs_container.aget(UserSanitizer)
+        password_crypt, email_emitter = await svcs_container.aget_abstract(
+            AbstractPasswordCrypt, AbstractEmailEmitter
+        )
+
         input_data = UserCreateInput(
             username="new_username",
             email_address="new_email_address@test.com",
@@ -145,7 +168,10 @@ class TestUserWriteOpsController:
         )
 
         result = await user_write_ops_controller.create(
-            data=input_data, svcs_container=svcs_container
+            data=input_data,
+            user_sanitizer=user_sanitizer,
+            password_crypt=password_crypt,
+            email_emitter=email_emitter,
         )
 
         persisted_user = (

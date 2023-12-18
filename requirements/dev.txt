@@ -50,6 +50,8 @@ colorama==0.4.6
     #   mkdocs-material
 coverage[toml]==7.3.2
     # via verdantech-api (pyproject.toml)
+croniter==2.0.1
+    # via saq
 dnspython==2.4.2
     # via email-validator
 editorconfig==0.12.3
@@ -103,7 +105,7 @@ jinja2==3.1.2
     #   pytest-html
 jsbeautifier==1.14.11
     # via litestar
-litestar[standard]==2.4.2
+litestar[standard]==2.4.4
     # via
     #   litestar-svcs
     #   verdantech-api (pyproject.toml)
@@ -207,12 +209,15 @@ pytest-mock==3.12.0
     # via verdantech-api (pyproject.toml)
 python-dateutil==2.8.2
     # via
+    #   croniter
     #   faker
     #   ghp-import
 python-decouple==3.8
     # via verdantech-api (pyproject.toml)
 python-dotenv==1.0.0
     # via uvicorn
+pytz==2023.3.post1
+    # via croniter
 pyyaml==6.0.1
     # via
     #   litestar
@@ -222,6 +227,8 @@ pyyaml==6.0.1
     #   uvicorn
 pyyaml-env-tag==0.1
     # via mkdocs
+redis==5.0.1
+    # via saq
 regex==2023.10.3
     # via mkdocs-material
 requests==2.31.0
@@ -233,6 +240,8 @@ rich==13.7.0
 rich-click==1.7.1
     # via litestar
 ruff==0.1.6
+    # via verdantech-api (pyproject.toml)
+saq==0.12.2
     # via verdantech-api (pyproject.toml)
 six==1.16.0
     # via

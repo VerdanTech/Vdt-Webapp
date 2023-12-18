@@ -45,7 +45,9 @@
 				"ms-python.mypy-type-checker",
 				"ms-python.vscode-pylance",
 				"mikestead.dotenv",
-				"njpwerner.autodocstring"
+				"njpwerner.autodocstring",
+				"pomdtr.excalidraw-editor",
+				"mtxr.sqltools"
 
             ]
         }

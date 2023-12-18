@@ -1,24 +1,14 @@
 # External Libraries
-from litestar import Request as LitestarRequest
+from saq import Queue as SaqQueue
 from svcs import Container
 
 # VerdanTech Source
-from src.infra.email.emitter.litestar import LitestarEmailEmitter
+from src.infra.email.emitter.saq import SaqEmailEmitter
 from src.interfaces.email.client import AbstractEmailClient
 
-# async def provide_litestar_email_emitter(
-#    svcs_container: Container, request: LitestarRequest
-# ) -> LitestarEmailEmitter:
-"""
-Litestar email emitter to be injected into route handler.
 
-Args:
-    request (LitestarRequest): the litestar request object,
-        registered automatically when injected as
-        dependency into route handler.
-
-Returns:
-    EmailEmitter: email emitter callable.
-"""
-#    email_client = await svcs_container.aget_abstract(AbstractEmailClient)
-#    return LitestarEmailEmitter(client=email_client, app=request.app)
+async def provide_saq_email_emitter(svcs_container: Container) -> SaqEmailEmitter:
+    # Todo: Implement Queueing
+    client = await svcs_container.aget_abstract(AbstractEmailClient)
+    emitter = SaqEmailEmitter(client=client)
+    return emitter
