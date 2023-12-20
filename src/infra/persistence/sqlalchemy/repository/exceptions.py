@@ -1,5 +1,5 @@
 # Standard Library
-from contextlib import asynccontextmanager
+from contextlib import contextmanager
 
 # External Libraries
 import sqlalchemy.exc as alchemy_exceptions
@@ -8,8 +8,8 @@ import sqlalchemy.exc as alchemy_exceptions
 from src.interfaces.persistence import exceptions
 
 
-@asynccontextmanager
-async def alchemy_exception_map():
+@contextmanager
+def alchemy_exception_map():
     """Map sqlalchemy exceptions to native domain equivalents"""
     try:
         yield

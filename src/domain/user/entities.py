@@ -1,4 +1,5 @@
 # Standard Library
+from dataclasses import field
 from datetime import datetime, timedelta
 from typing import List, Optional
 
@@ -15,16 +16,12 @@ class User:
     """User entity model"""
 
     username: str
-    emails: Optional[List[Email]] = None
-    _password_hash: Optional[str] = None
-    # memberships: Optional[List[Ref[GardenMembership]]] = None
+    emails: List[Email] = field(default_factory=list)
+    _password_hash: str = None
+    # memberships: List[Ref[GardenMembership]] = field(default_factory=list)
     is_active: bool = True
     is_superuser: bool = False
     password_reset_confirmation: Optional[PasswordResetConfirmation] = None
-
-    def __post_init__(self) -> None:
-        self.emails = []
-        self.memberships = []
 
     def email_create(
         self,

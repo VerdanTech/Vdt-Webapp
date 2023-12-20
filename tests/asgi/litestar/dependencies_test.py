@@ -18,7 +18,6 @@ from src.ops.user import controllers as user_ops
 pytestmark = [pytest.mark.integration]
 
 
-@pytest.mark.skip
 async def test_container(litestar_client: AsyncTestClient) -> None:
     """
     Ensure that the svcs Registry created on the Litestar global application
@@ -27,67 +26,67 @@ async def test_container(litestar_client: AsyncTestClient) -> None:
     Args:
         litestar_client (AsyncTestClient): litestar test client.
     """
-    # pdb.set_trace()
-    async with litestar_client as client:
-        svcs_plugin = client.app.plugins.get(SvcsPlugin)
-        registry_state_key = svcs_plugin._config.registry_state_key
-        registry = getattr(client.app.state, registry_state_key, None)
-        assert registry is not None
+    svcs_plugin = litestar_client.app.plugins.get(SvcsPlugin)
+    registry_state_key = svcs_plugin._config.registry_state_key
+    registry = getattr(litestar_client.app.state, registry_state_key, None)
+    assert registry is not None
 
-        async with Container(registry=registry) as container:
-            state = getattr(client.app, "state")
-            container.register_local_value(LitestarGlobalState, state)
-            # ======================================
-            # OPERATIONS CONTROLLERS
-            # ======================================
-            # User
-            user_write_ops_controller = await container.aget(
-                user_ops.UserWriteOpsController
-            )
-            assert user_write_ops_controller is not None
+    async with Container(registry=registry) as container:
+        # Currently, Litestar global state is registered as a local
+        # value in each route handler. Replicated here for consistency.
+        state = getattr(litestar_client.app, "state")
+        container.register_local_value(LitestarGlobalState, state)
+        # ======================================
+        # OPERATIONS CONTROLLERS
+        # ======================================
+        # User
+        user_write_ops_controller = await container.aget(
+            user_ops.UserWriteOpsController
+        )
+        assert user_write_ops_controller is not None
 
-            # ======================================
-            # SANITIZERS
-            # ======================================
+        # ======================================
+        # SANITIZERS
+        # ======================================
 
-            # User
-            user_sanitizer = await container.aget(UserSanitizer)
-            assert user_sanitizer is not None
+        # User
+        user_sanitizer = await container.aget(UserSanitizer)
+        assert user_sanitizer is not None
 
-            # ======================================
-            # PERSISTENCE
-            # ======================================
+        # ======================================
+        # PERSISTENCE
+        # ======================================
 
-            # Repository
-            alchemy_client = await container.aget(AlchemyClient)
-            assert alchemy_client is not None
+        # Repository
+        alchemy_client = await container.aget(AlchemyClient)
+        assert alchemy_client is not None
 
-            alchemy_transaction = await container.aget(AsyncSession)
-            assert alchemy_transaction is not None
+        alchemy_transaction = await container.aget(AsyncSession)
+        assert alchemy_transaction is not None
 
-            # Repository
-            user_repo = await container.aget_abstract(AbstractUserRepository)
-            assert user_repo is not None
+        # Repository
+        user_repo = await container.aget_abstract(AbstractUserRepository)
+        assert user_repo is not None
 
-            # ======================================
-            # QUEUE
-            # ======================================
+        # ======================================
+        # QUEUE
+        # ======================================
 
-            # ======================================
-            # EMAIL
-            # ======================================
+        # ======================================
+        # EMAIL
+        # ======================================
 
-            # Client
-            email_client = await container.aget_abstract(AbstractEmailClient)
-            assert email_client is not None
+        # Client
+        email_client = await container.aget_abstract(AbstractEmailClient)
+        assert email_client is not None
 
-            # Emitter
-            email_emitter = await container.aget_abstract(AbstractEmailEmitter)
-            assert email_emitter is not None
+        # Emitter
+        email_emitter = await container.aget_abstract(AbstractEmailEmitter)
+        assert email_emitter is not None
 
-            # ======================================
-            # SECURITY
-            # ======================================
+        # ======================================
+        # SECURITY
+        # ======================================
 
-            password_crypt = await container.aget_abstract(AbstractPasswordCrypt)
-            assert password_crypt is not None
+        password_crypt = await container.aget_abstract(AbstractPasswordCrypt)
+        assert password_crypt is not None

@@ -47,7 +47,8 @@
 				"mikestead.dotenv",
 				"njpwerner.autodocstring",
 				"pomdtr.excalidraw-editor",
-				"mtxr.sqltools"
+				"mtxr.sqltools",
+				"mtxr.sqltools-driver-pg"
 
             ]
         }

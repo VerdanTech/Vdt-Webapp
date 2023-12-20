@@ -1,5 +1,4 @@
 # Standard Library
-import pdb
 from collections.abc import AsyncGenerator
 
 # External Libraries
@@ -17,6 +16,15 @@ from src.infra.persistence.sqlalchemy.repository.user import UserAlchemyReposito
 
 
 async def provide_alchemy_client(svcs_container: Container) -> AlchemyClient:
+    """
+    Provides a Sqlalchemy client for dependency injection.
+
+    Args:
+        svcs_container (Container): svcs service provider.
+
+    Returns:
+        AlchemyClient: the Sqlalchemy client stored in global state.
+    """
     litestar_global_state = await svcs_container.aget(LitestarGlobalState)
     return await get_alchemy_client(state=litestar_global_state)
 
@@ -24,6 +32,16 @@ async def provide_alchemy_client(svcs_container: Container) -> AlchemyClient:
 async def provide_alchemy_transaction(
     svcs_container: Container,
 ) -> AsyncGenerator[AsyncSession, None]:
+    """
+    Provides a Sqlalchemy AsyncSession generator
+    for transactional units of work.
+
+    Args:
+        svcs_container (Container): svcs service provider.
+
+    Yields:
+        Iterator[AsyncSession, None]: transaction generator.
+    """
     client = await svcs_container.aget(AlchemyClient)
     async with get_alchemy_transaction(client=client) as transaction:
         yield transaction
@@ -32,7 +50,15 @@ async def provide_alchemy_transaction(
 async def provide_user_alchemy_repository(
     svcs_container: Container,
 ) -> UserAlchemyRepository:
-    """Configure and provide a user sqlalchemy repository for dependency injection"""
+    """
+    Provides a UserRepository for depedency injection.
+
+    Args:
+        svcs_container (Container): svcs service provider.
+
+    Returns:
+        UserAlchemyRepository: user repository.
+    """
     sql_transaction = await svcs_container.aget(AsyncSession)
     return UserAlchemyRepository(
         transaction=sql_transaction,

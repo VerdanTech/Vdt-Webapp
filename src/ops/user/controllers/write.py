@@ -1,6 +1,3 @@
-# Standard Library
-import pdb
-
 # External Libraries
 from svcs import Container
 
@@ -39,7 +36,6 @@ class UserWriteOpsController:
         Returns:
             User: the user model created after persistence.
         """
-        pdb.set_trace()
         # Sanitize input data
         await data.sanitize(user_sanitizer=user_sanitizer)
 

@@ -17,20 +17,6 @@ pytestmark = [pytest.mark.unit]
 
 class TestUser:
     # ======================================
-    # User.__post_init__() tests
-    # ======================================
-
-    def test___post_init__(self) -> None:
-        """
-        Ensure the post init hook on the entity
-        is called and sets the emails and membership
-        lists to an empty list.
-        """
-        user = User(username="TestUsername")
-        assert user.emails == []
-        assert user.memberships == []
-
-    # ======================================
     # User.email_create() tests
     # ======================================
 

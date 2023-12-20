@@ -42,7 +42,7 @@ async def get_alchemy_transaction(
 ) -> AsyncGenerator[AsyncSession, None]:
     """
     Begins a database transaction on the current engine
-    and yields the transaction objects for use by repositories.
+    and yields the session object for use by repositories.
 
     Args:
         client (AlchemyClient): the current SqlAlchemy client.
@@ -51,10 +51,19 @@ async def get_alchemy_transaction(
         Iterator[AsyncGenerator[AsyncSession, None]]: the created
             AsyncSession transaction object.
     """
-    async with sessionmaker(bind=client.engine) as Session:
-        async with alchemy_exception_map():
-            async with Session.begin():
-                yield Session
+    async with sessionmaker(bind=client.engine) as session:
+        session.begin()
+        try:
+            with alchemy_exception_map():
+                yield session
+        except:
+            await session.rollback()
+            raise
+        finally:
+            if settings.ALCHEMY_TRANSACTION_ROLLBACK:
+                await session.rollback()
+            else:
+                await session.commit()
 
 
 @asynccontextmanager

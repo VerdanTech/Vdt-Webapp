@@ -15,17 +15,29 @@ pytestmark = [pytest.mark.integration]
 
 class TestUserWriteApiController:
     async def test_create(self, litestar_client: AsyncTestClient) -> None:
-        async with litestar_client as client:
-            path = client.app.route_reverse(routes.USER_CREATE_NAME)
-            input_data = UserCreateInput(
-                username="new_username",
-                email_address="new_email@gmail.com",
-                password1="New_password*1",
-                password2="New_password*1",
-            )
-            response = await client.post(
-                path,
-                json=asdict(input_data),
-            )
-            assert response.status_code == 201
-            pass
+        """
+        Ensure that the test_create endpoint successfully creates a user
+        and returns a response containing the created user.
+
+        Args:
+            litestar_client (AsyncTestClient): test client fixture.
+        """
+        path = litestar_client.app.route_reverse(routes.USER_CREATE_NAME)
+        input_data = UserCreateInput(
+            username="new_username",
+            email_address="new_email@gmail.com",
+            password1="New_password*1",
+            password2="New_password*1",
+        )
+
+        response = await litestar_client.post(
+            path,
+            json=asdict(input_data),
+        )
+        response_dict = json.loads(response.content)
+
+        assert response.status_code == 201
+        assert (
+            response_dict["username"] == input_data.username
+            and response_dict["emails"][0]["address"] == input_data.email_address
+        )

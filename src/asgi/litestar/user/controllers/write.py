@@ -1,13 +1,9 @@
 # Standard Library
 import pdb
-from unittest.mock import MagicMock
 
 # External Libraries
-import svcs
-from click import password_option
 from litestar import Controller, post
 from litestar.datastructures import State
-from litestar.di import Provide
 from litestar.params import Dependency
 from svcs import Container
 
@@ -18,7 +14,7 @@ from src.domain.user.sanitizers import UserSanitizer
 from src.interfaces.email.emitter import AbstractEmailEmitter
 from src.interfaces.security.crypt.password_crypt import AbstractPasswordCrypt
 from src.ops.user.controllers.write import UserWriteOpsController
-from src.ops.user.schemas import write as write_schemas
+from src.ops.user.schemas import write as write_ops_schemas
 
 from .. import routes, schemas, urls
 
@@ -38,7 +34,7 @@ class UserWriteApiController(Controller):
     )
     async def create(
         self,
-        data: write_schemas.UserCreateInput,
+        data: write_ops_schemas.UserCreateInput,
         state: State,
         svcs_container: Container = Dependency(skip_validation=True),
     ) -> User:
@@ -67,7 +63,8 @@ class UserWriteApiController(Controller):
                 password_crypt=password_crypt,
                 email_emitter=email_emitter,
             )
-            return user
+            # pdb.set_trace()
+        return user
 
     """
     @patch(path=urls.USER_CHANGE_USERNAME_URL)
