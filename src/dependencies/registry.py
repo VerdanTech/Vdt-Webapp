@@ -19,7 +19,10 @@ from .factories.infra.persistence.sqlalchemy import (
     provide_user_alchemy_repository,
 )
 from .factories.infra.security.crypt import provide_passlib_crypt
-from .factories.ops.user.controllers import provide_user_write_ops
+from .factories.ops.user.controllers import (
+    provide_user_verification_ops,
+    provide_user_write_ops,
+)
 from .factories.ops.user.sanitizers import provide_user_sanitizer
 
 
@@ -32,6 +35,9 @@ def create_registry() -> Registry:
 
     # User
     registry.register_factory(user_ops.UserWriteOpsController, provide_user_write_ops)
+    registry.register_factory(
+        user_ops.UserVerificationOpsController, provide_user_verification_ops
+    )
 
     # ======================================
     # SANITIZERS

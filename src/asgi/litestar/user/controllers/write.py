@@ -17,7 +17,9 @@ from .. import routes, schemas, urls
 
 
 class UserWriteApiController(Controller):
-    """User write api controller"""
+    """
+    User write ASGI controller.
+    """
 
     path = urls.USER_WRITE_CONTROLLER_URL_BASE
 
@@ -36,7 +38,7 @@ class UserWriteApiController(Controller):
         svcs_container: Container = Dependency(skip_validation=True),
     ) -> User:
         """
-        Call the user creation application operation.
+        Calls the user creation application operation.
 
         Args:
             data (UserCreateInput): input DTO.

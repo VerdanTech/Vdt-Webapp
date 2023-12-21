@@ -13,6 +13,7 @@ class UserCreateInput:
     """
     Input for creating a new user.
     """
+
     username: str
     email_address: str
     password1: str
@@ -37,8 +38,6 @@ class UserCreateInput:
                 "username": [specs.LENGTH, specs.REGEX, specs.BAN, specs.UNIQUE],
                 "email_address": [
                     specs.LENGTH,
-                    specs.REGEX,
-                    specs.BAN,
                     specs.UNIQUE,
                     specs.EMAIL,
                 ],

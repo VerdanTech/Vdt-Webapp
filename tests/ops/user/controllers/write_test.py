@@ -4,13 +4,9 @@ from pytest_mock import MockerFixture
 from svcs import Container
 
 # VerdanTech Source
-from mocks.infra.persistence.repository.user_mock import MockUserRepository
-from mocks.infra.security.mock_crypt import MockPasswordCrypt
-from src.dependencies.factories.ops.user.sanitizers import provide_user_sanitizer
 from src.domain.user.entities import User
 from src.domain.user.sanitizers import UserSanitizer
 from src.interfaces.email.emitter import AbstractEmailEmitter
-from src.interfaces.persistence.user.repository import AbstractUserRepository
 from src.interfaces.security.crypt import AbstractPasswordCrypt
 from src.ops.user.controllers.write import UserWriteOpsController
 from src.ops.user.schemas.write import UserCreateInput
@@ -29,7 +25,6 @@ class TestUserWriteOpsController:
         self,
         user_write_ops_controller: UserWriteOpsController,
         svcs_container: Container,
-        mocker: MockerFixture,
     ) -> None:
         """
         Ensure that when the operation is called with a maximally invalid data input,
@@ -38,9 +33,7 @@ class TestUserWriteOpsController:
         Args:
             user_write_ops_controller (UserWriteOpsController): fixture
                 providing controller to test.
-            mock_password_crypt (AbstractPasswordCrypt): fixture
-                providing mock password crypt.
-            mocker (MockerFixture): pytest_mock.
+            svcs_container (Container): service locator with mock services.
         """
         # Retrieve dependencies
         user_sanitizer = await svcs_container.aget(UserSanitizer)
@@ -57,6 +50,7 @@ class TestUserWriteOpsController:
         # Fails length and regex sanitization.
         invalid_password = "a"
 
+        # Add existing user
         existing_user = User(username=existing_invalid_username)
         existing_user.email_create(address=existing_invalid_email, max_emails=1)
         await user_write_ops_controller.user_repo.add(user=existing_user)
@@ -99,7 +93,6 @@ class TestUserWriteOpsController:
         self,
         user_write_ops_controller: UserWriteOpsController,
         svcs_container: Container,
-        mocker: MockerFixture,
     ) -> None:
         """
         Ensure that when the operation is called with mismatched password inputs,
@@ -108,9 +101,7 @@ class TestUserWriteOpsController:
         Args:
             user_write_ops_controller (UserWriteOpsController): fixture
                 providing controller to test.
-            mock_password_crypt (AbstractPasswordCrypt): fixture
-                providing mock password crypt.
-            mocker (MockerFixture): pytest_mock.
+            svcs_container (Container): service locator with mock services.
         """
         # Retrieve dependencies
         user_sanitizer = await svcs_container.aget(UserSanitizer)
@@ -141,7 +132,6 @@ class TestUserWriteOpsController:
         self,
         user_write_ops_controller: UserWriteOpsController,
         svcs_container: Container,
-        mocker: MockerFixture,
     ) -> None:
         """
         Ensure the user creation operation creates a user and persists
@@ -150,9 +140,7 @@ class TestUserWriteOpsController:
         Args:
             user_write_ops_controller (UserWriteOpsController): fixture
                 providing controller to test.
-            mock_password_crypt (AbstractPasswordCrypt): fixture
-                providing mock password crypt.
-            mocker (MockerFixture): pytest_mock.
+            svcs_container (Container): service locator with mock services.
         """
         # Retrieve dependencies
         user_sanitizer = await svcs_container.aget(UserSanitizer)

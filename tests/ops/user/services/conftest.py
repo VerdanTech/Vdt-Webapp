@@ -1,7 +1,10 @@
+# External Libraries
 import pytest
 
-from tests.domain.user.conftest import user
+# VerdanTech Source
 from mocks.infra.persistence.repository.user_mock import MockUserRepository
+from tests.domain.user.conftest import user
+
 
 @pytest.fixture
 def mock_user_repo():

@@ -125,7 +125,9 @@ class User:
             "The email address provided does not exist on this User."
         )
 
-    def email_confirmation_confirm(self, key: str, max_emails: int) -> None:
+    def email_confirmation_confirm(
+        self, key: str, max_emails: int, expiry_time_hours: int
+    ) -> None:
         """
         Given a verification key, verify the email
         and set it as primary, ensuring the email
@@ -134,9 +136,11 @@ class User:
         Args:
             key (str): email confirmation key.
             max_emails (int): maximum emails stored in a User, application setting.
+            expiry_time_hours (int): the amount of hours an EmailConfirmation
+                can exist before it expires. Application setting.
         """
         email = self._get_email_by_confirmation_key(key=key)
-        email.check_confirmation_expired()
+        email.check_confirmation_expired(expiry_time_hours=expiry_time_hours)
         email = email.verify()
         self._set_primary_email(email)
         self._trim_oldest_emails(max_emails=max_emails)
@@ -324,7 +328,7 @@ class User:
         """
         remaining_emails = sorted(
             self.emails,
-            key=lambda email: email.verified_at or 0,
+            key=lambda email: email.verified_at or datetime.min,
             reverse=True,
         )[:max_emails]
         self.emails = [email for email in self.emails if email in remaining_emails]

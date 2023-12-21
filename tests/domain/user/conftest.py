@@ -35,4 +35,3 @@ class UserMake(factory.Factory):
 @pytest.fixture
 def user():
     return UserMake.build()
-

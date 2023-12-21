@@ -5,7 +5,10 @@ from unittest import mock
 from svcs import Registry
 
 # VerdanTech Source
-from src.dependencies.factories.ops.user.controllers import provide_user_write_ops
+from src.dependencies.factories.ops.user.controllers import (
+    provide_user_verification_ops,
+    provide_user_write_ops,
+)
 from src.dependencies.factories.ops.user.sanitizers import provide_user_sanitizer
 from src.domain.user.sanitizers import UserSanitizer
 from src.interfaces.email.emitter import AbstractEmailEmitter
@@ -24,6 +27,9 @@ mock_registry = Registry()
 
 # User
 mock_registry.register_factory(user_ops.UserWriteOpsController, provide_user_write_ops)
+mock_registry.register_factory(
+    user_ops.UserVerificationOpsController, provide_user_verification_ops
+)
 
 # ======================================
 # SANITIZERS

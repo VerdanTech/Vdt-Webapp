@@ -1,10 +1,9 @@
 # VerdanTech Source
+from src.domain.user import exceptions
 from src.domain.user.entities import User
 from src.interfaces.email.emitter import AbstractEmailEmitter
 from src.interfaces.persistence.user.repository import AbstractUserRepository
 from src.utils.key_generator import key_generator
-
-from src.domain.user import exceptions
 
 
 async def email_confirmation_create(

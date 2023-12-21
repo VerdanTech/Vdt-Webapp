@@ -74,16 +74,20 @@ class Email:
         """
         return replace(self, primary=False)
 
-    def check_confirmation_expired(self) -> None:
+    def check_confirmation_expired(self, expiry_time_hours: int) -> None:
         """
         Raise an exception if the email's confirmation is expired.
+
+        Args:
+            expiry_time_hours (int): the amount of hours an EmailConfirmation
+                can exist before it expires. Application setting.
 
         Raises:
             EmailConfirmationExpired: raised if the confirmation is exprired.
         """
         if self.confirmation is None:
             return
-        if not self.confirmation.is_valid():
+        if not self.confirmation.is_valid(expiry_time_hours=expiry_time_hours):
             raise EmailConfirmationExpired("The email confirmation key is expired")
 
 
@@ -99,7 +103,7 @@ class BaseConfirmation:
         Computes whether the confirmation has expired.
 
         Args:
-            expiry_time_hours (int): amounf ot hours before an email
+            expiry_time_hours (int): amount of hours before an email
                 confirmation should expire, application setting.
 
         Returns:

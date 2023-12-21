@@ -168,7 +168,7 @@ class TestEmail:
         )
 
         with expected_error_context:
-            email.check_confirmation_expired()
+            email.check_confirmation_expired(expiry_time_hours=0)
 
 
 class TestBaseConfirmation:
