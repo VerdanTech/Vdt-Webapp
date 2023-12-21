@@ -4,9 +4,9 @@ from pytest_mock import MockerFixture
 
 # VerdanTech Source
 from src.domain.user.entities import User
-from src.domain.user.services import email as email_services
 from src.interfaces.email.emitter import AbstractEmailEmitter
 from src.interfaces.persistence.user import AbstractUserRepository
+from src.ops.user.services import email as email_services
 
 pytestmark = [pytest.mark.unit]
 
@@ -74,7 +74,7 @@ async def test_email_create_verification_true_success(
     key_length = 10
     generated_key = "abc"
     mock_generate_unique_email_confirmation_key = mocker.patch(
-        "src.domain.user.services.email.verification_services.generate_unique_email_confirmation_key",
+        "src.ops.user.services.email.verification_services.generate_unique_email_confirmation_key",
         return_value=generated_key,
     )
     mock_user_email_create = mocker.patch.object(user, "email_create")

@@ -8,10 +8,10 @@ from pytest_mock import MockerFixture
 # VerdanTech Source
 from src.domain.user import exceptions
 from src.domain.user.entities import User
-from src.domain.user.services import verification as verification_services
 from src.domain.user.values import Email, PasswordResetConfirmation
 from src.interfaces.email.emitter import AbstractEmailEmitter
 from src.interfaces.persistence.user import AbstractUserRepository
+from src.ops.user.services import verification as verification_services
 
 pytestmark = [pytest.mark.unit]
 
