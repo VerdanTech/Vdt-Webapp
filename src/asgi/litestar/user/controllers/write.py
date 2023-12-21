@@ -1,6 +1,3 @@
-# Standard Library
-import pdb
-
 # External Libraries
 from litestar import Controller, post
 from litestar.datastructures import State
@@ -27,7 +24,7 @@ class UserWriteApiController(Controller):
     @post(
         name=routes.USER_CREATE_NAME,
         summary="User registration",
-        description="Register a new user and send an email verification",
+        description="Register a new user and send an email verification if configured.",
         tags=["users"],
         path=urls.USER_CREATE_URL,
         return_dto=schemas.UserSelfDetail,
@@ -39,7 +36,7 @@ class UserWriteApiController(Controller):
         svcs_container: Container = Dependency(skip_validation=True),
     ) -> User:
         """
-        Call the main user creation application operation.
+        Call the user creation application operation.
 
         Args:
             data (UserCreateInput): input DTO.
@@ -63,7 +60,6 @@ class UserWriteApiController(Controller):
                 password_crypt=password_crypt,
                 email_emitter=email_emitter,
             )
-            # pdb.set_trace()
         return user
 
     """

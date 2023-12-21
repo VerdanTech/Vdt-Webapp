@@ -15,7 +15,7 @@ async def litestar_exception_map():
         yield
     except SpecError as error:
         raise LitestarValidationException(
-            detail="Data validation error", status_code=422
+            detail="Data validation error", status_code=422, extra=error.value.args[0]
         )
     except Exception as error:
         raise error

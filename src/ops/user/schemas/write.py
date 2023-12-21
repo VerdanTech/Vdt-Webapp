@@ -10,12 +10,21 @@ from ..sanitizers import validate_password_match
 
 @dataclass
 class UserCreateInput:
+    """
+    Input for creating a new user.
+    """
     username: str
     email_address: str
     password1: str
     password2: str
 
     async def sanitize(self, user_sanitizer: UserSanitizer) -> None:
+        """
+        Validate and normalize the input data.
+
+        Args:
+            user_sanitizer (UserSanitizer): user object sanitizer.
+        """
         validate_password_match(password1=self.password1, password2=self.password2)
 
         sanitized_data = await user_sanitizer.sanitize(

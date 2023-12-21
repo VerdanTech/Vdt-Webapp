@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 from typing import List, Optional
 
 # VerdanTech Source
-from src.domain.common import EntityIDType, Ref, root_entity
+from src.domain.common import EntityIDType, root_entity
 from src.interfaces.security.crypt import AbstractPasswordCrypt
 
 from . import exceptions
