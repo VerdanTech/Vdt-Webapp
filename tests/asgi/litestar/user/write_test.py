@@ -7,23 +7,27 @@ import pytest
 from litestar.testing import AsyncTestClient
 
 # VerdanTech Source
-from src.asgi.litestar.user import routes, urls
-from src.ops.user.schemas.write import UserCreateInput
+from src.asgi.litestar.user import routes
+from src.ops.user.schemas import write as write_ops_schemas
 
 pytestmark = [pytest.mark.integration]
 
-
+import pdb
 class TestUserWriteApiController:
-    async def test_create(self, litestar_client: AsyncTestClient) -> None:
+    # ================================================================
+    # TestUserWriteApiController.user_create() tests
+    # ================================================================
+    async def test_user_create(self, litestar_client: AsyncTestClient) -> None:
         """
-        Ensure that the test_create endpoint successfully creates a user
+        Ensure that the user_create endpoint successfully creates a user
         and returns a response containing the created user.
 
         Args:
             litestar_client (AsyncTestClient): test client fixture.
         """
+        pdb.set_trace()
         path = litestar_client.app.route_reverse(routes.USER_CREATE_NAME)
-        input_data = UserCreateInput(
+        input_data = write_ops_schemas.UserCreateInput(
             username="new_username",
             email_address="new_email@gmail.com",
             password1="New_password*1",
