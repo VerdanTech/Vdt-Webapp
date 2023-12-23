@@ -12,7 +12,6 @@ from src.ops.user.schemas import write as write_ops_schemas
 
 pytestmark = [pytest.mark.integration]
 
-import pdb
 class TestUserWriteApiController:
     # ================================================================
     # TestUserWriteApiController.user_create() tests
@@ -25,7 +24,6 @@ class TestUserWriteApiController:
         Args:
             litestar_client (AsyncTestClient): test client fixture.
         """
-        pdb.set_trace()
         path = litestar_client.app.route_reverse(routes.USER_CREATE_NAME)
         input_data = write_ops_schemas.UserCreateInput(
             username="new_username",

@@ -13,7 +13,6 @@ from src.ops.user.controllers import UserVerificationOpsController
 from src.ops.user.schemas import verification as verification_ops_schemas
 
 from .. import routes, urls
-import pdb
 
 class UserVerificationApiController(Controller):
     """
@@ -44,7 +43,6 @@ class UserVerificationApiController(Controller):
             svcs_container (Container): svcs service
                 locator container.
         """
-        pdb.set_trace()
         svcs_container.register_local_value(State, state)
         user_verification_ops_controller, user_sanitizer = await svcs_container.aget(
             UserVerificationOpsController, UserSanitizer

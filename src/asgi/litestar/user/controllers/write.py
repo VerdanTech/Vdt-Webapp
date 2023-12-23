@@ -14,8 +14,6 @@ from src.ops.user.controllers.write import UserWriteOpsController
 from src.ops.user.schemas import write as write_ops_schemas
 
 from .. import routes, schemas, urls
-
-import pdb
 class UserWriteApiController(Controller):
     """
     User write ASGI controller.
@@ -55,7 +53,6 @@ class UserWriteApiController(Controller):
         email_emitter, password_crypt = await svcs_container.aget_abstract(
             AbstractEmailEmitter, AbstractPasswordCrypt
         )
-        pdb.set_trace()
         async with litestar_exception_map():
             user = await user_write_ops_controller.create(
                 data=data,

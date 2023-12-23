@@ -60,7 +60,10 @@ async def get_alchemy_transaction(
             await session.rollback()
             raise
         finally:
-            await session.commit()
+            if settings.ALCHEMY_TRANSACTION_ROLLBACK:
+                await session.rollback()
+            else:
+                await session.commit()
 
 
 @asynccontextmanager

@@ -25,7 +25,6 @@ class TestUserVerificationApiController:
         Args:
             litestar_client (AsyncTestClient): test client fixture.
         """
-        """
         path = litestar_client.app.route_reverse(routes.USER_EMAIL_VERIFICATION_REQUEST_NAME)
         input_data = verification_ops_schemas.UserVerifyEmailRequestInput(
             email_address="existing_email@gmail.com"
@@ -37,8 +36,7 @@ class TestUserVerificationApiController:
         )
 
         assert response.status_code == 201
-        """
-        pass
+
 
     # ================================================================
     # UserVerificationApiController.user_email_confirmation_confirm() tests
