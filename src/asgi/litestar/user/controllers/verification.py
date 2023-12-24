@@ -13,7 +13,7 @@ from src.ops.user.controllers import UserVerificationOpsController
 from src.ops.user.schemas import verification as verification_ops_schemas
 
 from .. import routes, urls
-
+import pdb
 class UserVerificationApiController(Controller):
     """
     User email and password verification ASGI controller.
@@ -82,7 +82,7 @@ class UserVerificationApiController(Controller):
             UserVerificationOpsController, UserSanitizer
         )
         async with litestar_exception_map():
-            await user_verification_ops_controller.email_verification_confirm(data=data, user_sanitizer=user_sanitizer)
+            await user_verification_ops_controller.email_confirmation_confirm(data=data, user_sanitizer=user_sanitizer)
 
     @post(
         name=routes.USER_PASSWORD_RESET_REQUEST_NAME,
@@ -117,7 +117,7 @@ class UserVerificationApiController(Controller):
             await user_verification_ops_controller.password_reset_request(
                 data=data,
                 user_sanitizer=user_sanitizer,
-                email_emitter_email=email_emitter,
+                email_emitter=email_emitter,
             )
 
     @post(

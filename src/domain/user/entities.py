@@ -6,7 +6,7 @@ from typing import List, Optional
 # VerdanTech Source
 from src.domain.common import EntityIDType, root_entity
 from src.interfaces.security.crypt import AbstractPasswordCrypt
-
+from src.domain import exceptions as domain_exceptions
 from . import exceptions
 from .values import Email, PasswordResetConfirmation
 
@@ -121,7 +121,7 @@ class User:
                 email = email.new_confirmation(key=key)
                 self.emails[index] = email
                 return
-        raise exceptions.EmailNotFound(
+        raise domain_exceptions.FieldNotFound(
             "The email address provided does not exist on this User."
         )
 

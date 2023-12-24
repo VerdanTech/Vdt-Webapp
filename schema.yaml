@@ -1,19 +1,347 @@
 components:
-  schemas: {}
+  schemas:
+    UserCreateEmail_0ResponseBody:
+      properties:
+        created_at:
+          format: date-time
+          type: string
+        key:
+          type: string
+      required:
+      - key
+      title: UserCreateEmail_0ResponseBody
+      type: object
+    UserCreateInput:
+      properties:
+        email_address:
+          type: string
+        password1:
+          type: string
+        password2:
+          type: string
+        username:
+          type: string
+      required:
+      - email_address
+      - password1
+      - password2
+      - username
+      title: UserCreateInput
+      type: object
+    UserCreateUserResponseBody:
+      properties:
+        created_at:
+          format: date-time
+          type: string
+        emails:
+          items:
+            $ref: '#/components/schemas/UserCreateUser_0ResponseBody'
+          type: array
+        id:
+          oneOf:
+          - type: 'null'
+          - type: object
+        is_superuser:
+          type: boolean
+        username:
+          type: string
+      required:
+      - username
+      title: UserCreateUserResponseBody
+      type: object
+    UserCreateUser_0ResponseBody:
+      properties:
+        address:
+          type: string
+        confirmation:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/UserCreateEmail_0ResponseBody'
+        primary:
+          type: boolean
+        verified:
+          type: boolean
+        verified_at:
+          oneOf:
+          - type: 'null'
+          - format: date-time
+            type: string
+      required:
+      - address
+      title: UserCreateUser_0ResponseBody
+      type: object
+    UserPasswordResetConfirmInput:
+      properties:
+        key:
+          type: string
+        new_password1:
+          type: string
+        new_password2:
+          type: string
+        user_id:
+          type: object
+      required:
+      - key
+      - new_password1
+      - new_password2
+      - user_id
+      title: UserPasswordResetConfirmInput
+      type: object
+    UserPasswordResetRequestInput:
+      properties:
+        email_address:
+          type: string
+      required:
+      - email_address
+      title: UserPasswordResetRequestInput
+      type: object
+    UserVerifyEmailConfirmInput:
+      properties:
+        key:
+          type: string
+      required:
+      - key
+      title: UserVerifyEmailConfirmInput
+      type: object
+    UserVerifyEmailRequestInput:
+      properties:
+        email_address:
+          type: string
+      required:
+      - email_address
+      title: UserVerifyEmailRequestInput
+      type: object
 info:
   title: Litestar API
   version: 1.0.0
 openapi: 3.1.0
 paths:
-  /vdtapi/users/write/create:
-    get:
+  /vdtapi/users/verification/email/confirm/{key}:
+    post:
       deprecated: false
-      description: Register a new user and send an email verification
-      operationId: VdtapiUsersWriteCreateUserCreate
+      description: Close email confirmation and verify email.
+      operationId: VdtapiUsersVerificationEmailConfirmKeyUserEmailConfirmationConfirm
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserVerifyEmailConfirmInput'
+        required: true
       responses:
-        '200':
-          description: Request fulfilled, document follows
+        '201':
+          description: Document created, URL follows
           headers: {}
+        '400':
+          content:
+            application/json:
+              schema:
+                description: Validation Exception
+                examples:
+                  ValidationException:
+                    value:
+                      detail: Bad Request
+                      extra: {}
+                      status_code: 400
+                properties:
+                  detail:
+                    type: string
+                  extra:
+                    additionalProperties: {}
+                    type:
+                    - 'null'
+                    - object
+                    - array
+                  status_code:
+                    type: integer
+                required:
+                - detail
+                - status_code
+                type: object
+          description: Bad request syntax or unsupported method
+      summary: Email confirmation confirm.
+      tags:
+      - users
+  /vdtapi/users/verification/email/request:
+    post:
+      deprecated: false
+      description: Create a new email confirmation and send confirmation email.
+      operationId: VdtapiUsersVerificationEmailRequestUserEmailConfirmationRequest
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserVerifyEmailRequestInput'
+        required: true
+      responses:
+        '201':
+          description: Document created, URL follows
+          headers: {}
+        '400':
+          content:
+            application/json:
+              schema:
+                description: Validation Exception
+                examples:
+                  ValidationException:
+                    value:
+                      detail: Bad Request
+                      extra: {}
+                      status_code: 400
+                properties:
+                  detail:
+                    type: string
+                  extra:
+                    additionalProperties: {}
+                    type:
+                    - 'null'
+                    - object
+                    - array
+                  status_code:
+                    type: integer
+                required:
+                - detail
+                - status_code
+                type: object
+          description: Bad request syntax or unsupported method
+      summary: Email confirmation request
+      tags:
+      - users
+  /vdtapi/users/verification/password/confirm:
+    post:
+      deprecated: false
+      description: Close a password reset request and change password
+      operationId: VdtapiUsersVerificationPasswordConfirmUserPasswordResetConfirm
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserPasswordResetConfirmInput'
+        required: true
+      responses:
+        '201':
+          description: Document created, URL follows
+          headers: {}
+        '400':
+          content:
+            application/json:
+              schema:
+                description: Validation Exception
+                examples:
+                  ValidationException:
+                    value:
+                      detail: Bad Request
+                      extra: {}
+                      status_code: 400
+                properties:
+                  detail:
+                    type: string
+                  extra:
+                    additionalProperties: {}
+                    type:
+                    - 'null'
+                    - object
+                    - array
+                  status_code:
+                    type: integer
+                required:
+                - detail
+                - status_code
+                type: object
+          description: Bad request syntax or unsupported method
+      summary: Password reset confirm
+      tags:
+      - users
+  /vdtapi/users/verification/password/request/{user_id}/{key}:
+    post:
+      deprecated: false
+      description: Open a new password reset request and send confirmation email
+      operationId: VdtapiUsersVerificationPasswordRequestUserIdKeyUserPasswordResetRequest
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserPasswordResetRequestInput'
+        required: true
+      responses:
+        '201':
+          description: Document created, URL follows
+          headers: {}
+        '400':
+          content:
+            application/json:
+              schema:
+                description: Validation Exception
+                examples:
+                  ValidationException:
+                    value:
+                      detail: Bad Request
+                      extra: {}
+                      status_code: 400
+                properties:
+                  detail:
+                    type: string
+                  extra:
+                    additionalProperties: {}
+                    type:
+                    - 'null'
+                    - object
+                    - array
+                  status_code:
+                    type: integer
+                required:
+                - detail
+                - status_code
+                type: object
+          description: Bad request syntax or unsupported method
+      summary: Password reset request
+      tags:
+      - users
+  /vdtapi/users/write/create:
+    post:
+      deprecated: false
+      description: Register a new user and send an email verification if configured.
+      operationId: VdtapiUsersWriteCreateUserCreate
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserCreateInput'
+        required: true
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserCreateUserResponseBody'
+          description: Document created, URL follows
+          headers: {}
+        '400':
+          content:
+            application/json:
+              schema:
+                description: Validation Exception
+                examples:
+                  ValidationException:
+                    value:
+                      detail: Bad Request
+                      extra: {}
+                      status_code: 400
+                properties:
+                  detail:
+                    type: string
+                  extra:
+                    additionalProperties: {}
+                    type:
+                    - 'null'
+                    - object
+                    - array
+                  status_code:
+                    type: integer
+                required:
+                - detail
+                - status_code
+                type: object
+          description: Bad request syntax or unsupported method
       summary: User registration
       tags:
       - users

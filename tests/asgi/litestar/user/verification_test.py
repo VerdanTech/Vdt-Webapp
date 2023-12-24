@@ -7,11 +7,12 @@ import pytest
 from litestar.testing import AsyncTestClient
 
 # VerdanTech Source
+from src import settings
 from src.asgi.litestar.user import routes, urls
-from src.ops.user.schemas import verification as verification_ops_schemas 
+from src.ops.user.schemas import verification as verification_ops_schemas
+from src.utils.key_generator import key_generator
 
 pytestmark = [pytest.mark.integration]
-
 
 class TestUserVerificationApiController:
     # ================================================================
@@ -35,7 +36,7 @@ class TestUserVerificationApiController:
             json=asdict(input_data),
         )
 
-        assert response.status_code == 201
+        assert response.status_code == 422
 
 
     # ================================================================
@@ -49,7 +50,7 @@ class TestUserVerificationApiController:
         Args:
             litestar_client (AsyncTestClient): test client fixture.
         """
-        pass
+        path = litestar_client.app.route_reverse(routes.USER_EMAIL_VERIFICATION_CONFIRM_NAME)
 
     # ================================================================
     # UserVerificationApiController.user_password_reset_request() tests

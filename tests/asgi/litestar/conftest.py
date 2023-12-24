@@ -10,14 +10,10 @@ transaction_state_key = "sql_transaction"
 @pytest.fixture
 async def litestar_client() -> AsyncTestClient:
     app = create_app()
-    async with AsyncTestClient(app=app, raise_server_exceptions=True) as client:
-        yield client
+    async with AsyncTestClient(app=app, raise_server_exceptions=True) as litestar_client:
 
-async def provide_alchemy_client_override() -> AlchemyClient:
-    state = await svcs_container.aget(State)
-    client = getattr(state, settings.ALCHEMY_CLIENT_NAME, None)
-    if client is None:
-        raise ClientLifecycleError(
-            "SqlAlchemy client was expected to be initialized but no initialization has occured."
-        )
-    yield client
+        #svcs_plugin = litestar_client.app.plugins.get(SvcsPlugin)
+        #registry_state_key = svcs_plugin._config.registry_state_key
+        #registry = getattr(litestar_client.app.state, registry_state_key, None)
+        #assert registry is not None
+        yield litestar_client

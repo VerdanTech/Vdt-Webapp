@@ -5,6 +5,7 @@ from src.domain.user.sanitizers import UserSanitizer
 from src.interfaces.email.emitter import AbstractEmailEmitter
 from src.interfaces.persistence.user.repository import AbstractUserRepository
 from src.interfaces.security.crypt import AbstractPasswordCrypt
+from src.ops.exceptions import EntityNotFound
 
 from ..schemas import verification as schemas
 from ..services import verification as verification_services
@@ -42,7 +43,7 @@ class UserVerificationOpsController:
             email_address=data.email_address
         )
         if user is None:
-            raise domain_exceptions.UserNotFound("The email address does not exist.")
+            raise EntityNotFound("The email address does not exist.")
 
         # Add new email verification
         await verification_services.email_confirmation_create(
@@ -82,7 +83,7 @@ class UserVerificationOpsController:
             email_confirmation_key=data.key
         )
         if user is None:
-            raise domain_exceptions.UserNotFound(
+            raise EntityNotFound(
                 "The email verification key does not exist."
             )
 
@@ -124,7 +125,7 @@ class UserVerificationOpsController:
             email_address=data.email_address
         )
         if user is None:
-            raise domain_exceptions.UserNotFound("The email address does not exist.")
+            raise EntityNotFound("The email address does not exist.")
 
         # Add new password reset confirmation
         await verification_services.password_reset_create(
@@ -169,7 +170,7 @@ class UserVerificationOpsController:
             user_id=data.user_id, password_reset_confirmation_key=data.key
         )
         if user is None:
-            raise domain_exceptions.UserNotFound("The password reset does not exist")
+            raise EntityNotFound("The password reset does not exist")
 
         # Reset password
         await user.password_reset_confirm(
