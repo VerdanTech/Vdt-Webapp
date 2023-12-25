@@ -27,20 +27,14 @@ alchemy_client = AlchemyClient(engine=engine)
 
 @pytest.fixture
 async def sql_transaction() -> AsyncGenerator[AsyncSession, None]:
-    async with test_scoped_sql_transaction(client=alchemy_client) as transaction:
-        yield transaction
-
-
-@asynccontextmanager
-async def test_scoped_sql_transaction(client: AlchemyClient) -> AsyncGenerator[AsyncSession, None]:
     """Yield a session with a savepoint, that
     rolls back after every test case
 
     https://www.core27.co/post/transactional-unit-tests-with-pytest-and-async-sqlalchemy
     <https://github.com/sqlalchemy/sqlalchemy/issues/5811>
     """
-    connection = await client.engine.connect()
-    db_connection = await connection.begin()
+    connection = await alchemy_client.engine.connect()
+    db_transaction = await connection.begin()
     transaction = sessionmaker(bind=connection)
     nested = await connection.begin_nested()
 
@@ -53,6 +47,6 @@ async def test_scoped_sql_transaction(client: AlchemyClient) -> AsyncGenerator[A
     try:
         yield transaction
     finally:
-        await db_connection.rollback()
+        await db_transaction.rollback()
         await transaction.close()
         await connection.close()

@@ -32,7 +32,7 @@ class UserVerificationOpsController:
             email_emitter (AbstractEmailEmitter): email emitter interface.
 
         Raises:
-            UserNotFound: raised if no user with the email
+            EntityNotFound: raised if no user with the email
                 was found.
         """
         # Sanitize input data
@@ -114,7 +114,7 @@ class UserVerificationOpsController:
             email_emitter (EmailEmitter): email emitter awaitable.
 
         Raises:
-            UserNotFound: raised if a user with the email
+            EntityNotFound: raised if a user with the email
                 is nof found.
         """
         # Sanitize input data

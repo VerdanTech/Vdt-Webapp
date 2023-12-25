@@ -6,7 +6,8 @@ import pytest
 from pytest_mock import MockerFixture
 
 # VerdanTech Source
-from src.domain.user import exceptions
+from src.ops import exceptions as ops_exceptions
+
 from src.domain.user.entities import User
 from src.domain.user.values import Email, PasswordResetConfirmation
 from src.interfaces.email.emitter import AbstractEmailEmitter
@@ -74,7 +75,7 @@ async def test_password_reset_create_incorrect_email_address(
     user: User, mocker: MockerFixture
 ) -> None:
     """
-    Ensure that UserNotFound is raised if the email address provided
+    Ensure that EntityNotFound is raised if the email address provided
     as an argument is not the user's primary email.
 
     Args:
@@ -87,7 +88,7 @@ async def test_password_reset_create_incorrect_email_address(
         Email(address="primary@abc.com", primary=True),
     ]
 
-    with pytest.raises(exceptions.UserNotFound):
+    with pytest.raises(ops_exceptions.EntityNotFound):
         await verification_services.password_reset_create(
             user=user,
             email_address=non_primary_address,

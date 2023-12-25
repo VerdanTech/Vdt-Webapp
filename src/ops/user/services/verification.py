@@ -1,5 +1,5 @@
 # VerdanTech Source
-from src.domain.user import exceptions
+from src.ops import exceptions as ops_exceptions
 from src.domain.user.entities import User
 from src.interfaces.email.emitter import AbstractEmailEmitter
 from src.interfaces.persistence.user.repository import AbstractUserRepository
@@ -56,7 +56,7 @@ async def password_reset_create(
     """
     primary_email = user.get_primary_email()
     if not email_address == primary_email.address:
-        raise exceptions.UserNotFound(
+        raise ops_exceptions.EntityNotFound(
             "The email address provided is not the user's primary email."
         )
     key = await _generate_unique_password_reset_key(

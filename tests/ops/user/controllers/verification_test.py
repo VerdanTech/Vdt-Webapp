@@ -7,7 +7,7 @@ from svcs import Container
 
 # VerdanTech Source
 from src import settings
-from src.domain.user import exceptions as domain_exceptions
+from src.ops import exceptions as ops_exceptions
 from src.domain.user.entities import User
 from src.domain.user.sanitizers import UserSanitizer
 from src.domain.user.values import EmailConfirmation
@@ -73,7 +73,7 @@ class TestUserVerificationOpsController:
     ) -> None:
         """
         Ensure that when the operation is called with an email that does
-        not match an existing user, the UserNotFound exception is raised.
+        not match an existing user, the EntityNotFound exception is raised.
 
         Args:
             user_verification_ops_controller (UserVerificationOpsController):
@@ -88,7 +88,7 @@ class TestUserVerificationOpsController:
 
         input_data = UserVerifyEmailRequestInput(email_address=nonexistant_valid_email)
 
-        with pytest.raises(domain_exceptions.UserNotFound):
+        with pytest.raises(ops_exceptions.EntityNotFound):
             await user_verification_ops_controller.email_confirmation_request(
                 data=input_data,
                 user_sanitizer=user_sanitizer,
@@ -182,7 +182,7 @@ class TestUserVerificationOpsController:
     ) -> None:
         """
         Ensure that when the operation is called with a confirmation key that does
-        not match an existing user, the UserNotFound exception is raised.
+        not match an existing user, the EntityNotFound exception is raised.
 
         Args:
             user_verification_ops_controller (UserVerificationOpsController):
@@ -198,7 +198,7 @@ class TestUserVerificationOpsController:
 
         input_data = UserVerifyEmailConfirmInput(key=nonexistant_valid_key)
 
-        with pytest.raises(domain_exceptions.UserNotFound):
+        with pytest.raises(ops_exceptions.EntityNotFound):
             await user_verification_ops_controller.email_confirmation_confirm(
                 data=input_data,
                 user_sanitizer=user_sanitizer,
@@ -297,7 +297,7 @@ class TestUserVerificationOpsController:
     ) -> None:
         """
         Ensure that when the operation is called with an email that does
-        not match an existing user, the UserNotFound exception is raised.
+        not match an existing user, the EntityNotFound exception is raised.
 
         Args:
             user_verification_ops_controller (UserVerificationOpsController):
@@ -314,7 +314,7 @@ class TestUserVerificationOpsController:
             email_address=nonexistant_valid_email
         )
 
-        with pytest.raises(domain_exceptions.UserNotFound):
+        with pytest.raises(ops_exceptions.EntityNotFound):
             await user_verification_ops_controller.password_reset_request(
                 data=input_data,
                 user_sanitizer=user_sanitizer,
@@ -462,7 +462,7 @@ class TestUserVerificationOpsController:
     ) -> None:
         """
         Ensure that when the operation is called with a confirmation key that does
-        not match an existing user, the UserNotFound exception is raised.
+        not match an existing user, the EntityNotFound exception is raised.
 
         Args:
             user_verification_ops_controller (UserVerificationOpsController):
@@ -484,7 +484,7 @@ class TestUserVerificationOpsController:
             new_password2="New_password12",
         )
 
-        with pytest.raises(domain_exceptions.UserNotFound):
+        with pytest.raises(ops_exceptions.EntityNotFound):
             await user_verification_ops_controller.password_reset_confirm(
                 data=input_data,
                 user_sanitizer=user_sanitizer,

@@ -33,13 +33,13 @@ class UserAlchemyRepository(BaseAlchemyRepository[User]):
         Returns:
             User: the resultant persisted user object
         """
-        # async with alchemy_exception_map():
-        user_model = self._entity_to_model(user)
-        self.transaction.add(user_model)
-        await self.transaction.flush()
-        self.transaction.expunge(user_model)
-        user = self._model_to_entity(user_model)
-        return user
+        with alchemy_exception_map():
+            user_model = self._entity_to_model(user)
+            self.transaction.add(user_model)
+            await self.transaction.flush()
+            self.transaction.expunge(user_model)
+            user = self._model_to_entity(user_model)
+            return user
 
     async def add_many(self, users: List[User]) -> List[User]:
         """Persist a list of new user objects to the repository

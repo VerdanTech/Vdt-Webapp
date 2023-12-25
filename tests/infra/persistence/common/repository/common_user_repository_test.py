@@ -10,6 +10,23 @@ pytestmark = [pytest.mark.databases]
 
 
 class TestAbstractUserRepository:
+
+    # ================================================================
+    # AbstractUserRepository.add() tests
+    # ================================================================
+    async def test_add_already_exists(
+        self, user_repo: AbstractUserRepository, user: User
+    ) -> None:
+        """Ensure the proper exception occurs if the user
+            already exists
+
+        Args:
+            user_repo (AbstractUserRepository): fixture providing
+                repository to test
+            user (User): factory fixture providing user
+        """
+        pass
+
     async def test_add_success(
         self, user_repo: AbstractUserRepository, user: User
     ) -> None:
@@ -27,20 +44,34 @@ class TestAbstractUserRepository:
         )
         assert user.id is not None
 
-    async def test_add_already_exists(
-        self, user_repo: AbstractUserRepository, user: User
+
+    # ================================================================
+    # AbstractUserRepository.add_many() tests
+    # ================================================================
+
+    # ================================================================
+    # AbstractUserRepository.update() tests
+    # ================================================================
+
+    # ================================================================
+    # AbstractUserRepository.get_user_by_email_address() tests
+    # ================================================================
+
+    async def test_get_user_by_email_address_not_found(
+        self, user_repo: AbstractUserRepository
     ) -> None:
-        """Ensure the proper exception occurs if the user
-            already exists
+        """Ensure None is returned if user does not exist
 
         Args:
             user_repo (AbstractUserRepository): fixture providing
                 repository to test
-            user (User): factory fixture providing user
         """
-        pass
+        user_result = await user_repo.get_user_by_email_address(
+            email_address="test@test.com"
+        )
+        assert user_result is None
 
-    async def test_get_user_by_email_address(
+    async def test_get_user_by_email_address_success(
         self, user_repo: AbstractUserRepository, user: User
     ) -> None:
         """Ensure the user with the email address is retrieved
@@ -57,24 +88,24 @@ class TestAbstractUserRepository:
         )
         assert user_result.emails[0].address == user.emails[0].address
 
-    async def test_get_user_by_email_address_not_found(
-        self, user_repo: AbstractUserRepository
-    ) -> None:
-        """Ensure None is returned if user does not exist
 
-        Args:
-            user_repo (AbstractUserRepository): fixture providing
-                repository to test
-        """
-        user_result = await user_repo.get_user_by_email_address(
-            email_address="test@test.com"
-        )
-        assert user_result is None
+    # ================================================================
+    # AbstractUserRepository.get_user_by_email_confirmation_key() tests
+    # ================================================================
+        
+    # ================================================================
+    # AbstractUserRepository.get_user_by_password_reset_confirmation() tests
+    # ================================================================
+        
+    # ================================================================
+    # AbstractUserRepository.username_exists() tests
+    # ================================================================
+
 
     @pytest.mark.parametrize(
         ("username_exists", "expected_output"), [(True, True), (False, False)]
     )
-    async def test_username_exists(
+    async def test_username_exists_success(
         self,
         username_exists: bool,
         expected_output: bool,
@@ -99,10 +130,14 @@ class TestAbstractUserRepository:
 
         assert output == expected_output
 
+    # ================================================================
+    # AbstractUserRepository.email_exists() tests
+    # ================================================================
+
     @pytest.mark.parametrize(
         ("email_exists", "expected_output"), [(True, True), (False, False)]
     )
-    async def test_email_exists(
+    async def test_email_exists_success(
         self,
         email_exists: bool,
         expected_output: bool,
@@ -127,11 +162,15 @@ class TestAbstractUserRepository:
 
         assert output == expected_output
 
+    # ================================================================
+    # AbstractUserRepository.email_confirmation_key_exists() tests
+    # ================================================================
+
     @pytest.mark.parametrize(
         ("email_confirmation_key_exists", "expected_output"),
         [(True, True), (False, False)],
     )
-    async def test_email_confirmation_key_exists(
+    async def test_email_confirmation_key_exists_success(
         self,
         email_confirmation_key_exists: bool,
         expected_output: bool,
@@ -161,11 +200,15 @@ class TestAbstractUserRepository:
 
         assert output == expected_output
 
+    # ================================================================
+    # AbstractUserRepository.password_reset_confirmation_key_exists() tests
+    # ================================================================
+
     @pytest.mark.parametrize(
         ("password_reset_confirmation_exists", "expected_output"),
         [(True, True), (False, False)],
     )
-    async def test_password_reset_confirmation_key_exists(
+    async def test_password_reset_confirmation_key_exists_success(
         self,
         password_reset_confirmation_exists: bool,
         expected_output: bool,

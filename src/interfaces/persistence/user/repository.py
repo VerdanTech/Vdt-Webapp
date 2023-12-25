@@ -46,6 +46,18 @@ class AbstractUserRepository(AbstractAsyncRepository[User], Protocol):
         """
         ...
 
+    async def get_user_by_id(self, id: EntityIDType) -> User | None:
+        """
+        Given a user id, return the user to whom it belongs.
+
+        Args:
+            id (EntityIDType): the id to search for.
+
+        Returns:
+            User | None: the found user, or None if no user was found.
+        """
+        ...
+
     async def get_user_by_email_address(self, email_address: str) -> User | None:
         """Given an email address, return the user with the
             email to whom it belongs
