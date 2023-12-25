@@ -30,7 +30,7 @@
 		"vscode": {
 			"settings": {
 				"python.defaultInterpreterPath": "/usr/local/bin/python",
-				//"python.analysis.typeCheckingMode": "basic",
+				"python.analysis.typeCheckingMode": "basic",
 				"python.analysis.autoImportCompletions": true,
 				"python.formatting.blackPath": "/usr/local/bin/black",
 				"python.testing.unittestEnabled": false,
