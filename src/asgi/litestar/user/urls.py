@@ -34,9 +34,9 @@ USER_DELETE_URL: str = "delete/"
 
 USER_VERIFICATION_CONTROLLER_BASE = "verification/"
 
-USER_EMAIL_VERIFICATION_REQUEST_URL: str = "email/request/"
-USER_EMAIL_VERIFICATION_CONFIRM_URL: str = "email/confirm/{key:str}"
-USER_PASSWORD_RESET_REQUEST_URL: str = "password/request/{user_id:str}/{key:str}"
+USER_EMAIL_VERIFICATION_REQUEST_URL: str = "email/verification_request/"
+USER_EMAIL_VERIFICATION_CONFIRM_URL: str = "email/verification_confirm/"
+USER_PASSWORD_RESET_REQUEST_URL: str = "password/request/"
 USER_PASSWORD_RESET_CONFIRM_URL: str = "password/confirm/"
 
 # ======================================

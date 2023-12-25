@@ -7,10 +7,10 @@ from litestar.logging import StructLoggingConfig
 # VerdanTech Source
 from src import settings
 
-allowed_hosts_config = AllowedHostsConfig(allowed_hosts=settings.ALLOWED_HOSTS)
+# allowed_hosts_config = AllowedHostsConfig(allowed_hosts=settings.ALLOWED_HOSTS)
 
-cors_config = CORSConfig(allow_origins=settings.ALLOW_ORIGINS)
+# cors_config = CORSConfig(allow_origins=settings.ALLOW_ORIGINS)
 
-csrf_config = CSRFConfig()
+# csrf_config = CSRFConfig()
 
 logging_config = StructLoggingConfig()

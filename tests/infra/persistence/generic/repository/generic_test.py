@@ -1,9 +1,9 @@
 # External Libraries
 import pytest
+from pytest_mock import MockerFixture
 
 # VerdanTech Source
 from mocks.infra.persistence.repository import MockBaseRepository
-from pytest_mock import MockerFixture
 from src.interfaces.persistence import exceptions
 
 

@@ -1,6 +1,8 @@
+# Standard Library
 from functools import partial
 from typing import Callable, List
 
+# VerdanTech Source
 from src.domain.common import EntityT, RootEntityT
 from src.infra.persistence.generic.repository import BaseRepository
 from src.utils.key_generator import key_generator

@@ -3,7 +3,6 @@ import factory
 import pytest
 
 # VerdanTech Source
-from mocks.infra.persistence.repository.user_mock import MockUserRepository
 from src.domain.user.entities import User
 from src.domain.user.values import Email
 
@@ -36,8 +35,3 @@ class UserMake(factory.Factory):
 @pytest.fixture
 def user():
     return UserMake.build()
-
-
-@pytest.fixture
-def mock_user_repo():
-    return MockUserRepository()

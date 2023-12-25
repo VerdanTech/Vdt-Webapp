@@ -5,6 +5,7 @@ from typing import ContextManager
 
 # External Libraries
 import pytest
+from svcs import Container, Registry
 
 # VerdanTech Source
 from mocks.infra.security.mock_crypt import MockPasswordCrypt
@@ -52,7 +53,7 @@ def expected_error_context(request) -> ContextManager:
         return pytest.raises(request.param)
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="session", autouse=True)
 def event_loop(request):
     marker = request.node.get_closest_marker("fixt_data")
     """
@@ -69,3 +70,20 @@ def event_loop(request):
 @pytest.fixture
 def mock_password_crypt():
     return MockPasswordCrypt()
+
+
+# VerdanTech Source
+from mocks.dependencies.registry import mock_registry
+
+
+@pytest.fixture
+def svcs_container() -> Container:
+    """
+    Fixture returning an empty Container for per-test
+    dependency configuration.
+
+    Returns:
+        Container: svcs container.
+    """
+    container = Container(registry=mock_registry)
+    return container

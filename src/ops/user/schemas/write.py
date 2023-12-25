@@ -3,31 +3,47 @@ from dataclasses import dataclass
 
 # VerdanTech Source
 from src.domain.user.sanitizers import UserSanitizer
+from src.utils.sanitizers.options import GroupErrorsByEnum, SelectEnum as specs
 
 from ..sanitizers import validate_password_match
 
 
 @dataclass
 class UserCreateInput:
+    """
+    Input for creating a new user.
+    """
+
     username: str
     email_address: str
     password1: str
     password2: str
 
     async def sanitize(self, user_sanitizer: UserSanitizer) -> None:
+        """
+        Validate and normalize the input data.
+
+        Args:
+            user_sanitizer (UserSanitizer): user object sanitizer.
+        """
         validate_password_match(password1=self.password1, password2=self.password2)
 
         sanitized_data = await user_sanitizer.sanitize(
-            input={
+            input_data={
                 "username": self.username,
                 "email_address": self.email_address,
                 "password": self.password1,
             },
-            sanitization_select={
-                "username": ["length", "regex", "ban", "unique"],
-                "email": ["length", "regex", "ban", "unique", "email"],
-                "password": ["length", "regex", "ban"],
+            spec_select={
+                "username": [specs.LENGTH, specs.REGEX, specs.BAN, specs.UNIQUE],
+                "email_address": [
+                    specs.LENGTH,
+                    specs.UNIQUE,
+                    specs.EMAIL,
+                ],
+                "password": [specs.LENGTH, specs.REGEX, specs.BAN],
             },
+            group_errors_by=GroupErrorsByEnum.OBJECT,
         )
         self.username = sanitized_data["username"]
         self.email_address = sanitized_data["email_address"]

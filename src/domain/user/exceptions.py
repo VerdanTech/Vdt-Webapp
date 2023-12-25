@@ -38,12 +38,6 @@ class PasswordResetConfirmationNotValid(UserError):
     pass
 
 
-class UserNotFound(UserError):
-    """Exception for when a user is searched for but does not exist"""
-
-    pass
-
-
 class EmailNotFound(UserError):
     """Exception for when a user is supposed to operate on an email address that does not exist."""
 

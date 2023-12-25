@@ -1,5 +1,5 @@
 # Standard Library
-from typing import List
+from typing import List, Protocol
 
 # VerdanTech Source
 from src.domain.common import EntityIDType
@@ -8,7 +8,7 @@ from src.domain.user.entities import User
 from ..generic import AbstractAsyncRepository
 
 
-class AbstractUserRepository(AbstractAsyncRepository[User]):
+class AbstractUserRepository(AbstractAsyncRepository[User], Protocol):
     """Data persistence interface for the User domain model"""
 
     entity = User
@@ -43,6 +43,18 @@ class AbstractUserRepository(AbstractAsyncRepository[User]):
 
         Returns:
             User: the resultant persisted user object
+        """
+        ...
+
+    async def get_user_by_id(self, id: EntityIDType) -> User | None:
+        """
+        Given a user id, return the user to whom it belongs.
+
+        Args:
+            id (EntityIDType): the id to search for.
+
+        Returns:
+            User | None: the found user, or None if no user was found.
         """
         ...
 

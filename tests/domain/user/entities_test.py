@@ -17,20 +17,6 @@ pytestmark = [pytest.mark.unit]
 
 class TestUser:
     # ======================================
-    # User.__post_init__() tests
-    # ======================================
-
-    def test___post_init__(self) -> None:
-        """
-        Ensure the post init hook on the entity
-        is called and sets the emails and membership
-        lists to an empty list.
-        """
-        user = User(username="TestUsername")
-        assert user.emails == []
-        assert user.memberships == []
-
-    # ======================================
     # User.email_create() tests
     # ======================================
 
@@ -274,6 +260,7 @@ class TestUser:
             user (User): user factory fixture.
             mocker (MockerFixture): pytest-mock.
         """
+        expiry_time_hours = 0
         mock_unverified_email = mocker.MagicMock(spec=Email)
         mock__get_email_by_confirmation_key = mocker.patch.object(
             user, "_get_email_by_confirmation_key", return_value=mock_unverified_email
@@ -283,10 +270,14 @@ class TestUser:
         mock__set_primary_email = mocker.patch.object(user, "_set_primary_email")
         mock__trim_oldest_emails = mocker.patch.object(user, "_trim_oldest_emails")
 
-        user.email_confirmation_confirm(key="abc", max_emails=0)
+        user.email_confirmation_confirm(
+            key="abc", max_emails=0, expiry_time_hours=expiry_time_hours
+        )
 
         mock__get_email_by_confirmation_key.assert_called_once_with(key="abc")
-        mock_unverified_email.check_confirmation_expired.assert_called_once()
+        mock_unverified_email.check_confirmation_expired.assert_called_once_with(
+            expiry_time_hours=expiry_time_hours
+        )
         mock_unverified_email.verify.assert_called_once()
         mock__set_primary_email.assert_called_once_with(mock_verified_email)
         mock__trim_oldest_emails.assert_called_once()

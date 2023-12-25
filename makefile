@@ -15,6 +15,13 @@ sync-dependencies:
 	pip-sync requirements/dev.txt
 
 #
+# Run all tests.
+#
+.PHONY: test
+test:
+	pytest
+
+#
 # Run all unit tests.
 #
 .PHONY: test-unit
@@ -22,11 +29,18 @@ test-unit:
 	pytest -m unit
 
 #
-# Run all tests.
+# Run all integration tests.
 #
-.PHONY: test
-test:
-	pytest
+.PHONY: test-integration
+test-intg:
+	pytest -m integration
+
+#
+# Run all database tests.
+#
+.PHONY: test-db
+test-db:
+	pytest -m databases
 
 #
 # Run all tests and generate a coverage report.
@@ -69,14 +83,14 @@ docs:
 #
 .PHONY: schema
 schema:
-	litestar openapi schema --output schema.yaml
+	litestar --app src.asgi.litestar.app:create_app schema openapi --output schema.yaml
 
 #
 # Run the backend server with uvicorn.
 #
 .PHONY: run
 run:
-	litestar --app src.asgi.litestar.app:create_app run
+	litestar --app src.asgi.litestar.app:create_app run -d
 
 #
 # Run Alembic's "revision" command to create database migrations from the current sqlalchemy metadata.

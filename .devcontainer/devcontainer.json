@@ -30,13 +30,12 @@
 		"vscode": {
 			"settings": {
 				"python.defaultInterpreterPath": "/usr/local/bin/python",
-				"python.analysis.typeCheckingMode": "basic",
-				"python.analysis.completeFunctionParens": true,
+				//"python.analysis.typeCheckingMode": "basic",
 				"python.analysis.autoImportCompletions": true,
 				"python.formatting.blackPath": "/usr/local/bin/black",
 				"python.testing.unittestEnabled": false,
 				"python.testing.pytestEnabled": true,
-				"python.formatting.provider": "black",
+				"python.formatting.provider": "black"
 			},
             "extensions": [
                 "ms-python.python",
@@ -46,7 +45,10 @@
 				"ms-python.mypy-type-checker",
 				"ms-python.vscode-pylance",
 				"mikestead.dotenv",
-				"njpwerner.autodocstring"
+				"njpwerner.autodocstring",
+				"pomdtr.excalidraw-editor",
+				"mtxr.sqltools",
+				"mtxr.sqltools-driver-pg"
 
             ]
         }

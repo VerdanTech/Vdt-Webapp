@@ -1,11 +1,12 @@
 # Standard Library
+from dataclasses import field
 from datetime import datetime, timedelta
 from typing import List, Optional
 
 # VerdanTech Source
-from src.domain.common import EntityIDType, Ref, root_entity
+from src.domain.common import EntityIDType, root_entity
 from src.interfaces.security.crypt import AbstractPasswordCrypt
-
+from src.domain import exceptions as domain_exceptions
 from . import exceptions
 from .values import Email, PasswordResetConfirmation
 
@@ -15,16 +16,12 @@ class User:
     """User entity model"""
 
     username: str
-    emails: Optional[List[Email]] = None
-    _password_hash: Optional[str] = None
-    # memberships: Optional[List[Ref[GardenMembership]]] = None
+    emails: List[Email] = field(default_factory=list)
+    _password_hash: str = None
+    # memberships: List[Ref[GardenMembership]] = field(default_factory=list)
     is_active: bool = True
     is_superuser: bool = False
     password_reset_confirmation: Optional[PasswordResetConfirmation] = None
-
-    def __post_init__(self) -> None:
-        self.emails = []
-        self.memberships = []
 
     def email_create(
         self,
@@ -124,11 +121,13 @@ class User:
                 email = email.new_confirmation(key=key)
                 self.emails[index] = email
                 return
-        raise exceptions.EmailNotFound(
+        raise domain_exceptions.FieldNotFound(
             "The email address provided does not exist on this User."
         )
 
-    def email_confirmation_confirm(self, key: str, max_emails: int) -> None:
+    def email_confirmation_confirm(
+        self, key: str, max_emails: int, expiry_time_hours: int
+    ) -> None:
         """
         Given a verification key, verify the email
         and set it as primary, ensuring the email
@@ -137,9 +136,11 @@ class User:
         Args:
             key (str): email confirmation key.
             max_emails (int): maximum emails stored in a User, application setting.
+            expiry_time_hours (int): the amount of hours an EmailConfirmation
+                can exist before it expires. Application setting.
         """
         email = self._get_email_by_confirmation_key(key=key)
-        email.check_confirmation_expired()
+        email.check_confirmation_expired(expiry_time_hours=expiry_time_hours)
         email = email.verify()
         self._set_primary_email(email)
         self._trim_oldest_emails(max_emails=max_emails)
@@ -327,7 +328,7 @@ class User:
         """
         remaining_emails = sorted(
             self.emails,
-            key=lambda email: email.verified_at or 0,
+            key=lambda email: email.verified_at or datetime.min,
             reverse=True,
         )[:max_emails]
         self.emails = [email for email in self.emails if email in remaining_emails]

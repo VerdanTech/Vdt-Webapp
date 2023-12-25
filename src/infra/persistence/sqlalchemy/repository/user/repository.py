@@ -33,13 +33,13 @@ class UserAlchemyRepository(BaseAlchemyRepository[User]):
         Returns:
             User: the resultant persisted user object
         """
-        # async with alchemy_exception_map():
-        user_model = self._entity_to_model(user)
-        self.session.add(user_model)
-        await self.session.flush()
-        self.session.expunge(user_model)
-        user = self._model_to_entity(user_model)
-        return user
+        with alchemy_exception_map():
+            user_model = self._entity_to_model(user)
+            self.transaction.add(user_model)
+            await self.transaction.flush()
+            self.transaction.expunge(user_model)
+            user = self._model_to_entity(user_model)
+            return user
 
     async def add_many(self, users: List[User]) -> List[User]:
         """Persist a list of new user objects to the repository
@@ -75,11 +75,11 @@ class UserAlchemyRepository(BaseAlchemyRepository[User]):
         """
         statement = (
             select(EmailAlchemyModel)
-            # .options(joinedload(EmailAlchemyModel.user))
+            .options(joinedload(EmailAlchemyModel.user))
             .filter(EmailAlchemyModel.address == email_address)
         )
-        query = await self.session.execute(statement)
-        email_model = query.scalar_one_or_none()
+        query = await self.transaction.execute(statement)
+        email_model = query.unique().scalar_one_or_none()
 
         if email_model is None:
             return None
@@ -101,7 +101,7 @@ class UserAlchemyRepository(BaseAlchemyRepository[User]):
         Returns:
             User | None: the found user, or None if no user was found
         """
-        ...
+        return None
 
     async def get_user_by_password_reset_confirmation(
         self, user_id: EntityIDType, password_reset_confirmation_key: str
@@ -116,7 +116,7 @@ class UserAlchemyRepository(BaseAlchemyRepository[User]):
         Returns:
             User | None: the found user, or None if no user was found
         """
-        ...
+        return None
 
     async def username_exists(self, username: str) -> bool:
         """
@@ -134,7 +134,7 @@ class UserAlchemyRepository(BaseAlchemyRepository[User]):
             .filter(func.lower(UserAlchemyModel.username) == func.lower(username))
             .options(noload(UserAlchemyModel.emails))
         )
-        query = await self.session.execute(statement)
+        query = await self.transaction.execute(statement)
         user_model = query.scalar_one_or_none()
 
         return user_model is not None
@@ -148,10 +148,12 @@ class UserAlchemyRepository(BaseAlchemyRepository[User]):
         Returns:
             bool: true if the email exists
         """
-        statement = select(EmailAlchemyModel).filter(
-            EmailAlchemyModel.address == email_address
+        statement = (
+            select(EmailAlchemyModel)
+            .filter(EmailAlchemyModel.address == email_address)
+            .options(noload(EmailAlchemyModel.user))
         )
-        query = await self.session.execute(statement)
+        query = await self.transaction.execute(statement)
         email_model = query.scalar_one_or_none()
 
         return email_model is not None
@@ -165,10 +167,12 @@ class UserAlchemyRepository(BaseAlchemyRepository[User]):
         Returns:
             bool: true if the email confirmation key exists
         """
-        statement = select(EmailAlchemyModel).filter(
-            EmailAlchemyModel.confirmation_key == key
+        statement = (
+            select(EmailAlchemyModel)
+            .filter(EmailAlchemyModel.confirmation_key == key)
+            .options(noload(EmailAlchemyModel.user))
         )
-        query = await self.session.execute(statement)
+        query = await self.transaction.execute(statement)
         email_model = query.scalar_one_or_none()
 
         return email_model is not None
@@ -189,7 +193,7 @@ class UserAlchemyRepository(BaseAlchemyRepository[User]):
             .filter(UserAlchemyModel.password_reset_confirmation_key == key)
             .options(noload(UserAlchemyModel.emails))
         )
-        query = await self.session.execute(statement)
+        query = await self.transaction.execute(statement)
         user_model = query.scalar_one_or_none()
 
         return user_model is not None

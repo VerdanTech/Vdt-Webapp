@@ -23,16 +23,16 @@ class BaseEmailClient:
 
     def __init__(
         self,
-        client_hostname: str,
-        client_port: int,
-        client_username: str,
-        client_password: str,
+        hostname: str,
+        port: int,
+        username: str,
+        password: str,
         sender: str,
     ):
-        self.client_hostname = client_hostname
-        self.client_port = client_port
-        self.client_username = client_username
-        self.client_password = client_password
+        self.hostname = hostname
+        self.port = port
+        self.username = username
+        self.password = password
         self.sender = sender
 
     def template_html(self, html_content: str, **kwargs: Dict[str, Any]) -> str:

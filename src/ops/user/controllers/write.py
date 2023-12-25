@@ -2,12 +2,12 @@
 from src import settings
 from src.domain.user.entities import User
 from src.domain.user.sanitizers import UserSanitizer
-from src.domain.user.services import email as email_domain_services
 from src.interfaces.email.emitter import AbstractEmailEmitter
 from src.interfaces.persistence.user.repository import AbstractUserRepository
 from src.interfaces.security.crypt import AbstractPasswordCrypt
 
 from ..schemas import write as schemas
+from ..services import email as email_services
 
 
 class UserWriteOpsController:
@@ -34,12 +34,12 @@ class UserWriteOpsController:
             User: the user model created after persistence.
         """
         # Sanitize input data
-        data.sanitize(user_sanitizer=user_sanitizer)
+        await data.sanitize(user_sanitizer=user_sanitizer)
 
         # Create a new user
         user = User(username=data.username)
-        await user.set_password(password=data.password, password_crypt=password_crypt)
-        await email_domain_services.email_create(
+        await user.set_password(password=data.password1, password_crypt=password_crypt)
+        await email_services.email_create(
             user=user,
             address=data.email_address,
             max_emails=settings.USER_MAX_EMAILS,
@@ -54,14 +54,14 @@ class UserWriteOpsController:
 
         return user
 
-    async def username_change():
+    async def username_change(self):
         pass
 
-    async def email_change():
+    async def email_change(self):
         pass
 
-    async def password_change():
+    async def password_change(self):
         pass
 
-    async def delete():
+    async def delete(self):
         pass

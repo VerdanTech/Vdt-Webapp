@@ -60,51 +60,16 @@ ALLOW_ORIGINS: List[str] = config("ALLOWED_ORIGINS", cast=Csv(), default="")
 # ============================================================================
 
 # ======================================
-# PROVIDER KEY (PK) NAMES
-# These key names automatically configure all provided dependencies
-# in the provider key. The route handlers of the API, which is what the
-# dependencies are injected into, still need to have arguments with
-# names matching these keys to receive them.
+# QUEUE SETTINGS
 # ======================================
 
-# ========== Operations ========== #
-
-# User
-USER_READ_OP_PK = "user_read_operations"
-USER_WRITE_OP_PK = "user_write_operations"
-USER_VERIFICATION_OP_PK = "user_verification_operations"
-USER_AUTH_OP_PK = "user_auth_operations"
-
-# ========== Sanitizers ========== #
-
-USER_SANITIZER_PK = "user_sanitizer"
-
-# ========== Persistence ========== #
-
-# Database
-DB_CLIENT_PK = "db_client"
-DB_SESSION_PK = "db_session"
-
-# Serializer
-USER_SERIALIZER_PK = "user_serializer"
-
-# Repositories
-USER_REPOSITORY_PK = "user_repo"
-
-# ========== Email ========== #
-
-EMAIL_CLIENT_PK = "email_client"
-EMAIL_EMITTER_PK = "email_emitter"
-
-# ========== Security ========== #
-
-# Crypt
-PASSWORD_CRYPT_PK = "password_crypt"
+SAQ_WORKERS = 1
 
 # ======================================
 # DATABASE SETTINGS
 # ======================================
 
+# SQL
 POSTGRES_DB_NAME: str = config("POSTGRES_DB_NAME", cast=str)
 POSTGRES_DB_USER: str = config("POSTGRES_DB_USER", cast=str)
 POSTGRES_DB_PASSWORD: str = config("POSTGRES_DB_PASSWORD", cast=str)
@@ -115,14 +80,27 @@ POSTGRES_URI: str = config(
 )
 
 ALCHEMY_URI: str = POSTGRES_URI
+# Name of the client attribute in the global app state
+ALCHEMY_CLIENT_NAME: str = "sqlalchemy_client"
+ALCHEMY_TRANSACTION_ROLLBACK = True
+
+# Redis
+REDIS_URI: str = "redis://localhost"
 
 # ======================================
 # FILE SETTINGS
 # ======================================
 
-BASE_DIR = Path(__file__).resolve().parent.parent.parent
+BASE_DIR = Path(__file__).resolve().parent.parent
 
-EMAIL_BASE_DIR: str = "verdantech_api/static/emails/"
+STATIC_BASE_DIR: str = "static/"
+
+EMAIL_BASE_DIR: str = "static/emails/"
+
+
+def static_path(*paths: str) -> Path:
+    """Appends input path to static files directory"""
+    return BASE_DIR.joinpath(STATIC_BASE_DIR, *paths)
 
 
 def email_path(*paths: str) -> Path:
@@ -136,8 +114,8 @@ def email_path(*paths: str) -> Path:
 
 EMAIL_CLIENT_HOSTNAME: str = ""
 EMAIL_CLIENT_PORT: int = 0
-EMAIL_CLIENT_USERNAME: int = ""
-EMAIL_CLIENT_PASSWORD: int = ""
+EMAIL_CLIENT_USERNAME: str = ""
+EMAIL_CLIENT_PASSWORD: str = ""
 EMAIL_CLIENT_SENDER: str = "verdantech@gmail.com"
 
 
@@ -173,7 +151,6 @@ EMAIL_MIN_LENGTH: int = 1
 EMAIL_MAX_LENGTH: int = 255
 USERNAME_MIN_LENGTH: int = 3
 USERNAME_MAX_LENGTH: int = 50
-# USERNAME_REGEX_PATTERN: str =
 PASSWORD_MIN_LENGTH: int = 6
 PASSWORD_MAX_LENGTH: int = 255
 USER_MAX_EMAILS: int = 3

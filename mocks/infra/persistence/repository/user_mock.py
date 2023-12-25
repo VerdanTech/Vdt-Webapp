@@ -1,5 +1,7 @@
+# Standard Library
 from typing import List
 
+# VerdanTech Source
 from src.domain.common import EntityIDType
 from src.domain.user.entities import User
 from src.interfaces.persistence.user.exceptions import UserDoesNotExistError
@@ -137,7 +139,7 @@ class MockUserRepository(MockBaseRepository[User]):
         """
         for user in self.collection:
             for email in user.emails:
-                if email.address == email:
+                if email.address == email_address:
                     return True
         return False
 
@@ -152,7 +154,7 @@ class MockUserRepository(MockBaseRepository[User]):
         """
         for user in self.collection:
             for email in user.emails:
-                if email.confirmation.key == key:
+                if email.confirmation is not None and email.confirmation.key == key:
                     return True
         return False
 
@@ -168,6 +170,9 @@ class MockUserRepository(MockBaseRepository[User]):
             bool: true if the password reset confirmation key exists
         """
         for user in self.collection:
-            if user.password_reset_confirmation.key == key:
+            if (
+                user.password_reset_confirmation is not None
+                and user.password_reset_confirmation.key == key
+            ):
                 return True
         return False

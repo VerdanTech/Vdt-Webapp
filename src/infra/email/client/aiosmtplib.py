@@ -29,10 +29,10 @@ class AioSmtplibEmailClient(BaseEmailClient):
         try:
             await aiosmtp_send(
                 message,
-                hostname=self.client_hostname,
-                port=self.client_port,
-                username=self.client_username,
-                password=self.client_password,
+                hostname=self.hostname,
+                port=self.port,
+                username=self.username,
+                password=self.password,
                 use_tls=True,
             )
         except SMTPException as exc:

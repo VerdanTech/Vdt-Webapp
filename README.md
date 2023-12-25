@@ -1,3 +1,14 @@
+# Setup Build Environment
+ 
+## Windows, VS devcontainer
+
+1. Install WSL
+2. Install Docker Engine (easiest way is through docker desktop). Start Docker Enginer.
+3. Install VSCode and Dev Containers extension.
+3. Run command `Clone repository into container volume.` For optimal performance. Otherwise, clone the repo and run `Run folder in container.`
+4. Copy .env-default into .env
+5. Run `make migrate`
+
 
 ## Makefile commands
 

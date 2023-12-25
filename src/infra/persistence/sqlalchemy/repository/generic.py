@@ -16,11 +16,11 @@ class BaseAlchemyRepository(BaseRepository[RootEntityT]):
 
     def __init__(
         self,
-        session: AsyncSession,
-        **kwargs: Dict[str, Any],
+        transaction: AsyncSession,
+        **kwargs,
     ) -> None:
         super().__init__(**kwargs)
-        self.session = session
+        self.transaction = transaction
 
     def _entity_to_model(self, entity: RootEntityT) -> BaseAlchemyModel:
         """Wrap entity to model mapping
