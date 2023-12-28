@@ -6,7 +6,10 @@ from src.domain.common import EntityIdType
 
 
 class AbstractEmailEmitter(Protocol):
-    """Interface for configuring and emitting emails into an event stream"""
+    """
+    The EmailEmitter provides an interface between the application and
+    an EmailClient, and allows emitting emails into an event stream.
+    """
 
     async def emit_user_email_confirmation(
         self, email_address: str, username: str, key: str

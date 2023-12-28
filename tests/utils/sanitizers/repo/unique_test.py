@@ -7,7 +7,7 @@ import pytest
 from pytest_mock import MockerFixture
 
 # VerdanTech Source
-from src.interfaces.persistence.generic import AbstractAsyncRepository
+from src.interfaces.persistence.generic import AbstractRepository
 from src.utils.sanitizers.repo.unique import UniqueSpec, UniqueSpecConfig
 
 pytestmark = [pytest.mark.unit]
@@ -24,7 +24,7 @@ class TestUniqueSpecConfig:
         """
         Ensure that the repository's method signature validation is called.
         """
-        mock_repo = mocker.MagicMock(spec=AbstractAsyncRepository)
+        mock_repo = mocker.MagicMock(spec=AbstractRepository)
         existence_method_name = "existence_method_name"
         existence_method_argument_name = "existence_method_argument_name"
 
@@ -73,7 +73,7 @@ class TestUniqueSpec:
         # Config attributes
         existence_method_name = "existence_method_name"
         existence_method_argument_name = "existence_method_argument_name"
-        mock_repo = mocker.MagicMock(spec=AbstractAsyncRepository)
+        mock_repo = mocker.MagicMock(spec=AbstractRepository)
         mock_repo.async_dynamic_call.return_value = mock_existence_method_return_value
 
         # Init Spec

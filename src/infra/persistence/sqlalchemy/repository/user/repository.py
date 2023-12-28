@@ -18,20 +18,21 @@ from ..exceptions import alchemy_exception_map
 from ..generic import BaseAlchemyRepository
 
 
-class UserAlchemyRepository(BaseAlchemyRepository[User]):
+class UserAlchemyRepository(BaseAlchemyRepository[User, UserAlchemyModel]):
     """SQLAlchemy implementation of user repository"""
 
     entity = User
     mapper = UserAlchemyMapper
 
     async def add(self, user: User) -> User:
-        """Persist a new user object to the repository
+        """
+        Persist a new user entity to the repository.
 
         Args:
-            user (User): the user object to add
+            user (User): the user entity to add.
 
         Returns:
-            User: the resultant persisted user object
+            User: the user entity after persistence.
         """
         with alchemy_exception_map():
             user_model = self._entity_to_model(user)
@@ -42,36 +43,51 @@ class UserAlchemyRepository(BaseAlchemyRepository[User]):
             return user
 
     async def add_many(self, users: List[User]) -> List[User]:
-        """Persist a list of new user objects to the repository
+        """
+        Persist a list of new user entities to the repository.
 
         Args:
-            users (List[User]): the user objects to add
+            users (list[User]): the user entities to add.
 
         Returns:
-            List[User]: the resultant persisted user objects
+            list[User]: the user entities after persistence.
         """
         ...
 
     async def update(self, user: User) -> User:
-        """Persist an existing user object to the repository
+        """
+        Persist an existing user entity to the repository.
 
         Args:
-            user (User): user object to update
+            user (User): user entity to update.
 
         Returns:
-            User: the resultant persisted user object
+            User: the user entity after persistence.
+        """
+        ...
+
+    async def get_user_by_id(self, id: EntityIdType) -> User | None:
+        """
+        Given a user id, return the user to whom it belongs.
+
+        Args:
+            id (EntityIdType): the id to search for.
+
+        Returns:
+            User | None: the found user, or None if no user was found.
         """
         ...
 
     async def get_user_by_email_address(self, email_address: str) -> User | None:
-        """Given an email address, return the user with the
-            email to whom it belongs
+        """
+        Given an email address, return the user with the
+        email to whom it belongs
 
         Args:
-            email_address (str): the address to search for
+            email_address (str): the address to search for.
 
         Returns:
-            User | None: the found user, or None if no user was found
+            User | None: the found user, or None if no user was found.
         """
         statement = (
             select(EmailAlchemyModel)
@@ -92,29 +108,31 @@ class UserAlchemyRepository(BaseAlchemyRepository[User]):
     async def get_user_by_email_confirmation_key(
         self, email_confirmation_key: str
     ) -> User | None:
-        """Given an email confirmation key, return the user with
-            the email to whom it belongs
+        """
+        Given an email confirmation key, return the user with
+        the email to whom it belongs.
 
         Args:
-            key (str): email confirmation key
+            key (str): email confirmation key.
 
         Returns:
-            User | None: the found user, or None if no user was found
+            User | None: the found user, or None if no user was found.
         """
         return None
 
     async def get_user_by_password_reset_confirmation(
         self, user_id: EntityIdType, password_reset_confirmation_key: str
     ) -> User | None:
-        """Given a password reset key and user ID, return the user with
-            the password reset confirmation and ID to whom they belong
+        """
+        Given a password reset key and user ID, return the user with
+        the password reset confirmation and ID to whom they belong.
 
         Args:
-            user_id (EntityIdType): the user's ID
-            key (str): password reset confirmation key
+            user_id (EntityIdType): the user's ID.
+            key (str): password reset confirmation key.
 
         Returns:
-            User | None: the found user, or None if no user was found
+            User | None: the found user, or None if no user was found.
         """
         return None
 
@@ -124,10 +142,10 @@ class UserAlchemyRepository(BaseAlchemyRepository[User]):
         Username comparison should be case insensitive.
 
         Args:
-            username (str): the username to check uniqueness of
+            username (str): the username to check uniqueness of.
 
         Returns:
-            bool: true if the username exists
+            bool: true if the username exists.
         """
         statement = (
             select(UserAlchemyModel)
@@ -140,13 +158,14 @@ class UserAlchemyRepository(BaseAlchemyRepository[User]):
         return user_model is not None
 
     async def email_exists(self, email_address: str) -> bool:
-        """Check the existence of an email address in the repository
+        """
+        Check the existence of an email_address in the repository.
 
         Args:
-            email (str): the email to check uniqueness of
+            email (str): the email to check uniqueness of.
 
         Returns:
-            bool: true if the email exists
+            bool: true if the email exists.
         """
         statement = (
             select(EmailAlchemyModel)
@@ -159,13 +178,14 @@ class UserAlchemyRepository(BaseAlchemyRepository[User]):
         return email_model is not None
 
     async def email_confirmation_key_exists(self, key: str) -> bool:
-        """Check the existence of an email confirmatiion key in the repository
+        """
+        Check the existence of an email confirmatiion key in the repository.
 
         Args:
-            key (str): the email confirmation key to check uniqueness of
+            key (str): the email confirmation key to check uniqueness of.
 
         Returns:
-            bool: true if the email confirmation key exists
+            bool: true if the email confirmation key exists.
         """
         statement = (
             select(EmailAlchemyModel)
@@ -178,15 +198,16 @@ class UserAlchemyRepository(BaseAlchemyRepository[User]):
         return email_model is not None
 
     async def password_reset_confirmation_key_exists(self, key: str) -> bool:
-        """Check the existence of an password reset confirmatiion key
-            in the repository
+        """
+        Check the existence of an password reset confirmatiion key
+        in the repository.
 
         Args:
             key (str): the password reset confirmation key to
-                check uniqueness of
+                check uniqueness of.
 
         Returns:
-            bool: true if the password reset confirmation key exists
+            bool: true if the password reset confirmation key exists.
         """
         statement = (
             select(UserAlchemyModel)

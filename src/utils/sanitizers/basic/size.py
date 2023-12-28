@@ -18,7 +18,7 @@ class SizeSpecError(SpecError):
     pass
 
 
-class SizeSpec(Spec):
+class SizeSpec[SizeSpecConfig](Spec):
     """Size sanitization functionality"""
 
     id = SelectEnum.SIZE

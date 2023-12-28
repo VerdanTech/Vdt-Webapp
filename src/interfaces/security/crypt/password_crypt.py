@@ -11,6 +11,7 @@ class AbstractPasswordCrypt(Protocol):
 
         Args:
             plain_password: Plain password
+
         Returns:
             str: Hashed password
         """

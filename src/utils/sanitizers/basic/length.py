@@ -15,7 +15,7 @@ class LengthSpecError(SpecError):
     pass
 
 
-class LengthSpec(Spec):
+class LengthSpec[LengthSpecConfig](Spec):
     """Length sanitization functionality"""
 
     id = SelectEnum.LENGTH

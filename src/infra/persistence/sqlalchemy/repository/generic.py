@@ -1,6 +1,3 @@
-# Standard Library
-from typing import Any, Dict, Generic
-
 # External Libraries
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -11,35 +8,37 @@ from src.infra.persistence.sqlalchemy.mapper.generic import BaseAlchemyMapper
 from src.infra.persistence.sqlalchemy.mapper.model import BaseAlchemyModel
 
 
-class BaseAlchemyRepository[T: RootEntity](BaseRepository[T]):
-    mapper: BaseAlchemyMapper
+class BaseAlchemyRepository[RootEntityT: RootEntity, AlchemyModelT: BaseAlchemyModel](
+    BaseRepository[RootEntityT]
+):
+    mapper = BaseAlchemyMapper
 
     def __init__(
         self,
         transaction: AsyncSession,
-        **kwargs,
     ) -> None:
-        super().__init__(**kwargs)
         self.transaction = transaction
 
-    def _entity_to_model(self, entity: RootEntity) -> BaseAlchemyModel:
-        """Wrap entity to model mapping
+    def _entity_to_model(self, entity: RootEntityT) -> AlchemyModelT:
+        """
+        Wraps entity to model mapping.
 
         Args:
-            entity (RootEntity): entity to map
+            entity (RootEntityT): entity to map.
 
         Returns:
-            BaseAlchemyModel: result of mapping
+            BaseAlchemyModel: result of mapping.
         """
         return self.mapper.to_model(entity=entity)
 
-    def _model_to_entity(self, model: BaseAlchemyModel) -> RootEntity:
-        """Wrap model to entity mapping
+    def _model_to_entity(self, model: AlchemyModelT) -> RootEntityT:
+        """
+        Wrap model to entity mapping.
 
         Args:
-            model (BaseAlchemyModel): model to map
+            model (AlchemyModelT): model to map.
 
         Returns:
-            RootEntity: result of mapping
+            RootEntityT: result of mapping.
         """
         return self.mapper.from_model(model=model)

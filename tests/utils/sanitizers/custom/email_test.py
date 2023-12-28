@@ -50,7 +50,7 @@ class TestEmailSpec:
         # As the EmailSpec modifies the normalized_data attribute on its FieldSanitizer,
         # mock a FieldSanitizer on the EmailSpec
         mock_field_sanitizer = mocker.Mock(spec=FieldSanitizer)
-        spec.field = mock_field_sanitizer
+        spec.field_sanitizer = mock_field_sanitizer
 
         # Mock email_validator library
         normalized_email_address = "normalized_email"
@@ -71,7 +71,7 @@ class TestEmailSpec:
             test_environment=test_environment,
             allow_smtputf8=allow_smtputf8,
         )
-        assert return_value == True
+        assert return_value is True
 
     def test_email_spec_false_validation(self, mocker: MockerFixture):
         """
@@ -99,7 +99,7 @@ class TestEmailSpec:
         # As the EmailSpec modifies the normalized_data attribute on its FieldSanitizer,
         # mock a FieldSanitizer on the EmailSpec
         mock_field_sanitizer = mocker.Mock(spec=FieldSanitizer)
-        spec.field = mock_field_sanitizer
+        spec.field_sanitizer = mock_field_sanitizer
 
         # Mock email_validator library
         mock_error_message = "Error message from email_validator"
@@ -110,5 +110,5 @@ class TestEmailSpec:
 
         return_value = spec._sanitize(input_data="input_data")
 
-        assert return_value == False
+        assert return_value is False
         assert spec.config.error_message == str(mock_error_message)

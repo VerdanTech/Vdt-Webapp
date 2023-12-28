@@ -3,17 +3,17 @@ from dataclasses import dataclass
 from typing import Any
 
 # VerdanTech Source
-from src.interfaces.persistence.generic import AbstractAsyncRepository
+from src.interfaces.persistence.generic import AbstractRepository
 
 from ..options import SelectEnum
 from ..spec import Spec, SpecConfig, SpecError
 
 
 @dataclass(kw_only=True)
-class UniqueSpecConfig(SpecConfig[None]):
+class UniqueSpecConfig(SpecConfig):
     params = None
     # The repository to use for validation.
-    repo: AbstractAsyncRepository
+    repo: AbstractRepository
     # The name of the method on the repository that return True when
     # the input exists in the database and False when it doesn't.
     existence_method_name: str
@@ -24,7 +24,7 @@ class UniqueSpecConfig(SpecConfig[None]):
     def __init__(
         self,
         error_message: str,
-        repo: AbstractAsyncRepository,
+        repo: AbstractRepository,
         existence_method_name: str,
         existence_method_argument_name: str,
     ) -> None:
@@ -43,7 +43,7 @@ class UniqueSpecError(SpecError):
     pass
 
 
-class UniqueSpec(Spec):
+class UniqueSpec[UniqueSpecConfig](Spec):
     """Uniqueness sanitization functionality"""
 
     id = SelectEnum.UNIQUE

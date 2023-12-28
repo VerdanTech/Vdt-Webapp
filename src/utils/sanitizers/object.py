@@ -1,5 +1,5 @@
 # Standard Library
-from typing import Any, Dict, Generic, List, Tuple, Type, TypedDict, TypeVar
+from typing import Any, Dict, Generic, List, Tuple, TypedDict, TypeVar
 
 from . import field, spec
 from .options import GroupErrorsByEnum, SelectEnum
@@ -26,7 +26,7 @@ class ObjectSanitizer(Generic[ObjectSanitizerConfigT]):
 
     async def sanitize(
         self,
-        input_data: Dict[str, spec.GenericInputType],
+        input_data: Dict[str, spec.InputType],
         spec_select: Dict[str, List[SelectEnum]],
         apply_default: bool = False,
         group_errors_by: GroupErrorsByEnum = GroupErrorsByEnum.OBJECT,
@@ -81,8 +81,8 @@ class ObjectSanitizer(Generic[ObjectSanitizerConfigT]):
 
     async def _sanitize(
         self,
-        input_data: Dict[str, spec.GenericInputType],
-        spec_select: Dict[str, List[SelectEnum]],
+        input_data: Dict[str, spec.InputType],
+        spec_select: Dict[str, list[SelectEnum]],
         apply_default: bool = False,
         group_errors_by: GroupErrorsByEnum = GroupErrorsByEnum.OBJECT,
     ) -> Tuple[Dict[str, Any], Dict[str, str]]:
@@ -158,12 +158,12 @@ class MockObjectSanitizer(ObjectSanitizer):
 
     async def sanitize(
         self,
-        input: Dict[str, Any],
-        sanitization_select: Dict[str, List[field.SelectEnum]],
+        input_data: Dict[str, spec.InputType],
+        spec_select: Dict[str, List[SelectEnum]],
+        apply_default: bool = False,
         group_errors_by: GroupErrorsByEnum = GroupErrorsByEnum.OBJECT,
-        apply_sanitization_default: bool = False,
     ) -> Dict[str, Any]:
-        return input
+        return input_data
 
     async def sanitize_object(self, object: Any) -> None:
         return
