@@ -2,7 +2,7 @@
 from dataclasses import dataclass
 
 # VerdanTech Source
-from src.domain.common import EntityIDType
+from src.domain.common import EntityIdType
 from src.domain.user.sanitizers import UserSanitizer
 from src.utils.sanitizers.options import GroupErrorsByEnum, SelectEnum as specs
 
@@ -96,7 +96,7 @@ class UserPasswordResetConfirmInput:
     Input for closing and confirming a password reset request.
     """
 
-    user_id: EntityIDType
+    user_id: EntityIdType
     key: str
     new_password1: str
     new_password2: str

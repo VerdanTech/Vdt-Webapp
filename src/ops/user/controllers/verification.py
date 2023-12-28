@@ -83,9 +83,7 @@ class UserVerificationOpsController:
             email_confirmation_key=data.key
         )
         if user is None:
-            raise EntityNotFound(
-                "The email verification key does not exist."
-            )
+            raise EntityNotFound("The email verification key does not exist.")
 
         # Verify email
         user.email_confirmation_confirm(

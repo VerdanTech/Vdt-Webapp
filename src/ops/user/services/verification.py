@@ -1,8 +1,8 @@
 # VerdanTech Source
-from src.ops import exceptions as ops_exceptions
 from src.domain.user.entities import User
 from src.interfaces.email.emitter import AbstractEmailEmitter
 from src.interfaces.persistence.user.repository import AbstractUserRepository
+from src.ops import exceptions as ops_exceptions
 from src.utils.key_generator import key_generator
 
 

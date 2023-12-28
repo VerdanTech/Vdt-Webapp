@@ -6,7 +6,7 @@ from sqlalchemy import func, select
 from sqlalchemy.orm import joinedload, noload
 
 # VerdanTech Source
-from src.domain.common import EntityIDType
+from src.domain.common import EntityIdType
 from src.domain.user.entities import User
 from src.infra.persistence.sqlalchemy.mapper.user import UserAlchemyMapper
 from src.infra.persistence.sqlalchemy.mapper.user.model import (
@@ -104,13 +104,13 @@ class UserAlchemyRepository(BaseAlchemyRepository[User]):
         return None
 
     async def get_user_by_password_reset_confirmation(
-        self, user_id: EntityIDType, password_reset_confirmation_key: str
+        self, user_id: EntityIdType, password_reset_confirmation_key: str
     ) -> User | None:
         """Given a password reset key and user ID, return the user with
             the password reset confirmation and ID to whom they belong
 
         Args:
-            user_id (EntityIDType): the user's ID
+            user_id (EntityIdType): the user's ID
             key (str): password reset confirmation key
 
         Returns:

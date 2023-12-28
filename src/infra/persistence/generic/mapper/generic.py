@@ -2,12 +2,12 @@
 from typing import Generic, Protocol, TypeVar
 
 # VerdanTech Source
-from src.domain.common import RootEntityT
+from src.domain.common import RootEntity
 
-DatabaseModelT = TypeVar("DatabaseModelT")
+type DatabaseModelT = TypeVar("DatabaseModelT")
 
 
-class AbstractMapper(Protocol, Generic[RootEntityT]):
+class AbstractMapper[T: RootEntity](Protocol):
     """
     Interface for python object -> database representation functionality.
     We only expect RootEntitys because they are supposed to define
@@ -16,11 +16,11 @@ class AbstractMapper(Protocol, Generic[RootEntityT]):
     (and one repository) for each RootEntity.
     """
 
-    entity: RootEntityT
+    entity: T
     model: DatabaseModelT
 
     @classmethod
-    def to_model(entity: RootEntityT) -> DatabaseModelT:
+    def to_model(entity: RootEntity) -> DatabaseModelT:
         """
         Given a root entity, map into a database representation.
 
@@ -33,7 +33,7 @@ class AbstractMapper(Protocol, Generic[RootEntityT]):
         ...
 
     @classmethod
-    def from_model(model: DatabaseModelT) -> RootEntityT:
+    def from_model(model: DatabaseModelT) -> RootEntity:
         """
         Given a database representation, map into a root entity.
 
@@ -41,6 +41,6 @@ class AbstractMapper(Protocol, Generic[RootEntityT]):
             DatabaseModelT: the database representation to map.
 
         Returns:
-            RootEntityT: the resultant root entity.
+            RootEntity: the resultant root entity.
         """
         ...

@@ -3,7 +3,7 @@ from typing import Optional
 
 # VerdanTech Source
 from src import settings
-from src.domain.common import EntityIDType
+from src.domain.common import EntityIdType
 from src.interfaces.email.client import AbstractEmailClient
 
 
@@ -69,7 +69,7 @@ class BaseEmailEmitter:
         )
 
     async def emit_user_password_reset(
-        self, email_address: str, username: str, user_id: EntityIDType, key: str
+        self, email_address: str, username: str, user_id: EntityIdType, key: str
     ) -> None:
         """
         The password reset email provides a url to a page on the client
@@ -79,7 +79,7 @@ class BaseEmailEmitter:
         Args:
             email_address (str): the email address to send to
             username (str): the username of the user
-            user_id (EntityIDType): the ID of the user
+            user_id (EntityIdType): the ID of the user
         """
         filepath = settings.EMAIL_FILEPATH_PASSWORD_RESET
         subject = settings.EMAIL_SUBJECT_PASSWORD_RESET

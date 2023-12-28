@@ -1,32 +1,35 @@
 # Standard Library
+from dataclasses import field
 from datetime import datetime
 from typing import List
 
-from ..common import root_entity
-from ..plants.values import PlantSetRef
-from ..user.values import UserRef
-from ..workspace.values import WorkspaceRef
-from .values import GardenMembershipRefGarden, GardenRef, RoleEnum, VisibilityEnum
+# VerdanTech Source
+from src.domain.common import Ref, RootEntity, root_entity_dataclass
+from src.domain.plants.entities import PlantSet
+from src.domain.user.entities import User
+from src.domain.workspace.entities import Workspace
+
+from .values import RoleEnum, VisibilityEnum
 
 
-@root_entity
-class Garden:
+@root_entity_dataclass
+class Garden(RootEntity):
     key_id: str
     name: str
-    creator: UserRef | None
+    creator: Ref[User] | None
     visibility: VisibilityEnum
-    admins: List[GardenMembershipRefGarden]
-    editors: List[GardenMembershipRefGarden]
-    viewers: List[GardenMembershipRefGarden]
-    plantsets: List[PlantSetRef]
-    workspaces: List[WorkspaceRef]
+    admins: List[Ref["GardenMembership"]]
+    editors: List[Ref["GardenMembership"]] = field(default_factory=list)
+    viewers: List[Ref["GardenMembership"]] = field(default_factory=list)
+    plantsets: List[Ref[PlantSet]] = field(default_factory=list)
+    workspaces: List[Ref[Workspace]] = field(default_factory=list)
 
 
-@root_entity
-class GardenMembership:
-    inviter: UserRef | None
-    user: UserRef
-    garden: GardenRef
+@root_entity_dataclass
+class GardenMembership(RootEntity):
+    inviter: Ref[User] | None
+    user: Ref[User]
+    garden: Ref[Garden]
     role: RoleEnum
     created_at: datetime
 

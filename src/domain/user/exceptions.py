@@ -1,4 +1,8 @@
-class UserError(Exception):
+# VerdanTech Source
+from src.domain.exceptions import DomainException
+
+
+class UserError(DomainException):
     pass
 
 

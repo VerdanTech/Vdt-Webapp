@@ -5,13 +5,13 @@ from typing import Any, Dict, Generic
 from sqlalchemy.ext.asyncio import AsyncSession
 
 # VerdanTech Source
-from src.domain.common import RootEntityT
+from src.domain.common import RootEntity
 from src.infra.persistence.generic.repository import BaseRepository
 from src.infra.persistence.sqlalchemy.mapper.generic import BaseAlchemyMapper
 from src.infra.persistence.sqlalchemy.mapper.model import BaseAlchemyModel
 
 
-class BaseAlchemyRepository(BaseRepository[RootEntityT]):
+class BaseAlchemyRepository[T: RootEntity](BaseRepository[T]):
     mapper: BaseAlchemyMapper
 
     def __init__(
@@ -22,24 +22,24 @@ class BaseAlchemyRepository(BaseRepository[RootEntityT]):
         super().__init__(**kwargs)
         self.transaction = transaction
 
-    def _entity_to_model(self, entity: RootEntityT) -> BaseAlchemyModel:
+    def _entity_to_model(self, entity: RootEntity) -> BaseAlchemyModel:
         """Wrap entity to model mapping
 
         Args:
-            entity (RootEntityT): entity to map
+            entity (RootEntity): entity to map
 
         Returns:
             BaseAlchemyModel: result of mapping
         """
         return self.mapper.to_model(entity=entity)
 
-    def _model_to_entity(self, model: BaseAlchemyModel) -> RootEntityT:
+    def _model_to_entity(self, model: BaseAlchemyModel) -> RootEntity:
         """Wrap model to entity mapping
 
         Args:
             model (BaseAlchemyModel): model to map
 
         Returns:
-            RootEntityT: result of mapping
+            RootEntity: result of mapping
         """
         return self.mapper.from_model(model=model)

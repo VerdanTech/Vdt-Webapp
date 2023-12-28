@@ -5,8 +5,8 @@ from contextlib import asynccontextmanager
 from litestar.exceptions import ValidationException as LitestarValidationException
 
 # VerdanTech Source
-from src.utils.sanitizers.spec import SpecError
 from src.ops import exceptions as ops_exceptions
+from src.utils.sanitizers.spec import SpecError
 
 
 @asynccontextmanager
@@ -18,9 +18,7 @@ async def litestar_exception_map():
         raise LitestarValidationException(
             detail="Data validation error", status_code=422, extra=error.value.args[0]
         )
-    except ops_exceptions.EntityNotFound as error:
-        raise LitestarValidationException(
-            detail="Entity not found", status_code=422
-        )
+    except ops_exceptions.EntityNotFound:
+        raise LitestarValidationException(detail="Entity not found", status_code=422)
     except Exception as error:
         raise error

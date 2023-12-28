@@ -2,7 +2,7 @@
 from typing import List, Protocol
 
 # VerdanTech Source
-from src.domain.common import EntityIDType
+from src.domain.common import EntityIdType
 from src.domain.user.entities import User
 
 from ..generic import AbstractAsyncRepository
@@ -46,12 +46,12 @@ class AbstractUserRepository(AbstractAsyncRepository[User], Protocol):
         """
         ...
 
-    async def get_user_by_id(self, id: EntityIDType) -> User | None:
+    async def get_user_by_id(self, id: EntityIdType) -> User | None:
         """
         Given a user id, return the user to whom it belongs.
 
         Args:
-            id (EntityIDType): the id to search for.
+            id (EntityIdType): the id to search for.
 
         Returns:
             User | None: the found user, or None if no user was found.
@@ -85,13 +85,13 @@ class AbstractUserRepository(AbstractAsyncRepository[User], Protocol):
         ...
 
     async def get_user_by_password_reset_confirmation(
-        self, user_id: EntityIDType, password_reset_confirmation_key: str
+        self, user_id: EntityIdType, password_reset_confirmation_key: str
     ) -> User | None:
         """Given a password reset key and user ID, return the user with
             the password reset confirmation and ID to whom they belong
 
         Args:
-            user_id (EntityIDType): the user's ID
+            user_id (EntityIdType): the user's ID
             key (str): password reset confirmation key
 
         Returns:

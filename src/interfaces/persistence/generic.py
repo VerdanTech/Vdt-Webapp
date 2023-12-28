@@ -2,16 +2,16 @@
 from typing import Any, Dict, Generic, Protocol
 
 # VerdanTech Source
-from src.domain.common import RootEntityT
+from src.domain.common import RootEntity
 
 from .exceptions import InterfaceRepositoryError
 
 
-class AbstractAsyncRepository(Generic[RootEntityT], Protocol):
+class AbstractAsyncRepository[T: RootEntity](Protocol):
     """
     Base interface of repository for domain model persistence.
 
-    Generic[RootEntityT]: a Repository is characterized by one
+    T: a Repository is characterized by one
         type of RootEntity. As RootEntitys are defined as entities
         which compose transactional and consistency boundaries,
         they are the objects that get persisted through interaction
@@ -20,7 +20,7 @@ class AbstractAsyncRepository(Generic[RootEntityT], Protocol):
     Protocol: (https://peps.python.org/pep-0544/)
     """
 
-    entity: RootEntityT
+    entity: T
 
     async def async_dynamic_call(
         self,

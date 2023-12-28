@@ -3,16 +3,16 @@ import inspect
 from typing import Any, Dict, Generic, Optional
 
 # VerdanTech Source
-from src.domain.common import RootEntityT
+from src.domain.common import RootEntity
 from src.interfaces.persistence import exceptions
 
 from ..mapper import AbstractMapper
 
 
-class BaseRepository(Generic[RootEntityT]):
+class BaseRepository[T: RootEntity]:
     """Base implementation of interface for domain model persistence"""
 
-    entity: RootEntityT
+    entity: T
 
     def __init__(
         self,

@@ -10,7 +10,6 @@ pytestmark = [pytest.mark.databases]
 
 
 class TestAbstractUserRepository:
-
     # ================================================================
     # AbstractUserRepository.add() tests
     # ================================================================
@@ -43,7 +42,6 @@ class TestAbstractUserRepository:
             email_address=user.emails[0].address
         )
         assert user.id is not None
-
 
     # ================================================================
     # AbstractUserRepository.add_many() tests
@@ -88,19 +86,17 @@ class TestAbstractUserRepository:
         )
         assert user_result.emails[0].address == user.emails[0].address
 
-
     # ================================================================
     # AbstractUserRepository.get_user_by_email_confirmation_key() tests
     # ================================================================
-        
+
     # ================================================================
     # AbstractUserRepository.get_user_by_password_reset_confirmation() tests
     # ================================================================
-        
+
     # ================================================================
     # AbstractUserRepository.username_exists() tests
     # ================================================================
-
 
     @pytest.mark.parametrize(
         ("username_exists", "expected_output"), [(True, True), (False, False)]

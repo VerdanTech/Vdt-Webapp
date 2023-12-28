@@ -28,8 +28,12 @@ USER_DELETE_NAME: str = USER_ROUTER_NAME_BASE + "delete"
 # VERIFICATION
 # ======================================
 
-USER_EMAIL_VERIFICATION_REQUEST_NAME: str = USER_ROUTER_NAME_BASE + "email_verification_request"
-USER_EMAIL_VERIFICATION_CONFIRM_NAME: str = USER_ROUTER_NAME_BASE + "email_confirmation_confirm"
+USER_EMAIL_VERIFICATION_REQUEST_NAME: str = (
+    USER_ROUTER_NAME_BASE + "email_verification_request"
+)
+USER_EMAIL_VERIFICATION_CONFIRM_NAME: str = (
+    USER_ROUTER_NAME_BASE + "email_confirmation_confirm"
+)
 USER_PASSWORD_RESET_REQUEST_NAME: str = USER_ROUTER_NAME_BASE + "password_reset_request"
 USER_PASSWORD_RESET_CONFIRM_NAME: str = USER_ROUTER_NAME_BASE + "password_reset_confirm"
 

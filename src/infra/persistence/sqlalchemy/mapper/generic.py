@@ -2,19 +2,19 @@
 from typing import Generic
 
 # VerdanTech Source
-from src.domain.common import RootEntityT
+from src.domain.common import RootEntity
 
 from .model import BaseAlchemyModel
 
 
-class BaseAlchemyMapper(Generic[RootEntityT]):
+class BaseAlchemyMapper[T: RootEntity]:
     """Implementation of a model mapper interface using sqlalchemy."""
 
-    entity: RootEntityT
+    entity = T
     model: BaseAlchemyModel
 
     @staticmethod
-    def to_model(self, entity: RootEntityT) -> BaseAlchemyModel:
+    def to_model(entity: T) -> BaseAlchemyModel:
         """Given a root entity, map into sqlalchemy model.
 
         Args:
@@ -26,13 +26,13 @@ class BaseAlchemyMapper(Generic[RootEntityT]):
         raise NotImplementedError
 
     @staticmethod
-    def from_model(self, model: BaseAlchemyModel) -> RootEntityT:
+    def from_model(model: BaseAlchemyModel) -> RootEntity:
         """Given a sqlalchemy model, map into python object
 
         Args:
             BaseAlchemyModel: the sqlalchemy model to map
 
         Returns:
-            RootEntityT: the resultant object
+            RootEntity: the resultant object
         """
         raise NotImplementedError
