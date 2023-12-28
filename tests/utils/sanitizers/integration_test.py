@@ -19,7 +19,7 @@ async def test_multi_field_multi_spec_object_sanitizer() -> None:
     """
     object_sanitizer = ObjectSanitizer(
         config=ObjectSanitizerConfig(
-            field1=FieldSanitizer(
+            field1=FieldSanitizer([
                 length.LengthSpec(
                     config=length.LengthSpecConfig(
                         params=length.LengthSpecParams(min=0, max=50),
@@ -33,8 +33,8 @@ async def test_multi_field_multi_spec_object_sanitizer() -> None:
                         case_sensitive=False,
                     )
                 ),
-            ),
-            field2=FieldSanitizer(
+            ]),
+            field2=FieldSanitizer([
                 length.LengthSpec(
                     config=length.LengthSpecConfig(
                         params=length.LengthSpecParams(min=0, max=2),
@@ -50,8 +50,8 @@ async def test_multi_field_multi_spec_object_sanitizer() -> None:
                         case_sensitive=False,
                     )
                 ),
-            ),
-            field3=FieldSanitizer(
+            ]),
+            field3=FieldSanitizer([
                 length.LengthSpec(
                     config=length.LengthSpecConfig(
                         params=length.LengthSpecParams(min=0, max=5),
@@ -69,7 +69,7 @@ async def test_multi_field_multi_spec_object_sanitizer() -> None:
                         case_sensitive=False,
                     )
                 ),
-            ),
+            ]),
         )
     )
 

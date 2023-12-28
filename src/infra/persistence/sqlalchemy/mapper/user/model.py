@@ -36,7 +36,7 @@ class UserAlchemyModel(BaseAlchemyModel):
         String(length=settings.VERIFICATION_KEY_MAX_LENGTH), nullable=True
     )
     password_reset_confirmation_created_at: Mapped[Optional[datetime]]
-    created_at: Mapped[datetime]
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now)
 
 
 # ======================================

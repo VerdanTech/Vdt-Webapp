@@ -33,9 +33,9 @@ class Entity:
     """
 
     id: EntityIdType | None = None
-    """Not included in __init__ as that takes place before first persistence."""
-    created_at: datetime = field(default_factory=datetime.now, init=False)
-    """Not included in __init__ as it is created with a factory."""
+    """Not included in __init__ as the ID is assigned at persistence."""
+    created_at: datetime | None = None
+    """Not included in __init__ as the timestamp is assigned at persistence."""
 
     def __eq__(self, other) -> bool:
         return self.id == other.id

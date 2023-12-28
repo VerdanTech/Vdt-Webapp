@@ -38,10 +38,15 @@ class TestAbstractUserRepository:
         """
         await user_repo.add(user=user)
 
-        user = await user_repo.get_user_by_email_address(
+        user_result = await user_repo.get_user_by_email_address(
             email_address=user.emails[0].address
         )
-        assert user.id is not None
+        assert (
+            user_result is not None
+            and user_result.id is not None
+            and user_result.created_at is not None
+            and user_result.username == user.username
+        )
 
     # ================================================================
     # AbstractUserRepository.add_many() tests
@@ -84,7 +89,10 @@ class TestAbstractUserRepository:
         user_result = await user_repo.get_user_by_email_address(
             email_address=user.emails[0].address
         )
-        assert user_result.emails[0].address == user.emails[0].address
+        assert (
+            user_result is not None
+            and user_result.emails[0].address == user.emails[0].address
+        )
 
     # ================================================================
     # AbstractUserRepository.get_user_by_email_confirmation_key() tests
@@ -184,15 +192,14 @@ class TestAbstractUserRepository:
                 repository to test
             user (User): factory fixture providing user
         """
+        key = "abc"
         user.emails[0] = Email(
-            address="test@test.com", confirmation=EmailConfirmation(key="abc")
+            address="test@test.com", confirmation=EmailConfirmation(key=key)
         )
         if email_confirmation_key_exists:
             await user_repo.add(user=user)
 
-        output = await user_repo.email_confirmation_key_exists(
-            key=user.emails[0].confirmation.key
-        )
+        output = await user_repo.email_confirmation_key_exists(key=key)
 
         assert output == expected_output
 

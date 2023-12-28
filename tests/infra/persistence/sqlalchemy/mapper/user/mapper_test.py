@@ -21,7 +21,8 @@ pytestmark = [pytest.mark.unit]
 
 class TestUserAlchemyMapper:
     def test_to_model(self) -> None:
-        """Ensure that the method maps a user
+        """
+        Ensure that the method maps a user
         domain entity into a sqlalchemy model
         with the proper attributes and relations.
         """

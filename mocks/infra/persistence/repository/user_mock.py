@@ -6,6 +6,7 @@ from src.domain.common import EntityIdType
 from src.domain.user.entities import User
 from src.interfaces.persistence.exceptions import ObjectNotFound
 from src.interfaces.persistence.user.repository import AbstractUserRepository
+
 from .base_mock import MockBaseRepository
 
 
@@ -52,10 +53,8 @@ class MockUserRepository(MockBaseRepository[User], AbstractUserRepository):
             if existing_user.id == user.id:
                 self.collection[i] = user
                 return user
-        raise ObjectNotFound(
-            "The user does not presently exist in the repository"
-        )
-    
+        raise ObjectNotFound("The user does not presently exist in the repository")
+
     async def get_user_by_id(self, id: EntityIdType) -> User | None:
         """
         Given a user id, return the user to whom it belongs.
