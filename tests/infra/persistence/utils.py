@@ -55,7 +55,7 @@ def assert_equivalent_entities(entity1, entity2) -> None:
             print(f"VISITED_ATTRIBUTES: {visited_attrs}")
             # Continue if attribute has already been visited
             if id(value1) in visited_attrs:
-                print(f"VISITED_ATTRIBUTES: triggered")
+                print("VISITED_ATTRIBUTES: triggered")
                 continue
 
             key2 = key1

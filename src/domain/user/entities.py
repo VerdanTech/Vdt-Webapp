@@ -268,7 +268,8 @@ class User(RootEntity):
         Returns:
             bool: whether the user is expired.
         """
-
+        if self.created_at is None:
+            return False
         return not self.is_verified() and (
             datetime.now() - self.created_at
         ) > timedelta(hours=expiry_time_hours)

@@ -1,6 +1,6 @@
 class UserAuthOpsController:
-    async def login():
+    async def login(self):
         pass
 
-    async def logout():
+    async def logout(self):
         pass

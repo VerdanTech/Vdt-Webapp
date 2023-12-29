@@ -4,8 +4,6 @@ from typing import Any, Protocol, Type
 # VerdanTech Source
 from src.domain.common import RootEntity
 
-from .exceptions import InterfaceRepositoryError
-
 
 class AbstractRepository[T: RootEntity](Protocol):
     """

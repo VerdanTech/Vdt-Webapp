@@ -2,12 +2,38 @@
 import asyncio
 import re
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Any, Optional, Type, TypedDict
+from typing import TYPE_CHECKING, Any, Coroutine, Optional, Type, TypedDict
 
 if TYPE_CHECKING:
     from .field import FieldSanitizer
 
 from .options import GroupErrorsByEnum, SelectEnum
+
+type InputType = Any
+type SpecErrorMessage = str | dict[str, str] | dict[str, dict[str, str]]
+"""
+The SpecError's message can take one of three forms:
+    - str when raised on the Spec level with group_errors_by = SPEC.
+        The message is the message attribute on the Spec class, formatted
+        with the parameters and input data.
+    - dict[str, str] when raised on the FieldSanitizer level 
+        with group_errors_by = FIELD. The keys are the name attributes 
+        of Specs and the values are the Spec-level error messages.
+    - dict[str, dict[str, str]] when raised on the ObjectSanitizer
+        level with group_errors_by = OBJECT. The keys are the names
+        of field attributes set on the ObjectSanitizer and the values
+        are the FieldSanitizer-level error messages. 
+"""
+
+
+class SpecError(Exception):
+    """Base class for handling sanitization errors"""
+
+    message: SpecErrorMessage
+
+    def __init__(self, message: SpecErrorMessage) -> None:
+        super().__init__(message)
+        self.message = message
 
 
 class SpecParams(TypedDict):
@@ -59,39 +85,14 @@ class SpecConfig[T: SpecParams]:
             )
 
 
-type SpecErrorMessage = str | dict[str, str] | dict[str, dict[str, str]]
-"""
-The SpecError's message can take one of three forms:
-    - str when raised on the Spec level with group_errors_by = SPEC.
-        The message is the message attribute on the Spec class, formatted
-        with the parameters and input data.
-    - dict[str, str] when raised on the FieldSanitizer level 
-        with group_errors_by = FIELD. The keys are the name attributes 
-        of Specs and the values are the Spec-level error messages.
-    - dict[str, dict[str, str]] when raised on the ObjectSanitizer
-        level with group_errors_by = OBJECT. The keys are the names
-        of field attributes set on the ObjectSanitizer and the values
-        are the FieldSanitizer-level error messages. 
-"""
-
-
-class SpecError(Exception):
-    """Base class for handling sanitization errors"""
-
-    message: SpecErrorMessage
-
-    def __init__(self, message: SpecErrorMessage) -> None:
-        super().__init__(message)
-        self.message = message
-
-
-type InputType = Any
-
-
 class Spec[C: SpecConfig]:
     """
     Base class for encapsulating validation and normalization
     logic along with a dynamically formatted error message.
+
+    Implements sanitization interface.
+
+    Sanitization logic, including one of _sanitize or _asanitize is implemented by subclasses.
     """
 
     # The id of the Spec is used to select it on a FieldSanitizer
@@ -154,7 +155,7 @@ class Spec[C: SpecConfig]:
         else:
             return None
 
-    def _sanitize(self, input_data: InputType) -> bool:
+    def _sanitize(self, input_data: InputType) -> bool | Coroutine[Any, Any, bool]:
         """
         Sanitize input against self.params. Optionally, set the normalized
         attribute on the associated FieldSanitizer.
@@ -163,6 +164,6 @@ class Spec[C: SpecConfig]:
             input_data (InputType): input to validate.
 
         Returns:
-            bool: the status of the sanitization.
+            bool | Coroutine[Any, Any, bool]: the status of the sanitization.
         """
         raise NotImplementedError

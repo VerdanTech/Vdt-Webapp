@@ -1,6 +1,6 @@
 # Standard Library
 import inspect
-from typing import Any, Optional, Type
+from typing import Any, Type
 
 # VerdanTech Source
 from src.domain.common import RootEntity

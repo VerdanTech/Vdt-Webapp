@@ -1,5 +1,5 @@
 # Standard Library
-from typing import Any, ContextManager, Dict
+from typing import Any, Dict
 
 # External Libraries
 import pytest

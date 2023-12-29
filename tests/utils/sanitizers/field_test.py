@@ -1,5 +1,5 @@
 # Standard Library
-from typing import ContextManager, List
+from typing import List
 
 # External Libraries
 import pytest

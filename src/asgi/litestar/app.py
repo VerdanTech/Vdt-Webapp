@@ -12,6 +12,7 @@ def create_app() -> "Litestar":
 
     # VerdanTech Source
     from src.asgi.litestar.dependencies import svcs_plugin
+    from src.asgi.litestar.exceptions import exception_handlers
     from src.asgi.litestar.lifespan import lifespan
     from src.asgi.litestar.router import create_base_router
 
@@ -21,5 +22,6 @@ def create_app() -> "Litestar":
         route_handlers=[base_router],
         lifespan=lifespan,
         plugins=[svcs_plugin],
+        exception_handlers=exception_handlers,
         debug=True,
     )

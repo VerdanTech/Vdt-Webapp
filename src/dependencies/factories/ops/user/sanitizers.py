@@ -39,7 +39,7 @@ async def provide_user_sanitizer(svcs_container: Container) -> UserSanitizer:
                     sanitizers.basic.RegexSpec(
                         sanitizers.basic.RegexSpecConfig(
                             params=sanitizers.basic.RegexSpecParams(
-                                pattern=re.compile("[0-9A-Za-z]+")
+                                pattern=re.compile(r"[0-9A-Za-z]+")
                             ),
                             error_message="Must contain only alphanumeric characters.",
                         )
@@ -99,9 +99,9 @@ async def provide_user_sanitizer(svcs_container: Container) -> UserSanitizer:
                     ),
                     sanitizers.basic.RegexSpec(
                         sanitizers.basic.RegexSpecConfig(
-                            params=sanitizers.basic.BanSpecParams(
+                            params=sanitizers.basic.RegexSpecParams(
                                 pattern=re.compile(
-                                    """^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d~`!@#$%^&*()_\-+={[}\]|\:;"'<,>.?/]*$"""
+                                    r"""^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d~`!@#$%^&*()_\-+={[}\]|\:;"'<,>.?/]*$"""
                                 )
                             ),
                             error_message="Password must contain at least one lowercase letter, one uppercase letter, and one digit.",

@@ -7,24 +7,26 @@ class AbstractPasswordCrypt(Protocol):
         self,
         plain_password: str | bytes,
     ) -> str:
-        """Get password hash.
+        """
+        Get password hash.
 
         Args:
-            plain_password: Plain password
+            plain_password: plaintext password.
 
         Returns:
-            str: Hashed password
+            str: hashed password.
         """
         ...
 
     async def verify_password(
         self, plain_password: str | bytes, hashed_password: str
     ) -> bool:
-        """Verify Password.
+        """
+        Verify Password.
 
         Args:
-            plain_password (SecretBytes | SecretStr): Password input
-            hashed_password (str): Password hash to verify against
+            plain_password (SecretBytes | SecretStr): password input.
+            hashed_password (str): password hash to verify against.
 
         Returns:
             bool: True if the password hashes match

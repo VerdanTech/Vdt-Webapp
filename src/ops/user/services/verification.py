@@ -1,4 +1,5 @@
 # VerdanTech Source
+from src.domain.user import exceptions as domain_exceptions
 from src.domain.user.entities import User
 from src.interfaces.email.emitter import AbstractEmailEmitter
 from src.interfaces.persistence.user.repository import AbstractUserRepository
@@ -54,6 +55,11 @@ async def password_reset_create(
         user_repo (AbstractUserRepository): user repository interface.
         email_emitter (AbstractEmailEmitter): email emitter interface.
     """
+    if user.id is None:
+        raise domain_exceptions.UserIntegrityError(
+            "Password reset attempt on unpersisted User."
+        )
+
     primary_email = user.get_primary_email()
     if not email_address == primary_email.address:
         raise ops_exceptions.EntityNotFound(

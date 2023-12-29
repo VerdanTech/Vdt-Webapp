@@ -70,6 +70,7 @@ lint:
 	ruff check ./src
 	ruff check ./tests
 	ruff check ./mocks
+	pyright ./src
 
 #
 # Spin up documentation server.

@@ -5,22 +5,22 @@
 #    pip-compile --output-file=requirements/main.txt pyproject.toml
 #
 aiofiles==23.2.1
-    # via verdantech-api (pyproject.toml)
+    # via verdantech_api (pyproject.toml)
 aiosmtplib==3.0.1
-    # via verdantech-api (pyproject.toml)
+    # via verdantech_api (pyproject.toml)
 alembic==1.13.0
-    # via verdantech-api (pyproject.toml)
+    # via verdantech_api (pyproject.toml)
 anyio==4.1.0
     # via
     #   httpx
     #   litestar
     #   watchfiles
 argon2-cffi==23.1.0
-    # via verdantech-api (pyproject.toml)
+    # via verdantech_api (pyproject.toml)
 argon2-cffi-bindings==21.2.0
     # via argon2-cffi
 asyncpg==0.29.0
-    # via verdantech-api (pyproject.toml)
+    # via verdantech_api (pyproject.toml)
 attrs==23.1.0
     # via svcs
 certifi==2023.11.17
@@ -41,7 +41,7 @@ dnspython==2.4.2
 editorconfig==0.12.3
     # via jsbeautifier
 email-validator==2.1.0.post1
-    # via verdantech-api (pyproject.toml)
+    # via verdantech_api (pyproject.toml)
 faker==20.1.0
     # via polyfactory
 fast-query-parsers==1.0.3
@@ -53,7 +53,7 @@ h11==0.14.0
     #   httpcore
     #   uvicorn
 html2text==2020.1.16
-    # via verdantech-api (pyproject.toml)
+    # via verdantech_api (pyproject.toml)
 httpcore==1.0.2
     # via httpx
 httptools==0.6.1
@@ -72,9 +72,9 @@ jsbeautifier==1.14.11
 litestar[standard]==2.4.4
     # via
     #   litestar-svcs
-    #   verdantech-api (pyproject.toml)
+    #   verdantech_api (pyproject.toml)
 litestar-svcs==0.1.2
-    # via verdantech-api (pyproject.toml)
+    # via verdantech_api (pyproject.toml)
 mako==1.3.0
     # via alembic
 markdown-it-py==3.0.0
@@ -90,7 +90,7 @@ msgspec==0.18.4
 multidict==6.0.4
     # via litestar
 passlib==1.7.4
-    # via verdantech-api (pyproject.toml)
+    # via verdantech_api (pyproject.toml)
 polyfactory==2.12.0
     # via litestar
 pycparser==2.21
@@ -102,7 +102,7 @@ python-dateutil==2.8.2
     #   croniter
     #   faker
 python-decouple==3.8
-    # via verdantech-api (pyproject.toml)
+    # via verdantech_api (pyproject.toml)
 python-dotenv==1.0.0
     # via uvicorn
 pytz==2023.3.post1
@@ -120,7 +120,7 @@ rich==13.7.0
 rich-click==1.7.1
     # via litestar
 saq==0.12.2
-    # via verdantech-api (pyproject.toml)
+    # via verdantech_api (pyproject.toml)
 six==1.16.0
     # via
     #   jsbeautifier
@@ -132,11 +132,11 @@ sniffio==1.3.0
 sqlalchemy==2.0.23
     # via
     #   alembic
-    #   verdantech-api (pyproject.toml)
+    #   verdantech_api (pyproject.toml)
 svcs==23.21.0
     # via
     #   litestar-svcs
-    #   verdantech-api (pyproject.toml)
+    #   verdantech_api (pyproject.toml)
 typing-extensions==4.8.0
     # via
     #   alembic

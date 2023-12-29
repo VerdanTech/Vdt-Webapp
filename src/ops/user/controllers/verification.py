@@ -1,6 +1,5 @@
 # VerdanTech Source
 from src import settings
-from src.domain.user import exceptions as domain_exceptions
 from src.domain.user.sanitizers import UserSanitizer
 from src.interfaces.email.emitter import AbstractEmailEmitter
 from src.interfaces.persistence.user.repository import AbstractUserRepository

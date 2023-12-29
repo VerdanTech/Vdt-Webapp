@@ -1,6 +1,5 @@
 # Standard Library
-import asyncio
-from typing import Any, Dict, Generic, List, Tuple
+from typing import Any, List, Tuple
 
 from . import spec
 from .options import GroupErrorsByEnum, SelectEnum
@@ -8,7 +7,7 @@ from .options import GroupErrorsByEnum, SelectEnum
 
 class FieldSanitizer[*Spec]:
     """
-    Encapsulate multiple Specs.
+    Encapsulate multiple Specs which operate on a single input field.
     """
 
     normalized_data = Any | None
@@ -25,7 +24,7 @@ class FieldSanitizer[*Spec]:
         spec_select: List[SelectEnum],
         apply_default: bool = False,
         group_errors_by: GroupErrorsByEnum = GroupErrorsByEnum.FIELD,
-    ) -> Tuple[spec.InputType, Dict[str, str]]:
+    ) -> Tuple[spec.InputType, dict[str, str]]:
         """
         Call the _sanitization function, and raise error if any failure.
 
@@ -77,7 +76,7 @@ class FieldSanitizer[*Spec]:
         spec_select: List[SelectEnum],
         apply_default: bool = False,
         group_errors_by: GroupErrorsByEnum = GroupErrorsByEnum.FIELD,
-    ) -> Dict[str, str]:
+    ) -> dict[str, str]:
         """
         Sanitizes the input against Sanitizations.
 
@@ -151,15 +150,3 @@ class FieldSanitizer[*Spec]:
             InputType: The normalized input
         """
         return self.normalized_data or None
-
-
-class MockFieldSanitizer(FieldSanitizer):
-    """Mock sanitizer class for testing"""
-
-    field_name: str = "generic_field"
-
-    def sanitize(self, input: spec.InputType) -> bool:
-        return True
-
-    def normalized(self) -> spec.InputType:
-        return input

@@ -1,5 +1,5 @@
 # Standard Library
-from typing import Protocol, Type
+from typing import Protocol
 
 # VerdanTech Source
 from src.domain.common import RootEntity
@@ -13,9 +13,6 @@ class AbstractMapper[RootEntityT: RootEntity, DatabaseModelT](Protocol):
     well to database transactions, and so there is one mapper
     (and one repository) for each RootEntity.
     """
-
-    entity: Type[RootEntityT]
-    model: Type[DatabaseModelT]
 
     @staticmethod
     def to_model(entity: RootEntityT) -> DatabaseModelT:

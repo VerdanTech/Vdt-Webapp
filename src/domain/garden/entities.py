@@ -1,6 +1,5 @@
 # Standard Library
 from dataclasses import field
-from datetime import datetime
 from typing import List
 
 # VerdanTech Source
@@ -31,6 +30,4 @@ class GardenMembership(RootEntity):
     user: Ref[User]
     garden: Ref[Garden]
     role: RoleEnum
-    created_at: datetime
-
     open_invite: bool = True

@@ -1,8 +1,15 @@
 # Standard Library
-from typing import Any, Dict, Generic, List, Tuple, TypedDict, TypeVar
+from typing import Any, TypedDict
 
 from . import field, spec
 from .options import GroupErrorsByEnum, SelectEnum
+
+type FieldName = str
+"""Type alias for the names of fields put under sanitization."""
+type ObjectInputType = dict[FieldName, spec.InputType]
+"""Type alias for the mapping input to the ObjetSanitizer."""
+type SpecSelectType = dict[FieldName, list[SelectEnum]]
+"""Type alias for the spec selection input to the ObjectSanitizer"""
 
 
 class ObjectSanitizerConfig(TypedDict):
@@ -14,31 +21,30 @@ class ObjectSanitizerConfig(TypedDict):
     pass
 
 
-ObjectSanitizerConfigT = TypeVar("ObjectSanitizerConfigT", bound=ObjectSanitizerConfig)
+class ObjectSanitizer[C: ObjectSanitizerConfig]:
+    """
+    This class allows assigning multiple FieldSanitizers to
+    multiple object fields and to validate all fields while grouping errors.
+    """
 
-
-class ObjectSanitizer(Generic[ObjectSanitizerConfigT]):
-    """This class allows assigning multiple FieldSanitizers to
-    multiple object fields, and to validate all fields while grouping errors"""
-
-    def __init__(self, config: ObjectSanitizerConfig):
+    def __init__(self, config: C):
         self.config = config
 
     async def sanitize(
         self,
-        input_data: Dict[str, spec.InputType],
-        spec_select: Dict[str, List[SelectEnum]],
+        input_data: ObjectInputType,
+        spec_select: SpecSelectType,
         apply_default: bool = False,
         group_errors_by: GroupErrorsByEnum = GroupErrorsByEnum.OBJECT,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Call the sanitization function on a dict input,
         and raise error if any failure.
 
         Args:
-            input_data (Dict[str, GenericInputType]): keys are field names
+            input_data (dict[str, GenericInputType]): keys are field names
                 and values are field values to sanitize.
-            spec_select (Dict[str, List[str]]):
+            spec_select (dict[str, list[str]]):
                 keys are field names and values are lists
                 of values of SelectEnum, which allows filtering
                 the list of Sanitizations registered on each field.
@@ -56,7 +62,7 @@ class ObjectSanitizer(Generic[ObjectSanitizerConfigT]):
                 errors grouped according to group_errors_by
 
         Returns:
-            Dict[str, GenericInputType]: the sanitized data
+            dict[str, GenericInputType]: the sanitized data
         """
         sanitized_data, error = await self._sanitize(
             input_data=input_data,
@@ -81,23 +87,23 @@ class ObjectSanitizer(Generic[ObjectSanitizerConfigT]):
 
     async def _sanitize(
         self,
-        input_data: Dict[str, spec.InputType],
-        spec_select: Dict[str, list[SelectEnum]],
+        input_data: ObjectInputType,
+        spec_select: SpecSelectType,
         apply_default: bool = False,
         group_errors_by: GroupErrorsByEnum = GroupErrorsByEnum.OBJECT,
-    ) -> Tuple[Dict[str, Any], Dict[str, str]]:
+    ) -> tuple[dict[str, spec.InputType], dict[str, str]]:
         """
         Call the field sanitizer for every field in
         the input, and group sanitization errors together.
 
         Args:
-            input_data (Dict[str, GenericInputType]): see sanitize() method
-            spec_select (Dict[str, List[SelectEnum]]): see sanitize() method
+            input_data (ObjectInputType): see sanitize() method
+            spec_select (SpecSelectType): see sanitize() method
             group_errors_by (GroupErrorsOptionsEnum): see sanitize() method
             apply_default (bool): see sanitize() method
 
         Returns:
-            Tuple[Dict[str, GenericInputType], Dict[str, str]]: the output sanitized
+            tuple[dict[str, InputType], Dict[str, str]]: the output sanitized
                 data and the error dictionary.
         """
         # Default normalized value is no change
@@ -158,11 +164,11 @@ class MockObjectSanitizer(ObjectSanitizer):
 
     async def sanitize(
         self,
-        input_data: Dict[str, spec.InputType],
-        spec_select: Dict[str, List[SelectEnum]],
+        input_data: dict[str, spec.InputType],
+        spec_select: dict[str, list[SelectEnum]],
         apply_default: bool = False,
         group_errors_by: GroupErrorsByEnum = GroupErrorsByEnum.OBJECT,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         return input_data
 
     async def sanitize_object(self, object: Any) -> None:

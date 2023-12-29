@@ -1,7 +1,6 @@
 # Standard Library
 from enum import Enum
 from pathlib import Path
-from typing import List
 
 # External Libraries
 from decouple import Csv, config
@@ -14,17 +13,17 @@ from decouple import Csv, config
 # OPENAPI SETTINGS
 # ======================================
 
-OPENAPI_TITLE: str = "verdantech_api"
+OPENAPI_TITLE: str = "VerdanTech-Backend"
 OPENAPI_VERSION: str = "v0.0.1"
-OPENAPI_DOCUMENTATION_URL: str = "https://github.com/nathanielarking/VerdanTech"
+OPENAPI_DOCUMENTATION_URL: str = "https://github.com/VerdanTech/VerdanTech-Backend"
 OPENAPI_LICENSE: str = "GPL-3.0-or-later"
 
 # ======================================
 # URL SETTINGS
 # ======================================
 
-USING_HTTPS: bool = config("USING_HTTPS", default=False, cast=bool)
-BASE_DOMAIN: str = config("BASE_DOMAIN", cast=str, default="127.0.0.1")
+USING_HTTPS = config("USING_HTTPS", default=False, cast=bool)
+BASE_DOMAIN = config("BASE_DOMAIN", cast=str, default="127.0.0.1")
 API_URL_BASE: str = "/vdtapi"
 
 # ======================================
@@ -43,13 +42,13 @@ CLIENT_PASSWORD_RESET_URL: str = CLIENT_BASE_URL + "password_reset/"
 # ALLOWED HOSTS SETTINGS
 # ======================================
 
-ALLOWED_HOSTS: List[str] = config("ALLOWED_HOSTS", cast=Csv(), default=".localhost")
+ALLOWED_HOSTS = config("ALLOWED_HOSTS", cast=Csv(), default=".localhost")
 
 # ======================================
 # CORS SETTINGS
 # ======================================
 
-ALLOW_ORIGINS: List[str] = config("ALLOWED_ORIGINS", cast=Csv(), default="")
+ALLOW_ORIGINS = config("ALLOWED_ORIGINS", cast=Csv(), default="")
 
 # ======================================
 # CSRF SETTINGS
@@ -69,19 +68,23 @@ SAQ_WORKERS = 1
 # DATABASE SETTINGS
 # ======================================
 
-# SQL
-POSTGRES_DB_NAME: str = config("POSTGRES_DB_NAME", cast=str)
-POSTGRES_DB_USER: str = config("POSTGRES_DB_USER", cast=str)
-POSTGRES_DB_PASSWORD: str = config("POSTGRES_DB_PASSWORD", cast=str)
-POSTGRES_URI: str = config(
-    "POSTGRES_DB_URI",
-    cast=str,
-    default=f"postgresql+asyncpg://{POSTGRES_DB_USER}:{POSTGRES_DB_PASSWORD}@postgres:5432/{POSTGRES_DB_NAME}",
+# Postgres
+POSTGRES_DB_NAME = config("POSTGRES_DB_NAME", cast=str)
+POSTGRES_DB_USER = config("POSTGRES_DB_USER", cast=str)
+POSTGRES_DB_PASSWORD = config("POSTGRES_DB_PASSWORD", cast=str)
+POSTGRES_URI = str(  # Todo: fix str() required for type checker.
+    config(
+        "POSTGRES_DB_URI",
+        cast=str,
+        default=f"postgresql+asyncpg://{POSTGRES_DB_USER}:{POSTGRES_DB_PASSWORD}@postgres:5432/{POSTGRES_DB_NAME}",
+    )
 )
 
-ALCHEMY_URI: str = POSTGRES_URI
+# Sqlalchemy
+ALCHEMY_URI = POSTGRES_URI
 # Name of the client attribute in the global app state
 ALCHEMY_CLIENT_NAME: str = "sqlalchemy_client"
+# Whether to rollback / not commit database transactions
 ALCHEMY_TRANSACTION_ROLLBACK = True
 
 # Redis
@@ -112,6 +115,7 @@ def email_path(*paths: str) -> Path:
 # EMAIL SETTINGS
 # ======================================
 
+# Client
 EMAIL_CLIENT_HOSTNAME: str = ""
 EMAIL_CLIENT_PORT: int = 0
 EMAIL_CLIENT_USERNAME: str = ""
@@ -119,6 +123,7 @@ EMAIL_CLIENT_PASSWORD: str = ""
 EMAIL_CLIENT_SENDER: str = "verdantech@gmail.com"
 
 
+# Verification
 class EmailConfirmationOptions(Enum):
     REQUIRED_FOR_NONE = 0
     REQUIRED_FOR_WRITE = 1
@@ -134,9 +139,11 @@ EMAIL_CONFIRMATION = EmailConfirmationOptions.REQUIRED_FOR_WRITE
 EMAIL_VERIFICATION_KEY_LENGTH: int = 32
 EMAIL_VERIFICATON_EXPIRY_TIME_HOURS: int = 72
 
-EMAIL_FILEPATH_EMAIL_CONFIRMATION: str = email_path("email_verification.html")
+# Email confirmation
+EMAIL_FILEPATH_EMAIL_CONFIRMATION = email_path("email_verification.html")
 EMAIL_SUBJECT_EMAIL_CONFIRMATION: str = "Email verification - VerdanTech"
-EMAIL_FILEPATH_PASSWORD_RESET: str = email_path("password_reset.html")
+# Password reset
+EMAIL_FILEPATH_PASSWORD_RESET = email_path("password_reset.html")
 EMAIL_SUBJECT_PASSWORD_RESET: str = "Password reset - VerdanTech"
 
 # ============================================================================

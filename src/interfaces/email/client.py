@@ -1,5 +1,6 @@
 # Standard Library
-from typing import Any, Dict, Protocol
+from pathlib import Path
+from typing import Protocol
 
 
 class AbstractEmailClient(Protocol):
@@ -10,7 +11,7 @@ class AbstractEmailClient(Protocol):
     """
 
     async def compile_and_send(
-        self, filepath: str, receiver: str, subject: str, **kwargs
+        self, filepath: Path, receiver: str, subject: str, **kwargs
     ):
         """
         Compile email from html, and send it as html

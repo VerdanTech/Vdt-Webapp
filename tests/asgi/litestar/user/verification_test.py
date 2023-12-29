@@ -1,5 +1,4 @@
 # Standard Library
-import json
 from dataclasses import asdict
 
 # External Libraries
@@ -7,10 +6,8 @@ import pytest
 from litestar.testing import AsyncTestClient
 
 # VerdanTech Source
-from src import settings
-from src.asgi.litestar.user import routes, urls
+from src.asgi.litestar.user import routes
 from src.ops.user.schemas import verification as verification_ops_schemas
-from src.utils.key_generator import key_generator
 
 pytestmark = [pytest.mark.integration]
 
@@ -19,12 +16,12 @@ class TestUserVerificationApiController:
     # ================================================================
     # UserVerificationApiController.user_email_confirmation_request() tests
     # ================================================================
-    async def test_user_email_confirmation_request(
+    async def test_user_email_confirmation_request_nonexistant_user(
         self, litestar_client: AsyncTestClient
     ) -> None:
         """
         Ensure that the user_email_confirmation_request endpoint returns
-        a success status code.
+        a failure status code when no email_address exists.
 
         Args:
             litestar_client (AsyncTestClient): test client fixture.
@@ -41,12 +38,24 @@ class TestUserVerificationApiController:
             json=asdict(input_data),
         )
 
-        assert response.status_code == 422
+        assert response.status_code == 404
+
+    async def test_user_email_confirmation_request_success(
+        self, litestar_client: AsyncTestClient
+    ) -> None:
+        """
+        Ensure that the user_email_confirmation_request endpoint returns
+        a success status code.
+
+        Args:
+            litestar_client (AsyncTestClient): test client fixture.
+        """
+        pass
 
     # ================================================================
     # UserVerificationApiController.user_email_confirmation_confirm() tests
     # ================================================================
-    async def test_user_email_confirmation_confirm(
+    async def test_user_email_confirmation_confirm_success(
         self, litestar_client: AsyncTestClient
     ) -> None:
         """
@@ -56,14 +65,12 @@ class TestUserVerificationApiController:
         Args:
             litestar_client (AsyncTestClient): test client fixture.
         """
-        path = litestar_client.app.route_reverse(
-            routes.USER_EMAIL_VERIFICATION_CONFIRM_NAME
-        )
+        pass
 
     # ================================================================
     # UserVerificationApiController.user_password_reset_request() tests
     # ================================================================
-    async def test_user_password_reset_request(
+    async def test_user_password_reset_request_success(
         self, litestar_client: AsyncTestClient
     ) -> None:
         """
@@ -78,7 +85,7 @@ class TestUserVerificationApiController:
     # ================================================================
     # UserVerificationApiController.user_password_reset_confirm() tests
     # ================================================================
-    async def test_user_password_reset_confirm(
+    async def test_user_password_reset_confirm_success(
         self, litestar_client: AsyncTestClient
     ) -> None:
         """

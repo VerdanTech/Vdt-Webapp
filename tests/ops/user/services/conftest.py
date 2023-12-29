@@ -3,7 +3,7 @@ import pytest
 
 # VerdanTech Source
 from mocks.infra.persistence.repository.user_mock import MockUserRepository
-from tests.domain.user.conftest import user
+from tests.domain.user.conftest import user  # noqa: F401 - pytest fixture
 
 
 @pytest.fixture

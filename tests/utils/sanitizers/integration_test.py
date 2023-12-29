@@ -3,7 +3,7 @@ import pytest
 
 # VerdanTech Source
 from src.utils.sanitizers import options
-from src.utils.sanitizers.basic import ban, length, size
+from src.utils.sanitizers.basic import ban, length
 from src.utils.sanitizers.field import FieldSanitizer
 from src.utils.sanitizers.object import ObjectSanitizer, ObjectSanitizerConfig
 from src.utils.sanitizers.spec import SpecError
@@ -19,57 +19,63 @@ async def test_multi_field_multi_spec_object_sanitizer() -> None:
     """
     object_sanitizer = ObjectSanitizer(
         config=ObjectSanitizerConfig(
-            field1=FieldSanitizer([
-                length.LengthSpec(
-                    config=length.LengthSpecConfig(
-                        params=length.LengthSpecParams(min=0, max=50),
-                        error_message="Field 1 length spec error message {max}, {min}, {input_data}",
-                    )
-                ),
-                ban.BanSpec(
-                    config=ban.BanSpecConfig(
-                        params=ban.BanSpecParams(banned_inputs=["banned_input1"]),
-                        error_message="Field 1 ban spec error_message {banned_inputs}, {input_data}",
-                        case_sensitive=False,
-                    )
-                ),
-            ]),
-            field2=FieldSanitizer([
-                length.LengthSpec(
-                    config=length.LengthSpecConfig(
-                        params=length.LengthSpecParams(min=0, max=2),
-                        error_message="Field 2 length spec error message {max}, {min}, {input_data}",
-                    )
-                ),
-                ban.BanSpec(
-                    config=ban.BanSpecConfig(
-                        params=ban.BanSpecParams(
-                            banned_inputs=["over_length_spec_and_banned"]
-                        ),
-                        error_message="Field 2 ban spec error_message {banned_inputs}, {input_data}",
-                        case_sensitive=False,
-                    )
-                ),
-            ]),
-            field3=FieldSanitizer([
-                length.LengthSpec(
-                    config=length.LengthSpecConfig(
-                        params=length.LengthSpecParams(min=0, max=5),
-                        error_message="Field 3 length spec error message {max}, {min}, {input_data}",
-                    )
-                ),
-                ban.BanSpec(
-                    config=ban.BanSpecConfig(
-                        params=ban.BanSpecParams(
-                            banned_inputs=[
-                                "over_length_spec_and_banned_but_banned_spec_is_not_enabled"
-                            ]
-                        ),
-                        error_message="Field 3 ban spec error_message {banned_inputs}, {input_data}",
-                        case_sensitive=False,
-                    )
-                ),
-            ]),
+            field1=FieldSanitizer(
+                [
+                    length.LengthSpec(
+                        config=length.LengthSpecConfig(
+                            params=length.LengthSpecParams(min=0, max=50),
+                            error_message="Field 1 length spec error message {max}, {min}, {input_data}",
+                        )
+                    ),
+                    ban.BanSpec(
+                        config=ban.BanSpecConfig(
+                            params=ban.BanSpecParams(banned_inputs=["banned_input1"]),
+                            error_message="Field 1 ban spec error_message {banned_inputs}, {input_data}",
+                            case_sensitive=False,
+                        )
+                    ),
+                ]
+            ),
+            field2=FieldSanitizer(
+                [
+                    length.LengthSpec(
+                        config=length.LengthSpecConfig(
+                            params=length.LengthSpecParams(min=0, max=2),
+                            error_message="Field 2 length spec error message {max}, {min}, {input_data}",
+                        )
+                    ),
+                    ban.BanSpec(
+                        config=ban.BanSpecConfig(
+                            params=ban.BanSpecParams(
+                                banned_inputs=["over_length_spec_and_banned"]
+                            ),
+                            error_message="Field 2 ban spec error_message {banned_inputs}, {input_data}",
+                            case_sensitive=False,
+                        )
+                    ),
+                ]
+            ),
+            field3=FieldSanitizer(
+                [
+                    length.LengthSpec(
+                        config=length.LengthSpecConfig(
+                            params=length.LengthSpecParams(min=0, max=5),
+                            error_message="Field 3 length spec error message {max}, {min}, {input_data}",
+                        )
+                    ),
+                    ban.BanSpec(
+                        config=ban.BanSpecConfig(
+                            params=ban.BanSpecParams(
+                                banned_inputs=[
+                                    "over_length_spec_and_banned_but_banned_spec_is_not_enabled"
+                                ]
+                            ),
+                            error_message="Field 3 ban spec error_message {banned_inputs}, {input_data}",
+                            case_sensitive=False,
+                        )
+                    ),
+                ]
+            ),
         )
     )
 

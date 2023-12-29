@@ -1,6 +1,5 @@
 # External Libraries
 import pytest
-from pytest_mock import MockerFixture
 from svcs import Container
 
 # VerdanTech Source

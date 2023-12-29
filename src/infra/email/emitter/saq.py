@@ -1,4 +1,5 @@
 # Standard Library
+from pathlib import Path
 from typing import Optional
 
 # External Libraries
@@ -14,7 +15,7 @@ from .generic import BaseEmailEmitter
 async def send_email(
     ctx: Context,
     client: AbstractEmailClient,
-    filepath: str,
+    filepath: Path,
     receiver: str,
     subject: str,
     **kwargs,
@@ -24,7 +25,7 @@ async def send_email(
 
     Args:
         ctx (Context): saq context dict.
-        filepath (str): the path to the email file
+        filepath (Path): the path to the email file
         receiver (str): the receiver of the message
         subject (str): the subject of the message
         kwargs: arguments to insert into html
@@ -45,7 +46,7 @@ class SaqEmailEmitter(BaseEmailEmitter):
 
     async def _send(
         self,
-        filepath: str,
+        filepath: Path,
         receiver: str,
         subject: str,
         queue: Optional[bool] = False,
@@ -55,7 +56,7 @@ class SaqEmailEmitter(BaseEmailEmitter):
         Send the email or emit the email send event into saq's event queue.
 
         Args:
-            filepath (str): filepath of the email.
+            filepath (Path): filepath of the email.
             receiver (str): recipient email address.
             subject (str): email subject line.
             queue (Optional[bool]): if True, emits the email send
