@@ -1,6 +1,7 @@
 # Standard Library
 from enum import Enum
 from pathlib import Path
+from typing import Annotated
 
 # External Libraries
 from decouple import Csv, config
@@ -53,6 +54,12 @@ ALLOW_ORIGINS = config("ALLOWED_ORIGINS", cast=Csv(), default="")
 # ======================================
 # CSRF SETTINGS
 # ======================================
+
+# ======================================
+# AUTH SETTINGS
+# ======================================
+
+JWT_SECRET = str(config("JWT_SECRET", cast=str, default="developmentsecret123"))
 
 # ============================================================================
 # APPLICATION SETTINGS

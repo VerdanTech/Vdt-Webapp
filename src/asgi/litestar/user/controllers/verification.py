@@ -1,5 +1,3 @@
-# Standard Library
-
 # External Libraries
 from litestar import Controller, post
 from litestar.datastructures import State
@@ -26,6 +24,7 @@ class UserVerificationApiController(Controller):
 
     @post(
         name=routes.USER_EMAIL_VERIFICATION_REQUEST_NAME,
+        opt={"exclude_from_auth": True},
         summary="Email confirmation request",
         description="Create a new email confirmation and send confirmation email.",
         tags=["users"],
@@ -58,6 +57,7 @@ class UserVerificationApiController(Controller):
 
     @post(
         name=routes.USER_EMAIL_VERIFICATION_CONFIRM_NAME,
+        opt={"exclude_from_auth": True},
         summary="Email confirmation confirm.",
         description="Close email confirmation and verify email.",
         tags=["users"],
@@ -89,6 +89,7 @@ class UserVerificationApiController(Controller):
 
     @post(
         name=routes.USER_PASSWORD_RESET_REQUEST_NAME,
+        opt={"exclude_from_auth": True},
         summary="Password reset request",
         description="Open a new password reset request and send confirmation email",
         tags=["users"],
@@ -123,6 +124,7 @@ class UserVerificationApiController(Controller):
 
     @post(
         name=routes.USER_PASSWORD_RESET_CONFIRM_NAME,
+        opt={"exclude_from_auth": True},
         summary="Password reset confirm",
         description="Close a password reset request and change password",
         tags=["users"],

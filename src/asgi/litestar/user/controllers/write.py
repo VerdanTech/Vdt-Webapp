@@ -25,6 +25,7 @@ class UserWriteApiController(Controller):
 
     @post(
         name=routes.USER_CREATE_NAME,
+        opt={"exclude_from_auth": True},
         summary="User registration",
         description="Register a new user and send an email verification if configured.",
         tags=["users"],
