@@ -3,14 +3,13 @@ from datetime import datetime
 from typing import List, Optional
 
 # External Libraries
-from sqlalchemy import Boolean, DateTime, ForeignKey, String
-from sqlalchemy.orm import Mapped, composite, mapped_column, relationship
+from sqlalchemy import DateTime, ForeignKey, String
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 # VerdanTech Source
 from src import settings
-from src.domain.user.values import EmailConfirmation, PasswordResetConfirmation
 
-from ..model import BaseAlchemyModel, IDType
+from ..model import BaseAlchemyModel
 
 # ======================================
 # ENTITIES
@@ -36,7 +35,7 @@ class UserAlchemyModel(BaseAlchemyModel):
         String(length=settings.VERIFICATION_KEY_MAX_LENGTH), nullable=True
     )
     password_reset_confirmation_created_at: Mapped[Optional[datetime]]
-    created_at: Mapped[datetime]
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now)
 
 
 # ======================================

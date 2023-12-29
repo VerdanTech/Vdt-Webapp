@@ -1,17 +1,16 @@
 # Standard Library
-from typing import Any, Dict, Generic, Protocol
+from typing import Any, Protocol, Type
 
 # VerdanTech Source
-from src.domain.common import RootEntityT
-
-from .exceptions import InterfaceRepositoryError
+from src.domain.common import RootEntity
 
 
-class AbstractAsyncRepository(Generic[RootEntityT], Protocol):
+class AbstractRepository[T: RootEntity](Protocol):
     """
-    Base interface of repository for domain model persistence.
+    A Repository is an interface between the domain layer
+    and the database layer.
 
-    Generic[RootEntityT]: a Repository is characterized by one
+    T: a Repository is characterized by one
         type of RootEntity. As RootEntitys are defined as entities
         which compose transactional and consistency boundaries,
         they are the objects that get persisted through interaction
@@ -20,13 +19,13 @@ class AbstractAsyncRepository(Generic[RootEntityT], Protocol):
     Protocol: (https://peps.python.org/pep-0544/)
     """
 
-    entity: RootEntityT
+    entity: Type[T]
 
     async def async_dynamic_call(
         self,
         method_name: str,
         bypass_validation: bool = False,
-        **kwargs: Dict[str, Any],
+        **kwargs,
     ) -> Any:
         """
         Calls the method on the repository given the method name
@@ -37,23 +36,21 @@ class AbstractAsyncRepository(Generic[RootEntityT], Protocol):
             bypass_validation (bool): whether to call
                 self.validate_async_dynamic_call_signature.
                 Used when the arguments have been pre-validated.
-            **kwargs (Dict[str, Any]): the arguments to the method.
+            **kwargs: the arguments to the method.
 
         Returns:
             Any: the result of the method.
         """
         ...
 
-    def validate_async_dynamic_call_signature(
-        self, method_name: str, **kwargs: Dict[str, Any]
-    ) -> None:
+    def validate_async_dynamic_call_signature(self, method_name: str, **kwargs) -> None:
         """
         Validates that an async method with the given name exists on the repository
         and that it accepts the specified keyword arguments.
 
         Args:
             method_name (str): The name of the method to validate.
-            **method_kwargs (Dict[str, Any]): The dictionary of keyword arguments
+            **kwargs: The dictionary of keyword arguments
                 that the method is expected to accept.
 
         Raises:

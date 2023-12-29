@@ -5,9 +5,10 @@ from typing import ContextManager
 
 # External Libraries
 import pytest
-from svcs import Container, Registry
+from svcs import Container
 
 # VerdanTech Source
+from mocks.dependencies.registry import mock_registry
 from mocks.infra.security.mock_crypt import MockPasswordCrypt
 
 
@@ -55,7 +56,6 @@ def expected_error_context(request) -> ContextManager:
 
 @pytest.fixture(scope="session", autouse=True)
 def event_loop(request):
-    marker = request.node.get_closest_marker("fixt_data")
     """
     Creates an instance of the default event loop for the test session.
 
@@ -70,10 +70,6 @@ def event_loop(request):
 @pytest.fixture
 def mock_password_crypt():
     return MockPasswordCrypt()
-
-
-# VerdanTech Source
-from mocks.dependencies.registry import mock_registry
 
 
 @pytest.fixture

@@ -1,6 +1,5 @@
 # External Libraries
 import pytest
-from litestar.testing import AsyncTestClient
 
 # VerdanTech Source
 from src.asgi.litestar.app import create_app

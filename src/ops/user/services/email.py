@@ -51,14 +51,13 @@ async def email_create(
             length=key_length, user_repo=user_repo
         )
 
+        await email_emitter.emit_user_email_confirmation(
+            email_address=address, username=user.username, key=key
+        )
+
     user.email_create(
         address=address,
         max_emails=max_emails,
         verification=verification,
         email_confirmation_key=key,
     )
-
-    if verification:
-        await email_emitter.emit_user_email_confirmation(
-            email_address=address, username=user.username, key=key
-        )

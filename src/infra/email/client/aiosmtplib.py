@@ -12,6 +12,11 @@ from ..client.generic import BaseEmailClient
 
 
 class AioSmtplibEmailClient(BaseEmailClient):
+    """
+    Completes Implementation of the AbstractEmailClient interface
+    using the aiosmtplib library.
+    """
+
     async def send(
         self,
         message: MIMEMultipart,

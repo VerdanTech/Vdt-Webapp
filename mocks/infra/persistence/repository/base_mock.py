@@ -3,12 +3,12 @@ from functools import partial
 from typing import Callable, List
 
 # VerdanTech Source
-from src.domain.common import EntityT, RootEntityT
+from src.domain.common import Entity, RootEntity
 from src.infra.persistence.generic.repository import BaseRepository
 from src.utils.key_generator import key_generator
 
 
-class MockBaseRepository(BaseRepository[RootEntityT]):
+class MockBaseRepository[T: RootEntity](BaseRepository[T]):
 
     """Base implementation of a mock, in-memory repository for testing"""
 
@@ -18,7 +18,7 @@ class MockBaseRepository(BaseRepository[RootEntityT]):
         self.id_factory = id_factory
         self.collection = []
 
-    def _generate_entity_id(self, entity: EntityT) -> None:
+    def _generate_entity_id(self, entity: Entity) -> None:
         """Generate an ID for an entity given an ID factory set
             on the repository upon instantiation
 
@@ -27,19 +27,19 @@ class MockBaseRepository(BaseRepository[RootEntityT]):
         """
         entity.id = self.id_factory()
 
-    def _add(self, entity: RootEntityT) -> RootEntityT:
+    def _add(self, entity: T) -> T:
         """Add a generic entity to the repository
 
         Args:
-            entity (RootEntityT): entity to add
+            entity (RootEntity): entity to add
 
         Raises:
             ValueError: raised if the entity already exists
 
         Returns:
-            RootEntityT: the entity added
+            RootEntity: the entity added
         """
-
+        print(entity.id)
         # Existing entity
         if entity.id is not None:
             raise ValueError(
@@ -51,17 +51,17 @@ class MockBaseRepository(BaseRepository[RootEntityT]):
         self.collection.append(entity)
         return entity
 
-    def _add_many(self, entities: List[RootEntityT]) -> List[RootEntityT]:
+    def _add_many(self, entities: List[T]) -> List[T]:
         """Add a list of generic entities to the repository
 
         Args:
-            entities (List[RootEntityT]): entities to add
+            entities (List[RootEntity]): entities to add
 
         Raises:
             ValueError: raised if any of the entities already exist
 
         Returns:
-            List[RootEntityT]: entities added
+            List[RootEntity]: entities added
         """
         persisted_entities = []
 

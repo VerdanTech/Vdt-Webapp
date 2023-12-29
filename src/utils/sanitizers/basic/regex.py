@@ -18,7 +18,7 @@ class RegexSpecError(SpecError):
     pass
 
 
-class RegexSpec(Spec):
+class RegexSpec[RegexSpecConfig](Spec):
     """Regex pattern sanitization functionality"""
 
     id = SelectEnum.REGEX

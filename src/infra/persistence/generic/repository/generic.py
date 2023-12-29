@@ -1,31 +1,28 @@
 # Standard Library
 import inspect
-from typing import Any, Dict, Generic, Optional
+from typing import Any, Type
 
 # VerdanTech Source
-from src.domain.common import RootEntityT
+from src.domain.common import RootEntity
 from src.interfaces.persistence import exceptions
+from src.interfaces.persistence.generic import AbstractRepository
 
-from ..mapper import AbstractMapper
 
+class BaseRepository[T: RootEntity](AbstractRepository):
+    """
+    A Repository is an interface between the domain layer
+    and the database layer.
 
-class BaseRepository(Generic[RootEntityT]):
-    """Base implementation of interface for domain model persistence"""
+    Base implementation of a Repository including dynamic call functionality.
+    """
 
-    entity: RootEntityT
-
-    def __init__(
-        self,
-        mapper: Optional[AbstractMapper] = None,
-    ) -> None:
-        if mapper:
-            self.mapper = mapper
+    entity: Type[T]
 
     async def async_dynamic_call(
         self,
         method_name: str,
         bypass_validation: bool = False,
-        **kwargs: Dict[str, Any],
+        **kwargs,
     ) -> Any:
         """
         Calls the method on the repository given the method name
@@ -36,7 +33,7 @@ class BaseRepository(Generic[RootEntityT]):
             bypass_validation (bool): whether to call
                 self.validate_async_dynamic_call_signature.
                 Used when the arguments have been pre-validated.
-            **kwargs (Dict[str, Any]): the arguments to the method.
+            **kwargs: the arguments to the method.
 
         Returns:
             Any: the result of the method.
@@ -48,20 +45,20 @@ class BaseRepository(Generic[RootEntityT]):
             )
 
         # Retrieve attribute from repository object
-        method = getattr(self, method_name, None)
+        if not hasattr(self, method_name):
+            raise ValueError("Invalid call signature")
+        method = getattr(self, method_name)
 
         return await method(**kwargs)
 
-    def validate_async_dynamic_call_signature(
-        self, method_name: str, **kwargs: Dict[str, Any]
-    ) -> None:
+    def validate_async_dynamic_call_signature(self, method_name: str, **kwargs) -> None:
         """
         Validates that an async method with the given name exists on the repository
         and that the supplied kwargs matches the method's signature.
 
         Args:
             method_name (str): the name of the method to validate against.
-            **method_kwargs (Dict[str, Any]): the dictionary of keyword arguments
+            **method_kwargs: the dictionary of keyword arguments
                 that the method is expected to accept.
 
         Raises:

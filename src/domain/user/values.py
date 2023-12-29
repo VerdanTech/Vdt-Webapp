@@ -5,12 +5,12 @@ from dataclasses import field, replace
 from datetime import datetime, timedelta
 from typing import Optional
 
-from ..common import value
+from ..common import Value, value_dataclass
 from .exceptions import EmailAlreadyVerifiedError, EmailConfirmationExpired
 
 
-@value
-class Email:
+@value_dataclass
+class Email(Value):
     """Email value object"""
 
     address: str
@@ -91,8 +91,8 @@ class Email:
             raise EmailConfirmationExpired("The email confirmation key is expired")
 
 
-@value
-class BaseConfirmation:
+@value_dataclass
+class BaseConfirmation(Value):
     """Base value object for verification through email"""
 
     key: str

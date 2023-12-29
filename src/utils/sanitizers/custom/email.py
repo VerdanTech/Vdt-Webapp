@@ -25,7 +25,7 @@ class EmailSpecError(SpecError):
     pass
 
 
-class EmailSpec(Spec):
+class EmailSpec[EmailSpecConfig](Spec):
     """
     Use of the third-party email_validator library for
     validation and normalization.
@@ -33,7 +33,7 @@ class EmailSpec(Spec):
 
     id = SelectEnum.EMAIL
     name = "Email"
-    error: Exception = EmailSpecError
+    error = EmailSpecError
 
     def _sanitize(self, input_data: str) -> bool:
         """
@@ -56,7 +56,8 @@ class EmailSpec(Spec):
                 test_environment=self.config.params["test_environment"],
                 allow_smtputf8=self.config.params["allow_smtputf8"],
             )
-            self.field.normalized_data = validated_email.normalized
+            if self.field_sanitizer is not None:
+                self.field_sanitizer.normalized_data = validated_email.normalized
         except EmailNotValidError as exc:
             self.config.error_message = str(exc)
             return False

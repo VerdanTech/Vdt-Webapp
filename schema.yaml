@@ -30,17 +30,10 @@ components:
       type: object
     UserCreateUserResponseBody:
       properties:
-        created_at:
-          format: date-time
-          type: string
         emails:
           items:
             $ref: '#/components/schemas/UserCreateUser_0ResponseBody'
           type: array
-        id:
-          oneOf:
-          - type: 'null'
-          - type: object
         is_superuser:
           type: boolean
         username:
@@ -78,8 +71,7 @@ components:
           type: string
         new_password2:
           type: string
-        user_id:
-          type: object
+        user_id: {}
       required:
       - key
       - new_password1

@@ -12,6 +12,7 @@ from src.ops.user.schemas import write as write_ops_schemas
 
 pytestmark = [pytest.mark.integration]
 
+
 class TestUserWriteApiController:
     # ================================================================
     # TestUserWriteApiController.user_create() tests

@@ -6,17 +6,17 @@ class UserReadOpsController:
     def __init__(self, user_repo: AbstractUserRepository):
         self.user_repo = user_repo
 
-    async def list():
+    async def list(self):
         pass
 
-    async def detail():
+    async def detail(self):
         pass
 
-    async def check_username():
+    async def check_username(self):
         pass
 
-    async def check_email():
+    async def check_email(self):
         pass
 
-    async def check_password():
+    async def check_password(self):
         pass

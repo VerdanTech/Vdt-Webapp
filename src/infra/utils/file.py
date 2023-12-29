@@ -1,8 +1,11 @@
+# Standard Library
+from pathlib import Path
+
 # External Libraries
 from aiofiles import open as async_open
 
 
-async def read_file_async(filepath: str) -> str:
+async def read_file_async(filepath: Path) -> str:
     """Open file with asyncio
 
     Args:
@@ -11,5 +14,5 @@ async def read_file_async(filepath: str) -> str:
     Returns:
         str: the document
     """
-    with async_open(filepath, "r") as file:
+    async with async_open(filepath, "r") as file:
         return await file.read()

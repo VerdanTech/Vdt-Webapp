@@ -4,8 +4,6 @@ from typing import TypedDict
 # VerdanTech Source
 from src.utils import sanitizers
 
-from .entities import User
-
 
 class UserSanitizerConfig(TypedDict):
     username: sanitizers.FieldSanitizer[
@@ -30,12 +28,14 @@ class UserSanitizerConfig(TypedDict):
 
 
 class UserSanitizer(sanitizers.ObjectSanitizer[UserSanitizerConfig]):
-    async def sanitize_object(self, user: User) -> None:
-        """Sanitize a user object
+    """
+    Type declaration for the User entity sanitizer.
 
-        Args:
-            user (User): user to sanitize
-        """
-        await self.username.sanitize(input=user.username)
-        for email in user.emails:
-            await self.email_address.sanitize(input=email.address)
+    Fields:
+        username
+        email_address
+        password
+        confirmation_key
+    """
+
+    pass

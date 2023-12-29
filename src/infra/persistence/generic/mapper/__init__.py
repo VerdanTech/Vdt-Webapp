@@ -1,3 +1,3 @@
-from .generic import AbstractMapper, DatabaseModelT
+from .generic import AbstractMapper
 
-__all__ = ["AbstractMapper", "DatabaseModelT"]
+__all__ = ["AbstractMapper"]

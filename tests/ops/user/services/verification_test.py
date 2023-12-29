@@ -6,12 +6,12 @@ import pytest
 from pytest_mock import MockerFixture
 
 # VerdanTech Source
-from src.ops import exceptions as ops_exceptions
-
+from src.domain.user import exceptions as domain_exceptions
 from src.domain.user.entities import User
 from src.domain.user.values import Email, PasswordResetConfirmation
 from src.interfaces.email.emitter import AbstractEmailEmitter
 from src.interfaces.persistence.user import AbstractUserRepository
+from src.ops import exceptions as ops_exceptions
 from src.ops.user.services import verification as verification_services
 
 pytestmark = [pytest.mark.unit]
@@ -71,6 +71,30 @@ async def test_email_confirmation_create(
 # ======================================
 
 
+async def test_password_reset_create_unpersisted_user(
+    user: User, mocker: MockerFixture
+) -> None:
+    """
+    Ensure that UserIntegrityError is raised if the user provided
+    does not have an ID.
+
+    Args:
+        user (User): user factory fixture.
+        mocker (MockerFixture): pytest-mock.
+    """
+    user.id = None
+    primary_email_address = user.get_primary_email().address
+
+    with pytest.raises(domain_exceptions.UserIntegrityError):
+        await verification_services.password_reset_create(
+            user=user,
+            email_address=primary_email_address,
+            key_length=0,
+            user_repo=mocker.Mock(),
+            email_emitter=mocker.Mock(),
+        )
+
+
 async def test_password_reset_create_incorrect_email_address(
     user: User, mocker: MockerFixture
 ) -> None:
@@ -82,6 +106,7 @@ async def test_password_reset_create_incorrect_email_address(
         user (User): user factory fixture.
         mocker (MockerFixture): pytest-mock.
     """
+    user.id = 0
     non_primary_address = "abc@abc.com"
     user.emails = [
         Email(address=non_primary_address, primary=False),
@@ -113,6 +138,7 @@ async def test_password_reset_create_success(
     """
     key_length = 10
     generated_key = "abc"
+    user.id = 0
     primary_email_address = user.get_primary_email().address
 
     mock__generate_unique_password_reset_key = mocker.patch.object(

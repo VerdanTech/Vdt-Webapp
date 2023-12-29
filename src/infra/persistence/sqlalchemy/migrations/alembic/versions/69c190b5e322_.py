@@ -9,7 +9,6 @@ Create Date: 2023-10-15 14:21:58.911441
 from typing import Sequence, Union
 
 # External Libraries
-import sqlalchemy as sa
 from alembic import op
 from sqlalchemy.dialects import postgresql
 

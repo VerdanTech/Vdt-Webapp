@@ -1,5 +1,4 @@
 # External Libraries
-from saq import Queue as SaqQueue
 from svcs import Container
 
 # VerdanTech Source

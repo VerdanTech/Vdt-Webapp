@@ -2,14 +2,38 @@
 import asyncio
 import re
 from dataclasses import dataclass
-from typing import Generic, Optional, TypedDict, TypeVar, TypeVarTuple
+from typing import TYPE_CHECKING, Any, Coroutine, Optional, Type, TypedDict
 
-from .options import GroupErrorsByEnum
+if TYPE_CHECKING:
+    from .field import FieldSanitizer
 
-SpecParamsT = TypeVar("SpecParamsT", bound="SpecParams")
-SpecT = TypeVar("SpecT", bound="Spec")
-SpecsT = TypeVarTuple("SpecsT")
-GenericInputType = TypeVar("GenericInputType")
+from .options import GroupErrorsByEnum, SelectEnum
+
+type InputType = Any
+type SpecErrorMessage = str | dict[str, str] | dict[str, dict[str, str]]
+"""
+The SpecError's message can take one of three forms:
+    - str when raised on the Spec level with group_errors_by = SPEC.
+        The message is the message attribute on the Spec class, formatted
+        with the parameters and input data.
+    - dict[str, str] when raised on the FieldSanitizer level 
+        with group_errors_by = FIELD. The keys are the name attributes 
+        of Specs and the values are the Spec-level error messages.
+    - dict[str, dict[str, str]] when raised on the ObjectSanitizer
+        level with group_errors_by = OBJECT. The keys are the names
+        of field attributes set on the ObjectSanitizer and the values
+        are the FieldSanitizer-level error messages. 
+"""
+
+
+class SpecError(Exception):
+    """Base class for handling sanitization errors"""
+
+    message: SpecErrorMessage
+
+    def __init__(self, message: SpecErrorMessage) -> None:
+        super().__init__(message)
+        self.message = message
 
 
 class SpecParams(TypedDict):
@@ -22,8 +46,8 @@ class SpecParams(TypedDict):
 
 
 @dataclass(kw_only=True)
-class SpecConfig(Generic[SpecParamsT]):
-    params: SpecParamsT
+class SpecConfig[T: SpecParams]:
+    params: T
     error_message: str
 
     def __post_init__(self) -> None:
@@ -61,42 +85,45 @@ class SpecConfig(Generic[SpecParamsT]):
             )
 
 
-class SpecError(Exception):
-    """Base class for handling sanitization errors"""
-
-    pass
-
-
-class Spec:
+class Spec[C: SpecConfig]:
     """
     Base class for encapsulating validation and normalization
     logic along with a dynamically formatted error message.
+
+    Implements sanitization interface.
+
+    Sanitization logic, including one of _sanitize or _asanitize is implemented by subclasses.
     """
 
     # The id of the Spec is used to select it on a FieldSanitizer
-    # or ObjectSanitizer with the sanitize_select argument.
-    id = "generic"
+    # or ObjectSanitizer with the spec_select argument.
+    id: SelectEnum
 
     # The name of the spec is used as a key when FieldSanitizers
     # and ObjectSanitizers construct error messages.
     name = "GenericSpec"
 
     # The error of the spec is raised when validation fails.
-    error: Exception = SpecError
+    error: Type[SpecError] = SpecError
 
-    def __init__(self, config: SpecConfig):
+    # A reference to the containing FieldSanitizer is held
+    # for setting normalized data on the parent.
+    field_sanitizer: Optional["FieldSanitizer"]
+
+    def __init__(self, config: C):
         self.config = config
+        self.field_sanitizer = None
 
     async def sanitize(
         self,
-        input_data: GenericInputType,
+        input_data: InputType,
         group_errors_by: GroupErrorsByEnum = GroupErrorsByEnum.SPEC,
     ) -> Optional[str]:
         """
         Validate input against self.config.params.
 
         Args:
-            input_data (GenericInputType): input to validate.
+            input_data (InputType): input to validate.
 
         Raises:
             self.error(): if sanitization fails and group_errors_by
@@ -122,21 +149,21 @@ class Spec:
             # Raise error if group_by_error calls for errors to be raised at the Spec level.
             # Otherwire return error.
             if group_errors_by == GroupErrorsByEnum.SPEC:
-                raise self.error(error)
+                raise self.error(message=error)
             else:
                 return error
         else:
             return None
 
-    def _sanitize(self, input_data: GenericInputType) -> bool:
+    def _sanitize(self, input_data: InputType) -> bool | Coroutine[Any, Any, bool]:
         """
         Sanitize input against self.params. Optionally, set the normalized
         attribute on the associated FieldSanitizer.
 
         Args:
-            input_data (GenericInputType): input to validate.
+            input_data (InputType): input to validate.
 
         Returns:
-            bool: the status of the sanitization.
+            bool | Coroutine[Any, Any, bool]: the status of the sanitization.
         """
         raise NotImplementedError

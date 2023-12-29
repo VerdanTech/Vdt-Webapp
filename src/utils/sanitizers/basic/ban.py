@@ -20,7 +20,7 @@ class BanSpecError(SpecError):
     pass
 
 
-class BanSpec(Spec):
+class BanSpec[BanSpecConfig](Spec):
     """Banned input sanitization functionality"""
 
     id = SelectEnum.BAN

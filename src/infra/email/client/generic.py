@@ -1,22 +1,23 @@
 # Standard Library
 import html
 import re
-from builtins import NotImplementedError
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
-from typing import Any, Dict
+from pathlib import Path
 
 # External Libraries
 import html2text
 
 # VerdanTech Source
 from src.infra.utils.file import read_file_async
+from src.interfaces.email.client import AbstractEmailClient
 
 
-class BaseEmailClient:
+class BaseEmailClient(AbstractEmailClient):
     """
-    Partial implemention of the AbstractAsyncEmailClient interface defined in
-    interfaces.
+    Partial implemention of the AbstractAsyncEmailClient interface defined in interfaces.
+
+    Contains implementation of html parsing and message compilation.
 
     The implementation of the "send" awaitable is the responsibility of subclasses.
     """
@@ -35,19 +36,20 @@ class BaseEmailClient:
         self.password = password
         self.sender = sender
 
-    def template_html(self, html_content: str, **kwargs: Dict[str, Any]) -> str:
-        """Replace templated variables in {{}} with kwargs
+    def template_html(self, html_content: str, **kwargs) -> str:
+        """
+        Replace templated variables contained in {{}} with kwargs.
 
         Args:
-            filepath (str): The path of the email html document
-            kwargs (Dict[str, Any]): arguments to insert into html
+            filepath (str): the path of the email html document.
+            kwargs: arguments to insert into html.
 
         Raises:
-            ValueError: Raised if not all templated valued provided
-                with kwargs
+            ValueError: Raised if not all templated valued are
+                filled by provided with kwargs.
 
         Returns:
-            str: the html string
+            str: the html string.
         """
 
         # Find all templated values in html_content
@@ -86,13 +88,14 @@ class BaseEmailClient:
         return html_content
 
     def html_to_plain_text(self, html_content: str) -> str:
-        """Convert html to plain text document
+        """
+        Convert html to plain text document.
 
         Args:
-            html_content (str): the html string to convert
+            html_content (str): the html string to convert.
 
         Returns:
-            str: the plain text string
+            str: the plain text string.
         """
         processor = html2text.HTML2Text()
         return processor.handle(html_content)
@@ -105,18 +108,19 @@ class BaseEmailClient:
         plain_text_message: str,
         html_message: str,
     ) -> MIMEMultipart:
-        """Compile the arguments into a
-            MIMEMultipart message object
+        """
+        Compile the arguments into an
+        MIMEMultipart message object.
 
         Args:
-            sender (str): email address to use as sender
-            receiver (str): email address to use as reciever
-            subject (str): message subject line
-            plain_text_message (str): plain text message content
-            html_message (str): html message content
+            sender (str): email address to use as sender.
+            receiver (str): email address to use as reciever.
+            subject (str): message subject line.
+            plain_text_message (str): plain text message content.
+            html_message (str): html message content.
 
         Returns:
-            MIMEMultipart: The MIMEMultipart email object
+            MIMEMultipart: The MIMEMultipart email object.
         """
 
         message = MIMEMultipart("alternative")
@@ -124,24 +128,23 @@ class BaseEmailClient:
         message["To"] = receiver
         message["Subject"] = subject
 
-        plain_text_message = MIMEText(plain_text_message, "plain", "utf-8")
-        html_message = MIMEText(html_message, "html", "utf-8")
-        message.attach(plain_text_message)
-        message.attach(html_message)
+        message.attach(MIMEText(plain_text_message, "plain", "utf-8"))
+        message.attach(MIMEText(html_message, "html", "utf-8"))
 
         return message
 
     async def compile_and_send(
-        self, filepath: str, receiver: str, subject: str, **kwargs: Dict[str, Any]
+        self, filepath: Path, receiver: str, subject: str, **kwargs
     ):
-        """Compile email from html, and send it as html
-            with a plaintext alternative
+        """
+        Compile email from html and send it as html
+        with a plaintext alternative.
 
         Args:
-            filepath (str): path of the html content
-            receiver (str): recipient address
-            subject (str): subject line of the message
-            kwargs (Dict[str, Any]): arguments to insert into html
+            filepath (Path): path of the html content.
+            receiver (str): recipient address.
+            subject (str): subject line of the message.
+            kwargs: arguments to insert into html.
         """
 
         html_content = await read_file_async(filepath=filepath)
@@ -157,13 +160,10 @@ class BaseEmailClient:
         await self.send(message=message)
 
     async def send(self, message: MIMEMultipart) -> None:
-        """Send the email using the client
+        """
+        Send the email using the client.
 
         Args:
-            message (MIMEMultipart): the email object to send
-            hostname (str): SMTP server hostname
-            port (int): SMTP server port
-            username (str): client username
-            password (str): client password
+            message (MIMEMultipart): the email object to send.
         """
         raise NotImplementedError

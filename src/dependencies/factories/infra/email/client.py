@@ -2,7 +2,6 @@
 from unittest.mock import Mock
 
 # VerdanTech Source
-from src import settings
 from src.infra.email.client.aiosmtplib import AioSmtplibEmailClient
 
 

@@ -1,5 +1,4 @@
 # Standard Library
-from typing import List, Tuple
 
 # VerdanTech Source
 from src.domain.user.entities import User
@@ -9,11 +8,8 @@ from ..generic import BaseAlchemyMapper
 from .model import EmailAlchemyModel, UserAlchemyModel
 
 
-class UserAlchemyMapper(BaseAlchemyMapper[User]):
+class UserAlchemyMapper(BaseAlchemyMapper[User, UserAlchemyModel]):
     """Implementation of a model mapper interface using sqlalchemy."""
-
-    entity: User
-    model: UserAlchemyModel
 
     @staticmethod
     def to_model(entity: User) -> UserAlchemyModel:

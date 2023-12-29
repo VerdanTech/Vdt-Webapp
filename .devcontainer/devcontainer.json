@@ -30,7 +30,7 @@
 		"vscode": {
 			"settings": {
 				"python.defaultInterpreterPath": "/usr/local/bin/python",
-				//"python.analysis.typeCheckingMode": "basic",
+				"python.analysis.typeCheckingMode": "basic",
 				"python.analysis.autoImportCompletions": true,
 				"python.formatting.blackPath": "/usr/local/bin/black",
 				"python.testing.unittestEnabled": false,
@@ -42,7 +42,7 @@
 				"christian-kohler.path-intellisense",
 				"ms-python.black-formatter",
 				"charliermarsh.ruff",
-				"ms-python.mypy-type-checker",
+				"ms-pyright.pyright",
 				"ms-python.vscode-pylance",
 				"mikestead.dotenv",
 				"njpwerner.autodocstring",

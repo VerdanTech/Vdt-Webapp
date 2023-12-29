@@ -35,7 +35,7 @@ test = [
     "coverage[toml]",
 ]
 dev = [
-    "mypy",
+    "pyright",
     "mkdocs",
     "mkdocstrings[python]",
     "mkdocs-material",

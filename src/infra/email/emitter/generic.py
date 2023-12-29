@@ -1,13 +1,15 @@
 # Standard Library
+from pathlib import Path
 from typing import Optional
 
 # VerdanTech Source
 from src import settings
-from src.domain.common import EntityIDType
+from src.domain.common import EntityIdType
 from src.interfaces.email.client import AbstractEmailClient
+from src.interfaces.email.emitter import AbstractEmailEmitter
 
 
-class BaseEmailEmitter:
+class BaseEmailEmitter(AbstractEmailEmitter):
     """
     Base class for implementing Email Emitter interface.
 
@@ -19,7 +21,7 @@ class BaseEmailEmitter:
 
     async def _send(
         self,
-        filepath: str,
+        filepath: Path,
         receiver: str,
         subject: str,
         queue: Optional[bool] = False,
@@ -29,7 +31,7 @@ class BaseEmailEmitter:
         Send the email or emit the email send event into an event queue.
 
         Args:
-            filepath (str): filepath of the email.
+            filepath (Path): filepath of the email.
             receiver (str): recipient email address.
             subject (str): email subject line.
             queue (Optional[bool]): if True, emits the email send
@@ -69,7 +71,7 @@ class BaseEmailEmitter:
         )
 
     async def emit_user_password_reset(
-        self, email_address: str, username: str, user_id: EntityIDType, key: str
+        self, email_address: str, username: str, user_id: EntityIdType, key: str
     ) -> None:
         """
         The password reset email provides a url to a page on the client
@@ -79,7 +81,7 @@ class BaseEmailEmitter:
         Args:
             email_address (str): the email address to send to
             username (str): the username of the user
-            user_id (EntityIDType): the ID of the user
+            user_id (EntityIdType): the ID of the user
         """
         filepath = settings.EMAIL_FILEPATH_PASSWORD_RESET
         subject = settings.EMAIL_SUBJECT_PASSWORD_RESET

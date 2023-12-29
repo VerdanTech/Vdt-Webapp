@@ -1,11 +1,5 @@
 # External Libraries
-from litestar.config.allowed_hosts import AllowedHostsConfig
-from litestar.config.cors import CORSConfig
-from litestar.config.csrf import CSRFConfig
 from litestar.logging import StructLoggingConfig
-
-# VerdanTech Source
-from src import settings
 
 # allowed_hosts_config = AllowedHostsConfig(allowed_hosts=settings.ALLOWED_HOSTS)
 

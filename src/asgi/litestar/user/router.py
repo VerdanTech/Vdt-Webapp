@@ -2,7 +2,7 @@
 from litestar import Router
 
 from . import urls
-from .controllers import write, verification
+from .controllers import verification, write
 
 
 def create_user_router() -> Router:

@@ -1,5 +1,5 @@
 # Standard Library
-from typing import ContextManager, List
+from typing import List
 
 # External Libraries
 import pytest
@@ -32,14 +32,14 @@ class TestFieldSanitizer:
 
         field_sanitizer = FieldSanitizer[
             basic.length.LengthSpec, basic.regex.RegexSpec, basic.ban.BanSpec
-        ](*length_regex_ban_specs_fixture)
+        ](length_regex_ban_specs_fixture)
 
         for spec in length_regex_ban_specs_fixture:
             assert any(
                 spec.id == field_sanitizer_spec.id
                 for field_sanitizer_spec in field_sanitizer.specs
             )
-            assert spec.field == field_sanitizer
+            assert spec.field_sanitizer == field_sanitizer
 
     # ======================================
     # FieldSanitizer.sanitize() tests
@@ -65,7 +65,7 @@ class TestFieldSanitizer:
 
         field_sanitizer = FieldSanitizer[
             basic.length.LengthSpec, basic.regex.RegexSpec, basic.ban.BanSpec
-        ](*length_regex_ban_specs_fixture)
+        ](length_regex_ban_specs_fixture)
 
         mocker.patch.object(
             field_sanitizer, "_sanitize", return_value=_sanitize_output_error_message
@@ -114,7 +114,7 @@ class TestFieldSanitizer:
 
         field_sanitizer = FieldSanitizer[
             basic.length.LengthSpec, basic.regex.RegexSpec, basic.ban.BanSpec
-        ](*length_regex_ban_specs_fixture)
+        ](length_regex_ban_specs_fixture)
 
         mocker.patch.object(
             field_sanitizer, "_sanitize", return_value=_sanitize_output_error_message
@@ -160,7 +160,7 @@ class TestFieldSanitizer:
 
         field_sanitizer = FieldSanitizer[
             basic.length.LengthSpec, basic.regex.RegexSpec, basic.ban.BanSpec
-        ](*length_regex_ban_specs_fixture)
+        ](length_regex_ban_specs_fixture)
 
         mocker.patch.object(
             field_sanitizer, "_select_specs", return_value=field_sanitizer.specs
@@ -244,7 +244,7 @@ class TestFieldSanitizer:
             length_regex_ban_specs_fixture (List[Spec]): fixture providing
                 list of length, regex, and ban Specs.
         """
-        field_sanitizer = FieldSanitizer(*length_regex_ban_specs_fixture)
+        field_sanitizer = FieldSanitizer(length_regex_ban_specs_fixture)
 
         output = field_sanitizer._select_specs(
             spec_select=spec_select, apply_default=apply_default

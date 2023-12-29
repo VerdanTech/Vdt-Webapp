@@ -1,3 +1,3 @@
 from .password_crypt import AbstractPasswordCrypt
 
-__all__ = [AbstractPasswordCrypt]
+__all__ = ["AbstractPasswordCrypt"]

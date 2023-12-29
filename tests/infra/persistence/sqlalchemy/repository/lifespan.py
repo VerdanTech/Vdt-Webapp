@@ -1,6 +1,5 @@
 # Standard Library
 from typing import AsyncGenerator
-from contextlib import asynccontextmanager
 
 # External Libraries
 import pytest
@@ -24,6 +23,7 @@ sessionmaker = async_sessionmaker(
 )
 
 alchemy_client = AlchemyClient(engine=engine)
+
 
 @pytest.fixture
 async def sql_transaction() -> AsyncGenerator[AsyncSession, None]:

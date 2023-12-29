@@ -4,20 +4,21 @@ from datetime import datetime, timedelta
 from typing import List, Optional
 
 # VerdanTech Source
-from src.domain.common import EntityIDType, root_entity
-from src.interfaces.security.crypt import AbstractPasswordCrypt
 from src.domain import exceptions as domain_exceptions
+from src.domain.common import EntityIdType, RootEntity, root_entity_dataclass
+from src.interfaces.security.crypt import AbstractPasswordCrypt
+
 from . import exceptions
 from .values import Email, PasswordResetConfirmation
 
 
-@root_entity
-class User:
+@root_entity_dataclass
+class User(RootEntity):
     """User entity model"""
 
     username: str
     emails: List[Email] = field(default_factory=list)
-    _password_hash: str = None
+    _password_hash: str | None = None
     # memberships: List[Ref[GardenMembership]] = field(default_factory=list)
     is_active: bool = True
     is_superuser: bool = False
@@ -189,7 +190,7 @@ class User:
 
     async def password_reset_confirm(
         self,
-        user_id: EntityIDType,
+        user_id: EntityIdType,
         key: str,
         new_password: str,
         password_crypt: AbstractPasswordCrypt,
@@ -199,7 +200,7 @@ class User:
         only if the provided key is correct.
 
         Args:
-            user_id (EntityIDType): the id of the user on the password reset confirmation.
+            user_id (EntityIdType): the id of the user on the password reset confirmation.
             key (str): the password reset confirmation key.
             new_password (str): the new password to set.
             password_crypt (AbstractPasswordCrypt): password crypt interface.
@@ -237,6 +238,8 @@ class User:
         Returns:
             bool: true if the passwords match.
         """
+        if self._password_hash is None:
+            return False
         return await password_crypt.verify_password(
             plain_password=password, hashed_password=self._password_hash
         )
@@ -265,7 +268,8 @@ class User:
         Returns:
             bool: whether the user is expired.
         """
-
+        if self.created_at is None:
+            return False
         return not self.is_verified() and (
             datetime.now() - self.created_at
         ) > timedelta(hours=expiry_time_hours)
