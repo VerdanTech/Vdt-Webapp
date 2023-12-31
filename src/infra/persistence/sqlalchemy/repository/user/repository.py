@@ -76,7 +76,19 @@ class UserAlchemyRepository(BaseAlchemyRepository[User, UserAlchemyModel]):
         Returns:
             User | None: the found user, or None if no user was found.
         """
-        ...
+        statement = (
+            select(UserAlchemyModel)
+            .options(joinedload(UserAlchemyModel.emails))
+            .filter(UserAlchemyModel.id == id)
+        )
+        query = await self.transaction.execute(statement)
+        user_model = query.unique().scalar_one_or_none()
+
+        if user_model is None:
+            return None
+
+        user = self._model_to_entity(user_model)
+        return user
 
     async def get_user_by_email_address(self, email_address: str) -> User | None:
         """

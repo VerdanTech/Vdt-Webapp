@@ -57,6 +57,40 @@ class TestAbstractUserRepository:
     # ================================================================
 
     # ================================================================
+    # AbstractUserRepository.get_user_by_id() tests
+    # ================================================================
+
+    async def test_get_user_by_id_not_found(
+        self, user_repo: AbstractUserRepository
+    ) -> None:
+        """
+        Ensure None is returned if the User does not exist.
+
+        Args:
+            user_repo (AbstractUserRepository): fixture providing
+                repository to test
+        """
+        user_result = await user_repo.get_user_by_id(id=0)
+        assert user_result is None
+
+    async def test_get_user_by_id_success(
+        self, user_repo: AbstractUserRepository, user: User
+    ) -> None:
+        """
+        Ensure the User with the ID is retrieved.
+
+        Args:
+            user_repo (AbstractUserRepository): fixture providing
+                repository to test.
+            user (User): factory fixture providing user.
+        """
+        user = await user_repo.add(user=user)
+        assert user.id is not None
+
+        user_result = await user_repo.get_user_by_id(id=user.id)
+        assert user_result is not None and user_result.id == user.id
+
+    # ================================================================
     # AbstractUserRepository.get_user_by_email_address() tests
     # ================================================================
 

@@ -20,6 +20,7 @@ from .factories.infra.persistence.sqlalchemy import (
 )
 from .factories.infra.security.crypt import provide_passlib_crypt
 from .factories.ops.user.controllers import (
+    provide_user_auth_ops,
     provide_user_verification_ops,
     provide_user_write_ops,
 )
@@ -34,6 +35,7 @@ def create_registry() -> Registry:
     # ======================================
 
     # User
+    registry.register_factory(user_ops.UserAuthOpsController, provide_user_auth_ops)
     registry.register_factory(user_ops.UserWriteOpsController, provide_user_write_ops)
     registry.register_factory(
         user_ops.UserVerificationOpsController, provide_user_verification_ops
