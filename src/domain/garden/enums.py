@@ -1,6 +1,7 @@
 # Standard Library
 from enum import Enum
 
+# VerdanTech Source
 from src.asgi.litestar.router import create_routers
 
 
@@ -15,10 +16,11 @@ class RoleEnum(Enum):
     EDIT = "EDIT"
     VIEW = "VIEW"
 
-class PermissionsEnum():
+
+class PermissionsEnum:
     """
     requires admin
-    requires edit 
+    requires edit
     requires view
     any, even anon allowed
     """

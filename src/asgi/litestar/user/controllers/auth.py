@@ -15,6 +15,7 @@ from src.ops.user.schemas import auth as auth_ops_schemas
 
 from .. import routes, urls
 
+
 class UserAuthApiController(Controller):
     """User authentication operations controller"""
 
@@ -56,6 +57,8 @@ class UserAuthApiController(Controller):
                 data=data, user_sanitizer=user_sanitizer, password_crypt=password_crypt
             )
         if user is None:
-            return Response(status_code=status_codes.HTTP_401_UNAUTHORIZED, content=None)
+            return Response(
+                status_code=status_codes.HTTP_401_UNAUTHORIZED, content=None
+            )
         else:
             return jwt_cookie_auth.login(identifier=str(user.id), response_body=user)

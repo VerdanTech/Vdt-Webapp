@@ -43,7 +43,7 @@ class UserAuthOpsController:
         )
         if user is None:
             raise EntityNotFound("The email address does not exist.")
-        
+
         # Todo: verify email is confirmed if settings.EMAIL_CONFIRMATION is REQUIRED_FOR_LOGIN
 
         # Verify password

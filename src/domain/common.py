@@ -64,6 +64,7 @@ class Value:
 
     pass
 
+
 @dataclass_transform(field_specifiers=(Field, field))
 def entity_dataclass(cls):
     """
@@ -129,6 +130,7 @@ def value_dataclass(cls):
     cls = dataclass(**dataclass_settings)(cls)
     return cls
 
+
 @value_dataclass
 class Ref[RootEntity](Value):
     """
@@ -139,4 +141,4 @@ class Ref[RootEntity](Value):
     id: EntityIdType
 
     def __init__(self, id: EntityIdType) -> None:
-        self.id=id
+        self.id = id

@@ -2,9 +2,7 @@ class GardenWriteOpsController:
     def __init__(self):
         pass
 
-    async def create(
-        self
-    ):
+    async def create(self):
         pass
 
     async def invite(self):
