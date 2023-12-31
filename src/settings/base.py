@@ -167,4 +167,4 @@ VERIFICATION_KEY_MAX_LENGTH: int = 64
 # GARDEN SETTINGS
 # ======================================
 
-GARDEN_STR_ID_MAX_LENGTH: int = 6
+GARDEN_STR_ID_LENGTH: int = 6

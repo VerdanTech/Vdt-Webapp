@@ -1,14 +1,11 @@
-# Standard Library
-from enum import Enum
 
+from datetime import date
+from src.domain.common import value_dataclass, Value
 
-class VisibilityEnum(Enum):
-    PRIVATE = "PRIVATE"
-    UNLISTED = "UNLISTED"
-    PUBLIC = "PUBLIC"
+class EnvironmentAttributeProfile(Value):
+    pass
 
-
-class RoleEnum(Enum):
-    ADMIN = "ADMIN"
-    EDIT = "EDIT"
-    VIEW = "VIEW"
+@value_dataclass
+class FrostDateProfile(EnvironmentAttributeProfile):
+    first_frost_date: date
+    last_frost_date: date

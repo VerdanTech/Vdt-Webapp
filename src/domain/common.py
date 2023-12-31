@@ -64,16 +64,6 @@ class Value:
 
     pass
 
-
-class Ref[RootEntity](Value):
-    """
-    Entities and Values can hold references to other aggregates, but
-    only by referencing RootEntitys by ID.
-    """
-
-    id: EntityIdType = field(init=True)
-
-
 @dataclass_transform(field_specifiers=(Field, field))
 def entity_dataclass(cls):
     """
@@ -138,3 +128,15 @@ def value_dataclass(cls):
     dataclass_settings = {"kw_only": True, "frozen": True, "eq": True}
     cls = dataclass(**dataclass_settings)(cls)
     return cls
+
+@value_dataclass
+class Ref[RootEntity](Value):
+    """
+    Entities and Values can hold references to other aggregates, but
+    only by referencing RootEntitys by ID.
+    """
+
+    id: EntityIdType
+
+    def __init__(self, id: EntityIdType) -> None:
+        self.id=id
