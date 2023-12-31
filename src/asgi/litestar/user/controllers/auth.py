@@ -1,19 +1,21 @@
 # External Libraries
-from litestar import Controller, Response, post
+from litestar import Controller, Response, post, status_codes
 from litestar.datastructures import State
+from litestar.params import Dependency
 from svcs import Container
 
 # VerdanTech Source
 from src.asgi.litestar.auth import jwt_cookie_auth
+from src.asgi.litestar.exceptions import litestar_exception_map
 from src.domain.user.entities import User
 from src.domain.user.sanitizers import UserSanitizer
-from src.interfaces.persistence.user.repository import AbstractUserRepository
 from src.interfaces.security.crypt import AbstractPasswordCrypt
+from src.ops.user.controllers.auth import UserAuthOpsController
+from src.ops.user.schemas import auth as auth_ops_schemas
 
-from .. import routes, schemas, urls
+from .. import routes, urls
 
-
-class UserAuthController(Controller):
+class UserAuthApiController(Controller):
     """User authentication operations controller"""
 
     path = urls.USER_AUTH_CONTROLLER_BASE
@@ -25,29 +27,35 @@ class UserAuthController(Controller):
         description="Authenticate the request with JWT cookie authentication.",
         tags=["users"],
         path=urls.USER_LOGIN_URL,
-        return_dto=schemas.UserSelfDetail,
     )
     async def user_login(
-        self, data: schemas.UserLoginInput, state: State, svcs_container: Container
-    ) -> Response[User]:
+        self,
+        data: auth_ops_schemas.UserLoginInput,
+        state: State,
+        svcs_container: Container = Dependency(skip_validation=True),
+    ) -> Response[User] | Response:
+        """
+        Uses the application operation and Litestar's built in JWT auth to log
+        the user in with a JWT cookie authentication scheme.
+
+        Args:
+            data (schemas.UserLoginInput): input DTO.
+            state (State): litestar application state.
+            svcs_container (Container): svcs service container.
+
+        Returns:
+            Response[User] | Response: a response containing JWT auth or None.
+        """
         svcs_container.register_local_value(State, state)
-        user_sanitizer = await svcs_container.aget(UserSanitizer)
-        user_repo, password_crypt = await svcs_container.aget_abstract(
-            AbstractUserRepository, AbstractPasswordCrypt
+        user_auth_ops_controller, user_sanitizer = await svcs_container.aget(
+            UserAuthOpsController, UserSanitizer
         )
-
-        await data.sanitize(user_sanitizer=user_sanitizer)
-
-        user = await user_repo.get_user_by_email_address(
-            email_address=data.email_address
-        )
-
+        password_crypt = await svcs_container.aget_abstract(AbstractPasswordCrypt)
+        async with litestar_exception_map():
+            user = await user_auth_ops_controller.login(
+                data=data, user_sanitizer=user_sanitizer, password_crypt=password_crypt
+            )
         if user is None:
-            pass
-
-        if not user.verify_password(
-            password=data.password, password_crypt=password_crypt
-        ):
-            pass
-
-        return jwt_cookie_auth.login(identifier=str(user.id), response_body=user)
+            return Response(status_code=status_codes.HTTP_401_UNAUTHORIZED, content=None)
+        else:
+            return jwt_cookie_auth.login(identifier=str(user.id), response_body=user)

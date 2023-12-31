@@ -63,6 +63,17 @@ components:
       - address
       title: UserCreateUser_0ResponseBody
       type: object
+    UserLoginInput:
+      properties:
+        email_address:
+          type: string
+        password:
+          type: string
+      required:
+      - email_address
+      - password
+      title: UserLoginInput
+      type: object
     UserPasswordResetConfirmInput:
       properties:
         key:
@@ -103,11 +114,67 @@ components:
       - email_address
       title: UserVerifyEmailRequestInput
       type: object
+  securitySchemes:
+    BearerToken:
+      bearerFormat: JWT
+      description: JWT cookie-based authentication and authorization.
+      in: cookie
+      name: token
+      scheme: Bearer
+      type: http
 info:
   title: Litestar API
   version: 1.0.0
 openapi: 3.1.0
 paths:
+  /vdtapi/users/auth/login:
+    post:
+      deprecated: false
+      description: Authenticate the request with JWT cookie authentication.
+      operationId: VdtapiUsersAuthLoginUserLogin
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserLoginInput'
+        required: true
+      responses:
+        '201':
+          content:
+            application/json:
+              schema: {}
+          description: Document created, URL follows
+          headers: {}
+        '400':
+          content:
+            application/json:
+              schema:
+                description: Validation Exception
+                examples:
+                  ValidationException:
+                    value:
+                      detail: Bad Request
+                      extra: {}
+                      status_code: 400
+                properties:
+                  detail:
+                    type: string
+                  extra:
+                    additionalProperties: {}
+                    type:
+                    - 'null'
+                    - object
+                    - array
+                  status_code:
+                    type: integer
+                required:
+                - detail
+                - status_code
+                type: object
+          description: Bad request syntax or unsupported method
+      summary: User login
+      tags:
+      - users
   /vdtapi/users/verification/email/verification_confirm:
     post:
       deprecated: false
@@ -337,5 +404,7 @@ paths:
       summary: User registration
       tags:
       - users
+security:
+- BearerToken: []
 servers:
 - url: /
