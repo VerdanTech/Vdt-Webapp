@@ -43,7 +43,7 @@ class TestUserWriteOpsController:
         # Fails length, regex, ban, and uniqueness sanitization.
         existing_invalid_username = "$a"
 
-        # Fails length, email, and uniqueness sanitization.
+        # Fails email, and uniqueness sanitization.
         existing_invalid_email = "a"
 
         # Fails length and regex sanitization.

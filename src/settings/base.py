@@ -1,6 +1,7 @@
 # Standard Library
 from enum import Enum
 from pathlib import Path
+from typing import Annotated
 
 # External Libraries
 from decouple import Csv, config
@@ -53,6 +54,12 @@ ALLOW_ORIGINS = config("ALLOWED_ORIGINS", cast=Csv(), default="")
 # ======================================
 # CSRF SETTINGS
 # ======================================
+
+# ======================================
+# AUTH SETTINGS
+# ======================================
+
+JWT_SECRET = str(config("JWT_SECRET", cast=str, default="developmentsecret123"))
 
 # ============================================================================
 # APPLICATION SETTINGS
@@ -127,11 +134,11 @@ EMAIL_CLIENT_SENDER: str = "verdantech@gmail.com"
 class EmailConfirmationOptions(Enum):
     REQUIRED_FOR_NONE = 0
     REQUIRED_FOR_WRITE = 1
-    REQUIRED_FOR_ALL = 2
+    REQUIRED_FOR_LOGIN = 2
 
     def verification_required(self) -> bool:
         return (
-            self.value == self.REQUIRED_FOR_WRITE or self.value == self.REQUIRED_FOR_ALL
+            self.value == self.REQUIRED_FOR_WRITE or self.value == self.REQUIRED_FOR_LOGIN
         )
 
 

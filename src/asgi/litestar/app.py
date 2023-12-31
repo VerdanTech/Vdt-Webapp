@@ -11,6 +11,7 @@ def create_app() -> "Litestar":
     from litestar import Litestar
 
     # VerdanTech Source
+    from src.asgi.litestar.auth import jwt_cookie_auth
     from src.asgi.litestar.dependencies import svcs_plugin
     from src.asgi.litestar.exceptions import exception_handlers
     from src.asgi.litestar.lifespan import lifespan
@@ -23,5 +24,6 @@ def create_app() -> "Litestar":
         lifespan=lifespan,
         plugins=[svcs_plugin],
         exception_handlers=exception_handlers,
+        on_app_init=[jwt_cookie_auth.on_app_init],
         debug=True,
     )

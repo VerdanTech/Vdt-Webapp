@@ -6,7 +6,7 @@ authors = [
     { name = "Nathaniel King", email = "nathanielarking@gmail.com" }
 ]
 dependencies = [
-    "litestar[standard]",
+    "litestar[standard, jwt]",
     "svcs",
     "litestar-svcs",
     "saq",

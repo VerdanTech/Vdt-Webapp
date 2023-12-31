@@ -6,6 +6,7 @@ from svcs import Registry
 
 # VerdanTech Source
 from src.dependencies.factories.ops.user.controllers import (
+    provide_user_auth_ops,
     provide_user_verification_ops,
     provide_user_write_ops,
 )
@@ -26,6 +27,7 @@ mock_registry = Registry()
 # ======================================
 
 # User
+mock_registry.register_factory(user_ops.UserAuthOpsController, provide_user_auth_ops)
 mock_registry.register_factory(user_ops.UserWriteOpsController, provide_user_write_ops)
 mock_registry.register_factory(
     user_ops.UserVerificationOpsController, provide_user_verification_ops
