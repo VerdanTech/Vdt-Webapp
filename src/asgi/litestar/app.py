@@ -5,7 +5,6 @@ from typing import TYPE_CHECKING
 from litestar import Litestar
 
 # VerdanTech Source
-# VerdanTech Source
 from src.infra.persistence.sqlalchemy.repository.litestar_lifespan import (
     litestar_alchemy_client_lifespan,
 )
@@ -21,7 +20,6 @@ if TYPE_CHECKING:
 
 
 def create_app() -> "Litestar":
-
     base_router = create_base_router()
 
     return Litestar(

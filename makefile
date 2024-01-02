@@ -18,7 +18,8 @@ sync-dependencies:
 # Run all tests.
 #
 .PHONY: test
-test: test-unit test-intg test-db
+test:
+	pytest
 
 #
 # Run all unit tests.

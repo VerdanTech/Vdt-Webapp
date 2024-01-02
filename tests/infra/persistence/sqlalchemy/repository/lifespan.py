@@ -27,13 +27,15 @@ alchemy_client = AlchemyClient(engine=engine)
 
 
 @pytest.fixture
-async def sql_transaction(
-) -> AsyncGenerator[AsyncSession, None]:
-    async with test_scoped_sql_transaction() as transaction:
+async def sql_transaction() -> AsyncGenerator[AsyncSession, None]:
+    async with function_scoped_sql_transaction() as transaction:
         yield transaction
 
+
 @asynccontextmanager
-async def test_scoped_sql_transaction(client: AlchemyClient = alchemy_client) -> AsyncGenerator[AsyncSession, None]:
+async def function_scoped_sql_transaction(
+    client: AlchemyClient = alchemy_client,
+) -> AsyncGenerator[AsyncSession, None]:
     """Yield a session with a savepoint, that
     rolls back after every test case
 
