@@ -44,3 +44,10 @@ class TestUserWriteApiController:
             response_dict["username"] == input_data.username
             and response_dict["emails"][0]["address"] == input_data.email_address
         )
+        response = await litestar_client.post(
+            path,
+            json=asdict(input_data),
+        )
+        response_dict = json.loads(response.content)
+
+        assert response.status_code == 422

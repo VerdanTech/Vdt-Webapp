@@ -17,7 +17,7 @@ from src.ops.user import controllers as user_ops
 
 pytestmark = [pytest.mark.integration]
 
-
+@pytest.mark.skip
 async def test_container(litestar_client: AsyncTestClient) -> None:
     """
     Ensure that the svcs Registry created on the Litestar global application

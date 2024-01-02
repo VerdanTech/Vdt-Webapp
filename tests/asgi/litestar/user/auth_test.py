@@ -12,7 +12,6 @@ from src.ops.user.schemas import auth as auth_ops_schemas
 
 pytestmark = [pytest.mark.integration]
 
-
 class TestUserAuthApiController:
     # ================================================================
     # TestUserAuthApiController.user_login() tests

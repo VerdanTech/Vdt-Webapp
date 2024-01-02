@@ -27,10 +27,13 @@ certifi==2023.11.17
     # via
     #   httpcore
     #   httpx
+    #   requests
 cffi==1.16.0
     # via
     #   argon2-cffi-bindings
     #   cryptography
+charset-normalizer==3.3.2
+    # via requests
 click==8.1.7
     # via
     #   litestar
@@ -42,8 +45,12 @@ croniter==2.0.1
     # via saq
 cryptography==41.0.7
     # via litestar
+deprecation==2.1.0
+    # via testcontainers
 dnspython==2.4.2
     # via email-validator
+docker==7.0.0
+    # via testcontainers
 ecdsa==0.18.0
     # via python-jose
 editorconfig==0.12.3
@@ -77,6 +84,7 @@ idna==3.6
     #   anyio
     #   email-validator
     #   httpx
+    #   requests
 iniconfig==2.0.0
     # via pytest
 jinja2==3.1.2
@@ -106,7 +114,10 @@ msgspec==0.18.4
 multidict==6.0.4
     # via litestar
 packaging==23.2
-    # via pytest
+    # via
+    #   deprecation
+    #   docker
+    #   pytest
 passlib==1.7.4
     # via verdantech_api (pyproject.toml)
 pluggy==1.3.0
@@ -154,6 +165,8 @@ pyyaml==6.0.1
     #   uvicorn
 redis==5.0.1
     # via saq
+requests==2.31.0
+    # via docker
 rich==13.7.0
     # via
     #   litestar
@@ -181,6 +194,8 @@ svcs==23.21.0
     # via
     #   litestar-svcs
     #   verdantech_api (pyproject.toml)
+testcontainers==3.7.1
+    # via verdantech_api (pyproject.toml)
 typing-extensions==4.8.0
     # via
     #   alembic
@@ -188,6 +203,10 @@ typing-extensions==4.8.0
     #   polyfactory
     #   rich-click
     #   sqlalchemy
+urllib3==2.1.0
+    # via
+    #   docker
+    #   requests
 uvicorn[standard]==0.24.0.post1
     # via litestar
 uvloop==0.19.0
@@ -198,3 +217,5 @@ watchfiles==0.21.0
     # via uvicorn
 websockets==12.0
     # via uvicorn
+wrapt==1.16.0
+    # via testcontainers
