@@ -14,67 +14,38 @@ from ..enums import RoleEnum, VisibilityEnum
 def create_garden(
     creator: User,
     name: str,
-    admins: Optional[list[User]] = None,
     description: Optional[str] = None,
+    invitations: Optional[list[tuple[User, RoleEnum]]] = None,
     visibility: VisibilityEnum = VisibilityEnum.PRIVATE,
-    editors: Optional[list[User]] = None,
-    viewers: Optional[list[User],] = None,
 ) -> Garden:
-    if creator.id is None:
-        raise Exception
+    creator.assert_persisted()
     creator_ref = Ref[User](creator.id)
 
     garden = Garden(
         name=name, creator=creator_ref, description=description, visibility=visibility
     )
 
-    if admins:
-        admin_refs = [Ref[User](admin.id) for admin in admins if admin.id is not None]
-        admin_refs.insert(0, creator_ref)
-    else:
-        admin_refs = [creator_ref]
+    creator_membership = GardenMembership(
+        inviter=creator_ref,
+        user=creator_ref,
+        garden=garden,
+        role=RoleEnum.ADMIN,
+        open_invite=False,
+    )
 
-    admin_memberships = [
-        GardenMembership(
-            inviter=creator_ref,
-            user=admin_ref,
-            garden=garden,
-            role=RoleEnum.ADMIN,
-            open_invite=False,
-        )
-        if admin_ref.id == creator_ref.id
-        else GardenMembership(
-            inviter=creator_ref, user=admin_ref, garden=garden, role=RoleEnum.ADMIN
-        )
-        for admin_ref in admin_refs
-    ]
-
-    garden.admins = admin_memberships
-
-    if editors:
-        edit_memberships = [
+    invitee_memberships = []
+    if invitations is not None:
+        invitee_memberships = [
             GardenMembership(
                 inviter=creator_ref,
-                user=Ref[User](editor.id),
+                user=Ref[User](invitee.id),
                 garden=garden,
-                role=RoleEnum.EDIT,
+                role=role,
+                open_invite=True,
             )
-            for editor in editors
-            if editor.id is not None
+            for invitee, role in invitations if invitee.id is not None
         ]
-        garden.editors = edit_memberships
 
-    if viewers:
-        view_memberships = [
-            GardenMembership(
-                inviter=creator_ref,
-                user=Ref[User](viewer.id),
-                garden=garden,
-                role=RoleEnum.VIEW,
-            )
-            for viewer in viewers
-            if viewer.id is not None
-        ]
-        garden.viewers = view_memberships
+    garden.memberships = ([creator_membership] + invitee_memberships)
 
     return garden

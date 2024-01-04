@@ -1,5 +1,9 @@
 # Standard Library
-from dataclasses import field
+from dataclasses import field, replace
+from typing import Optional
+
+# External Libraries
+from sqlalchemy import ReturnsRows
 
 # VerdanTech Source
 from src import settings
@@ -16,7 +20,7 @@ from src.domain.workspace.entities import Workspace
 from src.utils.key_generator import key_generator
 
 from .enums import RoleEnum, VisibilityEnum
-from .values import EnvironmentAttributeProfile
+from .values import EnvironmentAttributeProfile, GardenMembership
 
 
 @root_entity_dataclass
@@ -26,21 +30,65 @@ class Garden(RootEntity):
     key_id: str = field(
         default_factory=lambda: key_generator(length=settings.GARDEN_STR_ID_LENGTH)
     )
-    admins: list["GardenMembership"] = field(default_factory=list)
+    memberships: list[GardenMembership] = field(default_factory=list)
     description: str | None = None
     visibility: VisibilityEnum = VisibilityEnum.PRIVATE
-    editors: list["GardenMembership"] = field(default_factory=list)
-    viewers: list["GardenMembership"] = field(default_factory=list)
     plantsets: list[Ref[PlantSet]] = field(default_factory=list)
     workspaces: list[Ref[Workspace]] = field(default_factory=list)
     attributes: list[EnvironmentAttributeProfile] = field(default_factory=list)
 
+    def get_membership(self, user: User) -> Optional[GardenMembership]:
+        if user.persisted is False:
+            return None
 
-@entity_dataclass
-class GardenMembership(Entity):
-    garden: Garden
-    inviter: Ref[User] | None
-    user: Ref[User]
-    role: RoleEnum = RoleEnum.VIEW
-    open_invite: bool = True
-    favorite: bool = False
+        for membership in self.memberships:
+            if membership.user.id == user.id:
+                return membership
+
+        return None
+
+    def is_user_member(self, user: User) -> bool:
+        if user.persisted is False:
+            return False
+
+        if self.creator is not None and user.id == self.creator.id:
+            return True
+
+        if user.id in [membership.user.id for membership in self.memberships]:
+            return True
+
+        return False
+
+    def is_user_confirmed_member(self, user: User) -> bool:
+        if user.persisted is False:
+            return False
+
+        if self.creator is not None and user.id == self.creator.id:
+            return True
+
+        if user.id in [
+            membership.user.id
+            for membership in self.memberships
+            if membership.open_invite is False
+        ]:
+            return True
+
+        return False
+
+    def confirm_membership(self, user: User) -> GardenMembership | None:
+        self.assert_persisted()
+        user.assert_persisted()
+
+        for idx, membership in enumerate(self.memberships):
+            if membership.user.id == user.id:
+                if membership.open_invite is False:
+                    return None
+                self.memberships[idx] = replace(membership, open_invite=False)
+
+                return membership
+        return None
+
+    def remove_membership(self, user: User):
+        for idx, membership in enumerate(self.memberships):
+            if membership.user.id == user.id:
+                self.memberships.pop(idx)

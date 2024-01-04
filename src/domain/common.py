@@ -3,6 +3,8 @@ from dataclasses import Field, dataclass, field
 from datetime import datetime
 from typing import dataclass_transform
 
+from .exceptions import EntityIntegrityException
+
 """
 Domain modelling seeks to represent the problem domain in code with as much
 resemblance as possible to the understanding of the users of the application.
@@ -39,6 +41,19 @@ class Entity:
 
     def __eq__(self, other) -> bool:
         return self.id == other.id
+
+    @property
+    def persisted(self) -> bool:
+        if self.id is None:
+            return False
+        else:
+            return True
+
+    def assert_persisted(self) -> None:
+        if self.persisted is False:
+            raise EntityIntegrityException(
+                "Un-persisted Entity used at an invalid location."
+            )
 
 
 class RootEntity(Entity):

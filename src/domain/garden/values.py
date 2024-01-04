@@ -1,8 +1,24 @@
 # Standard Library
-from datetime import date
+from dataclasses import field
+from datetime import date, datetime
 
 # VerdanTech Source
-from src.domain.common import Value, value_dataclass
+from src.domain.common import Ref, Value, value_dataclass
+from src.domain.user.entities import User
+
+from .entities import Garden
+from .enums import RoleEnum
+
+
+@value_dataclass
+class GardenMembership(Value):
+    garden: Garden
+    inviter: Ref[User] | None
+    user: Ref[User]
+    role: RoleEnum = RoleEnum.VIEW
+    open_invite: bool = True
+    favorite: bool = False
+    created_at: datetime = field(default_factory=datetime.now)
 
 
 class EnvironmentAttributeProfile(Value):
