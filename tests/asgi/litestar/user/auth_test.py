@@ -10,7 +10,7 @@ from litestar.testing import AsyncTestClient
 from src.asgi.litestar.user import routes
 from src.ops.user.schemas import auth as auth_ops_schemas
 
-pytestmark = [pytest.mark.integration]
+pytestmark = [pytest.mark.asgi]
 
 
 class TestUserAuthApiController:

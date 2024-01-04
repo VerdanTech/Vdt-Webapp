@@ -29,18 +29,19 @@ test-unit:
 	pytest -m unit
 
 #
-# Run all integration tests.
-#
-.PHONY: test-integration
-test-intg:
-	pytest -m integration
-
-#
 # Run all database tests.
 #
 .PHONY: test-db
 test-db:
 	pytest -m databases
+
+#
+# Run all application integration tests.
+#
+.PHONY: test-asgi
+test-asgi:
+	pytest -m asgi
+
 
 #
 # Run all tests and generate a coverage report.

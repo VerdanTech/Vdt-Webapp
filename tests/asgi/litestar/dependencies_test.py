@@ -15,7 +15,7 @@ from src.interfaces.persistence.user.repository import AbstractUserRepository
 from src.interfaces.security.crypt.password_crypt import AbstractPasswordCrypt
 from src.ops.user import controllers as user_ops
 
-pytestmark = [pytest.mark.integration]
+pytestmark = [pytest.mark.asgi]
 
 
 @pytest.mark.skip
@@ -27,6 +27,7 @@ async def test_container(litestar_client: AsyncTestClient) -> None:
     Args:
         litestar_client (AsyncTestClient): litestar test client.
     """
+    # Retrieve svcs registry from litestar
     svcs_plugin = litestar_client.app.plugins.get(SvcsPlugin)
     registry_state_key = svcs_plugin._config.registry_state_key
     registry = getattr(litestar_client.app.state, registry_state_key, None)
