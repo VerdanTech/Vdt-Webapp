@@ -83,7 +83,7 @@ async def test_password_reset_create_unpersisted_user(
         mocker (MockerFixture): pytest-mock.
     """
     user.id = None
-    primary_email_address = user.get_primary_email().address
+    primary_email_address = user.primary_email.address
 
     with pytest.raises(domain_exceptions.UserIntegrityError):
         await verification_services.password_reset_create(
@@ -139,7 +139,7 @@ async def test_password_reset_create_success(
     key_length = 10
     generated_key = "abc"
     user.id = 0
-    primary_email_address = user.get_primary_email().address
+    primary_email_address = user.primary_email.address
 
     mock__generate_unique_password_reset_key = mocker.patch.object(
         verification_services,

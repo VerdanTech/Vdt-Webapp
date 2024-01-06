@@ -12,6 +12,13 @@ from .enums import RoleEnum
 
 @value_dataclass
 class GardenMembership(Value):
+    """
+    GardenMembership domain value.
+
+    GardenMemberships connect Users and Gardens,
+    allowing conditional access with different roles.
+    """
+
     garden: Garden
     inviter: Ref[User] | None
     user: Ref[User]

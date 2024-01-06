@@ -60,7 +60,7 @@ async def password_reset_create(
             "Password reset attempt on unpersisted User."
         )
 
-    primary_email = user.get_primary_email()
+    primary_email = user.primary_email
     if not email_address == primary_email.address:
         raise ops_exceptions.EntityNotFound(
             "The email address provided is not the user's primary email."

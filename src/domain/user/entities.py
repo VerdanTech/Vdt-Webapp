@@ -92,7 +92,8 @@ class User(RootEntity):
             self._set_primary_email(email)
             self._trim_oldest_emails(max_emails=max_emails)
 
-    def get_primary_email(self) -> Email:
+    @property
+    def primary_email(self) -> Email:
         """
         Return the user's primary email
 

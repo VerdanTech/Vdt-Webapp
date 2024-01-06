@@ -61,6 +61,22 @@ class AbstractUserRepository(AbstractRepository[User], Protocol):
         """
         ...
 
+    async def get_users_by_id(
+        self, ids: list[EntityIdType], raise_not_found: bool = False
+    ) -> list[User]:
+        """
+        Given a list of user ids, return the users to whom they belong.
+
+        Args:
+            ids (list[EntityIdType]): the ids to search for.
+            raise_not_found (bool): if True, an ObjectNotFound exception is
+                raised upon a user id not existing.
+
+        Returns:
+            list[User]: the found users.
+        """
+        ...
+
     async def get_user_by_email_address(self, email_address: str) -> User | None:
         """
         Given an email address, return the user with the

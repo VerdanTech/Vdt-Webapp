@@ -12,6 +12,7 @@ class GardenInviteCreateInput:
     garden_id: EntityIdType
     role: RoleEnum
 
+
 @dataclass
 class GardenInviteAcceptInput:
     garden_id: EntityIdType

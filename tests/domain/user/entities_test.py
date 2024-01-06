@@ -165,7 +165,7 @@ class TestUser:
             )
 
     # ======================================
-    # User.get_primary_email() tests
+    # User.primary_email() tests
     # ======================================
 
     def test_get_primary_email_no_primary_email(self, user: User) -> None:
@@ -180,7 +180,7 @@ class TestUser:
         user.emails = [Email(address="abc@abc.com", primary=False)]
 
         with pytest.raises(exceptions.UserIntegrityError):
-            user.get_primary_email()
+            user.primary_email
 
     def test_get_primary_email_success(self, user: User) -> None:
         """
@@ -194,7 +194,7 @@ class TestUser:
 
         user.emails = [Email(address="abc@abc.com", primary=False), primary_email]
 
-        assert user.get_primary_email() == primary_email
+        assert user.primary_email == primary_email
 
     # ======================================
     # User.email_confirmation_create() tests

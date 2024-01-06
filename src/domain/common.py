@@ -49,11 +49,24 @@ class Entity:
         else:
             return True
 
-    def assert_persisted(self) -> None:
-        if self.persisted is False:
+    def id_or_error(self) -> EntityIdType:
+        """
+        Returns the id of the Entity.
+
+        Raises:
+            EntityIntegrityException: raised if the id
+                attribute is None, which occurs
+                before it is persisted for the first time.
+
+        Returns:
+            EntityIdType: the id of the Entity.
+        """
+        if self.id is None:
             raise EntityIntegrityException(
                 "Un-persisted Entity used at an invalid location."
             )
+        else:
+            return self.id
 
 
 class RootEntity(Entity):
