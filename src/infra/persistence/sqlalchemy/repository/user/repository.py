@@ -1,9 +1,10 @@
 # Standard Library
+import pdb
 from typing import List
 
 # External Libraries
 from sqlalchemy import func, select
-from sqlalchemy.orm import selectinload, noload
+from sqlalchemy.orm import noload, selectinload
 
 # VerdanTech Source
 from src.domain.common import EntityIdType
@@ -16,7 +17,7 @@ from src.infra.persistence.sqlalchemy.mapper.user.model import (
 
 from ..exceptions import alchemy_exception_map
 from ..generic import BaseAlchemyRepository
-import pdb
+
 
 class UserAlchemyRepository(BaseAlchemyRepository[User, UserAlchemyModel]):
     """SQLAlchemy implementation of user repository"""
@@ -64,7 +65,13 @@ class UserAlchemyRepository(BaseAlchemyRepository[User, UserAlchemyModel]):
         Returns:
             User: the user entity after persistence.
         """
-        ...
+        pdb.set_trace()
+        with alchemy_exception_map():
+            user_model = self._entity_to_model(user)
+            await self.transaction.merge(user_model)
+            await self.transaction.flush()
+            user = self._model_to_entity(user_model)
+            return user
 
     async def get_user_by_id(self, id: EntityIdType) -> User | None:
         """

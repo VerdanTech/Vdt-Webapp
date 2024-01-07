@@ -83,7 +83,7 @@ POSTGRES_URI = str(  # Todo: fix str() required for type checker.
     config(
         "POSTGRES_DB_URI",
         cast=str,
-        default=f"postgresql+asyncpg://{POSTGRES_DB_USER}:{POSTGRES_DB_PASSWORD}@postgres:5432/{POSTGRES_DB_NAME}"
+        default=f"postgresql+asyncpg://{POSTGRES_DB_USER}:{POSTGRES_DB_PASSWORD}@postgres:5432/{POSTGRES_DB_NAME}",
     )
 )
 

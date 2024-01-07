@@ -1,26 +1,14 @@
 # Standard Library
-import asyncio
-import pdb
-from functools import partial
 from typing import AsyncGenerator
-from unittest import mock
 
 # External Libraries
 import pytest
-from litestar.testing import AsyncTestClient
-from sqlalchemy.ext.asyncio import (
-    AsyncConnection,
-    AsyncSession,
-    async_sessionmaker,
-    create_async_engine,
-)
+from sqlalchemy.ext.asyncio import AsyncSession
 from testcontainers.postgres import PostgresContainer
 
 # VerdanTech Source
-from src.asgi.litestar.app import create_app
-from tests.infra.persistence.sqlalchemy.repository.lifespan import (
-    function_scoped_sql_transaction,
-)
+from src.infra.persistence.sqlalchemy.repository.user import UserAlchemyRepository
+from src.interfaces.persistence.user.repository import AbstractUserRepository
 
 from .sqlalchemy import function_scoped_sql_transaction
 
@@ -40,3 +28,9 @@ async def alchemy_transaction(postgres) -> AsyncGenerator[AsyncSession, None]:
         alchemy_uri=postgres.get_connection_url()
     ) as transaction:
         yield transaction
+
+
+@pytest.fixture
+def user_repo(alchemy_transaction: AsyncSession) -> AbstractUserRepository:
+    user_repo = UserAlchemyRepository(transaction=alchemy_transaction)
+    return user_repo
