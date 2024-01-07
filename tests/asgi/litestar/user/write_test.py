@@ -63,7 +63,6 @@ class TestUserWriteApiController:
         result = await user_repo.username_exists(username=input_data.username)
         assert result is True
         result = await user_repo.get_user_by_id(id=0)
-        pdb.set_trace()
         result = await user_repo.get_user_by_email_address(
             email_address=input_data.email_address
         )

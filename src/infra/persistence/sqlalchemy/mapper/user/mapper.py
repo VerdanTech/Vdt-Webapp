@@ -7,6 +7,7 @@ from src.domain.user.values import Email, EmailConfirmation, PasswordResetConfir
 from ..generic import BaseAlchemyMapper
 from .model import EmailAlchemyModel, UserAlchemyModel
 
+import pdb
 
 class UserAlchemyMapper(BaseAlchemyMapper[User, UserAlchemyModel]):
     """Implementation of a model mapper interface using sqlalchemy."""
@@ -122,10 +123,12 @@ class UserAlchemyMapper(BaseAlchemyMapper[User, UserAlchemyModel]):
             password_reset_confirmation=password_reset_confirmation,
         )
         user.id = model.id
+        #pdb.set_trace()
+        model_emails = model.emails
         user.emails = [
             from_email_model(email_model)
             for email_model in sorted(
-                model.emails, key=lambda email_model: email_model.list_index
+                model_emails, key=lambda email_model: email_model.list_index
             )
         ]
         user.created_at = model.created_at

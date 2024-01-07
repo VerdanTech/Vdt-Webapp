@@ -3,7 +3,7 @@ from typing import List
 
 # External Libraries
 from sqlalchemy import func, select
-from sqlalchemy.orm import joinedload, noload
+from sqlalchemy.orm import selectinload, noload
 
 # VerdanTech Source
 from src.domain.common import EntityIdType
@@ -78,7 +78,7 @@ class UserAlchemyRepository(BaseAlchemyRepository[User, UserAlchemyModel]):
         """
         statement = (
             select(UserAlchemyModel)
-            .options(joinedload(UserAlchemyModel.emails))
+            .options(selectinload(UserAlchemyModel.emails))
             .filter(UserAlchemyModel.id == id)
         )
         query = await self.transaction.execute(statement)
@@ -101,10 +101,9 @@ class UserAlchemyRepository(BaseAlchemyRepository[User, UserAlchemyModel]):
         Returns:
             User | None: the found user, or None if no user was found.
         """
-        pdb.set_trace()
         statement = (
             select(EmailAlchemyModel)
-            .options(joinedload(EmailAlchemyModel.user))
+            .options(selectinload(EmailAlchemyModel.user))
             .filter(EmailAlchemyModel.address == email_address)
         )
         query = await self.transaction.execute(statement)
@@ -112,7 +111,6 @@ class UserAlchemyRepository(BaseAlchemyRepository[User, UserAlchemyModel]):
 
         if email_model is None:
             return None
-
         user_model = email_model.user
 
         user = self._model_to_entity(user_model)
