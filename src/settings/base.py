@@ -83,7 +83,8 @@ POSTGRES_URI = str(  # Todo: fix str() required for type checker.
     config(
         "POSTGRES_DB_URI",
         cast=str,
-        default=f"postgresql+asyncpg://{POSTGRES_DB_USER}:{POSTGRES_DB_PASSWORD}@postgres:5432/{POSTGRES_DB_NAME}",
+        default=f"postgresql+asyncpg://{POSTGRES_DB_USER}:{POSTGRES_DB_PASSWORD}@postgres:5432/{POSTGRES_DB_NAME}"
+        + "garbage",
     )
 )
 
@@ -92,7 +93,7 @@ ALCHEMY_URI = POSTGRES_URI
 # Name of the client attribute in the global app state
 ALCHEMY_CLIENT_NAME: str = "sqlalchemy_client"
 # Whether to commit database transactions - disabled in testing
-ALCHEMY_TRANSACTION_COMMIT = False
+ALCHEMY_TRANSACTION_COMMIT = True
 
 # Redis
 REDIS_URI: str = "redis://localhost"

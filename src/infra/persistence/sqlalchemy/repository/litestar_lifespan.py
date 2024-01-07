@@ -74,7 +74,13 @@ async def litestar_alchemy_client_lifespan(app: Litestar) -> AsyncGenerator[None
         app (Litestar): the Litestar application object,
             upon creation.
     """
-    engine = create_async_engine(settings.ALCHEMY_URI)
+    uri = getattr(app.state, "alchemy_uri", None)
+    if uri is None:
+        raise ValueError(
+            "SqlAlchemy connection URI not set on Litestar application state."
+        )
+
+    engine = create_async_engine(uri)
     client = AlchemyClient(engine=engine)
     setattr(app.state, settings.ALCHEMY_CLIENT_NAME, client)
 

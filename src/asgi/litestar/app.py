@@ -3,8 +3,10 @@ from typing import TYPE_CHECKING, AsyncGenerator, Callable
 
 # External Libraries
 from litestar import Litestar
+from litestar.datastructures import State
 
 # VerdanTech Source
+from src import settings
 from src.infra.persistence.sqlalchemy.repository.litestar_lifespan import (
     litestar_alchemy_client_lifespan,
 )
@@ -19,18 +21,15 @@ if TYPE_CHECKING:
     from litestar import Litestar
 
 
-def create_app(
-    lifespan=[litestar_alchemy_client_lifespan],
-    plugins=[svcs_plugin],
-    on_app_init=[jwt_cookie_auth.on_app_init],
-) -> "Litestar":
+def create_app(alchemy_uri: str = settings.ALCHEMY_URI) -> "Litestar":
     base_router = create_base_router()
 
     return Litestar(
         route_handlers=[base_router],
-        lifespan=lifespan,
-        plugins=plugins,
+        lifespan=[litestar_alchemy_client_lifespan],
+        plugins=[svcs_plugin],
         exception_handlers=exception_handlers,
-        on_app_init=on_app_init,
+        on_app_init=[jwt_cookie_auth.on_app_init],
+        state=State({"alchemy_uri": alchemy_uri}),
         debug=True,
     )

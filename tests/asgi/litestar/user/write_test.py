@@ -13,6 +13,8 @@ from src.infra.persistence.sqlalchemy.repository.user import UserAlchemyReposito
 from src.ops.user.schemas import write as write_ops_schemas
 
 pytestmark = [pytest.mark.asgi]
+# Standard Library
+import pdb
 
 
 class TestUserWriteApiController:
@@ -20,9 +22,7 @@ class TestUserWriteApiController:
     # TestUserWriteApiController.user_create() tests
     # ================================================================
     async def test_user_create(
-        self,
-        litestar_client: AsyncTestClient,
-        sql_transaction: AsyncSession
+        self, litestar_client: AsyncTestClient, alchemy_transaction: AsyncSession
     ) -> None:
         """
         Ensure that the user_create endpoint successfully creates a user
@@ -59,9 +59,11 @@ class TestUserWriteApiController:
 
         assert response.status_code == 422
 
-
-        #user_repo = UserAlchemyRepository(transaction=sql_transaction)
-        #def call_user_repo():
-            #return user_repo.get_user_by_email_address(email_address=input_data.email_address)
-        #async with litestar_client.blocking_portal.call(call_user_repo) as user:
-            #assert user is not None
+        user_repo = UserAlchemyRepository(transaction=alchemy_transaction)
+        result = await user_repo.username_exists(username=input_data.username)
+        assert result is True
+        result = await user_repo.get_user_by_id(id=0)
+        pdb.set_trace()
+        result = await user_repo.get_user_by_email_address(
+            email_address=input_data.email_address
+        )

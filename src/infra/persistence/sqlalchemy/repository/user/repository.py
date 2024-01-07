@@ -16,7 +16,7 @@ from src.infra.persistence.sqlalchemy.mapper.user.model import (
 
 from ..exceptions import alchemy_exception_map
 from ..generic import BaseAlchemyRepository
-
+import pdb
 
 class UserAlchemyRepository(BaseAlchemyRepository[User, UserAlchemyModel]):
     """SQLAlchemy implementation of user repository"""
@@ -101,6 +101,7 @@ class UserAlchemyRepository(BaseAlchemyRepository[User, UserAlchemyModel]):
         Returns:
             User | None: the found user, or None if no user was found.
         """
+        pdb.set_trace()
         statement = (
             select(EmailAlchemyModel)
             .options(joinedload(EmailAlchemyModel.user))

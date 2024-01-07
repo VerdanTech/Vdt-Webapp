@@ -50,7 +50,7 @@ class EmailAlchemyModel(BaseAlchemyModel):
     user_id: Mapped[int] = mapped_column(
         ForeignKey("user.id", ondelete="CASCADE"), primary_key=True
     )
-    user: Mapped["UserAlchemyModel"] = relationship(back_populates="emails")
+    user: Mapped["UserAlchemyModel"] = relationship(back_populates="emails", lazy="joined")
     list_index: Mapped[int] = mapped_column(primary_key=True)
 
     address: Mapped[str] = mapped_column(String(length=settings.EMAIL_MAX_LENGTH))
