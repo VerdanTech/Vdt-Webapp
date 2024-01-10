@@ -4,7 +4,7 @@ from src.domain.user.entities import User
 from src.interfaces.email.emitter import AbstractEmailEmitter
 from src.interfaces.persistence.user.repository import AbstractUserRepository
 from src.ops import exceptions as ops_exceptions
-from src.utils.key_generator import key_generator
+from src.utils.key_generator import generate_unique_key
 
 
 async def email_confirmation_create(
@@ -87,13 +87,11 @@ async def generate_unique_email_confirmation_key(
     Returns:
         str: the unique key.
     """
-    # The name of the method on the AbstractUserRepository
-    # that returns True when an email confirmation key exists
-    existence_method_name = "email_confirmation_key_exists"
-    return await _generate_unique_key(
+    return await generate_unique_key(
         length=length,
-        user_repo=user_repo,
-        existence_method_name=existence_method_name,
+        repo=user_repo,
+        existence_method_name="email_confirmation_key_exists",
+        existence_method_argument_name="key",
     )
 
 
@@ -110,36 +108,9 @@ async def _generate_unique_password_reset_key(
     Returns:
         str: the unique key.
     """
-    # The name of the method on the AbstractUserRepository
-    # that returns True when a password reset confirmation key exists.
-    existence_method_name = "password_reset_confirmation_key_exists"
-    return await _generate_unique_key(
+    return await generate_unique_key(
         length=length,
-        user_repo=user_repo,
-        existence_method_name=existence_method_name,
+        repo=user_repo,
+        existence_method_name="password_reset_confirmation_key_exists",
+        existence_method_argument_name="key",
     )
-
-
-async def _generate_unique_key(
-    length: int, user_repo: AbstractUserRepository, existence_method_name: str
-) -> str:
-    """
-    Generate a unique verification key. Keep generating keys until the
-    repository's existence method returns False.
-
-    Args:
-        length (int): length of the key to generate.
-        repo (AbstractUserRepository): user repository
-            instance.
-        method_name (str): the name of the repository
-            existence check method.
-
-    Returns:
-        str: the unique key.
-    """
-    key = key_generator(length=length)
-    while await user_repo.async_dynamic_call(
-        method_name=existence_method_name, key=key
-    ):
-        key = key_generator(length=length)
-    return key

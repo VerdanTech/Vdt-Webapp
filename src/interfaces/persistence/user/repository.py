@@ -61,19 +61,33 @@ class AbstractUserRepository(AbstractRepository[User], Protocol):
         """
         ...
 
-    async def get_users_by_id(
-        self, ids: list[EntityIdType], raise_not_found: bool = False
-    ) -> list[User]:
+    async def get_user_by_username(self, username: str) -> User | None:
         """
-        Given a list of user ids, return the users to whom they belong.
+        Given a username, return the user to whom it belongs.
 
         Args:
-            ids (list[EntityIdType]): the ids to search for.
-            raise_not_found (bool): if True, an ObjectNotFound exception is
-                raised upon a user id not existing.
+            username (str): the username to search for.
 
         Returns:
-            list[User]: the found users.
+            User | None: the found user, or None if no user was found.
+        """
+        ...
+
+    async def get_users_by_usernames(
+        self, usernames: list[str], return_first_none: bool = False
+    ) -> list[User] | None:
+        """
+        Given a list of user usernames, return the users to whom they belong.
+
+        Args:
+            usernames (list[str]): the usernames to search for.
+            return_first_none (bool): if True, None is returned upon
+                discerning that a username was provided that does
+                not exist. Otherwise, a list is returned.
+
+        Returns:
+            list[User]: the found users, or None if any usernames
+                did not exist and return_first_none is True.
         """
         ...
 

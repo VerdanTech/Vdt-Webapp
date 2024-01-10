@@ -3,11 +3,9 @@ from dataclasses import field, replace
 from typing import Optional
 
 # VerdanTech Source
-from src import settings
 from src.domain.common import Ref, RootEntity, root_entity_dataclass
 from src.domain.exceptions import FieldNotFound
 from src.domain.user.entities import User
-from src.utils.key_generator import key_generator
 
 from .enums import RoleEnum, VisibilityEnum
 from .exceptions import MembershipAlreadyConfirmed
@@ -25,15 +23,13 @@ class Garden(RootEntity):
     and most other application models.
     """
 
+    key_id: str
     name: str
     creator: Ref[User] | None
-    key_id: str = field(
-        default_factory=lambda: key_generator(length=settings.GARDEN_STR_ID_LENGTH)
-    )
+    visibility: VisibilityEnum = VisibilityEnum.PRIVATE
     memberships: list[GardenMembership] = field(default_factory=list)
     """There must exist only one GardenMembership for any given User."""
-    description: str | None = None
-    visibility: VisibilityEnum = VisibilityEnum.PRIVATE
+    description: str = ""
     attributes: list[EnvironmentAttributeProfile] = field(default_factory=list)
     expired: bool = False
 

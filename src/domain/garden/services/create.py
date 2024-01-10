@@ -8,22 +8,23 @@ from src.domain.user.entities import User
 from ..entities import Garden, GardenMembership
 from ..enums import RoleEnum, VisibilityEnum
 
-type UserRoleTuples = list[tuple[User, RoleEnum]]
+type UserRoleTupleList = list[tuple[User, RoleEnum]]
 type UserMembershipTuples = list[tuple[User, GardenMembership]]
 
 
 def garden_create(
-    client: User,
+    creator: User,
+    key: str,
     name: str,
-    description: Optional[str] = None,
-    user_role_tuples: UserRoleTuples = [],
+    description: str = "",
+    invitee_role_tuples: UserRoleTupleList = [],
     visibility: VisibilityEnum = VisibilityEnum.PRIVATE,
 ) -> tuple[Garden, UserMembershipTuples]:
     """
-    Creates a new garden.
+    Creates a new Garden and associated GardenMemberships.
 
     Args:
-        client (User): the User that is creating the Garden.
+        creator (User): the User that is creating the Garden.
         name (str): the name of the Garden.
         description (Optional[str]): the description of the Garden. Defaults to None.
         user_role_tuples (Optional[UserRoleTuples]): a list of tuples of
@@ -37,9 +38,13 @@ def garden_create(
             GardenMemberships creator on it.
     """
     # Create an new Garden entity.
-    creator_ref = Ref[User](client.id_or_error())
+    creator_ref = Ref[User](creator.id_or_error())
     garden = Garden(
-        name=name, creator=creator_ref, description=description, visibility=visibility
+        name=name,
+        key_id=key,
+        creator=creator_ref,
+        description=description,
+        visibility=visibility,
     )
 
     # Create a membership for the creator.
@@ -52,7 +57,7 @@ def garden_create(
     )
 
     # If any users were invited, create additional memberships.
-    invitations = [(invitee, role) for invitee, role in user_role_tuples]
+    invitations = [(invitee, role) for invitee, role in invitee_role_tuples]
     invitee_memberships = [
         GardenMembership(
             inviter=creator_ref,

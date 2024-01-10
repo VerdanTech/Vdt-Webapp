@@ -57,9 +57,9 @@ def assert_authorization(membership: GardenMembership, operation) -> None:
     if not _authorize(role=membership.role, permission=permission):
         raise GardenAuthorizationException(
             f"""
-            The action \"{operation}\" 
-            requires the permission \"{permission}\", 
-            but this user has role \"{role}\".
+            The action: \"{operation}\" 
+            requires the permission: \"{permission}\", 
+            but this user has role: \"{role}\".
             """
         )
 
@@ -112,6 +112,30 @@ class PermissionRouter:
             case _:
                 raise ValueError(
                     "Unhandled RoleEnum in invite() permission router domain service."
+                )
+
+    @staticmethod
+    def revoke_membership(role: RoleEnum) -> OperationEnum:
+        """
+        Maps a subject's role to an operation ID in the
+        context of the subject being removed from a Garden.
+
+        Args:
+            role (RoleEnum): the role of the user being removed.
+
+        Returns:
+            OperationEnum: the operation ID.
+        """
+        match role:
+            case RoleEnum.ADMIN:
+                return OperationEnum.KICK_ADMIN
+            case RoleEnum.EDIT:
+                return OperationEnum.KICK_EDIT
+            case RoleEnum.VIEW:
+                return OperationEnum.KICK_VIEW
+            case _:
+                raise ValueError(
+                    "Unhandled RoleEnum in kick() permission router domain service."
                 )
 
     @staticmethod
@@ -173,28 +197,4 @@ class PermissionRouter:
             case _:
                 raise ValueError(
                     "Unhandled RoleEnum in change_role() permission router domain service."
-                )
-
-    @staticmethod
-    def kick(role: RoleEnum) -> OperationEnum:
-        """
-        Maps a subject's role to an operation ID in the
-        context of the subject being removed from a Garden.
-
-        Args:
-            role (RoleEnum): the role of the user being removed.
-
-        Returns:
-            OperationEnum: the operation ID.
-        """
-        match role:
-            case RoleEnum.ADMIN:
-                return OperationEnum.KICK_ADMIN
-            case RoleEnum.EDIT:
-                return OperationEnum.KICK_EDIT
-            case RoleEnum.VIEW:
-                return OperationEnum.KICK_VIEW
-            case _:
-                raise ValueError(
-                    "Unhandled RoleEnum in kick() permission router domain service."
                 )

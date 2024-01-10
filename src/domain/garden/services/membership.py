@@ -60,6 +60,45 @@ def create_garden_membership(
     return membership
 
 
+def revoke_membership(client: User, subject: User, garden: Garden) -> None:
+    """
+    Removes a User that is not the client from a Garden.
+
+    Args:
+        client (User): the User responsible for the removal.
+        subject (User): the User that is subject to the removal.
+        garden (Garden): the Garden to remove the subject from.
+
+    Raises:
+        ValueError: raised if the client is the same as the subject.
+        FieldNotFound: raised if the subject does not have a GardenMembership
+            with the Garden.
+        GardenAuthorizationException: raised if the client does
+            not have the required permissions on their GardenMembership.
+    """
+    if client == subject:
+        raise ValueError("A client cannot kick themselves from a Garden.")
+
+    # Raise if subject does not exist in the garden already.
+    subject_membership = garden.get_membership(user=subject)
+    if subject_membership is None:
+        raise FieldNotFound("User does not have a membership with this Garden.")
+
+    # Raise if client is unauthorized.
+    client_membership = garden.get_membership(user=client)
+    if client_membership is None:
+        raise GardenAuthorizationException(
+            "Not authorized to perform operations in this Garden."
+        )
+    assert_authorization(
+        membership=client_membership,
+        operation=PermissionRouter.revoke_membership(role=subject_membership.role),
+    )
+
+    # Remove the membership
+    garden.remove_membership(user=subject)
+
+
 def change_role(
     client: User, subject: User, garden: Garden, new_role: RoleEnum
 ) -> GardenMembership:
@@ -103,44 +142,7 @@ def change_role(
         ),
     )
 
+    # Change the role.
     new_membership = garden.change_role(user=subject, new_role=new_role)
 
     return new_membership
-
-
-def kick(client: User, subject: User, garden: Garden) -> None:
-    """
-    Remove a User from a Garden.
-
-    Args:
-        client (User): the User responsible for the removal.
-        subject (User): the User that is subject to the removal.
-        garden (Garden): the Garden to remove the subject from.
-
-    Raises:
-        ValueError: raised if the client is the same as the subject.
-        FieldNotFound: raised if the subject does not have a GardenMembership
-            with the Garden.
-        GardenAuthorizationException: raised if the client does
-            not have the required permissions on their GardenMembership.
-    """
-    if client == subject:
-        raise ValueError("A client cannot kick themselves from a Garden.")
-
-    # Raise if subject does not exist in the garden already.
-    subject_membership = garden.get_membership(user=subject)
-    if subject_membership is None:
-        raise FieldNotFound("User does not have a membership with this Garden.")
-
-    # Raise if client is unauthorized.
-    client_membership = garden.get_membership(user=client)
-    if client_membership is None:
-        raise GardenAuthorizationException(
-            "Not authorized to perform operations in this Garden."
-        )
-    assert_authorization(
-        membership=client_membership,
-        operation=PermissionRouter.kick(role=subject_membership.role),
-    )
-
-    garden.remove_membership(user=subject)
