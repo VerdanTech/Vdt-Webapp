@@ -8,7 +8,7 @@ from src.utils.sanitizers.field import FieldSanitizer
 from src.utils.sanitizers.object import ObjectSanitizer, ObjectSanitizerConfig
 from src.utils.sanitizers.spec import SpecError
 
-pytestmark = [pytest.mark.integration]
+pytestmark = [pytest.mark.unit]
 
 
 async def test_multi_field_multi_spec_object_sanitizer() -> None:

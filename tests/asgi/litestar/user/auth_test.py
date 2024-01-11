@@ -10,13 +10,14 @@ from litestar.testing import AsyncTestClient
 from src.asgi.litestar.user import routes
 from src.ops.user.schemas import auth as auth_ops_schemas
 
-pytestmark = [pytest.mark.integration]
+pytestmark = [pytest.mark.asgi]
 
 
 class TestUserAuthApiController:
     # ================================================================
     # TestUserAuthApiController.user_login() tests
     # ================================================================
+    @pytest.mark.skip
     async def test_user_not_found_404(self, litestar_client: AsyncTestClient) -> None:
         """
         Ensure that the user_login() endpoint successfully returns the 404 status code

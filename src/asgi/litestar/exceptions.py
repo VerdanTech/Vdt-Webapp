@@ -1,5 +1,5 @@
 # Standard Library
-from contextlib import asynccontextmanager
+from contextlib import contextmanager
 
 # External Libraries
 from litestar import MediaType, Request, Response, status_codes
@@ -11,8 +11,8 @@ from src.ops import exceptions as ops_exceptions
 from src.utils.sanitizers.spec import SpecError
 
 
-@asynccontextmanager
-async def litestar_exception_map():
+@contextmanager
+def litestar_exception_map():
     """Map the native application exceptions to litestar equivalents."""
     try:
         yield

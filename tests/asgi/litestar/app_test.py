@@ -4,7 +4,7 @@ import pytest
 # VerdanTech Source
 from src.asgi.litestar.app import create_app
 
-pytestmark = [pytest.mark.integration]
+pytestmark = [pytest.mark.asgi]
 
 
 def test_create_app() -> None:

@@ -1,3 +1,4 @@
+
 # External Libraries
 from litestar import Controller, post
 from litestar.datastructures import State
@@ -50,7 +51,7 @@ class UserVerificationApiController(Controller):
             UserVerificationOpsController, UserSanitizer
         )
         email_emitter = await svcs_container.aget_abstract(AbstractEmailEmitter)
-        async with litestar_exception_map():
+        with litestar_exception_map():
             await user_verification_ops_controller.email_confirmation_request(
                 data=data, user_sanitizer=user_sanitizer, email_emitter=email_emitter
             )
@@ -82,7 +83,7 @@ class UserVerificationApiController(Controller):
         user_verification_ops_controller, user_sanitizer = await svcs_container.aget(
             UserVerificationOpsController, UserSanitizer
         )
-        async with litestar_exception_map():
+        with litestar_exception_map():
             await user_verification_ops_controller.email_confirmation_confirm(
                 data=data, user_sanitizer=user_sanitizer
             )
@@ -115,7 +116,7 @@ class UserVerificationApiController(Controller):
             UserVerificationOpsController, UserSanitizer
         )
         email_emitter = await svcs_container.aget_abstract(AbstractEmailEmitter)
-        async with litestar_exception_map():
+        with litestar_exception_map():
             await user_verification_ops_controller.password_reset_request(
                 data=data,
                 user_sanitizer=user_sanitizer,
@@ -150,7 +151,7 @@ class UserVerificationApiController(Controller):
             UserVerificationOpsController, UserSanitizer
         )
         password_crypt = await svcs_container.aget_abstract(AbstractPasswordCrypt)
-        async with litestar_exception_map():
+        with litestar_exception_map():
             await user_verification_ops_controller.password_reset_confirm(
                 data=data, user_sanitizer=user_sanitizer, password_crypt=password_crypt
             )
