@@ -65,7 +65,6 @@ class UserAlchemyRepository(BaseAlchemyRepository[User, UserAlchemyModel]):
         Returns:
             User: the user entity after persistence.
         """
-        pdb.set_trace()
         with alchemy_exception_map():
             user_model = self._entity_to_model(user)
             await self.transaction.merge(user_model)

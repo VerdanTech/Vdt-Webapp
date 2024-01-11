@@ -1,5 +1,5 @@
 # Standard Library
-from typing import AsyncGenerator
+from typing import AsyncGenerator, Generator
 
 # External Libraries
 import pytest
@@ -14,16 +14,22 @@ from .sqlalchemy import function_scoped_sql_transaction
 
 
 @pytest.fixture
-def postgres():
+def postgres() -> Generator[PostgresContainer, None, None]:
+    """
+    Creates a new postgres container for
+    every test.
+    """
     with PostgresContainer() as postgres:
         postgres.driver = "asyncpg"
-        connection_details = postgres.get_connection_url()
-        print(connection_details)
         yield postgres
 
 
 @pytest.fixture
-async def alchemy_transaction(postgres) -> AsyncGenerator[AsyncSession, None]:
+async def alchemy_transaction(postgres: PostgresContainer) -> AsyncGenerator[AsyncSession, None]:
+    """
+    Creates a new SqlAlchemy transaction for every test.
+    Runs independently from the application transactions.
+    """
     async with function_scoped_sql_transaction(
         alchemy_uri=postgres.get_connection_url()
     ) as transaction:
@@ -32,5 +38,8 @@ async def alchemy_transaction(postgres) -> AsyncGenerator[AsyncSession, None]:
 
 @pytest.fixture
 def user_repo(alchemy_transaction: AsyncSession) -> AbstractUserRepository:
+    """
+    Creates a new UserRepo for every test.
+    """
     user_repo = UserAlchemyRepository(transaction=alchemy_transaction)
     return user_repo

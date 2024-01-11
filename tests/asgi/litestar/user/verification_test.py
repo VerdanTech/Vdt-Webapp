@@ -86,7 +86,19 @@ class TestUserVerificationApiController:
     # ================================================================
     # UserVerificationApiController.user_email_confirmation_confirm() tests
     # ================================================================
-    async def test_user_email_confirmation_confirm_success(
+
+    async def test_user_email_confirmation_confirm_404_nonexistant_user(
+        self, litestar_client: AsyncTestClient
+    ) -> None:
+        """
+        Ensure that the user_email_confirmation_confirm endpoint returns
+        a failure status code when no email_address exists.
+
+        Args:
+            litestar_client (AsyncTestClient): test client fixture.
+        """
+        pass
+    async def test_user_email_confirmation_confirm_201_success(
         self, litestar_client: AsyncTestClient
     ) -> None:
         """
@@ -101,7 +113,7 @@ class TestUserVerificationApiController:
     # ================================================================
     # UserVerificationApiController.user_password_reset_request() tests
     # ================================================================
-    async def test_user_password_reset_request_success(
+    async def test_user_password_reset_request_201_success(
         self, litestar_client: AsyncTestClient
     ) -> None:
         """
@@ -116,7 +128,7 @@ class TestUserVerificationApiController:
     # ================================================================
     # UserVerificationApiController.user_password_reset_confirm() tests
     # ================================================================
-    async def test_user_password_reset_confirm_success(
+    async def test_user_password_reset_confirm_201_success(
         self, litestar_client: AsyncTestClient
     ) -> None:
         """

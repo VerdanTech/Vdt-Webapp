@@ -284,7 +284,7 @@ svcs==23.21.0
     # via
     #   litestar-svcs
     #   verdantech_api (pyproject.toml)
-testcontainers==3.7.1
+testcontainers[postgres]==3.7.1
     # via verdantech_api (pyproject.toml)
 typing-extensions==4.8.0
     # via

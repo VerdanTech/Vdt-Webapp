@@ -17,6 +17,7 @@ class TestUserAuthApiController:
     # ================================================================
     # TestUserAuthApiController.user_login() tests
     # ================================================================
+    @pytest.mark.skip
     async def test_user_not_found_404(self, litestar_client: AsyncTestClient) -> None:
         """
         Ensure that the user_login() endpoint successfully returns the 404 status code

@@ -56,9 +56,6 @@ async def get_alchemy_transaction(
         try:
             with alchemy_exception_map():
                 yield session
-        except:
-            await session.rollback()
-            raise
         finally:
             if settings.ALCHEMY_TRANSACTION_COMMIT:
                 await session.commit()
