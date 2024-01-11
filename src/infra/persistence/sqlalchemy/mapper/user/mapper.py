@@ -1,5 +1,8 @@
 # Standard Library
 
+# Standard Library
+import pdb
+
 # VerdanTech Source
 from src.domain.user.entities import User
 from src.domain.user.values import Email, EmailConfirmation, PasswordResetConfirmation
@@ -122,10 +125,11 @@ class UserAlchemyMapper(BaseAlchemyMapper[User, UserAlchemyModel]):
             password_reset_confirmation=password_reset_confirmation,
         )
         user.id = model.id
+        model_emails = model.emails
         user.emails = [
             from_email_model(email_model)
             for email_model in sorted(
-                model.emails, key=lambda email_model: email_model.list_index
+                model_emails, key=lambda email_model: email_model.list_index
             )
         ]
         user.created_at = model.created_at

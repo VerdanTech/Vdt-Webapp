@@ -56,7 +56,7 @@ class UserWriteApiController(Controller):
         email_emitter, password_crypt = await svcs_container.aget_abstract(
             AbstractEmailEmitter, AbstractPasswordCrypt
         )
-        async with litestar_exception_map():
+        with litestar_exception_map():
             user = await user_write_ops_controller.create(
                 data=data,
                 user_sanitizer=user_sanitizer,

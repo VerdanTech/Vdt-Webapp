@@ -28,6 +28,8 @@ license = {text = "GPL-3.0-or-later"}
 [project.optional-dependencies]
 test = [
     "pytest",
+    "testcontainers[postgres]",
+    "psycopg2",
     "pytest-asyncio",
     "factory_boy",
     "pytest-mock",
@@ -78,13 +80,13 @@ skip_gitignore = true
 skip_glob = ["**/migrations/*"]
 
 [tool.pytest.ini_options]
-addopts = "-vv -x -rx"
+addopts = "-vv -x -rx --lf"
 pythonpath = ". src tests"
 testpaths = ["tests/"]
 python_files = ["tests.py", "test_*.py", "*_test.py", "*_tests.py", "**/tests/*", "**/test/*"]
 markers = [
-    "unit: Isolated tests of individual functions",
-    "integration: Integrated tests of one or multiple functions",
-    "databases: Tests which require networked access to a database service",
+    "unit: Tests isolated from external services",
+    "databases: Unit tests of interfaces to external services",
+    "asgi: Integration tests of the application interface",
 ]
 asyncio_mode="auto"

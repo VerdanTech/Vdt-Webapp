@@ -91,8 +91,8 @@ POSTGRES_URI = str(  # Todo: fix str() required for type checker.
 ALCHEMY_URI = POSTGRES_URI
 # Name of the client attribute in the global app state
 ALCHEMY_CLIENT_NAME: str = "sqlalchemy_client"
-# Whether to rollback / not commit database transactions
-ALCHEMY_TRANSACTION_ROLLBACK = True
+# Whether to commit database transactions - disabled in testing
+ALCHEMY_TRANSACTION_COMMIT = True
 
 # Redis
 REDIS_URI: str = "redis://localhost"

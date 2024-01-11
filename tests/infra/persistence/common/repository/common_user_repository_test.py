@@ -56,6 +56,22 @@ class TestAbstractUserRepository:
     # AbstractUserRepository.update() tests
     # ================================================================
 
+    async def test_update_success(
+        self, user_repo: AbstractUserRepository, user: User
+    ) -> None:
+        user = await user_repo.add(user=user)
+
+        new_username = "new_username"
+        user.username = new_username
+
+        updated_user = await user_repo.update(user)
+        persisted_user = await user_repo.get_user_by_id(id=user.id)
+
+        assert (
+            persisted_user is not None
+            and persisted_user.username == updated_user.username == new_username
+        )
+
     # ================================================================
     # AbstractUserRepository.get_user_by_id() tests
     # ================================================================

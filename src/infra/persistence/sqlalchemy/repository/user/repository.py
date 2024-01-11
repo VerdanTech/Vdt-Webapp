@@ -1,9 +1,10 @@
 # Standard Library
+import pdb
 from typing import List
 
 # External Libraries
 from sqlalchemy import func, select
-from sqlalchemy.orm import joinedload, noload
+from sqlalchemy.orm import noload, selectinload
 
 # VerdanTech Source
 from src.domain.common import EntityIdType
@@ -64,7 +65,12 @@ class UserAlchemyRepository(BaseAlchemyRepository[User, UserAlchemyModel]):
         Returns:
             User: the user entity after persistence.
         """
-        ...
+        with alchemy_exception_map():
+            user_model = self._entity_to_model(user)
+            await self.transaction.merge(user_model)
+            await self.transaction.flush()
+            user = self._model_to_entity(user_model)
+            return user
 
     async def get_user_by_id(self, id: EntityIdType) -> User | None:
         """
@@ -78,7 +84,7 @@ class UserAlchemyRepository(BaseAlchemyRepository[User, UserAlchemyModel]):
         """
         statement = (
             select(UserAlchemyModel)
-            .options(joinedload(UserAlchemyModel.emails))
+            .options(selectinload(UserAlchemyModel.emails))
             .filter(UserAlchemyModel.id == id)
         )
         query = await self.transaction.execute(statement)
@@ -103,7 +109,7 @@ class UserAlchemyRepository(BaseAlchemyRepository[User, UserAlchemyModel]):
         """
         statement = (
             select(EmailAlchemyModel)
-            .options(joinedload(EmailAlchemyModel.user))
+            .options(selectinload(EmailAlchemyModel.user))
             .filter(EmailAlchemyModel.address == email_address)
         )
         query = await self.transaction.execute(statement)
@@ -111,7 +117,6 @@ class UserAlchemyRepository(BaseAlchemyRepository[User, UserAlchemyModel]):
 
         if email_model is None:
             return None
-
         user_model = email_model.user
 
         user = self._model_to_entity(user_model)
