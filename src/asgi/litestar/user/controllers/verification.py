@@ -24,12 +24,13 @@ class UserVerificationApiController(Controller):
     path = urls.USER_VERIFICATION_CONTROLLER_BASE
 
     @post(
+        path=urls.USER_EMAIL_VERIFICATION_REQUEST_URL,
         name=routes.USER_EMAIL_VERIFICATION_REQUEST_NAME,
         opt={"exclude_from_auth": True},
         summary="Email confirmation request",
         description="Create a new email confirmation and send confirmation email.",
+        operation_id=routes.USER_EMAIL_VERIFICATION_REQUEST_NAME,
         tags=["users"],
-        path=urls.USER_EMAIL_VERIFICATION_REQUEST_URL,
     )
     async def user_email_confirmation_request(
         self,
@@ -57,12 +58,13 @@ class UserVerificationApiController(Controller):
             )
 
     @post(
+        path=urls.USER_EMAIL_VERIFICATION_CONFIRM_URL,
         name=routes.USER_EMAIL_VERIFICATION_CONFIRM_NAME,
         opt={"exclude_from_auth": True},
         summary="Email confirmation confirm.",
         description="Close email confirmation and verify email.",
+        operation_id=routes.USER_EMAIL_VERIFICATION_CONFIRM_NAME,
         tags=["users"],
-        path=urls.USER_EMAIL_VERIFICATION_CONFIRM_URL,
     )
     async def user_email_confirmation_confirm(
         self,
@@ -89,12 +91,13 @@ class UserVerificationApiController(Controller):
             )
 
     @post(
+        path=urls.USER_PASSWORD_RESET_REQUEST_URL,
         name=routes.USER_PASSWORD_RESET_REQUEST_NAME,
         opt={"exclude_from_auth": True},
         summary="Password reset request",
         description="Open a new password reset request and send confirmation email",
+        operation_id=routes.USER_PASSWORD_RESET_REQUEST_NAME,
         tags=["users"],
-        path=urls.USER_PASSWORD_RESET_REQUEST_URL,
     )
     async def user_password_reset_request(
         self,
@@ -124,12 +127,13 @@ class UserVerificationApiController(Controller):
             )
 
     @post(
+        path=urls.USER_PASSWORD_RESET_CONFIRM_URL,
         name=routes.USER_PASSWORD_RESET_CONFIRM_NAME,
         opt={"exclude_from_auth": True},
         summary="Password reset confirm",
         description="Close a password reset request and change password",
+        operation_id=routes.USER_PASSWORD_RESET_CONFIRM_NAME,
         tags=["users"],
-        path=urls.USER_PASSWORD_RESET_CONFIRM_URL,
     )
     async def user_password_reset_confirm(
         self,

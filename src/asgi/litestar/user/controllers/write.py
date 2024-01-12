@@ -24,13 +24,14 @@ class UserWriteApiController(Controller):
     path = urls.USER_WRITE_CONTROLLER_URL_BASE
 
     @post(
+        path=urls.USER_CREATE_URL,
         name=routes.USER_CREATE_NAME,
         opt={"exclude_from_auth": True},
+        return_dto=schemas.UserSelfDetail,
         summary="User registration",
         description="Register a new user and send an email verification if configured.",
+        operation_id=routes.USER_CREATE_NAME,
         tags=["users"],
-        path=urls.USER_CREATE_URL,
-        return_dto=schemas.UserSelfDetail,
     )
     async def user_create(
         self,

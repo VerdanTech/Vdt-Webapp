@@ -86,6 +86,7 @@ docs:
 .PHONY: schema
 schema:
 	litestar --app src.asgi.litestar.app:create_app schema openapi --output schema.yaml
+	litestar --app src.asgi.litestar.app:create_app schema typescript --output types.ts
 
 #
 # Run the backend server with uvicorn.

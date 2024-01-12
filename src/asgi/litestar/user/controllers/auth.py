@@ -25,12 +25,13 @@ class UserAuthApiController(Controller):
     path = urls.USER_AUTH_CONTROLLER_BASE
 
     @post(
+        path=urls.USER_LOGIN_URL,
         name=routes.USER_LOGIN_NAME,
         opt={"exclude_from_auth": True},
         summary="User login",
         description="Authenticate the request with JWT cookie authentication.",
+        operation_id=routes.USER_EMAIL_VERIFICATION_REQUEST_NAME,
         tags=["users"],
-        path=urls.USER_LOGIN_URL,
     )
     async def user_login(
         self,
@@ -55,7 +56,7 @@ class UserAuthApiController(Controller):
             UserAuthOpsController, UserSanitizer
         )
         password_crypt = await svcs_container.aget_abstract(AbstractPasswordCrypt)
-        async with litestar_exception_map():
+        with litestar_exception_map():
             user = await user_auth_ops_controller.login(
                 data=data, user_sanitizer=user_sanitizer, password_crypt=password_crypt
             )
