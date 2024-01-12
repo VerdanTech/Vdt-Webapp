@@ -83,7 +83,7 @@ async def test_password_reset_create_unpersisted_user(
         mocker (MockerFixture): pytest-mock.
     """
     user.id = None
-    primary_email_address = user.get_primary_email().address
+    primary_email_address = user.primary_email.address
 
     with pytest.raises(domain_exceptions.UserIntegrityError):
         await verification_services.password_reset_create(
@@ -139,7 +139,7 @@ async def test_password_reset_create_success(
     key_length = 10
     generated_key = "abc"
     user.id = 0
-    primary_email_address = user.get_primary_email().address
+    primary_email_address = user.primary_email.address
 
     mock__generate_unique_password_reset_key = mocker.patch.object(
         verification_services,
@@ -189,8 +189,9 @@ async def test_generate_unique_email_confirmation_key(
     """
     key_length = 10
     generated_key = "abc"
-    mock_generate_unique_key = mocker.patch.object(
-        verification_services, "_generate_unique_key", return_value=generated_key
+    mock_generate_unique_key = mocker.patch(
+        "src.ops.user.services.verification.generate_unique_key",
+        return_value=generated_key,
     )
 
     assert (
@@ -201,8 +202,9 @@ async def test_generate_unique_email_confirmation_key(
     )
     mock_generate_unique_key.assert_called_once_with(
         length=key_length,
-        user_repo=mock_user_repo,
+        repo=mock_user_repo,
         existence_method_name="email_confirmation_key_exists",
+        existence_method_argument_name="key",
     )
 
 
@@ -227,8 +229,9 @@ async def test__generate_unique_password_reset_key(
     """
     key_length = 10
     generated_key = "abc"
-    mock_generate_unique_key = mocker.patch.object(
-        verification_services, "_generate_unique_key", return_value=generated_key
+    mock_generate_unique_key = mocker.patch(
+        "src.ops.user.services.verification.generate_unique_key",
+        return_value=generated_key,
     )
 
     assert (
@@ -239,71 +242,7 @@ async def test__generate_unique_password_reset_key(
     )
     mock_generate_unique_key.assert_called_once_with(
         length=key_length,
-        user_repo=mock_user_repo,
+        repo=mock_user_repo,
         existence_method_name="password_reset_confirmation_key_exists",
+        existence_method_argument_name="key",
     )
-
-
-# ======================================
-# verification_services._generate_unique_key() tests
-# ======================================
-
-
-@pytest.mark.parametrize(
-    ("generated_keys", "existing_users", "expected_output"),
-    [
-        # Test case: key is unique, and it is returned.
-        (
-            ["abc"],
-            [],
-            "abc",
-        ),
-        # Test case: key is not unique, another generated, and it is returned.
-        (
-            ["abc", "123"],
-            [
-                User(
-                    username="existing_user",
-                    password_reset_confirmation=PasswordResetConfirmation(key="abc"),
-                )
-            ],
-            "123",
-        ),
-    ],
-)
-async def test__generate_unique_key(
-    generated_keys: List[str],
-    existing_users: List[User],
-    expected_output: str,
-    mock_user_repo: AbstractUserRepository,
-    mocker: MockerFixture,
-):
-    """
-    Ensure a unique key is generated
-    given a repository existence function.
-
-    Args:
-        generated_keys (List[str]): mock keys to generate retuned from key_generator.
-        existing_users (List[User]): existing users to pre-populate repository with.
-        expected_output (str): expected unique key returned.
-        mock_user_repo (AbstractUserRepository): fixture providing mock user repository
-        mocker (MockerFixture): pytest-mock.
-    """
-    key_length = 10
-    mock_key_generator = mocker.patch.object(
-        verification_services,
-        "key_generator",
-        side_effect=generated_keys,
-    )
-
-    await mock_user_repo.add_many(existing_users)
-
-    assert (
-        await verification_services._generate_unique_key(
-            length=key_length,
-            user_repo=mock_user_repo,
-            existence_method_name="password_reset_confirmation_key_exists",
-        )
-        == expected_output
-    )
-    mock_key_generator.assert_called_with(length=key_length)

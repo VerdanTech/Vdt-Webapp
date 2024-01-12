@@ -39,3 +39,14 @@ class AbstractEmailEmitter(Protocol):
             user_id (EntityIdType): the ID of the user
         """
         ...
+
+    async def emit_garden_invite(
+        self,
+        email_address: str,
+        username: str,
+        garden_key_id: str,
+        garden_name: str,
+        inviter_username: str,
+        role: str,
+    ) -> None:
+        ...

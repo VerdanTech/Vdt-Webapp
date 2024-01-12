@@ -6,14 +6,14 @@ from pytest_mock import MockerFixture
 
 # VerdanTech Source
 from src.interfaces.persistence.generic import AbstractRepository
-from src.utils.sanitizers.repo.unique import UniqueSpec, UniqueSpecConfig
+from src.utils.sanitizers.repo.exists import ExistsSpec, ExistsSpecConfig
 
 pytestmark = [pytest.mark.unit]
 
 
-class TestUniqueSpecConfig:
+class TestExistsSpecConfig:
     # ======================================
-    # UniqueSpecConfig.__init__() tests
+    # ExistsSpecConfig.__init__() tests
     # ======================================
 
     def test___init___validates_repo_call_signature(
@@ -26,7 +26,7 @@ class TestUniqueSpecConfig:
         existence_method_name = "existence_method_name"
         existence_method_argument_name = "existence_method_argument_name"
 
-        UniqueSpecConfig(
+        ExistsSpecConfig(
             error_message="",
             repo=mock_repo,
             existence_method_name=existence_method_name,
@@ -39,30 +39,30 @@ class TestUniqueSpecConfig:
         )
 
 
-class TestUniqueSpec:
+class TestExistsSpec:
     # ======================================
-    # UniqueSpec._sanitize() tests
+    # ExistsSpec._sanitize() tests
     # ======================================
 
     @pytest.mark.parametrize(
         ("mock_existence_method_return_value", "expected_result"),
-        [(True, False), (False, True)],
+        [(True, True), (False, False)],
     )
-    async def test_unique_spec(
+    async def test_exists_spec(
         self,
         mock_existence_method_return_value: bool,
         expected_result: bool,
         mocker: MockerFixture,
     ):
         """
-        Ensure that the unique sanitization logic awaits the async_dynamic_call
+        Ensure that the exists sanitization logic awaits the async_dynamic_call
         method on the repository, with the proper method name and input_data argument.
-        The result of the unique validation is opposite the result of the existence function.
+        The result of the exists validation is the result of the existence function.
 
         Args:
             mock_existence_method_return_value (bool): mock return value of the
                 repository's existence method, True if the input exists.
-            expected_result (bool): the expected result of UniqueSpec._sanitize()
+            expected_result (bool): the expected result of ExistsSpec._sanitize()
             mocker: (MockerFixture): pytest-mock
         """
 
@@ -70,16 +70,20 @@ class TestUniqueSpec:
         existence_method_name = "existence_method_name"
         existence_method_argument_name = "existence_method_argument_name"
         mock_repo = mocker.MagicMock(spec=AbstractRepository)
-        mock_repo.async_dynamic_call.return_value = mock_existence_method_return_value
+        mocker.patch.object(
+            mock_repo,
+            "async_dynamic_call",
+            return_value=mock_existence_method_return_value,
+        )
 
         # Init Spec
-        config = UniqueSpecConfig(
+        config = ExistsSpecConfig(
             repo=mock_repo,
             existence_method_name=existence_method_name,
             existence_method_argument_name=existence_method_argument_name,
             error_message="",
         )
-        spec = UniqueSpec(config=config)
+        spec = ExistsSpec(config=config)
 
         input_data = "input_data"
 

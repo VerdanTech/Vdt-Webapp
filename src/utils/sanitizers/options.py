@@ -43,6 +43,7 @@ class SelectEnum(Enum):
 
     # Repo sanitizations.
     UNIQUE = "unique"
+    EXISTS = "exists"
 
     # Custom sanitizations.
     EMAIL = "email"

@@ -19,7 +19,6 @@ class User(RootEntity):
     username: str
     emails: List[Email] = field(default_factory=list)
     _password_hash: str | None = None
-    # memberships: List[Ref[GardenMembership]] = field(default_factory=list)
     is_active: bool = True
     is_superuser: bool = False
     password_reset_confirmation: Optional[PasswordResetConfirmation] = None
@@ -93,7 +92,8 @@ class User(RootEntity):
             self._set_primary_email(email)
             self._trim_oldest_emails(max_emails=max_emails)
 
-    def get_primary_email(self) -> Email:
+    @property
+    def primary_email(self) -> Email:
         """
         Return the user's primary email
 
