@@ -10,7 +10,7 @@ from ..spec import Spec, SpecConfig, SpecError
 
 
 @dataclass(kw_only=True)
-class UniqueSpecConfig(SpecConfig):
+class ExistsSpecConfig(SpecConfig):
     params = None
     # The repository to use for validation.
     repo: AbstractRepository
@@ -39,21 +39,21 @@ class UniqueSpecConfig(SpecConfig):
         )
 
 
-class UniqueSpecError(SpecError):
+class ExistsSpecError(SpecError):
     pass
 
 
-class UniqueSpec[UniqueSpecConfig](Spec):
-    """Uniqueness sanitization functionality"""
+class ExistsSpec[ExistsSpecConfig](Spec):
+    """Existance sanitization functionality"""
 
-    id = SelectEnum.UNIQUE
-    name = "UniquenessSpec"
-    error = UniqueSpecError
+    id = SelectEnum.EXISTS
+    name = "ExistenceSpec"
+    error = ExistsSpecError
 
     async def _sanitize(self, input_data: Any) -> bool:
         """
         Reject the input if the repository's existence check method
-        returns True.
+        returns False.
 
         Args:
             input_data (Real): the input to validate.
@@ -67,4 +67,4 @@ class UniqueSpec[UniqueSpecConfig](Spec):
             **{self.config.existence_method_argument_name: input_data},
         )
 
-        return not existence_check_result
+        return existence_check_result

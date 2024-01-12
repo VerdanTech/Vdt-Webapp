@@ -13,3 +13,12 @@ class FieldNotFound(DomainException):
     """
 
     pass
+
+
+class EntityIntegrityException(DomainException):
+    """
+    Raised when an Entity fails an assertion of integrity,
+    such as the assert_persisted() method.
+    """
+
+    pass

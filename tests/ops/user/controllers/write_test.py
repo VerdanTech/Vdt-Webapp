@@ -163,7 +163,7 @@ class TestUserWriteOpsController:
 
         persisted_user = (
             await user_write_ops_controller.user_repo.get_user_by_email_address(
-                email_address=result.get_primary_email().address
+                email_address=result.primary_email.address
             )
         )
 
