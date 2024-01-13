@@ -4,7 +4,7 @@ from dataclasses import asdict
 # External Libraries
 import pytest
 from litestar.testing import AsyncTestClient
-
+from svcs import Container
 # VerdanTech Source
 from src.asgi.litestar.user import routes
 from src.domain.user.entities import User
@@ -13,6 +13,8 @@ from src.interfaces.persistence.user.repository import AbstractUserRepository
 from src.ops.user.schemas import verification as verification_ops_schemas
 
 pytestmark = [pytest.mark.asgi]
+# Standard Library
+import pdb
 
 
 class TestUserVerificationApiController:
@@ -20,7 +22,7 @@ class TestUserVerificationApiController:
     # UserVerificationApiController.user_email_confirmation_request() tests
     # ================================================================
     async def test_user_email_confirmation_request_404_nonexistant_user(
-        self, litestar_client: AsyncTestClient, user_repo: AbstractUserRepository
+        self, litestar_client: AsyncTestClient, svcs_container: Container
     ) -> None:
         """
         Ensure that the user_email_confirmation_request endpoint returns
@@ -30,6 +32,7 @@ class TestUserVerificationApiController:
             litestar_client (AsyncTestClient): test client fixture.
             user_repo (AbstractUserRepository): user repository fixture.
         """
+        user_repo = await svcs_container.aget(AbstractUserRepository)
         path = litestar_client.app.route_reverse(
             routes.USER_EMAIL_VERIFICATION_REQUEST_NAME
         )
@@ -48,7 +51,7 @@ class TestUserVerificationApiController:
         self,
         user: User,
         litestar_client: AsyncTestClient,
-        user_repo: AbstractUserRepository,
+        svcs_container: Container,
     ) -> None:
         """
         Ensure that the user_email_confirmation_request endpoint returns
@@ -58,6 +61,7 @@ class TestUserVerificationApiController:
             litestar_client (AsyncTestClient): test client fixture.
             user_repo (AbstractUserRepository): user repository fixture.
         """
+        user_repo = await svcs_container.aget(AbstractUserRepository)
         email_address = "existing_email@gmail.com"
         user.emails = [Email(address=email_address, confirmation=None, verified=False)]
         await user_repo.add(user)
@@ -98,6 +102,7 @@ class TestUserVerificationApiController:
             litestar_client (AsyncTestClient): test client fixture.
         """
         pass
+
     async def test_user_email_confirmation_confirm_201_success(
         self, litestar_client: AsyncTestClient
     ) -> None:

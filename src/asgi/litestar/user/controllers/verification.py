@@ -1,4 +1,3 @@
-
 # External Libraries
 from litestar import Controller, post
 from litestar.datastructures import State
@@ -15,7 +14,7 @@ from src.ops.user.schemas import verification as verification_ops_schemas
 
 from .. import routes, urls
 
-
+import pdb
 class UserVerificationApiController(Controller):
     """
     User email and password verification ASGI controller.

@@ -28,8 +28,6 @@ license = {text = "GPL-3.0-or-later"}
 [project.optional-dependencies]
 test = [
     "pytest",
-    "testcontainers[postgres]",
-    "psycopg2",
     "pytest-asyncio",
     "factory_boy",
     "pytest-mock",

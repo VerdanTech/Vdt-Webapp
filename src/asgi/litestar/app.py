@@ -11,8 +11,8 @@ from src.infra.persistence.sqlalchemy.repository.litestar_lifespan import (
 from .auth import jwt_cookie_auth
 from .dependencies import svcs_plugin
 from .exceptions import exception_handlers
-from .router import create_base_router
 from .openapi import openapi_config
+from .router import create_base_router
 
 
 def create_app(alchemy_uri: str = settings.ALCHEMY_URI) -> "Litestar":

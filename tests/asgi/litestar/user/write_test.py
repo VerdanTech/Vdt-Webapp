@@ -10,7 +10,7 @@ from litestar.testing import AsyncTestClient
 from src.asgi.litestar.user import routes
 from src.interfaces.persistence.user.repository import AbstractUserRepository
 from src.ops.user.schemas import write as write_ops_schemas
-
+from svcs import Container
 pytestmark = [pytest.mark.asgi]
 
 
@@ -19,7 +19,7 @@ class TestUserWriteApiController:
     # TestUserWriteApiController.user_create() tests
     # ================================================================
     async def test_user_create_422_failure(
-        self, litestar_client: AsyncTestClient, user_repo: AbstractUserRepository
+        self, litestar_client: AsyncTestClient, svcs_container: Container
     ) -> None:
         """
         Ensure that the user_create endpoint successfully returns a 422 status
@@ -29,6 +29,7 @@ class TestUserWriteApiController:
             litestar_client (AsyncTestClient): test client fixture.
             user_repo (AbstractUserRepository): user repository fixture.
         """
+        user_repo = await svcs_container.aget(AbstractUserRepository)
         path = litestar_client.app.route_reverse(routes.USER_CREATE_NAME)
         input_data = write_ops_schemas.UserCreateInput(
             username="new_username",
@@ -37,7 +38,7 @@ class TestUserWriteApiController:
             password2="New_password*1",
         )
 
-        await litestar_client.post(
+        response = await litestar_client.post(
             path,
             json=asdict(input_data),
         )
@@ -48,7 +49,7 @@ class TestUserWriteApiController:
         assert response.status_code == 422
 
     async def test_user_create_201_success(
-        self, litestar_client: AsyncTestClient, user_repo: AbstractUserRepository
+        self, litestar_client: AsyncTestClient, svcs_container: Container
     ) -> None:
         """
         Ensure that the user_create endpoint successfully creates a user
@@ -58,6 +59,7 @@ class TestUserWriteApiController:
             litestar_client (AsyncTestClient): test client fixture.
             user_repo (AbstractUserRepository): user repository fixture.
         """
+        user_repo = await svcs_container.aget(AbstractUserRepository)
         path = litestar_client.app.route_reverse(routes.USER_CREATE_NAME)
         input_data = write_ops_schemas.UserCreateInput(
             username="new_username",
