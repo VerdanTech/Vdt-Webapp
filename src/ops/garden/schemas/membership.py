@@ -3,9 +3,10 @@ from dataclasses import dataclass
 
 # VerdanTech Source
 from src.domain.garden.enums import RoleEnum
+from src.ops.common import schema_dataclass
 
 
-@dataclass
+@schema_dataclass
 class GardenInviteCreateInput:
     """
     Garden invitation DTO.
@@ -21,7 +22,7 @@ class GardenInviteCreateInput:
     role: RoleEnum
 
 
-@dataclass
+@schema_dataclass
 class GardenRevokeMembershipInput:
     """
     Garden membership removal DTO.
@@ -35,7 +36,7 @@ class GardenRevokeMembershipInput:
     user_username: str
 
 
-@dataclass
+@schema_dataclass
 class GardenRoleChangeInput:
     """
     Garden membership role change DTO.

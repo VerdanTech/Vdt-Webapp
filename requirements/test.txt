@@ -10,6 +10,8 @@ aiosmtplib==3.0.1
     # via verdantech_api (pyproject.toml)
 alembic==1.13.0
     # via verdantech_api (pyproject.toml)
+annotated-types==0.6.0
+    # via pydantic
 anyio==4.1.0
     # via
     #   httpx
@@ -119,6 +121,10 @@ pyasn1==0.5.1
     #   rsa
 pycparser==2.21
     # via cffi
+pydantic==2.5.3
+    # via verdantech_api (pyproject.toml)
+pydantic-core==2.14.6
+    # via pydantic
 pygments==2.17.2
     # via rich
 pytest==7.4.3
@@ -186,6 +192,8 @@ typing-extensions==4.8.0
     #   alembic
     #   litestar
     #   polyfactory
+    #   pydantic
+    #   pydantic-core
     #   rich-click
     #   sqlalchemy
 uvicorn[standard]==0.24.0.post1

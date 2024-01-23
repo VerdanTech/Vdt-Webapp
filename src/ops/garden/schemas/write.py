@@ -1,5 +1,5 @@
 # Standard Library
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 # VerdanTech Source
 from src.domain.garden.enums import VisibilityEnum
@@ -32,9 +32,9 @@ class GardenCreateInput:
     name: str
     visibility: VisibilityEnum = VisibilityEnum.PRIVATE
     description: str = ""
-    admin_usernames: list[str] = []
-    editor_usernames: list[str] = []
-    viewer_usernames: list[str] = []
+    admin_usernames: list[str] = field(default_factory=list)
+    editor_usernames: list[str] = field(default_factory=list)
+    viewer_usernames: list[str] = field(default_factory=list)
 
     async def sanitize(self, garden_sanitizer: GardenSanitizer) -> None:
         """

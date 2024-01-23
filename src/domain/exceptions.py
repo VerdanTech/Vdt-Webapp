@@ -1,24 +1,20 @@
-class DomainException(Exception):
-    """
-    Base class for Domain layer exceptions.
-    """
-
-    pass
+# VerdanTech Source
+from src.exceptions import ApplicationException, ExceptionResponseEnum
 
 
-class FieldNotFound(DomainException):
+class FieldNotFound(ApplicationException):
     """
     Raised when a field is provided as an input
     to a function but does not exist on the object.
     """
 
-    pass
+    response = ExceptionResponseEnum.CLIENT_ERROR
 
 
-class EntityIntegrityException(DomainException):
+class EntityIntegrityException(ApplicationException):
     """
     Raised when an Entity fails an assertion of integrity,
     such as the assert_persisted() method.
     """
 
-    pass
+    response = ExceptionResponseEnum.SERVER_ERROR

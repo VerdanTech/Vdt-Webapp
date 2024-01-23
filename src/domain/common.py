@@ -1,7 +1,8 @@
 # Standard Library
+import uuid
 from dataclasses import Field, dataclass, field
 from datetime import datetime
-from typing import dataclass_transform
+from typing import Union, dataclass_transform
 
 from .exceptions import EntityIntegrityException
 
@@ -17,12 +18,8 @@ For information on how domain modelling fits into software architecture see this
 """
 
 
-type EntityIdType = int
-"""
-EntityIdType is the only part of the domain dependent on persistence, because
-the database is responsible for assigning primary keys. Currently, incrementing
-integer primary keys are used.
-"""
+type EntityIdType = uuid.UUID
+type DomainModel = Union[RootEntity, Entity, Value]
 
 
 class Entity:
@@ -34,39 +31,20 @@ class Entity:
     are equal if they share the same ID.
     """
 
-    id: EntityIdType | None = None
-    """Not included in __init__ as the ID is assigned at persistence."""
-    created_at: datetime | None = None
-    """Not included in __init__ as the timestamp is assigned at persistence."""
+    id: EntityIdType = field(default_factory=uuid.uuid4, init=False)
+    """Not included in __init__ as the ID is assigned with a factory."""
+    created_at: datetime = field(default_factory=datetime.now, init=False)
+    """Not included in __init__ as the timestamp is assigned with a factory."""
+    persisted: bool = False
 
     def __eq__(self, other) -> bool:
         return self.id == other.id
 
-    @property
-    def persisted(self) -> bool:
-        if self.id is None:
-            return False
-        else:
-            return True
-
-    def id_or_error(self) -> EntityIdType:
-        """
-        Returns the id of the Entity.
-
-        Raises:
-            EntityIntegrityException: raised if the id
-                attribute is None, which occurs
-                before it is persisted for the first time.
-
-        Returns:
-            EntityIdType: the id of the Entity.
-        """
-        if self.id is None:
+    def assert_persisted(self) -> None:
+        if not self.persisted:
             raise EntityIntegrityException(
-                "Un-persisted Entity used at an invalid location."
+                "Unpersisted entity used in unexpected location."
             )
-        else:
-            return self.id
 
 
 class RootEntity(Entity):
@@ -107,8 +85,10 @@ def entity_dataclass(cls):
             for the sake of simplicity and readability.
         eq=False: Explicit disabling of __eq__() generation as this
             is handled by Id equivalence.
+        slots=True: slotted classes are user for simple
+            and easy performance gains.
     """
-    dataclass_settings = {"kw_only": True, "eq": False}
+    dataclass_settings = {"kw_only": True, "eq": False, "slots": True}
     cls = dataclass(**dataclass_settings)(cls)
     return cls
 
@@ -144,8 +124,10 @@ def value_dataclass(cls):
         frozen=True: Immutability. If the object is to be modified
             it must return a modified version of itself
             (for example, by using replace())
-        eq=False: Explicit enabling of __eq__() generation as value
+        eq=True: Explicit enabling of __eq__() generation as value
             objects are equivalent if all their attributes are.
+        slots=True: slotted classes are user for simple
+            and easy performance gains.
 
     Args:
         cls (Type[Any]): the class before decoration.
@@ -154,19 +136,30 @@ def value_dataclass(cls):
         Type[ValueT]: the Value class after decoration.
     """
 
-    dataclass_settings = {"kw_only": True, "frozen": True, "eq": True}
+    dataclass_settings = {"kw_only": True, "frozen": True, "eq": True, "slots": True}
     cls = dataclass(**dataclass_settings)(cls)
     return cls
 
 
 @value_dataclass
-class Ref[RootEntity](Value):
+class Ref[E: RootEntity](Value):
     """
     Entities and Values can hold references to other aggregates, but
     only by referencing RootEntitys by ID.
     """
 
-    id: EntityIdType
+    id: uuid.UUID
+    """
+    UUID class is used directly as the Ref class is often used
+    as a data transfer schema directly, and the ASGI framework in use
+    (Litestar) currently cannot type it correctly when using the EntityIdType alias.
+    """
 
-    def __init__(self, id: EntityIdType) -> None:
-        self.id = id
+    def to_schema(self):
+        """
+        When a domain model is to be used directly as a
+        data transfer object, it must be ensured that the
+        conversion is valid. This is is done by calling
+        this function to use a domain model as a schema.
+        """
+        return self

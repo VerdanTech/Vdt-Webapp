@@ -5,7 +5,10 @@ from dataclasses import field, replace
 from datetime import datetime, timedelta
 from typing import Optional
 
-from ..common import Value, value_dataclass
+# VerdanTech Source
+from src.exceptions import ExceptionResponseEnum
+
+from ..common import Ref, Value, value_dataclass
 from .exceptions import EmailAlreadyVerifiedError, EmailConfirmationExpired
 
 
@@ -50,7 +53,8 @@ class Email(Value):
         """
         if self.verified:
             raise EmailAlreadyVerifiedError(
-                "Email verification attempt on already verified email"
+                "Email verification attempt on already verified email",
+                response=ExceptionResponseEnum.CLIENT_ERROR,
             )
         return replace(
             self, verified=True, confirmation=None, verified_at=datetime.now()
@@ -88,7 +92,10 @@ class Email(Value):
         if self.confirmation is None:
             return
         if not self.confirmation.is_valid(expiry_time_hours=expiry_time_hours):
-            raise EmailConfirmationExpired("The email confirmation key is expired")
+            raise EmailConfirmationExpired(
+                "The email confirmation key is expired",
+                response=ExceptionResponseEnum.CLIENT_ERROR,
+            )
 
 
 @value_dataclass

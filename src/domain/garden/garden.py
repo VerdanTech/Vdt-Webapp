@@ -3,13 +3,19 @@ from dataclasses import field, replace
 from typing import Optional
 
 # VerdanTech Source
-from src.domain.common import Ref, RootEntity, root_entity_dataclass
+from src.domain.common import Ref, RootEntity, root_entity_dataclass, value_dataclass
+from src.domain.environment import EnvironmentAttributeCluster
 from src.domain.exceptions import FieldNotFound
-from src.domain.user.entities import User
+from src.domain.user.entities import User, UserRef
 
 from .enums import RoleEnum, VisibilityEnum
 from .exceptions import MembershipAlreadyConfirmed
-from .values import EnvironmentAttributeProfile, GardenMembership
+from .membership import GardenMembership
+
+
+@value_dataclass
+class GardenRef(Ref["Garden"]):
+    key: str
 
 
 @root_entity_dataclass
@@ -23,15 +29,23 @@ class Garden(RootEntity):
     and most other application models.
     """
 
-    key_id: str
+    key: str
     name: str
-    creator: Ref[User] | None
+    creator: UserRef | None
     visibility: VisibilityEnum = VisibilityEnum.PRIVATE
     memberships: list[GardenMembership] = field(default_factory=list)
     """There must exist only one GardenMembership for any given User."""
     description: str = ""
-    attributes: list[EnvironmentAttributeProfile] = field(default_factory=list)
+    attributes: EnvironmentAttributeCluster = EnvironmentAttributeCluster()
     expired: bool = False
+
+    @property
+    def ref(self) -> GardenRef:
+        return GardenRef(id=self.id, key=self.key)
+
+    @property
+    def num_memberships(self) -> int:
+        return len(self.memberships)
 
     def get_membership(self, user: User) -> Optional[GardenMembership]:
         """

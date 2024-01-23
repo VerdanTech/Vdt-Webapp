@@ -5,11 +5,26 @@ from typing import List, Optional
 
 # VerdanTech Source
 from src.domain import exceptions as domain_exceptions
-from src.domain.common import EntityIdType, RootEntity, root_entity_dataclass
+from src.domain.common import (
+    EntityIdType,
+    Ref,
+    RootEntity,
+    Value,
+    root_entity_dataclass,
+    value_dataclass,
+)
+from src.exceptions import ExceptionResponseEnum
 from src.interfaces.security.crypt import AbstractPasswordCrypt
 
 from . import exceptions
 from .values import Email, PasswordResetConfirmation
+
+
+@value_dataclass
+class UserRef(Ref["User"]):
+    """User reference for embedding in other models."""
+
+    username: str
 
 
 @root_entity_dataclass
@@ -17,11 +32,21 @@ class User(RootEntity):
     """User entity model"""
 
     username: str
-    emails: List[Email] = field(default_factory=list)
+    emails: list[Email] = field(default_factory=list)
     _password_hash: str | None = None
     is_active: bool = True
     is_superuser: bool = False
     password_reset_confirmation: Optional[PasswordResetConfirmation] = None
+
+    @property
+    def ref(self) -> UserRef:
+        """
+        Get a reference to self.
+
+        Returns:
+            UserRef: the reference to the User.
+        """
+        return UserRef(id=self.id, username=self.username)
 
     def email_create(
         self,
@@ -106,7 +131,9 @@ class User(RootEntity):
         for email in self.emails:
             if email.primary is True:
                 return email
-        raise exceptions.UserIntegrityError("User has zero emails with primary = True")
+        raise domain_exceptions.EntityIntegrityException(
+            "User has zero emails with primary = True"
+        )
 
     def email_confirmation_create(self, address: str, key: str) -> None:
         """
@@ -172,7 +199,8 @@ class User(RootEntity):
                 """Password set attempt failed: 
                 called with overwrite=False 
                 but password already set.
-                """
+                """,
+                response=ExceptionResponseEnum.SERVER_ERROR,
             )
         self._password_hash = await password_crypt.get_password_hash(
             plain_password=password
@@ -206,17 +234,17 @@ class User(RootEntity):
             password_crypt (AbstractPasswordCrypt): password crypt interface.
         """
         if not user_id == self.id:
-            raise exceptions.PasswordResetConfirmationNotValid(
+            raise domain_exceptions.FieldNotFound(
                 "The provided password reset confirmation is not correct."
             )
 
         if self.password_reset_confirmation is None:
-            raise exceptions.PasswordResetConfirmationNotFound(
+            raise domain_exceptions.FieldNotFound(
                 "No password reset requests are associated with this User."
             )
 
         if not self.password_reset_confirmation.key == key:
-            raise exceptions.PasswordResetConfirmationNotValid(
+            raise domain_exceptions.FieldNotFound(
                 "The provided password reset key is not correct."
             )
 
@@ -295,7 +323,7 @@ class User(RootEntity):
             if email.confirmation is not None and email.confirmation.key == key:
                 email_with_key = email
         if email_with_key is None:
-            raise exceptions.EmailConfirmationKeyNotFound(
+            raise domain_exceptions.FieldNotFound(
                 "The email verification key does not exist"
             )
         return email_with_key

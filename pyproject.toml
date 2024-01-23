@@ -20,6 +20,7 @@ dependencies = [
     "aiofiles",
     "email-validator",
     "python-decouple",
+    "shapely",
 ]
 requires-python = ">=3.12"
 readme = "README.md"

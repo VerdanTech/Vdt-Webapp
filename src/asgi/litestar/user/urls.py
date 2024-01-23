@@ -10,11 +10,7 @@ USER_ROUTER_URL_BASE: str = "users/"
 
 USER_READ_CONTROLLER_URL_BASE = "read/"
 
-USER_LIST_URL: str = "list/"
-USER_DETAIL_URL: str = "{user_id:str}/detail/"
-USER_CHECK_USERNAME_URL: str = "{username:str}/check_username/"
-USER_CHECK_EMAIL_URL: str = "{email:str}/check_email/"
-USER_CHECK_PASSWORD_URL: str = "{password:str}/check_password/"
+USER_PROFILES_URL: str = "{user_ids:str}/profile/"
 
 # ======================================
 # WRITE
@@ -23,9 +19,7 @@ USER_CHECK_PASSWORD_URL: str = "{password:str}/check_password/"
 USER_WRITE_CONTROLLER_URL_BASE = "write/"
 
 USER_CREATE_URL: str = "create/"
-USER_CHANGE_USERNAME_URL: str = "change_username/"
-USER_CHANGE_PASSWORD_URL: str = "change_password/"
-USER_EMAIL_CHANGE_REQUEST_URL: str = "change_email_request/"
+USER_CHANGE_URL: str = "change/"
 USER_DELETE_URL: str = "delete/"
 
 # ======================================
@@ -46,4 +40,3 @@ USER_PASSWORD_RESET_CONFIRM_URL: str = "password/confirm/"
 USER_AUTH_CONTROLLER_BASE = "auth/"
 
 USER_LOGIN_URL: str = "login/"
-USER_LOGOUT_URL: str = "logout/"

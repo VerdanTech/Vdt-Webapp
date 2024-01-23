@@ -5,8 +5,9 @@ from src.domain.user.sanitizers import UserSanitizer
 from src.interfaces.email.emitter import AbstractEmailEmitter
 from src.interfaces.persistence.user.repository import AbstractUserRepository
 from src.interfaces.security.crypt import AbstractPasswordCrypt
+from src.ops.exceptions import IncorrectPassword
 
-from ..schemas import write as schemas
+from ..schemas import read as read_scheams, write as write_schemas
 from ..services import email as email_services
 
 
@@ -16,7 +17,7 @@ class UserWriteOpsController:
 
     async def create(
         self,
-        data: schemas.UserCreateInput,
+        data: write_schemas.UserCreateInput,
         user_sanitizer: UserSanitizer,
         password_crypt: AbstractPasswordCrypt,
         email_emitter: AbstractEmailEmitter,
@@ -43,7 +44,7 @@ class UserWriteOpsController:
             user=user,
             address=data.email_address,
             max_emails=settings.USER_MAX_EMAILS,
-            verification=settings.EMAIL_CONFIRMATION.verification_required(),
+            verification=settings.EMAIL_CONFIRMATION.verification_required,
             key_length=settings.VERIFICATION_KEY_MAX_LENGTH,
             user_repo=self.user_repo,
             email_emitter=email_emitter,
@@ -54,14 +55,48 @@ class UserWriteOpsController:
 
         return user
 
-    async def username_change(self):
-        pass
+    async def change(
+        self,
+        client: User,
+        data: write_schemas.UserChangeInput,
+        user_sanitizer: UserSanitizer,
+        password_crypt: AbstractPasswordCrypt,
+        email_emitter: AbstractEmailEmitter,
+    ) -> read_scheams.UserFullSchema:
+        # Sanitize input data
+        await data.sanitize(user_sanitizer=user_sanitizer)
 
-    async def email_change(self):
-        pass
+        # Authenticate password
+        if not await client.verify_password(
+            password=data.password, password_crypt=password_crypt
+        ):
+            raise IncorrectPassword("Provided password is incorrect.")
 
-    async def password_change(self):
-        pass
+        # Update the requested fields
+        if data.new_username:
+            client.username = data.new_username
 
-    async def delete(self):
-        pass
+        if data.new_email_address:
+            await email_services.email_create(
+                user=client,
+                address=data.email_address,
+                max_emails=settings.USER_MAX_EMAILS,
+                verification=settings.EMAIL_CONFIRMATION.verification_required,
+                key_length=settings.VERIFICATION_KEY_MAX_LENGTH,
+                user_repo=self.user_repo,
+                email_emitter=email_emitter,
+            )
+
+        if data.new_password1:
+            await client.set_password(
+                password=data.new_password1,
+                password_crypt=password_crypt,
+                overwrite=True,
+            )
+
+        # Persist user
+        user = await self.user_repo.add(client)
+
+        user_schema = read_scheams.UserFullSchema.from_model(user)
+
+        return user_schema

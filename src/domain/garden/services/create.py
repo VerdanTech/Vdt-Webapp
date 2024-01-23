@@ -5,8 +5,8 @@ from typing import Optional
 from src.domain.common import Ref
 from src.domain.user.entities import User
 
-from ..entities import Garden, GardenMembership
 from ..enums import RoleEnum, VisibilityEnum
+from ..garden import Garden, GardenMembership
 
 type UserRoleTupleList = list[tuple[User, RoleEnum]]
 type UserMembershipTuples = list[tuple[User, GardenMembership]]
@@ -38,19 +38,18 @@ def garden_create(
             GardenMemberships creator on it.
     """
     # Create an new Garden entity.
-    creator_ref = Ref[User](creator.id_or_error())
     garden = Garden(
         name=name,
-        key_id=key,
-        creator=creator_ref,
+        key=key,
+        creator=creator.ref,
         description=description,
         visibility=visibility,
     )
 
     # Create a membership for the creator.
     creator_membership = GardenMembership(
-        inviter=creator_ref,
-        user=creator_ref,
+        inviter=creator.ref,
+        user=creator.ref,
         garden=garden,
         role=RoleEnum.ADMIN,
         open_invite=False,
@@ -60,8 +59,8 @@ def garden_create(
     invitations = [(invitee, role) for invitee, role in invitee_role_tuples]
     invitee_memberships = [
         GardenMembership(
-            inviter=creator_ref,
-            user=Ref[User](invitee.id_or_error()),
+            inviter=creator.ref,
+            user=invitee.ref,
             garden=garden,
             role=role,
             open_invite=True,

@@ -136,6 +136,7 @@ class EmailConfirmationOptions(Enum):
     REQUIRED_FOR_WRITE = 1
     REQUIRED_FOR_LOGIN = 2
 
+    @property
     def verification_required(self) -> bool:
         return (
             self.value == self.REQUIRED_FOR_WRITE

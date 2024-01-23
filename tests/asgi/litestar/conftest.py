@@ -13,7 +13,10 @@ from src import settings
 from src.asgi.litestar.app import create_app
 from src.interfaces.persistence.user.repository import AbstractUserRepository
 
-from .service_overrides import provide_user_mock_repository, session_scoped_mock_user_repository
+from .service_overrides import (
+    provide_user_mock_repository,
+    session_scoped_mock_user_repository,
+)
 
 
 @pytest.fixture(scope="function")

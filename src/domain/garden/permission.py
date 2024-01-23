@@ -1,8 +1,4 @@
-# VerdanTech Source
-from src.domain.garden.entities import GardenMembership
-
-from ..enums import OperationEnum, PermissionEnum, RoleEnum
-from ..exceptions import GardenAuthorizationException
+from .enums import OperationEnum, PermissionEnum, RoleEnum
 
 permission_rules: dict[OperationEnum, PermissionEnum] = {
     OperationEnum.INVITE_ADMIN: PermissionEnum.REQUIRES_ADMIN,
@@ -21,72 +17,6 @@ permission_rules: dict[OperationEnum, PermissionEnum] = {
 """
 Match Operation IDs with PermissionEnums.
 """
-
-
-def authorize(membership: GardenMembership, operation: OperationEnum) -> bool:
-    """
-    Compares a GardenMembership with an operation ID to asses the
-    application of the permission rule associated with the operation.
-
-    Args:
-        membership (GardenMembership): membership to attempt authorization with.
-        operation (OperationEnum): operation to authorize.
-
-    Returns:
-        bool: true if the operation is authorized.
-    """
-    permission = permission_rules[operation]
-    role = membership.role
-    return _authorize(role=role, permission=permission)
-
-
-def assert_authorization(membership: GardenMembership, operation) -> None:
-    """
-    Compares a GardenMembership with an operation ID to asses the
-    application of the permission rule associated with the operation.
-
-    Args:
-        membership (GardenMembership): membership to attempt authorization with.
-        operation (OperationEnum): operation to authorize.
-
-    Raises:
-        GardenAuthorizationException: raised if the authorization fails.
-    """
-    permission = permission_rules[operation]
-    role = membership.role
-    if not _authorize(role=membership.role, permission=permission):
-        raise GardenAuthorizationException(
-            f"""
-            The action: \"{operation}\" 
-            requires the permission: \"{permission}\", 
-            but this user has role: \"{role}\".
-            """
-        )
-
-
-def _authorize(role: RoleEnum, permission: PermissionEnum) -> bool:
-    """
-    Compares a GardenMembership's role with a permission requirement.
-
-    Args:
-        role (RoleEnum): role of the GardenMembership.
-        permission (PermissionEnum): the permission level
-            of the operation.
-
-    Returns:
-        bool: true if the role is authorized to peform the operation.
-    """
-    if permission is PermissionEnum.REQUIRES_ADMIN and role is RoleEnum.ADMIN:
-        return True
-    elif permission is PermissionEnum.REQUIRES_EDIT and (
-        role is RoleEnum.ADMIN or role is RoleEnum.EDIT
-    ):
-        return True
-    elif permission is PermissionEnum.REQUIRES_VIEW and (
-        role is RoleEnum.ADMIN or role is RoleEnum.EDIT or role is RoleEnum.VIEW
-    ):
-        return True
-    return False
 
 
 class PermissionRouter:

@@ -1,12 +1,10 @@
-# Standard Library
-from dataclasses import dataclass
-
 # VerdanTech Source
 from src.domain.user.sanitizers import UserSanitizer
+from src.ops.common import schema_dataclass
 from src.utils.sanitizers.options import GroupErrorsByEnum, SelectEnum as specs
 
 
-@dataclass
+@schema_dataclass
 class UserLoginInput:
     """
     Input for logging a user in.

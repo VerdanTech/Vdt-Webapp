@@ -29,8 +29,12 @@ def configure_registry() -> Registry:
     # ======================================
 
     # User
-    mock_registry.register_factory(user_ops.UserAuthOpsController, provide_user_auth_ops)
-    mock_registry.register_factory(user_ops.UserWriteOpsController, provide_user_write_ops)
+    mock_registry.register_factory(
+        user_ops.UserAuthOpsController, provide_user_auth_ops
+    )
+    mock_registry.register_factory(
+        user_ops.UserWriteOpsController, provide_user_write_ops
+    )
     mock_registry.register_factory(
         user_ops.UserVerificationOpsController, provide_user_verification_ops
     )
@@ -64,5 +68,6 @@ def configure_registry() -> Registry:
     mock_registry.register_factory(AbstractPasswordCrypt, provide_mock_crypt)
 
     return mock_registry
+
 
 mock_registry = configure_registry()

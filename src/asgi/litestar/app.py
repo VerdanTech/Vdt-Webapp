@@ -10,7 +10,6 @@ from src.infra.persistence.sqlalchemy.repository.litestar_lifespan import (
 
 from .auth import jwt_cookie_auth
 from .dependencies import svcs_plugin
-from .exceptions import exception_handlers
 from .openapi import openapi_config
 from .router import create_base_router
 
@@ -23,7 +22,6 @@ def create_app(alchemy_uri: str = settings.ALCHEMY_URI) -> "Litestar":
         lifespan=[litestar_alchemy_client_lifespan],
         plugins=[svcs_plugin],
         openapi_config=openapi_config,
-        exception_handlers=exception_handlers,
         on_app_init=[jwt_cookie_auth.on_app_init],
         state=State({"alchemy_uri": alchemy_uri}),
         debug=True,

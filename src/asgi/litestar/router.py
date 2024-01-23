@@ -7,10 +7,11 @@ from litestar import Router
 # VerdanTech Source
 from src import settings
 
+from .garden.router import create_garden_router
 from .user.router import create_user_router
 
 # List of all router factories
-router_factories = [create_user_router]
+router_factories = [create_user_router, create_garden_router]
 
 
 def create_routers() -> List[Router]:

@@ -6,7 +6,7 @@ import pytest
 from pytest_mock import MockerFixture
 
 # VerdanTech Source
-from src.domain.user import exceptions as domain_exceptions
+from src.domain import exceptions as domain_exceptions
 from src.domain.user.entities import User
 from src.domain.user.values import Email, PasswordResetConfirmation
 from src.interfaces.email.emitter import AbstractEmailEmitter
@@ -85,7 +85,7 @@ async def test_password_reset_create_unpersisted_user(
     user.id = None
     primary_email_address = user.primary_email.address
 
-    with pytest.raises(domain_exceptions.UserIntegrityError):
+    with pytest.raises(domain_exceptions.EntityIntegrityException):
         await verification_services.password_reset_create(
             user=user,
             email_address=primary_email_address,

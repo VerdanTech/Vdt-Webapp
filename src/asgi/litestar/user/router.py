@@ -2,7 +2,7 @@
 from litestar import Router
 
 from . import urls
-from .controllers import auth, verification, write
+from .controllers import auth, read, verification, write
 
 
 def create_user_router() -> Router:
@@ -12,7 +12,7 @@ def create_user_router() -> Router:
     user_router = Router(
         path=urls.USER_ROUTER_URL_BASE,
         route_handlers=[
-            # UserReadController,
+            read.UserReadController,
             write.UserWriteApiController,
             auth.UserAuthApiController,
             verification.UserVerificationApiController,

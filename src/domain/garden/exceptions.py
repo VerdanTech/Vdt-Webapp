@@ -1,14 +1,14 @@
 # VerdanTech Source
-from src.domain.exceptions import DomainException
+from src.exceptions import ApplicationException, ExceptionResponseEnum
 
 
-class GardenAuthorizationException(DomainException):
+class GardenAuthorizationException(ApplicationException):
     """Raised when an operation is attempted but is unauthorized."""
 
-    pass
+    response = ExceptionResponseEnum.CLIENT_ERROR
 
 
-class MembershipAlreadyExists(DomainException):
+class MembershipAlreadyExists(ApplicationException):
     """
     Raised when an attempt is made to create a GardenMembership
     invite that has already been created.
@@ -17,7 +17,7 @@ class MembershipAlreadyExists(DomainException):
     pass
 
 
-class MembershipAlreadyConfirmed(DomainException):
+class MembershipAlreadyConfirmed(ApplicationException):
     """
     Raised when an attempt is made to accept a GardenMembership
     invite that has already been accepted.

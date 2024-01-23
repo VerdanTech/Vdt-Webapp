@@ -5,12 +5,13 @@ from dataclasses import asdict
 # External Libraries
 import pytest
 from litestar.testing import AsyncTestClient
+from svcs import Container
 
 # VerdanTech Source
 from src.asgi.litestar.user import routes
 from src.interfaces.persistence.user.repository import AbstractUserRepository
 from src.ops.user.schemas import write as write_ops_schemas
-from svcs import Container
+
 pytestmark = [pytest.mark.asgi]
 
 
@@ -29,7 +30,6 @@ class TestUserWriteApiController:
             litestar_client (AsyncTestClient): test client fixture.
             user_repo (AbstractUserRepository): user repository fixture.
         """
-        user_repo = await svcs_container.aget(AbstractUserRepository)
         path = litestar_client.app.route_reverse(routes.USER_CREATE_NAME)
         input_data = write_ops_schemas.UserCreateInput(
             username="new_username",
