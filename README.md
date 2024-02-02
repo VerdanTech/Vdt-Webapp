@@ -40,6 +40,7 @@ The python backend implements a clean architecture pattern, meaning that the fun
 - The infrastrure contains implementations of the domain service interfaces, such as database implementations of the repository interface. The only repository in use so far is a MongoDB Motor (async pymongo) implementation. The repository abstraction makes it possible to use different implementations in the future, but I havent investigated the potential compatibility with a sql database (plan to stick with mongo)
 - The API layer is the http and websocket wrapping around the application layer, and is implemented using the Litestar 
 
+
 # Development
 
 ## Environment
