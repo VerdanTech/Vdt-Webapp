@@ -6,10 +6,9 @@ from datetime import datetime
 from src.domain.environment.attributes import (
     EnvironmentAttributeCluster as EnvironmentAttributeClusterSchema,
 )
-from src.domain.garden.enums import RoleEnum, VisibilityEnum
-from src.domain.garden.garden import Garden, GardenRef as GardenRefSchema
-from src.domain.garden.membership import GardenMembership
-from src.ops.common import schema_dataclass
+from src.domain.garden import Garden, GardenMembership, RoleEnum, VisibilityEnum
+from src.domain.user import User
+from src.ops.common import RefSchema, schema
 from src.ops.user.schemas.read import UserPublicSchema
 
 """
@@ -18,100 +17,97 @@ because Litestar schema generation currently types it as Any.
 """
 
 
-@schema_dataclass
+@schema
 class GardenMembershipPublicSchema:
     """Schema for returning a brief, public representation of a GardenMembership."""
 
-    user: UserPublicSchema
+    garden_ref: RefSchema[Garden]
+    user_ref: RefSchema[User]
     role: RoleEnum
     created_at: datetime
-    garden_ref: GardenRefSchema | None = None
+
+    def __hash__(self) -> int:
+        """Used to make hashability transparent to type checkers."""
+        return super().__hash__()
 
     @classmethod
     def from_model(
         cls,
         membership: GardenMembership,
-        include_garden_ref: bool = False,
     ) -> "GardenMembershipPublicSchema":
         """
         Create an instance of the schema from a GardenMembership.
 
         Args:
             membership (GardenMembership): the garden membership to convert.
-            include_garden_key (bool): whether to include a ref to the garden
-                in the schema. Defaults to False.
 
         Returns:
             GardenMembershipPublicSchema: the schema result.
         """
         # Retrieve Garden schema
-        garden_ref_schema = None
-        if include_garden_ref:
-            garden_ref_schema = membership.garden.ref.to_schema()
+        garden_ref_schema = RefSchema.from_model(membership.garden_ref)
 
         # Retrieve user schema
-        user_schema = UserPublicSchema.from_model(membership.user)
+        user_ref_schema = RefSchema.from_model(membership.user_ref)
 
         return cls(
-            user=user_schema,
+            garden_ref=garden_ref_schema,
+            user_ref=user_ref_schema,
             role=membership.role,
             created_at=membership.created_at,
-            garden_ref=garden_ref_schema,
         )
 
 
-@schema_dataclass
+@schema
 class GardenMembershipFullSchema:
     """Schema for returning a detailed representation of a GardenMembership."""
 
-    user: UserPublicSchema
+    garden_ref: RefSchema[Garden]
+    user_ref: RefSchema[User]
     role: RoleEnum
-    open_invite: bool
+    accepted: bool
     favorite: bool
     created_at: datetime
-    garden_ref: GardenRefSchema | None = None
-    inviter: UserPublicSchema | None = None
+    inviter_ref: RefSchema[User] | None = None
+
+    def __hash__(self) -> int:
+        """Used to make hashability transparent to type checkers."""
+        return super().__hash__()
 
     @classmethod
-    def from_model(
-        cls, membership: GardenMembership, include_garden_ref: bool = False
-    ) -> "GardenMembershipFullSchema":
+    def from_model(cls, membership: GardenMembership) -> "GardenMembershipFullSchema":
         """
         Create an instance of the schema from a GardenMembership.
 
         Args:
             membership (GardenMembership): the garden membership to convert.
-            include_garden_key (bool): whether to include a ref to the garden
-                in the schema. Defaults to False.
 
         Returns:
             GardenMembershipPublicSchema: the schema result.
         """
         # Retrieve Garden schema
-        garden_ref_schema = None
-        if include_garden_ref:
-            garden_ref_schema = membership.garden.ref.to_schema()
+        garden_ref_schema = RefSchema.from_model(membership.garden_ref)
 
         # Retrieve user schema
-        user_schema = UserPublicSchema.from_model(membership.user)
+        user_ref_schema = RefSchema.from_model(membership.user_ref)
 
         # Retrieve inviter schema
-        inviter_schema = None
-        if membership.inviter:
-            inviter_schema = UserPublicSchema.from_model(membership.inviter)
+        inviter_ref_schema = None
+        if membership.inviter_ref:
+            inviter_ref_schema = RefSchema.from_model(membership.inviter_ref)
 
         return cls(
-            user=user_schema,
+            garden_ref=garden_ref_schema,
+            user_ref=user_ref_schema,
             role=membership.role,
-            open_invite=membership.open_invite,
+            accepted=membership.accepted,
             favorite=membership.favorite,
             created_at=membership.created_at,
-            garden_ref=garden_ref_schema,
-            inviter=inviter_schema,
+            inviter_ref=inviter_ref_schema,
         )
 
 
-@schema_dataclass
+@schema
 class GardenFullSchema:
     """Schema for returning a detailed representation of a Garden."""
 
@@ -120,10 +116,10 @@ class GardenFullSchema:
     name: str
     visibility: VisibilityEnum
     num_memberships: int
-    memberships: list[GardenMembershipPublicSchema]
-    attributes: EnvironmentAttributeClusterSchema
-    description: str
-    creator: UserPublicSchema | None = None
+    memberships: set[GardenMembershipPublicSchema]
+    description: str | None
+    attributes_ref: RefSchema[EnvironmentAttributeClusterSchema] | None
+    creator_ref: RefSchema[User] | None = None
 
     @classmethod
     def from_model(cls, garden: Garden) -> "GardenFullSchema":
@@ -137,21 +133,26 @@ class GardenFullSchema:
             GardenFullSchema: the schema result.
         """
         # Retrieve creator schema
-        creator_schema = None
-        if garden.creator:
-            creator_schema = UserPublicSchema.from_model(garden.creator)
+        creator_ref_schema = None
+        if garden.creator_ref:
+            creator_ref_schema = RefSchema.from_model(garden.creator_ref)
+
+        # Retrieve attributes schema
+        attributes_ref_schema = None
+        if garden.attributes_ref:
+            attributes_ref_schema = RefSchema.from_model(garden.attributes_ref)
 
         return cls(
-            id=garden.id,
+            id=garden.id_or_error(),
             key=garden.key,
             name=garden.name,
-            creator=creator_schema,
+            creator_ref=creator_ref_schema,
             visibility=garden.visibility,
             num_memberships=garden.num_memberships,
-            memberships=[
+            memberships={
                 GardenMembershipPublicSchema.from_model(membership)
                 for membership in garden.memberships
-            ],
-            attributes=garden.attributes,
+            },
+            attributes_ref=attributes_ref_schema,
             description=garden.description,
         )

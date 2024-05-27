@@ -1,11 +1,13 @@
 # Standard Library
-from dataclasses import field
-from datetime import date, datetime
+from datetime import datetime
 from typing import TYPE_CHECKING
 
+# External Libraries
+from attrs import field
+
 # VerdanTech Source
-from src.domain.common import Value, value_dataclass
-from src.domain.user.entities import UserRef
+from src.domain.common import Ref, Value, value_transform
+from src.domain.user import User
 
 from .enums import OperationEnum, PermissionEnum, RoleEnum
 from .exceptions import GardenAuthorizationException
@@ -15,7 +17,7 @@ if TYPE_CHECKING:
     from .garden import Garden
 
 
-@value_dataclass
+@value_transform
 class GardenMembership(Value):
     """
     GardenMembership domain value.
@@ -24,13 +26,22 @@ class GardenMembership(Value):
     allowing conditional access with different roles.
     """
 
-    garden: "Garden"
-    inviter: UserRef | None
-    user: UserRef
+    garden_ref: Ref["Garden"]
+    """The garden the membership exists on."""
+    user_ref: Ref[User]
+    """The holder of the membership."""
+    inviter_ref: Ref[User] | None
+    """The user responsible for creating the membership."""
     role: RoleEnum = RoleEnum.VIEW
-    open_invite: bool = True
+    """The persmissions of the membership."""
+    accepted: bool = False
+    """Whether the membership invitation has been accepted."""
     favorite: bool = False
-    created_at: datetime = field(default_factory=datetime.now)
+    created_at: datetime = field(factory=datetime.now)
+
+    def __hash__(self) -> int:
+        """Used to make hashability transparent to type checkers."""
+        return super().__hash__()
 
     def authorize(self, operation: OperationEnum) -> bool:
         """

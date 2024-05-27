@@ -1,13 +1,15 @@
+# Standard Library
+import uuid
+
 # VerdanTech Source
-from src.domain.common import EntityIdType
-from src.domain.user.sanitizers import UserSanitizer
-from src.ops.common import schema_dataclass
+from src.domain.user import UserSanitizer
+from src.ops.common import schema
 from src.utils.sanitizers.options import GroupErrorsByEnum, SelectEnum as specs
 
 from ..sanitizers import validate_password_match
 
 
-@schema_dataclass
+@schema
 class UserVerifyEmailRequestInput:
     """
     Input for putting in a request to have
@@ -37,7 +39,7 @@ class UserVerifyEmailRequestInput:
         self.email_address = sanitized_data["email_address"]
 
 
-@schema_dataclass
+@schema
 class UserVerifyEmailConfirmInput:
     """
     Input for closing an email confirmation request.
@@ -62,7 +64,7 @@ class UserVerifyEmailConfirmInput:
         self.key = sanitized_data["confirmation_key"]
 
 
-@schema_dataclass
+@schema
 class UserPasswordResetRequestInput:
     """
     Input for putting in a request to have a user's password
@@ -88,13 +90,13 @@ class UserPasswordResetRequestInput:
         self.email_address = sanitized_data["email_address"]
 
 
-@schema_dataclass
+@schema
 class UserPasswordResetConfirmInput:
     """
     Input for closing and confirming a password reset request.
     """
 
-    user_id: EntityIdType
+    user_id: uuid.UUID
     key: str
     new_password1: str
     new_password2: str

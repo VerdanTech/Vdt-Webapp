@@ -6,8 +6,8 @@ import factory
 import pytest
 
 # VerdanTech Source
-from src.domain.user.entities import User
-from src.domain.user.values import Email
+from src.domain.user import User
+from src.domain.user.email import Email
 
 
 class EmailMake(factory.Factory):

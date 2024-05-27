@@ -7,7 +7,7 @@ from svcs import Container
 
 # VerdanTech Source
 from src import settings
-from src.domain.user.sanitizers import UserSanitizer, UserSanitizerConfig
+from src.domain.user import UserSanitizer, UserSanitizerConfig
 from src.interfaces.persistence.user import AbstractUserRepository
 from src.utils import sanitizers
 

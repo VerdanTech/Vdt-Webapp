@@ -1,52 +1,37 @@
 # Standard Library
-from dataclasses import field
 from datetime import datetime, timedelta
-from typing import List, Optional
+from typing import Optional
+
+# External Libraries
+from attrs import field
 
 # VerdanTech Source
 from src.domain import exceptions as domain_exceptions
-from src.domain.common import (
-    EntityIdType,
-    Ref,
-    RootEntity,
-    Value,
-    root_entity_dataclass,
-    value_dataclass,
-)
+from src.domain.common import EntityIdType, RootEntity, root_entity_transform
 from src.exceptions import ExceptionResponseEnum
 from src.interfaces.security.crypt import AbstractPasswordCrypt
 
 from . import exceptions
-from .values import Email, PasswordResetConfirmation
+from .confirmation import BaseConfirmation
+from .email import Email
 
 
-@value_dataclass
-class UserRef(Ref["User"]):
-    """User reference for embedding in other models."""
+class PasswordResetConfirmation(BaseConfirmation):
+    """Password reset confirmation value object"""
 
-    username: str
+    pass
 
 
-@root_entity_dataclass
+@root_entity_transform
 class User(RootEntity):
     """User entity model"""
 
     username: str
-    emails: list[Email] = field(default_factory=list)
+    emails: list[Email] = field(factory=list)
     _password_hash: str | None = None
     is_active: bool = True
     is_superuser: bool = False
     password_reset_confirmation: Optional[PasswordResetConfirmation] = None
-
-    @property
-    def ref(self) -> UserRef:
-        """
-        Get a reference to self.
-
-        Returns:
-            UserRef: the reference to the User.
-        """
-        return UserRef(id=self.id, username=self.username)
 
     def email_create(
         self,

@@ -10,8 +10,7 @@ from svcs import Container
 # VerdanTech Source
 from src.asgi.litestar.auth import jwt_cookie_auth
 from src.asgi.litestar.exceptions import ClientError, litestar_exception_map
-from src.domain.user.entities import User
-from src.domain.user.sanitizers import UserSanitizer
+from src.domain.user import UserSanitizer
 from src.interfaces.security.crypt import AbstractPasswordCrypt
 from src.ops.user.controllers.auth import UserAuthOpsController
 from src.ops.user.schemas import auth as auth_ops_schemas

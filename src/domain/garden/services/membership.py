@@ -1,7 +1,7 @@
 # VerdanTech Source
 from src.domain.common import Ref
 from src.domain.exceptions import FieldNotFound
-from src.domain.user.entities import User
+from src.domain.user import User
 
 from ..enums import RoleEnum
 from ..exceptions import GardenAuthorizationException, MembershipAlreadyExists
@@ -50,12 +50,12 @@ def create_garden_membership(
     )
 
     membership = GardenMembership(
-        inviter=client.ref,
-        user=invitee.ref,
-        garden=garden,
+        garden_ref=garden.ref,
+        inviter_ref=client.ref,
+        user_ref=invitee.ref,
         role=role,
     )
-    garden.memberships.append(membership)
+    garden.memberships.add(membership)
 
     return membership
 

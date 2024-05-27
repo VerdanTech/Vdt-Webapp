@@ -9,7 +9,7 @@ from svcs import Container
 
 # VerdanTech Source
 from src.asgi.litestar.exceptions import ClientError, litestar_exception_map
-from src.domain.user.sanitizers import UserSanitizer
+from src.domain.user import UserSanitizer
 from src.interfaces.email.emitter import AbstractEmailEmitter
 from src.interfaces.security.crypt.password_crypt import AbstractPasswordCrypt
 from src.ops.user.controllers import UserVerificationOpsController

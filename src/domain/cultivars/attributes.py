@@ -1,21 +1,27 @@
 # Standard Library
-from datetime import date, timedelta
+from enum import Enum
 
 # VerdanTech Source
-from src.domain.attributes import AttributeCluster
-from src.domain.common import DomainModel, Value, value_dataclass
-from src.domain.cultivars.entities import Cultivar
-from src.domain.garden.garden import Garden
+from src.domain.attributes import AttributeCluster, AttributeProfile
+from src.domain.common import value_transform
+from src.domain.plants import OriginEnum
+
+from .cultivar import Cultivar
 
 
-class CultivarAttributeCluster(AttributeCluster[Cultivar]):
-    """Base class for attribute clusters which pertain to Cultivars"""
+class CultivarAttributeProfilesEnum(Enum):
+    LIFE_CYCLE = "life_cycle_profile"
+    FROST_DATE_PLANTING_WINDOWS = "frost_date_planting_windows"
 
-    pass
+
+class CultivarAttributeProfile(AttributeProfile[Cultivar]):
+    """Base class for attribute profiles which pertain to plant type (cultivar) characteristics."""
+
+    id: CultivarAttributeProfilesEnum
 
 
-@value_dataclass
-class LifecycleProfile(CultivarAttributeCluster):
+@value_transform
+class LifecycleProfile(CultivarAttributeProfile):
     """
     Defines the expected length of time between sections of a plant's life.
 
@@ -36,16 +42,20 @@ class LifecycleProfile(CultivarAttributeCluster):
             Equal to 1 for annuals.
     """
 
+    id = CultivarAttributeProfilesEnum.LIFE_CYCLE
+
     sow_to_germ: float
     germ_to_sprout: float
+    germ_to_transplant: float
     sprout_to_first_harvest: float
     first_to_last_harvest: float
+    # Or end of season!
     last_harvest_to_expiry: float
     years_of_life: int
 
 
-@value_dataclass
-class FrostDatePlantingWindows(CultivarAttributeCluster):
+@value_transform
+class FrostDatePlantingWindowProfile(CultivarAttributeProfile):
     """
     Defines two static windows that a Cultivar is able to be planted outside,
     relative to the last and first frost dates.
@@ -61,7 +71,30 @@ class FrostDatePlantingWindows(CultivarAttributeCluster):
             and the ending of the planting window.
     """
 
+    id = CultivarAttributeProfilesEnum.FROST_DATE_PLANTING_WINDOWS
+
     last_frost_window_open: float
     last_frost_window_close: float
     first_frost_window_open: float
     first_frost_window_close: float
+
+
+@value_transform
+class AllowedOriginsProfile(CultivarAttributeProfile):
+    """
+    Defines the set of values of OriginEnum a plant of this cultivar is allowed to take.
+
+    Attributes:
+        allowed_origins: set[OriginEnum]: the values of OriginEnum that are allowed.
+    """
+
+    allowed_origins: set[OriginEnum]
+
+
+@value_transform
+class CultivarAttributeCluster(AttributeCluster[CultivarAttributeProfile]):
+    """Acts as a container for a set of CultivarAttributeProfile."""
+
+    life_cycle_profile: LifecycleProfile | None = None
+    frost_date_planting_window_profile: FrostDatePlantingWindowProfile | None = None
+    allowed_origins_profile: AllowedOriginsProfile | None = None

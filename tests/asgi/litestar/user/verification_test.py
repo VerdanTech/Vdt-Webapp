@@ -9,8 +9,8 @@ from svcs import Container
 # VerdanTech Source
 from src import settings
 from src.asgi.litestar.user import routes
-from src.domain.user.entities import User
-from src.domain.user.values import Email, EmailConfirmation, PasswordResetConfirmation
+from src.domain.user import User
+from src.domain.user.email import Email, EmailConfirmation, PasswordResetConfirmation
 from src.interfaces.persistence.user.repository import AbstractUserRepository
 from src.ops.user.schemas import verification as verification_ops_schemas
 from src.utils.key_generator import key_generator

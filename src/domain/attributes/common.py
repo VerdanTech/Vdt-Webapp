@@ -1,9 +1,8 @@
 # Standard Library
-from dataclasses import field
 from enum import Enum
 
 # VerdanTech Source
-from src.domain.common import DomainModel, Value, value_dataclass
+from src.domain.common import DomainModel, Value
 
 
 class AttributeProfile[Parent: DomainModel](Value):

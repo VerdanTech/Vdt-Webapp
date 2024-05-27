@@ -1,29 +1,17 @@
-type User {
-    required username: str;
-    multi emails: Email;
-    required _password_hash: str
-    required is_active: bool
-    required is_superuser: bool
-    optional password_reset_contirmation: PasswordResetConfirmation 
-}
+module common {
+    abstract type Entity {
+        
+    }
 
-type Email {
-    required address: str;
-    required verified: bool;
-    required primary: bool;
-    optional confirmation: EmailConfirmation
-    optional verified_at: datetime 
-}
+    abstract type RootEntity extending Entity {
 
-abstract type BaseConfirmation {
-    required key: str
-    required created_at: datetime
-}
+    }
 
-type PasswordResetConfirmation extending BaseConfirmation {
+    abstract type ValueObject {
 
-}
+    }
 
-type EmailConfirmation extending BaseConfirmation {
-
+    abstract type Ref {
+        required id: uuid; 
+    }
 }

@@ -1,17 +1,16 @@
 # Standard Library
-from dataclasses import dataclass
 from typing import Optional
 
 # VerdanTech Source
 from src.domain.user.sanitizers import UserSanitizer
-from src.ops.common import schema_dataclass
+from src.ops.common import schema
 from src.utils import sanitizers
 from src.utils.sanitizers.options import GroupErrorsByEnum, SelectEnum as specs
 
 from ..sanitizers import validate_password_match
 
 
-@schema_dataclass
+@schema
 class UserCreateInput:
     """
     Input for creating a new user.
@@ -54,7 +53,7 @@ class UserCreateInput:
         self.password2 = sanitized_data["password"]
 
 
-@schema_dataclass
+@schema
 class UserChangeInput:
     """
     Input for changing an existing user's fields.

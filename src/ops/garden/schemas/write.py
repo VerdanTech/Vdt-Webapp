@@ -1,13 +1,14 @@
 # Standard Library
-from dataclasses import dataclass, field
+from dataclasses import field
 
 # VerdanTech Source
 from src.domain.garden.enums import VisibilityEnum
 from src.domain.garden.sanitizers import GardenSanitizer
+from src.ops.common import schema
 from src.utils.sanitizers.options import GroupErrorsByEnum, SelectEnum as specs
 
 
-@dataclass
+@schema
 class GardenCreateInput:
     """
     Garden creation DTO

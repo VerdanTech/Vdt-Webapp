@@ -1,18 +1,14 @@
 # VerdanTech Source
-from src.domain.common import Entity, entity_dataclass
+from src.domain.common import Ref, RootEntity, root_entity_transform
+from src.domain.environment import Environment
+from src.domain.geometry import Geometry
 
-from .geometry import Geometry
+from .location import LocationHistory
 
 
-class PlantingArea(Entity):
+@root_entity_transform
+class PlantingArea(RootEntity):
     geometry: Geometry
-
-
-@entity_dataclass
-class SoilContainer(PlantingArea):
-    pass
-
-
-@entity_dataclass
-class SeedStartingContainer(PlantingArea):
-    pass
+    location_history: LocationHistory = LocationHistory()
+    movable: bool = False
+    environment_ref: Ref[Environment] | None = None

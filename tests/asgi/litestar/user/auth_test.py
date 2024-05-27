@@ -9,7 +9,7 @@ from svcs import Container
 
 # VerdanTech Source
 from src.asgi.litestar.user import routes
-from src.domain.user.entities import User
+from src.domain.user import User
 from src.interfaces.persistence.user.repository import AbstractUserRepository
 from src.interfaces.security.crypt import AbstractPasswordCrypt
 from src.ops.user.schemas import auth as auth_ops_schemas

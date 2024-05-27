@@ -8,9 +8,8 @@ from pytest_mock import MockerFixture
 
 # VerdanTech Source
 from src.domain import exceptions as domain_exceptions
-from src.domain.user import exceptions
-from src.domain.user.entities import User
-from src.domain.user.values import Email, EmailConfirmation, PasswordResetConfirmation
+from src.domain.user import User, exceptions
+from src.domain.user.email import Email, EmailConfirmation, PasswordResetConfirmation
 from src.interfaces.security.crypt import AbstractPasswordCrypt
 
 pytestmark = [pytest.mark.unit]

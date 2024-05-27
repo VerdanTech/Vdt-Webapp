@@ -3,7 +3,7 @@ from typing import Protocol
 
 # VerdanTech Source
 from src.domain.common import EntityIdType
-from src.domain.user.entities import User
+from src.domain.user import User
 
 from ..generic import AbstractRepository
 

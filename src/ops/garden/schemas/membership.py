@@ -1,12 +1,9 @@
-# Standard Library
-from dataclasses import dataclass
-
 # VerdanTech Source
 from src.domain.garden.enums import RoleEnum
-from src.ops.common import schema_dataclass
+from src.ops.common import schema
 
 
-@schema_dataclass
+@schema
 class GardenInviteCreateInput:
     """
     Garden invitation DTO.
@@ -22,7 +19,7 @@ class GardenInviteCreateInput:
     role: RoleEnum
 
 
-@schema_dataclass
+@schema
 class GardenRevokeMembershipInput:
     """
     Garden membership removal DTO.
@@ -36,7 +33,7 @@ class GardenRevokeMembershipInput:
     user_username: str
 
 
-@schema_dataclass
+@schema
 class GardenRoleChangeInput:
     """
     Garden membership role change DTO.

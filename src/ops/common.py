@@ -1,10 +1,14 @@
 # Standard Library
+import uuid
 from dataclasses import Field, dataclass, field
 from typing import dataclass_transform
 
+# VerdanTech Source
+from src.domain.common import Ref, RootEntity
+
 
 @dataclass_transform(field_specifiers=(Field, field))
-def schema_dataclass(cls):
+def schema(cls):
     """
     Data transfer schema dataclass settings. Used as a decorator.
 
@@ -20,3 +24,16 @@ def schema_dataclass(cls):
     dataclass_settings = {"eq": True, "slots": True}
     cls = dataclass(**dataclass_settings)(cls)
     return cls
+
+
+@schema
+class RefSchema[E: RootEntity]:
+    id: uuid.UUID
+    """
+    UUID class is used directly as the the ASGI framework in use
+    (Litestar) currently cannot type it correctly when using the EntityIdType alias.
+    """
+
+    @classmethod
+    def from_model(cls, ref: Ref[E]) -> "RefSchema[E]":
+        return cls(id=ref.id)

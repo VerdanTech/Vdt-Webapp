@@ -3,9 +3,9 @@ from typing import Union
 
 # VerdanTech Source
 from src.domain.environment.attributes import FrostDateProfile, GeoCoordinateProfile
-from src.ops.common import schema_dataclass
+from src.ops.common import schema
 
 
-@schema_dataclass
+@schema
 class EnvironmentAttributeClusterInput:
     profiles: list[Union[FrostDateProfile, GeoCoordinateProfile]]

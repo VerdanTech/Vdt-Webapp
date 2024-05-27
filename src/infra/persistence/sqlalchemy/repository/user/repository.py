@@ -8,7 +8,7 @@ from sqlalchemy.orm import make_transient_to_detached, noload, selectinload
 
 # VerdanTech Source
 from src.domain.common import EntityIdType
-from src.domain.user.entities import User
+from src.domain.user import User
 from src.infra.persistence.sqlalchemy.mapper.user import UserAlchemyMapper
 from src.infra.persistence.sqlalchemy.mapper.user.model import (
     EmailAlchemyModel,

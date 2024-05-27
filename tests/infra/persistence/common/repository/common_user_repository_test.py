@@ -5,8 +5,8 @@ from dataclasses import replace
 import pytest
 
 # VerdanTech Source
-from src.domain.user.entities import User
-from src.domain.user.values import Email, EmailConfirmation, PasswordResetConfirmation
+from src.domain.user import User
+from src.domain.user.email import Email, EmailConfirmation, PasswordResetConfirmation
 from src.interfaces.persistence.user import AbstractUserRepository
 
 pytestmark = [pytest.mark.databases]

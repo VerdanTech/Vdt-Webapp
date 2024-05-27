@@ -1,13 +1,11 @@
 # Standard Library
-from dataclasses import field
-from datetime import date
+from datetime import date, datetime
 from enum import Enum
 from typing import TYPE_CHECKING
 
 # VerdanTech Source
 from src.domain.attributes import AttributeCluster, AttributeProfile
-from src.domain.common import DomainModel, Value, value_dataclass
-from src.domain.cultivars.entities import Cultivar
+from src.domain.common import root_entity_transform, value_transform
 from src.utils.sanitizers import SpecError
 
 if TYPE_CHECKING:
@@ -32,7 +30,7 @@ class EnvironmentAttributeProfile(
     id: EnvironmentAttributeProfilesEnum
 
 
-@value_dataclass
+@value_transform
 class FrostDateProfile(EnvironmentAttributeProfile):
     """
     Defines the dates of the first and last frost.
@@ -56,7 +54,7 @@ class FrostDateProfile(EnvironmentAttributeProfile):
             )
 
 
-@value_dataclass
+@value_transform
 class GeoCoordinateProfile(EnvironmentAttributeProfile):
     """
     Defines the geospatial location of the environment.
@@ -72,7 +70,16 @@ class GeoCoordinateProfile(EnvironmentAttributeProfile):
     lat: float
 
 
-@value_dataclass
+@value_transform
+class TemperatureProfile(EnvironmentAttributeProfile):
+    min_temp: float
+    avg_temp: float
+    max_temp: float
+    start_date: datetime | None
+    end_date: datetime | None
+
+
+@root_entity_transform
 class EnvironmentAttributeCluster(AttributeCluster[EnvironmentAttributeProfile]):
     """Acts as a container for a set of EnvironmentAttributeProfile."""
 

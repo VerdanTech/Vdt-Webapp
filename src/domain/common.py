@@ -1,11 +1,3 @@
-# Standard Library
-import uuid
-from dataclasses import Field, dataclass, field
-from datetime import datetime
-from typing import Union, dataclass_transform
-
-from .exceptions import EntityIntegrityException
-
 """
 Domain modelling seeks to represent the problem domain in code with as much
 resemblance as possible to the understanding of the users of the application.
@@ -17,6 +9,16 @@ For information on how domain modelling fits into software architecture see this
 (https://github.com/cosmicpython/book)
 """
 
+# Standard Library
+import uuid
+from datetime import datetime
+from typing import Self, Union, dataclass_transform
+
+# External Libraries
+from attr import attrib
+from attrs import define, evolve, field
+
+from .exceptions import EntityIntegrityException
 
 type EntityIdType = uuid.UUID
 type DomainModel = Union[RootEntity, Entity, Value]
@@ -31,16 +33,41 @@ class Entity:
     are equal if they share the same ID.
     """
 
-    id: EntityIdType = field(default_factory=uuid.uuid4, init=False)
-    """Not included in __init__ as the ID is assigned with a factory."""
-    created_at: datetime = field(default_factory=datetime.now, init=False)
+    id: EntityIdType | None = None
+    """Not included in __init__ as the ID is assigned at persistence."""
+    created_at: datetime = field(factory=datetime.now, init=False)
     """Not included in __init__ as the timestamp is assigned with a factory."""
-    persisted: bool = False
 
     def __eq__(self, other) -> bool:
+        """Two entities are equivalent if they share the same ID."""
         return self.id == other.id
 
+    @property
+    def persisted(self) -> bool:
+        """If an ID has not been assigned, the entity has not been persisted."""
+        return self.id is not None
+
+    def id_or_error(self) -> EntityIdType:
+        """
+        Returns the id of the Entity.
+
+        Raises:
+            EntityIntegrityException: raised if the id
+                attribute is None, which occurs
+                before it is persisted for the first time.
+
+        Returns:
+            EntityIdType: the id of the Entity.
+        """
+        if self.id is None:
+            raise EntityIntegrityException(
+                "Unpersisted entity used in unexpected location."
+            )
+        else:
+            return self.id
+
     def assert_persisted(self) -> None:
+        """Raise an integrity exception if the entity is used in a location it should be persisted."""
         if not self.persisted:
             raise EntityIntegrityException(
                 "Unpersisted entity used in unexpected location."
@@ -57,7 +84,15 @@ class RootEntity(Entity):
     for each RootEntity.
     """
 
-    pass
+    @property
+    def ref(self) -> "Ref[Self]":
+        """
+        Get a reference to self.
+
+        Returns:
+            Ref[RootEntity]: the reference to the RootEntity.
+        """
+        return Ref(id=self.id_or_error())
 
 
 class Value:
@@ -68,19 +103,21 @@ class Value:
     and has no identifier field. They are also immutable.
     """
 
-    pass
+    def transform(self, **kwargs):
+        """Wraps the attrs.evolve function for transforming immutable value objects."""
+        return evolve(self, **kwargs)
 
 
-@dataclass_transform(field_specifiers=(Field, field))
-def entity_dataclass(cls):
+@dataclass_transform(field_specifiers=(attrib, field))
+def entity_transform(cls):
     """
-    "Entity" style domain model dataclass settings. Used as a decorator.
+    "Entity" style domain model settings. Used as a decorator.
 
     The @dataclass_transform decorator is required for type-checking/dataclass
     functionality. See (https://peps.python.org/pep-0681/).
 
     This decorator:
-    - Applies dataclass decorator with arguments:
+    - Applies attrs @define decorator with arguments:
         kw_only=True: Positional arguments are not supported
             for the sake of simplicity and readability.
         eq=False: Explicit disabling of __eq__() generation as this
@@ -88,42 +125,41 @@ def entity_dataclass(cls):
         slots=True: slotted classes are user for simple
             and easy performance gains.
     """
-    dataclass_settings = {"kw_only": True, "eq": False, "slots": True}
-    cls = dataclass(**dataclass_settings)(cls)
+    cls = define(kw_only=True, eq=False, slots=True)(cls)
     return cls
 
 
-@dataclass_transform(field_specifiers=(Field, field))
-def root_entity_dataclass(cls):
+@dataclass_transform(field_specifiers=(attrib, field))
+def root_entity_transform(cls):
     """
-    "Root Entity / Aggregate Root" style domain model dataclass settings.
+    "Root Entity / Aggregate Root" style domain model settings.
     Used as a decorator. Currently no different than the plain entity.
 
     The @dataclass_transform decorator is required for type-checking/dataclass
     functionality. See (https://peps.python.org/pep-0681/).
 
     This decorator:
-    - Applies @entity_dataclass decorator.
+    - Applies @entity_transform decorator.
     """
-    cls = entity_dataclass(cls)
+    cls = entity_transform(cls)
     return cls
 
 
-@dataclass_transform(field_specifiers=(Field, field))
-def value_dataclass(cls):
+@dataclass_transform(field_specifiers=(attrib, field))
+def value_transform(cls):
     """
-    "Value Object" style domain model dataclass settings. Used as a decorator.
+    "Value Object" style domain model settings. Used as a decorator.
 
     The @dataclass_transform decorator is required for type-checking/dataclass
     functionality. See (https://peps.python.org/pep-0681/).
 
     This decorator:
-    - Applies dataclass decorator with arguments:
+    - Applies attrs @define decorator with arguments:
         kw_only=True: Positional arguments are not supported
             for the sake of simplicity and readability.
         frozen=True: Immutability. If the object is to be modified
             it must return a modified version of itself
-            (for example, by using replace())
+            (for example, by using evolve()).
         eq=True: Explicit enabling of __eq__() generation as value
             objects are equivalent if all their attributes are.
         slots=True: slotted classes are user for simple
@@ -136,30 +172,15 @@ def value_dataclass(cls):
         Type[ValueT]: the Value class after decoration.
     """
 
-    dataclass_settings = {"kw_only": True, "frozen": True, "eq": True, "slots": True}
-    cls = dataclass(**dataclass_settings)(cls)
+    cls = define(kw_only=True, frozen=True, eq=True, slots=True)(cls)
     return cls
 
 
-@value_dataclass
+@value_transform
 class Ref[E: RootEntity](Value):
     """
     Entities and Values can hold references to other aggregates, but
     only by referencing RootEntitys by ID.
     """
 
-    id: uuid.UUID
-    """
-    UUID class is used directly as the Ref class is often used
-    as a data transfer schema directly, and the ASGI framework in use
-    (Litestar) currently cannot type it correctly when using the EntityIdType alias.
-    """
-
-    def to_schema(self):
-        """
-        When a domain model is to be used directly as a
-        data transfer object, it must be ensured that the
-        conversion is valid. This is is done by calling
-        this function to use a domain model as a schema.
-        """
-        return self
+    id: EntityIdType

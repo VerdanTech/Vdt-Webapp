@@ -2,7 +2,7 @@
 from src.domain.garden.garden import Garden
 from src.domain.garden.membership import GardenMembership
 from src.domain.garden.services import membership as membership_domain_services
-from src.domain.user.entities import User
+from src.domain.user import User
 from src.exceptions import ApplicationException, ExceptionResponseEnum
 from src.interfaces.email.emitter import AbstractEmailEmitter
 from src.interfaces.persistence.garden.repository import AbstractGardenRepository

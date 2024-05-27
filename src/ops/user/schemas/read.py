@@ -3,10 +3,8 @@ import uuid
 from datetime import datetime
 
 # VerdanTech Source
-from src.domain.common import EntityIdType
-from src.domain.user.entities import User, UserRef
-from src.domain.user.values import Email
-from src.ops.common import schema_dataclass
+from src.domain.user import Email, User
+from src.ops.common import schema
 
 """
 Note: The UUID class is used directly instead of the EntityIdType alias
@@ -14,7 +12,7 @@ because Litestar schema generation currently types it as Any.
 """
 
 
-@schema_dataclass
+@schema
 class EmailSchema:
     """Schema for returning a detailed representation of an Email."""
 
@@ -40,7 +38,7 @@ class EmailSchema:
         )
 
 
-@schema_dataclass
+@schema
 class UserFullSchema:
     """
     Schema for returning a detailed representation of a User
@@ -65,7 +63,7 @@ class UserFullSchema:
             UserSelfOutput: the schema result.
         """
         return cls(
-            id=user.id,
+            id=user.id_or_error(),
             username=user.username,
             emails=[
                 EmailSchema(
@@ -80,7 +78,7 @@ class UserFullSchema:
         )
 
 
-@schema_dataclass
+@schema
 class UserPublicSchema:
     """
     Schema for returning a detailed representation of a User,
@@ -91,7 +89,7 @@ class UserPublicSchema:
     username: str
 
     @classmethod
-    def from_model(cls, user: User | UserRef) -> "UserPublicSchema":
+    def from_model(cls, user: User) -> "UserPublicSchema":
         """
         Create an instance of the schema from a User.
 
@@ -101,15 +99,7 @@ class UserPublicSchema:
         Returns:
             UserSelfOutput: the schema result.
         """
-        if user is User:
-            return cls(
-                id=user.id,
-                username=user.username,
-            )
-        elif user is UserRef:
-            return cls(
-                id=user.id,
-                username=user.username,
-            )
-        else:
-            raise ValueError("Value of user argument must be of type User or UserRef.")
+        return cls(
+            id=user.id_or_error(),
+            username=user.username,
+        )
