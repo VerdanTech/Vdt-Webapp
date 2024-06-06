@@ -1,12 +1,13 @@
 # Standard Library
 from datetime import datetime
+import uuid
 
 # External Libraries
 import pytest
 
 # VerdanTech Source
-from src.domain.user import User
-from src.domain.user.email import Email, EmailConfirmation, PasswordResetConfirmation
+from src.domain.user import User, PasswordResetConfirmation
+from src.domain.user.email import Email, EmailConfirmation
 from src.infra.persistence.sqlalchemy.mapper.user import (
     EmailAlchemyModel,
     UserAlchemyMapper,
@@ -28,12 +29,11 @@ class TestUserAlchemyMapper:
         """
         user = User(
             username="U",
-            _password_hash="p",
             is_active=False,
             is_superuser=True,
             password_reset_confirmation=PasswordResetConfirmation(key="2"),
         )
-        user.id = 0
+        user.id = uuid.uuid4()
         user.emails = [
             Email(address="e1", confirmation=EmailConfirmation(key="1")),
             Email(address="e2"),
@@ -87,7 +87,6 @@ class TestUserAlchemyMapper:
         user_model = UserAlchemyModel(
             id=0,
             username="U",
-            _password_hash="p",
             is_active=False,
             is_superuser=True,
             password_reset_confirmation_key="2",

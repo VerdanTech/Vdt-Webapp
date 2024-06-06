@@ -1,6 +1,7 @@
 # Standard Library
 from datetime import datetime
 from typing import ContextManager, List
+import uuid
 
 # External Libraries
 import pytest
@@ -8,8 +9,8 @@ from pytest_mock import MockerFixture
 
 # VerdanTech Source
 from src.domain import exceptions as domain_exceptions
-from src.domain.user import User, exceptions
-from src.domain.user.email import Email, EmailConfirmation, PasswordResetConfirmation
+from src.domain.user import User, exceptions, PasswordResetConfirmation
+from src.domain.user.email import Email, EmailConfirmation
 from src.interfaces.security.crypt import AbstractPasswordCrypt
 
 pytestmark = [pytest.mark.unit]
@@ -210,7 +211,7 @@ class TestUser:
             mocker (MockerFixture): pytest-mock.
         """
         mocker.patch(
-            "src.domain.user.values.Email.new_confirmation",
+            "src.domain.user.email.Email.new_confirmation",
             return_value=Email(
                 address="test2@test.com",
                 verified=False,
@@ -370,8 +371,8 @@ class TestUser:
             user (User): User fixture.
             mocker (MockerFixture): pytest-mock
         """
-        user.id = 1
-        user_id = user.id + 1
+        user.id = uuid.UUID('{12345678-1234-5678-1234-567812345678}')
+        user_id = uuid.UUID('{02345678-1234-5678-1234-567812345678}')
         key = "abc"
         new_password = "new_password"
         mock_password_crypt = mocker.Mock(spec=AbstractPasswordCrypt)
@@ -397,7 +398,7 @@ class TestUser:
             user (User): User fixture
             mocker (MockerFixture): pytest-mock
         """
-        user.id = 1
+        user.id = uuid.UUID('{12345678-1234-5678-1234-567812345678}')
         user_id = user.id
         key = "abc"
         new_password = "new_password"
@@ -424,7 +425,7 @@ class TestUser:
             user (User): User fixture.
             mocker (MockerFixture): pytest-mock.
         """
-        user.id = 1
+        user.id = uuid.UUID('{12345678-1234-5678-1234-567812345678}')
         user_id = user.id
         key = "abc"
         new_password = "new_password"
@@ -451,7 +452,7 @@ class TestUser:
             user (User): User fixture.
             mocker (MockerFixture): pytest-mock.
         """
-        user.id = 1
+        user.id = uuid.UUID('{12345678-1234-5678-1234-567812345678}')
         user_id = user.id
         key = "abc"
         new_password = "new_password"
@@ -626,7 +627,7 @@ class TestUser:
             user (User): user factory fixture.
             mocker (MockerFixture): pytest-mock.
         """
-        mock_datetime = mocker.patch("src.domain.user.entities.datetime")
+        mock_datetime = mocker.patch("src.domain.user.user.datetime")
         mock_datetime.now.return_value = now
         user.created_at = created_at
         mock_is_verified = mocker.patch.object(
@@ -734,7 +735,7 @@ class TestUser:
             return_value=Email(address="test1@test.com", primary=False),
         )
         mocker.patch(
-            "src.domain.user.values.Email.make_primary",
+            "src.domain.user.email.Email.make_primary",
             return_value=Email(address="test2@test.com", primary=True),
         )
         user.emails = [existing_primary_email, existing_unprimary_email]

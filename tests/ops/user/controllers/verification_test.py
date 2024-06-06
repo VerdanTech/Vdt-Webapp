@@ -1,6 +1,3 @@
-# Standard Library
-from dataclasses import replace
-
 # External Libraries
 import pytest
 from svcs import Container
@@ -118,8 +115,8 @@ class TestUserVerificationOpsController:
         # Add existing user
         existing_user = User(username="existing_username")
         existing_user.email_create(address=existing_valid_email, max_emails=1)
-        existing_user.emails[0] = replace(
-            existing_user.emails[0], verified=False, confirmation=None
+        existing_user.emails[0] = existing_user.emails[0].transform(
+            verified=False, confirmation=None
         )
         await user_verification_ops_controller.user_repo.add(user=existing_user)
 
@@ -227,8 +224,7 @@ class TestUserVerificationOpsController:
         # Add existing user
         existing_user = User(username="existing_username")
         existing_user.email_create(address=existing_valid_email, max_emails=1)
-        existing_user.emails[0] = replace(
-            existing_user.emails[0],
+        existing_user.emails[0] = existing_user.emails[0].transform(
             verified=False,
             confirmation=EmailConfirmation(key=existing_valid_key),
         )
@@ -523,7 +519,7 @@ class TestUserVerificationOpsController:
         )
 
         input_data = UserPasswordResetConfirmInput(
-            user_id=existing_user.id,
+            user_id=existing_user.id_or_error(),
             key=existing_valid_key,
             new_password1=new_password,
             new_password2=new_password,

@@ -5,14 +5,11 @@ from dataclasses import replace
 import pytest
 
 # VerdanTech Source
-from src.domain.user import User
-from src.domain.user.email import Email, EmailConfirmation, PasswordResetConfirmation
+from src.domain.user import User, PasswordResetConfirmation
+from src.domain.user.email import Email, EmailConfirmation
 from src.interfaces.persistence.user import AbstractUserRepository
 
 pytestmark = [pytest.mark.databases]
-
-# Standard Library
-import pdb
 
 
 class TestAbstractUserRepository:
@@ -73,7 +70,7 @@ class TestAbstractUserRepository:
         user.emails[0] = replace(user.emails[0], address=new_email)
 
         updated_user = await user_repo.update(user)
-        persisted_user = await user_repo.get_user_by_id(id=user.id)
+        persisted_user = await user_repo.get_user_by_id(id=user.id_or_error())
 
         assert (
             persisted_user is not None

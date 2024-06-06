@@ -1,3 +1,3 @@
-from .common import AttributeCluster, AttributeClusterValue, AttributeProfile
+from .common import AttributeCluster, AttributeProfile
 
-__all__ = ["AttributeProfile", "AttributeCluster", "AttributeClusterValue"]
+__all__ = ["AttributeProfile", "AttributeCluster"]
