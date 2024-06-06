@@ -1,9 +1,8 @@
 # Standard Library
-import pdb
 from typing import List
 
 # External Libraries
-from sqlalchemy import func, inspect, select
+from sqlalchemy import func, select
 from sqlalchemy.orm import make_transient_to_detached, noload, selectinload
 
 # VerdanTech Source
@@ -15,7 +14,6 @@ from src.infra.persistence.sqlalchemy.mapper.user.model import (
     UserAlchemyModel,
 )
 
-from ..exceptions import alchemy_exception_map
 from ..generic import BaseAlchemyRepository
 
 

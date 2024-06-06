@@ -1,5 +1,6 @@
 # Standard Library
 from dataclasses import asdict
+import uuid
 
 # External Libraries
 import pytest
@@ -9,8 +10,8 @@ from svcs import Container
 # VerdanTech Source
 from src import settings
 from src.asgi.litestar.user import routes
-from src.domain.user import User
-from src.domain.user.email import Email, EmailConfirmation, PasswordResetConfirmation
+from src.domain.user import User, PasswordResetConfirmation
+from src.domain.user.email import Email, EmailConfirmation
 from src.interfaces.persistence.user.repository import AbstractUserRepository
 from src.ops.user.schemas import verification as verification_ops_schemas
 from src.utils.key_generator import key_generator
@@ -257,7 +258,7 @@ class TestUserVerificationApiController:
             routes.USER_PASSWORD_RESET_CONFIRM_NAME
         )
         input_data = verification_ops_schemas.UserPasswordResetConfirmInput(
-            user_id=0,
+            user_id=uuid.uuid4(),
             key=nonexistant_valid_key,
             new_password1="New_password*1",
             new_password2="New_password*1",

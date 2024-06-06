@@ -1,14 +1,11 @@
-# Standard Library
-from typing import List
-
 # External Libraries
 import pytest
 from pytest_mock import MockerFixture
 
 # VerdanTech Source
 from src.domain import exceptions as domain_exceptions
-from src.domain.user import User
-from src.domain.user.email import Email, PasswordResetConfirmation
+from src.domain.user import User, PasswordResetConfirmation
+from src.domain.user.email import Email
 from src.interfaces.email.emitter import AbstractEmailEmitter
 from src.interfaces.persistence.user import AbstractUserRepository
 from src.ops import exceptions as ops_exceptions

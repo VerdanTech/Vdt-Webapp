@@ -15,6 +15,19 @@ class UserReadOpsController:
     async def profiles(
         self, client: User, user_ids: Optional[list[EntityIdType]]
     ) -> list[UserPublicSchema] | UserFullSchema:
+        """
+        Returns the client's full profile or a list of public profiles
+        if a list of IDs is given.
+
+        Args:
+            client (User): the client user.
+            user_ids (Optional[list[EntityIdType]]): an optional list of
+                user profiles to retrieve.
+
+        Returns:
+            list[UserPublicSchema] | UserFullSchema: the full schema of the client
+                or the public schemas of the requested IDs.
+        """
         if user_ids is None:
             user_schema = UserFullSchema.from_model(client)
             return user_schema
