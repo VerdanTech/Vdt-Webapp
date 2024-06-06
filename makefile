@@ -85,7 +85,9 @@ docs:
 #
 .PHONY: schema
 schema:
-	litestar --app src.asgi.litestar.app:create_app schema openapi --output schema.yaml
+	python3 -m litestar --app src.asgi.litestar.app:create_app schema openapi --output schema.yaml
+
+# python3.12 ./src/asgi/litestar/patch_openapi.py
 
 #
 # Run the backend server with uvicorn.

@@ -1,5 +1,5 @@
 # VerdanTech Source
-from src.domain.user.entities import User
+from src.domain.user import User
 from src.domain.user.sanitizers import UserSanitizer
 from src.interfaces.persistence.user import AbstractUserRepository
 from src.interfaces.security.crypt.password_crypt import AbstractPasswordCrypt

@@ -3,12 +3,12 @@ import pdb
 from typing import List
 
 # External Libraries
-from sqlalchemy import func, select
-from sqlalchemy.orm import noload, selectinload
+from sqlalchemy import func, inspect, select
+from sqlalchemy.orm import make_transient_to_detached, noload, selectinload
 
 # VerdanTech Source
 from src.domain.common import EntityIdType
-from src.domain.user.entities import User
+from src.domain.user import User
 from src.infra.persistence.sqlalchemy.mapper.user import UserAlchemyMapper
 from src.infra.persistence.sqlalchemy.mapper.user.model import (
     EmailAlchemyModel,
@@ -35,13 +35,12 @@ class UserAlchemyRepository(BaseAlchemyRepository[User, UserAlchemyModel]):
         Returns:
             User: the user entity after persistence.
         """
-        with alchemy_exception_map():
-            user_model = self._entity_to_model(user)
-            self.transaction.add(user_model)
-            await self.transaction.flush()
-            self.transaction.expunge(user_model)
-            user = self._model_to_entity(user_model)
-            return user
+        user_model = self._entity_to_model(user)
+        self.transaction.add(user_model)
+        await self.transaction.flush()
+        self.transaction.expunge(user_model)
+        user = self._model_to_entity(user_model)
+        return user
 
     async def add_many(self, users: List[User]) -> List[User]:
         """
@@ -65,12 +64,13 @@ class UserAlchemyRepository(BaseAlchemyRepository[User, UserAlchemyModel]):
         Returns:
             User: the user entity after persistence.
         """
-        with alchemy_exception_map():
-            user_model = self._entity_to_model(user)
-            await self.transaction.merge(user_model)
-            await self.transaction.flush()
-            user = self._model_to_entity(user_model)
-            return user
+        user_model = self._entity_to_model(user)
+        make_transient_to_detached(user_model)
+        user_model = await self.transaction.merge(user_model)
+        self.transaction.add(user_model)
+        await self.transaction.flush()
+        user = self._model_to_entity(user_model)
+        return user
 
     async def get_user_by_id(self, id: EntityIdType) -> User | None:
         """

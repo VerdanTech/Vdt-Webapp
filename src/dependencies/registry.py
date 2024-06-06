@@ -3,7 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession as AsyncSession
 from svcs import Registry
 
 # VerdanTech Source
-from src.domain.user.sanitizers import UserSanitizer
+from src.domain.user import UserSanitizer
 from src.infra.persistence.sqlalchemy.repository.litestar_lifespan import AlchemyClient
 from src.interfaces.email.client import AbstractEmailClient
 from src.interfaces.email.emitter import AbstractEmailEmitter

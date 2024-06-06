@@ -1,12 +1,12 @@
 # VerdanTech Source
 from src.domain.common import Ref
 from src.domain.exceptions import FieldNotFound
-from src.domain.user.entities import User
+from src.domain.user import User
 
-from ..entities import Garden, GardenMembership
 from ..enums import RoleEnum
 from ..exceptions import GardenAuthorizationException, MembershipAlreadyExists
-from .permission import PermissionRouter, assert_authorization
+from ..garden import Garden, GardenMembership
+from ..permission import PermissionRouter
 
 
 def create_garden_membership(
@@ -45,17 +45,17 @@ def create_garden_membership(
         raise GardenAuthorizationException(
             "Not authorized to perform operations in this Garden."
         )
-    assert_authorization(
-        membership=inviter_membership, operation=PermissionRouter.invite(role=role)
+    inviter_membership.assert_authorization(
+        operation=PermissionRouter.invite(role=role)
     )
 
     membership = GardenMembership(
-        inviter=Ref(id=client.id_or_error()),
-        user=Ref(id=invitee.id_or_error()),
-        garden=garden,
+        garden_ref=garden.ref,
+        inviter_ref=client.ref,
+        user_ref=invitee.ref,
         role=role,
     )
-    garden.memberships.append(membership)
+    garden.memberships.add(membership)
 
     return membership
 
@@ -90,8 +90,7 @@ def revoke_membership(client: User, subject: User, garden: Garden) -> None:
         raise GardenAuthorizationException(
             "Not authorized to perform operations in this Garden."
         )
-    assert_authorization(
-        membership=client_membership,
+    client_membership.assert_authorization(
         operation=PermissionRouter.revoke_membership(role=subject_membership.role),
     )
 
@@ -135,8 +134,7 @@ def change_role(
         raise GardenAuthorizationException(
             "Not authorized to perform operations in this Garden."
         )
-    assert_authorization(
-        membership=client_membership,
+    client_membership.assert_authorization(
         operation=PermissionRouter.change_role(
             client_role=client_membership.role, new_role=new_role
         ),

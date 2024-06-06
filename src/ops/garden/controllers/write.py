@@ -1,17 +1,17 @@
 # VerdanTech Source
 from src import settings
-from src.domain.garden.entities import Garden
 from src.domain.garden.enums import RoleEnum
+from src.domain.garden.garden import Garden
 from src.domain.garden.sanitizers import GardenSanitizer
 from src.domain.garden.services import create as create_domain_services
-from src.domain.user.entities import User
+from src.domain.user import User
 from src.interfaces.email.emitter import AbstractEmailEmitter
 from src.interfaces.persistence.garden.repository import AbstractGardenRepository
 from src.interfaces.persistence.user.repository import AbstractUserRepository
 from src.ops.exceptions import EntityNotFound
 from src.utils.key_generator import generate_unique_key
 
-from ..schemas import write as schemas
+from ..schemas import read as read_schemas, write as write_schemas
 
 
 class GardenWriteOpsController:
@@ -21,19 +21,20 @@ class GardenWriteOpsController:
     async def create(
         self,
         client: User,
-        data: schemas.GardenCreateInput,
+        data: write_schemas.GardenCreateInput,
         user_repo: AbstractUserRepository,
         garden_sanitizer: GardenSanitizer,
         email_emitter: AbstractEmailEmitter,
-    ) -> Garden:
+    ) -> read_schemas.GardenFullSchema:
         """
         Creates and persists a new Garden with one GardenMembership for
         the creator and each invited user.
+
         Emits invitation email notifications.
 
         Args:
             client (User): the User that is creating the Garden.
-            data (schemas.GardenCreateInput): the input DTO.
+            data (GardenCreateInput): the input DTO.
             user_repo (AbstractUserRepository): user entity persistence interface.
             garden_sanitizer (GardenSanitizer): garden entity persistence interface.
             email_emitter (AbstractEmailEmitter): email event interface.
@@ -104,13 +105,15 @@ class GardenWriteOpsController:
                 await email_emitter.emit_garden_invite(
                     email_address=user.primary_email.address,
                     username=user.username,
-                    garden_key_id=garden.key_id,
+                    garden_key_id=garden.key,
                     garden_name=garden.name,
                     inviter_username=client.username,
                     role=str(membership.role),
                 )
 
-        return garden
+        garden_schema = read_schemas.GardenFullSchema.from_model(garden=garden)
+
+        return garden_schema
 
     async def change(self):
         pass

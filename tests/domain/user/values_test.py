@@ -8,11 +8,11 @@ import pytest
 from pytest_mock import MockerFixture
 
 # VerdanTech Source
+from src.domain.user.email import BaseConfirmation, Email, EmailConfirmation
 from src.domain.user.exceptions import (
     EmailAlreadyVerifiedError,
     EmailConfirmationExpired,
 )
-from src.domain.user.values import BaseConfirmation, Email, EmailConfirmation
 
 pytestmark = [pytest.mark.unit]
 

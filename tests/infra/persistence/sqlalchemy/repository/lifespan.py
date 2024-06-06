@@ -60,6 +60,7 @@ async def function_scoped_sql_transaction(
 async def session_scoped_sql_connection(
     client: AlchemyClient = alchemy_client,
 ) -> AsyncGenerator[AsyncConnection, None]:
+    await client.init()
     connection = await client.engine.connect()
     connection_transaction = await connection.begin()
     try:

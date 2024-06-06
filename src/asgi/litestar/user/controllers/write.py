@@ -5,15 +5,20 @@ from litestar.params import Dependency
 from svcs import Container
 
 # VerdanTech Source
-from src.asgi.litestar.exceptions import litestar_exception_map
-from src.domain.user.entities import User
-from src.domain.user.sanitizers import UserSanitizer
+from src import settings
+from src.asgi.litestar import openapi
+from src.asgi.litestar.exceptions import (
+    ClientError,
+    ServerError,
+    litestar_exception_map,
+)
+from src.domain.user import UserSanitizer
 from src.interfaces.email.emitter import AbstractEmailEmitter
 from src.interfaces.security.crypt.password_crypt import AbstractPasswordCrypt
 from src.ops.user.controllers.write import UserWriteOpsController
-from src.ops.user.schemas import write as write_ops_schemas
+from src.ops.user.schemas import read as read_ops_schemas, write as write_ops_schemas
 
-from .. import routes, schemas, urls
+from .. import routes, urls
 
 
 class UserWriteApiController(Controller):
@@ -22,22 +27,23 @@ class UserWriteApiController(Controller):
     """
 
     path = urls.USER_WRITE_CONTROLLER_URL_BASE
+    tags = ["users"]
 
     @post(
+        path=urls.USER_CREATE_URL,
         name=routes.USER_CREATE_NAME,
         opt={"exclude_from_auth": True},
-        summary="User registration",
-        description="Register a new user and send an email verification if configured.",
-        tags=["users"],
-        path=urls.USER_CREATE_URL,
-        return_dto=schemas.UserSelfDetail,
+        summary="User registration.",
+        description=f"Registers a new user. Requires email confirmation: {settings.EMAIL_CONFIRMATION.verification_required}.",
+        response_description="The full newly created user object",
+        operation_id=routes.USER_CREATE_NAME,
     )
     async def user_create(
         self,
         data: write_ops_schemas.UserCreateInput,
         state: State,
         svcs_container: Container = Dependency(skip_validation=True),
-    ) -> User:
+    ) -> read_ops_schemas.UserFullSchema:
         """
         Calls the user creation application operation.
 
@@ -47,7 +53,7 @@ class UserWriteApiController(Controller):
                 locator container.
 
         Returns:
-            UserSelfDetail: user self-reference DTO.
+            UserFullSchema: full user schema.
         """
         svcs_container.register_local_value(State, state)
         user_write_ops_controller, user_sanitizer = await svcs_container.aget(
@@ -63,7 +69,8 @@ class UserWriteApiController(Controller):
                 password_crypt=password_crypt,
                 email_emitter=email_emitter,
             )
-        return user
+            user_self_output = read_ops_schemas.UserFullSchema.from_model(user)
+        return user_self_output
 
     """
     @patch(path=urls.USER_CHANGE_USERNAME_URL)

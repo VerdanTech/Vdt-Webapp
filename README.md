@@ -8,8 +8,6 @@
 [![Version][version-shield]][version-url]
 [![Issues][issues-shield]][issues-url]
 [![Pull Requests][prs-shield]][prs-url]
-[![License][license-shield]][license-url]
-
 
 <!-- PROJECT LOGO -->
 <div align="center">
@@ -17,7 +15,7 @@
 <h3 align="center">VerdanTech-Backend</h3>
 
 <p align="center">
-A garden productivity API build with async Python HTTP and WebSocket. 
+A garden productivity API built with async Python. 
 <br />
 <a href="https://github.com/VerdanTech/VerdanTech-Deployment"><strong>Deploy it yourself »</strong></a>
 <br />
@@ -39,6 +37,9 @@ The python backend implements a clean architecture pattern, meaning that the fun
 - The application layer orchestrates the domain layer and connects it to implementations of the interfaces. The application layer has two parts: the operaions sections, which are high level application functions and make up the main API (are-one to one with http API routes), and the services sections, which comprise more granular orchestrations of the domain logic and are called in the operations.
 - The infrastrure contains implementations of the domain service interfaces, such as database implementations of the repository interface. The only repository in use so far is a MongoDB Motor (async pymongo) implementation. The repository abstraction makes it possible to use different implementations in the future, but I havent investigated the potential compatibility with a sql database (plan to stick with mongo)
 - The API layer is the http and websocket wrapping around the application layer, and is implemented using the Litestar 
+
+Why repository and data mappers ? https://shawnmc.cool/active-record-how-we-got-persistence-perfectly-wrong
+
 
 # Development
 

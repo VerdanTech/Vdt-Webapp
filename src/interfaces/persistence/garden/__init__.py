@@ -1,3 +1,3 @@
-from .repository import AbstractUserRepository
+from .repository import AbstractGardenRepository
 
-__all__ = ["AbstractUserRepository"]
+__all__ = ["AbstractGardenRepository"]

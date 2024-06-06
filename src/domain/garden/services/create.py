@@ -1,12 +1,8 @@
-# Standard Library
-from typing import Optional
-
 # VerdanTech Source
-from src.domain.common import Ref
-from src.domain.user.entities import User
+from src.domain.user import User
 
-from ..entities import Garden, GardenMembership
 from ..enums import RoleEnum, VisibilityEnum
+from ..garden import Garden, GardenMembership
 
 type UserRoleTupleList = list[tuple[User, RoleEnum]]
 type UserMembershipTuples = list[tuple[User, GardenMembership]]
@@ -27,7 +23,7 @@ def garden_create(
         creator (User): the User that is creating the Garden.
         name (str): the name of the Garden.
         description (Optional[str]): the description of the Garden. Defaults to None.
-        user_role_tuples (Optional[UserRoleTuples]): a list of tuples of
+        invitee_role_tuples (Optional[UserRoleTuples]): a list of tuples of
             Users and Roles to use to create a set of GardenMembership
             invites on the new Garden. Defaults to [].
         visibility (Optional[VisibilityEnum]): the visibilty to set on the Garden.
@@ -38,39 +34,39 @@ def garden_create(
             GardenMemberships creator on it.
     """
     # Create an new Garden entity.
-    creator_ref = Ref[User](creator.id_or_error())
     garden = Garden(
         name=name,
-        key_id=key,
-        creator=creator_ref,
+        key=key,
+        creator_ref=creator.ref,
         description=description,
         visibility=visibility,
     )
 
     # Create a membership for the creator.
     creator_membership = GardenMembership(
-        inviter=creator_ref,
-        user=creator_ref,
-        garden=garden,
+        garden_ref=garden.ref,
+        inviter_ref=creator.ref,
+        user_ref=creator.ref,
         role=RoleEnum.ADMIN,
-        open_invite=False,
+        accepted=True,
     )
 
     # If any users were invited, create additional memberships.
     invitations = [(invitee, role) for invitee, role in invitee_role_tuples]
-    invitee_memberships = [
+    invitee_memberships = {
         GardenMembership(
-            inviter=creator_ref,
-            user=Ref[User](invitee.id_or_error()),
-            garden=garden,
+            garden_ref=garden.ref,
+            inviter_ref=creator.ref,
+            user_ref=invitee.ref,
             role=role,
-            open_invite=True,
+            accepted=False,
         )
         for invitee, role in invitations
-    ]
+    }
 
     # Add memberships to garden.
-    garden.memberships = [creator_membership] + invitee_memberships
+    garden.memberships = {creator_membership}
+    garden.memberships.update(invitee_memberships)
 
     # Combine lists of Users and Membership invitations into list of tuples.
     invitees = [invitation[0] for invitation in invitations]

@@ -1,12 +1,18 @@
+# Standard Library
+from dataclasses import replace
+
 # External Libraries
 import pytest
 
 # VerdanTech Source
-from src.domain.user.entities import User
-from src.domain.user.values import Email, EmailConfirmation, PasswordResetConfirmation
+from src.domain.user import User
+from src.domain.user.email import Email, EmailConfirmation, PasswordResetConfirmation
 from src.interfaces.persistence.user import AbstractUserRepository
 
 pytestmark = [pytest.mark.databases]
+
+# Standard Library
+import pdb
 
 
 class TestAbstractUserRepository:
@@ -55,14 +61,16 @@ class TestAbstractUserRepository:
     # ================================================================
     # AbstractUserRepository.update() tests
     # ================================================================
-
     async def test_update_success(
         self, user_repo: AbstractUserRepository, user: User
     ) -> None:
+        user.emails[0] = Email(address="old_email")
         user = await user_repo.add(user=user)
 
         new_username = "new_username"
+        new_email = "new_email"
         user.username = new_username
+        user.emails[0] = replace(user.emails[0], address=new_email)
 
         updated_user = await user_repo.update(user)
         persisted_user = await user_repo.get_user_by_id(id=user.id)
@@ -70,6 +78,9 @@ class TestAbstractUserRepository:
         assert (
             persisted_user is not None
             and persisted_user.username == updated_user.username == new_username
+            and persisted_user.emails[0].address
+            == updated_user.emails[0].address
+            == new_email
         )
 
     # ================================================================

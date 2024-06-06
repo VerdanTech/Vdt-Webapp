@@ -7,9 +7,9 @@ import pytest
 from pytest_mock import MockerFixture
 
 # VerdanTech Source
-from src.domain.user import exceptions
-from src.domain.user.entities import User
-from src.domain.user.values import Email, EmailConfirmation, PasswordResetConfirmation
+from src.domain import exceptions as domain_exceptions
+from src.domain.user import User, exceptions
+from src.domain.user.email import Email, EmailConfirmation, PasswordResetConfirmation
 from src.interfaces.security.crypt import AbstractPasswordCrypt
 
 pytestmark = [pytest.mark.unit]
@@ -179,7 +179,7 @@ class TestUser:
 
         user.emails = [Email(address="abc@abc.com", primary=False)]
 
-        with pytest.raises(exceptions.UserIntegrityError):
+        with pytest.raises(domain_exceptions.EntityIntegrityException):
             user.primary_email
 
     def test_get_primary_email_success(self, user: User) -> None:
@@ -376,9 +376,7 @@ class TestUser:
         new_password = "new_password"
         mock_password_crypt = mocker.Mock(spec=AbstractPasswordCrypt)
         user.password_reset_confirmation = PasswordResetConfirmation(key=key)
-        expected_error_context = pytest.raises(
-            exceptions.PasswordResetConfirmationNotValid
-        )
+        expected_error_context = pytest.raises(domain_exceptions.FieldNotFound)
 
         with expected_error_context:
             await user.password_reset_confirm(
@@ -405,9 +403,7 @@ class TestUser:
         new_password = "new_password"
         mock_password_crypt = mocker.Mock(spec=AbstractPasswordCrypt)
         user.password_reset_confirmation = None
-        expected_error_context = pytest.raises(
-            exceptions.PasswordResetConfirmationNotFound
-        )
+        expected_error_context = pytest.raises(domain_exceptions.FieldNotFound)
 
         with expected_error_context:
             await user.password_reset_confirm(
@@ -434,9 +430,7 @@ class TestUser:
         new_password = "new_password"
         mock_password_crypt = mocker.Mock(spec=AbstractPasswordCrypt)
         user.password_reset_confirmation = PasswordResetConfirmation(key=key + "def")
-        expected_error_context = pytest.raises(
-            exceptions.PasswordResetConfirmationNotValid
-        )
+        expected_error_context = pytest.raises(domain_exceptions.FieldNotFound)
 
         with expected_error_context:
             await user.password_reset_confirm(
@@ -685,7 +679,7 @@ class TestUser:
                 ],
                 "123",
                 None,
-                exceptions.EmailConfirmationKeyNotFound,
+                domain_exceptions.FieldNotFound,
             ),
         ],
         indirect=["expected_error_context"],

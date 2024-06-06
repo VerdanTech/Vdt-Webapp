@@ -9,7 +9,7 @@ from sqlalchemy.orm import joinedload
 
 # VerdanTech Source
 from src import settings
-from src.domain.user.entities import User
+from src.domain.user import User
 from src.infra.persistence.sqlalchemy.mapper.user import UserAlchemyMapper
 from src.infra.persistence.sqlalchemy.mapper.user.model import UserAlchemyModel
 from src.infra.persistence.sqlalchemy.repository.litestar_lifespan import (

@@ -4,8 +4,7 @@
 import pdb
 
 # VerdanTech Source
-from src.domain.user.entities import User
-from src.domain.user.values import Email, EmailConfirmation, PasswordResetConfirmation
+from src.domain.user import Email, EmailConfirmation, PasswordResetConfirmation, User
 
 from ..generic import BaseAlchemyMapper
 from .model import EmailAlchemyModel, UserAlchemyModel

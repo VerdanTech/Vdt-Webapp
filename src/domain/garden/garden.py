@@ -1,18 +1,18 @@
-# Standard Library
-from dataclasses import field, replace
-from typing import Optional
+# External Libraries
+from attrs import field
 
 # VerdanTech Source
-from src.domain.common import Ref, RootEntity, root_entity_dataclass
+from src.domain.common import Ref, RootEntity, root_entity_transform
+from src.domain.environment import Environment
 from src.domain.exceptions import FieldNotFound
-from src.domain.user.entities import User
+from src.domain.user import User
 
 from .enums import RoleEnum, VisibilityEnum
 from .exceptions import MembershipAlreadyConfirmed
-from .values import EnvironmentAttributeProfile, GardenMembership
+from .membership import GardenMembership
 
 
-@root_entity_dataclass
+@root_entity_transform
 class Garden(RootEntity):
     """
     Garden entity domain model.
@@ -23,17 +23,27 @@ class Garden(RootEntity):
     and most other application models.
     """
 
-    key_id: str
+    key: str
     name: str
-    creator: Ref[User] | None
+    creator_ref: Ref[User] | None
     visibility: VisibilityEnum = VisibilityEnum.PRIVATE
-    memberships: list[GardenMembership] = field(default_factory=list)
+    environment_ref: Ref[Environment] | None = None
+    memberships: set[GardenMembership] = field(factory=set)
     """There must exist only one GardenMembership for any given User."""
     description: str = ""
-    attributes: list[EnvironmentAttributeProfile] = field(default_factory=list)
     expired: bool = False
 
-    def get_membership(self, user: User) -> Optional[GardenMembership]:
+    @property
+    def num_memberships(self) -> int:
+        """
+        The number of memberships contained in the garden.
+
+        Returns:
+            int: the number of memberships.
+        """
+        return len(self.memberships)
+
+    def get_membership(self, user: User) -> GardenMembership | None:
         """
         Returns the GardenMembership belonging to a User,
         or None if no membership exists.
@@ -49,7 +59,7 @@ class Garden(RootEntity):
             return None
 
         for membership in self.memberships:
-            if membership.user.id == user.id:
+            if membership.user_ref.id == user.id:
                 return membership
 
         return None
@@ -70,11 +80,12 @@ class Garden(RootEntity):
         if not user.persisted:
             return False
 
-        if self.creator is not None and user.id == self.creator.id:
+        if self.creator_ref is not None and user.id == self.creator_ref.id:
             return True
 
-        if user.id in [membership.user.id for membership in self.memberships]:
-            return True
+        for membership in self.memberships:
+            if user.id == membership.user_ref.id:
+                return True
 
         return False
 
@@ -95,15 +106,14 @@ class Garden(RootEntity):
         if not user.persisted:
             return False
 
-        if self.creator is not None and user.id == self.creator.id:
+        if self.creator_ref is not None and user.id == self.creator_ref.id:
             return True
 
-        if user.id in [
-            membership.user.id
-            for membership in self.memberships
-            if not membership.open_invite
-        ]:
-            return True
+        for membership in self.memberships:
+            if not membership.accepted:
+                continue
+            elif user.id == membership.user_ref.id:
+                return True
 
         return False
 
@@ -125,14 +135,16 @@ class Garden(RootEntity):
         Returns:
             GardenMembership: the GardenMembership after confirmation.
         """
-        for idx, membership in enumerate(self.memberships):
-            if membership.user.id == user.id:
-                if membership.open_invite is False:
+        for membership in self.memberships:
+            if membership.user_ref.id == user.id:
+                if membership.accepted:
                     raise MembershipAlreadyConfirmed(
                         "The invite to this Garden has already been accepted."
                     )
 
-                self.memberships[idx] = replace(membership, open_invite=False)
+                new_membership = membership.transform(accepted=True)
+                self.memberships.remove(membership)
+                self.memberships.add(new_membership)
                 return membership
 
         raise FieldNotFound("The User does not have an invitation to this Garden.")
@@ -149,9 +161,9 @@ class Garden(RootEntity):
             FieldNotFound: raised if the User does not have an
                 existing GardenMembership.
         """
-        for idx, membership in enumerate(self.memberships):
-            if membership.user.id == user.id:
-                self.memberships.pop(idx)
+        for membership in self.memberships:
+            if membership.user_ref.id == user.id:
+                self.memberships.remove(membership)
         raise FieldNotFound("The User does not have a membership with this Garden.")
 
     def change_role(self, user: User, new_role: RoleEnum) -> GardenMembership:
@@ -166,9 +178,9 @@ class Garden(RootEntity):
             FieldNotFound: raised if the User does not have an
                 existing GardenMembership.
         """
-        for idx, membership in enumerate(self.memberships):
-            if membership.user.id == user.id:
-                new_membership = replace(membership, role=new_role)
-                self.memberships[idx] = new_membership
-                return new_membership
+        for membership in self.memberships:
+            if membership.user_ref.id == user.id:
+                new_membership = membership.transform(role=new_role)
+                self.memberships.remove(membership)
+                self.memberships.add(new_membership)
         raise FieldNotFound("The User does not have a membership with this Garden.")

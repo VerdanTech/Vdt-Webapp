@@ -13,13 +13,13 @@
 			"username": "devuser",
 			"userUid": "1000",
 			"userGid": "1000"
-		},
+		}
 
 		// Used to access the Docker tool from within the container.
-		"docker-in-docker": {
-			"version": "latest",
-			"dockerDashComposeVersion": "v2"
-		}
+		//"docker-in-docker": {
+			//"version": "latest",
+			//"dockerDashComposeVersion": "v2"
+		//}
 	},
 
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.

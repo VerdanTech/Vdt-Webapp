@@ -1,14 +1,15 @@
 # VerdanTech Source
-from src.domain.garden.entities import Garden
+from src.domain.garden.garden import Garden
+from src.domain.garden.membership import GardenMembership
 from src.domain.garden.services import membership as membership_domain_services
-from src.domain.garden.values import GardenMembership
-from src.domain.user.entities import User
+from src.domain.user import User
+from src.exceptions import ApplicationException, ExceptionResponseEnum
 from src.interfaces.email.emitter import AbstractEmailEmitter
 from src.interfaces.persistence.garden.repository import AbstractGardenRepository
 from src.interfaces.persistence.user.repository import AbstractUserRepository
 from src.ops.exceptions import EntityNotFound
 
-from ..schemas import membership as schemas
+from ..schemas import membership as membership_schemas, read as read_schemas
 
 
 class GardenMembershipOpsController:
@@ -18,10 +19,10 @@ class GardenMembershipOpsController:
     async def invite(
         self,
         client: User,
-        data: schemas.GardenInviteCreateInput,
+        data: membership_schemas.GardenInviteCreateInput,
         user_repo: AbstractUserRepository,
         email_emitter: AbstractEmailEmitter,
-    ) -> GardenMembership:
+    ) -> read_schemas.GardenMembershipFullSchema:
         """
         Creates a new GardenMembership invite.
         Emits email notification.
@@ -61,15 +62,21 @@ class GardenMembershipOpsController:
         await email_emitter.emit_garden_invite(
             email_address=invitee.primary_email.address,
             username=invitee.username,
-            garden_key_id=garden.key_id,
+            garden_key_id=garden.key,
             garden_name=garden.name,
             inviter_username=client.username,
             role=str(membership.role),
         )
 
-        return membership
+        membership_schema = read_schemas.GardenMembershipFullSchema.from_model(
+            membership=membership
+        )
 
-    async def accept_invite(self, client: User, garden_key: str):
+        return membership_schema
+
+    async def accept_invite(
+        self, client: User, garden_key: str
+    ) -> read_schemas.GardenMembershipFullSchema:
         """
         Accepts a GardenMembership invite.
 
@@ -94,7 +101,11 @@ class GardenMembershipOpsController:
         # Persist garden
         await self.garden_repo.update(garden)
 
-        return membership
+        membership_schema = read_schemas.GardenMembershipFullSchema.from_model(
+            membership=membership
+        )
+
+        return membership_schema
 
     async def leave(self, client: User, garden_key: str) -> None:
         """
@@ -121,9 +132,9 @@ class GardenMembershipOpsController:
     async def revoke_membership(
         self,
         client: User,
-        data: schemas.GardenRevokeMembershipInput,
+        data: membership_schemas.GardenRevokeMembershipInput,
         user_repo: AbstractUserRepository,
-    ):
+    ) -> None:
         """
         Removes a User that is not the client from a Garden.
 
@@ -157,9 +168,9 @@ class GardenMembershipOpsController:
     async def change_role(
         self,
         client: User,
-        data: schemas.GardenRoleChangeInput,
+        data: membership_schemas.GardenRoleChangeInput,
         user_repo: AbstractUserRepository,
-    ):
+    ) -> read_schemas.GardenMembershipFullSchema:
         """
         Changes the role of a GardenMembership.
 
@@ -189,3 +200,16 @@ class GardenMembershipOpsController:
 
         # Persist garden
         await self.garden_repo.update(garden)
+
+        membership = garden.get_membership(user=user)
+        if membership is None:
+            raise ApplicationException(
+                "Failed to retrieve garden membership when it should have existed.",
+                response=ExceptionResponseEnum.SERVER_ERROR,
+            )
+
+        membership_schema = read_schemas.GardenMembershipFullSchema.from_model(
+            membership=membership
+        )
+
+        return membership_schema

@@ -5,8 +5,8 @@ from datetime import datetime
 import pytest
 
 # VerdanTech Source
-from src.domain.user.entities import User
-from src.domain.user.values import Email, EmailConfirmation, PasswordResetConfirmation
+from src.domain.user import User
+from src.domain.user.email import Email, EmailConfirmation, PasswordResetConfirmation
 from src.infra.persistence.sqlalchemy.mapper.user import (
     EmailAlchemyModel,
     UserAlchemyMapper,

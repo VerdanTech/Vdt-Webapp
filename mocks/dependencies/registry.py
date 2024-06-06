@@ -11,7 +11,7 @@ from src.dependencies.factories.ops.user.controllers import (
     provide_user_write_ops,
 )
 from src.dependencies.factories.ops.user.sanitizers import provide_user_sanitizer
-from src.domain.user.sanitizers import UserSanitizer
+from src.domain.user import UserSanitizer
 from src.interfaces.email.emitter import AbstractEmailEmitter
 from src.interfaces.persistence.user.repository import AbstractUserRepository
 from src.interfaces.security.crypt import AbstractPasswordCrypt
@@ -20,43 +20,54 @@ from src.ops.user import controllers as user_ops
 from .factories.infra.persistence.repository import provide_user_mock_repository
 from .factories.infra.security.crypt import provide_mock_crypt
 
-mock_registry = Registry()
 
-# ======================================
-# OPERATIONS CONTROLLERS
-# ======================================
+def configure_registry() -> Registry:
+    mock_registry = Registry()
 
-# User
-mock_registry.register_factory(user_ops.UserAuthOpsController, provide_user_auth_ops)
-mock_registry.register_factory(user_ops.UserWriteOpsController, provide_user_write_ops)
-mock_registry.register_factory(
-    user_ops.UserVerificationOpsController, provide_user_verification_ops
-)
+    # ======================================
+    # OPERATIONS CONTROLLERS
+    # ======================================
 
-# ======================================
-# SANITIZERS
-# ======================================
+    # User
+    mock_registry.register_factory(
+        user_ops.UserAuthOpsController, provide_user_auth_ops
+    )
+    mock_registry.register_factory(
+        user_ops.UserWriteOpsController, provide_user_write_ops
+    )
+    mock_registry.register_factory(
+        user_ops.UserVerificationOpsController, provide_user_verification_ops
+    )
 
-# User
-mock_registry.register_factory(UserSanitizer, provide_user_sanitizer)
+    # ======================================
+    # SANITIZERS
+    # ======================================
 
-# ======================================
-# PERSISTENCE
-# ======================================
+    # User
+    mock_registry.register_factory(UserSanitizer, provide_user_sanitizer)
 
-# Repository
-mock_registry.register_factory(AbstractUserRepository, provide_user_mock_repository)
+    # ======================================
+    # PERSISTENCE
+    # ======================================
 
-# ======================================
-# EMAIL
-# ======================================
+    # Repository
+    mock_registry.register_factory(AbstractUserRepository, provide_user_mock_repository)
 
-mock_registry.register_value(
-    AbstractEmailEmitter, mock.MagicMock(spec=AbstractEmailEmitter)
-)
+    # ======================================
+    # EMAIL
+    # ======================================
 
-# ======================================
-# SECURITY
-# ======================================
+    mock_registry.register_value(
+        AbstractEmailEmitter, mock.MagicMock(spec=AbstractEmailEmitter)
+    )
 
-mock_registry.register_factory(AbstractPasswordCrypt, provide_mock_crypt)
+    # ======================================
+    # SECURITY
+    # ======================================
+
+    mock_registry.register_factory(AbstractPasswordCrypt, provide_mock_crypt)
+
+    return mock_registry
+
+
+mock_registry = configure_registry()

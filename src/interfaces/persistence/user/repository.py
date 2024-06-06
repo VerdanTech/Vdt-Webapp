@@ -3,7 +3,7 @@ from typing import Protocol
 
 # VerdanTech Source
 from src.domain.common import EntityIdType
-from src.domain.user.entities import User
+from src.domain.user import User
 
 from ..generic import AbstractRepository
 
@@ -58,6 +58,24 @@ class AbstractUserRepository(AbstractRepository[User], Protocol):
 
         Returns:
             User | None: the found user, or None if no user was found.
+        """
+        ...
+
+    async def get_users_by_ids(
+        self, ids: list[EntityIdType], return_first_none: bool = False
+    ) -> list[User] | None:
+        """
+        Given a list of user ids, return the users to whom they belong.
+
+        Args:
+            isd (list[EntityIdType]): the ids to search for.
+            return_first_none (bool): if True, None is returned upon
+                discerning that a username was provided that does
+                not exist. Otherwise, a list is returned.
+
+        Returns:
+            list[User]: the found users, or None if any usernames
+                did not exist and return_first_none is True.
         """
         ...
 

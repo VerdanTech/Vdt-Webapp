@@ -3,7 +3,7 @@ from typing import Protocol
 
 # VerdanTech Source
 from src.domain.common import EntityIdType
-from src.domain.garden.entities import Garden
+from src.domain.garden.garden import Garden
 
 from ..generic import AbstractRepository
 
@@ -46,5 +46,17 @@ class AbstractGardenRepository(AbstractRepository[Garden], Protocol):
 
         Returns:
             Garden | None: the found garden, or None if no garden was found.
+        """
+        ...
+
+    async def key_id_exists(self, key: str) -> bool:
+        """
+        Given a garden key id, return True if a matching garden exists.
+
+        Args:
+            key (str): the key to check existence of.
+
+        Returns:
+            bool: the result of the existence check.
         """
         ...

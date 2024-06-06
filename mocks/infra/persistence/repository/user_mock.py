@@ -3,7 +3,7 @@ from typing import List
 
 # VerdanTech Source
 from src.domain.common import EntityIdType
-from src.domain.user.entities import User
+from src.domain.user import User
 from src.interfaces.persistence.exceptions import ObjectNotFound
 from src.interfaces.persistence.user.repository import AbstractUserRepository
 
