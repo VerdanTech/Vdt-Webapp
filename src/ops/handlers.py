@@ -1,6 +1,0 @@
-from .user.command_handlers import USER_ASGI_COMMAND_HANDLERS
-from .user.event_handlers import USER_ASGI_EVENT_HANDLERS
-from .common import CommandHandlerDict, EventHandlerDict
-
-ASGI_COMMAND_HANDLERS: CommandHandlerDict = USER_ASGI_COMMAND_HANDLERS
-ASGI_EVENT_HANDLERS: EventHandlerDict = USER_ASGI_EVENT_HANDLERS

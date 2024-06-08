@@ -4,7 +4,7 @@ from typing import Callable, List
 
 # VerdanTech Source
 from src.adapters.persistence.common.repository import BaseRepository
-from src.domain.common import Entity, RootEntity
+from src.common.domain import Entity, RootEntity
 from src.utils.key_generator import key_generator
 
 
