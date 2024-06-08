@@ -7,8 +7,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 # VerdanTech Source
 from src import settings
-from src.infra.persistence.sqlalchemy.repository.user import UserAlchemyRepository
-from src.interfaces.persistence.user.repository import AbstractUserRepository
+from src.adapters.persistence.sqlalchemy.repository.user import UserAlchemyRepository
+from src.interfaces.persistence.user.user import AbstractUserRepository
 
 from .sqlalchemy import function_scoped_sql_transaction
 

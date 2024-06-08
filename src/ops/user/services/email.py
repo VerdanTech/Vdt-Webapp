@@ -4,7 +4,7 @@ from typing import Optional
 # VerdanTech Source
 from src.domain.user import User
 from src.interfaces.email.emitter import AbstractEmailEmitter
-from src.interfaces.persistence.user.repository import AbstractUserRepository
+from src.interfaces.persistence.user.user import AbstractUserRepository
 
 from . import verification as verification_services
 

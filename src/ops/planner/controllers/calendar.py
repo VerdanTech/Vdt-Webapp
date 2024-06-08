@@ -1,9 +1,8 @@
 # VerdanTech Source
 from src import settings
 from src.domain.planner.calendar import PlantingCalendar
-from src.domain.user.sanitizers import UserSanitizer
 from src.interfaces.email.emitter import AbstractEmailEmitter
-from src.interfaces.persistence.user.repository import AbstractUserRepository
+from src.interfaces.persistence.user.user import AbstractUserRepository
 from src.interfaces.security.crypt import AbstractPasswordCrypt
 from src.ops.exceptions import EntityNotFound
 

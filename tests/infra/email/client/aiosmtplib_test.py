@@ -8,7 +8,7 @@ from aiosmtplib.errors import SMTPException
 from pytest_mock import MockerFixture
 
 # VerdanTech Source
-from src.infra.email.client.aiosmtplib import AioSmtplibEmailClient
+from src.adapters.email.client.aiosmtplib import AioSmtplibEmailClient
 from src.interfaces.email.exceptions import EmailError
 
 pytestmark = [pytest.mark.unit]
@@ -46,7 +46,7 @@ class TestAioSmtplibEmailClient:
             mocker (MockerFixture): pytest-mock.
         """
         aiosmtp_send_mock = mocker.patch(
-            "src.infra.email.client.aiosmtplib.aiosmtp_send"
+            "src.adapters.email.client.aiosmtplib.aiosmtp_send"
         )
         if exception is not None:
             aiosmtp_send_mock.side_effect = exception

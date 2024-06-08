@@ -1,8 +1,7 @@
 # VerdanTech Source
 from src.domain.user import User
-from src.domain.user.sanitizers import UserSanitizer
 from src.interfaces.persistence.user import AbstractUserRepository
-from src.interfaces.security.crypt.password_crypt import AbstractPasswordCrypt
+from src.interfaces.security.crypt.crypt import AbstractPasswordCrypt
 from src.ops.exceptions import EntityNotFound
 
 from ..schemas import auth as schemas

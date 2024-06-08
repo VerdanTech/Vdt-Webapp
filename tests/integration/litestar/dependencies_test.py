@@ -7,12 +7,11 @@ from sqlalchemy.ext.asyncio import AsyncSession as AsyncSession
 from svcs import Container
 
 # VerdanTech Source
-from src.domain.user.sanitizers import UserSanitizer
-from src.infra.persistence.sqlalchemy.repository.client import AlchemyClient
+from src.adapters.persistence.sqlalchemy.client import AlchemyClient
 from src.interfaces.email.client import AbstractEmailClient
 from src.interfaces.email.emitter import AbstractEmailEmitter
-from src.interfaces.persistence.user.repository import AbstractUserRepository
-from src.interfaces.security.crypt.password_crypt import AbstractPasswordCrypt
+from src.interfaces.persistence.user.user import AbstractUserRepository
+from src.interfaces.security.crypt.crypt import AbstractPasswordCrypt
 from src.ops.user import controllers as user_ops
 
 pytestmark = [pytest.mark.asgi]

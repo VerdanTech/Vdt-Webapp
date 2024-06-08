@@ -2,7 +2,7 @@
 from typing import Any, Dict, List, Set, Union
 
 # VerdanTech Source
-from src.infra.persistence.sqlalchemy.mapper.model import BaseAlchemyModel
+from src.adapters.persistence.sqlalchemy.mapper.common import BaseAlchemyModel
 
 
 def assert_equivalent_models(

@@ -4,7 +4,7 @@ from typing import Optional
 # VerdanTech Source
 from src.domain.common import EntityIdType
 from src.domain.user import User
-from src.interfaces.persistence.user.repository import AbstractUserRepository
+from src.interfaces.persistence.user.user import AbstractUserRepository
 from src.ops.user.schemas.read import UserFullSchema, UserPublicSchema
 
 

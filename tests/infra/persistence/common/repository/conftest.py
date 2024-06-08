@@ -6,8 +6,8 @@ import pytest
 from sqlalchemy.ext.asyncio import AsyncConnection, AsyncSession
 
 # VerdanTech Source
-from src.infra.persistence.sqlalchemy.repository.user import UserAlchemyRepository
-from src.interfaces.persistence.user.repository import AbstractUserRepository
+from src.adapters.persistence.sqlalchemy.repository.user import UserAlchemyRepository
+from src.interfaces.persistence.user.user import AbstractUserRepository
 from tests.domain.user.conftest import user  # noqa: F401 - pytest fixture
 from tests.infra.persistence.sqlalchemy.repository.lifespan import (
     function_scoped_sql_transaction,

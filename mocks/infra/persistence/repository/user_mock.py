@@ -5,7 +5,7 @@ from typing import List
 from src.domain.common import EntityIdType
 from src.domain.user import User
 from src.interfaces.persistence.exceptions import ObjectNotFound
-from src.interfaces.persistence.user.repository import AbstractUserRepository
+from src.interfaces.persistence.user.user import AbstractUserRepository
 
 from .base_mock import MockBaseRepository
 

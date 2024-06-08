@@ -2,8 +2,8 @@
 import pytest
 
 # VerdanTech Source
-from src.infra.email.client.aiosmtplib import AioSmtplibEmailClient
-from src.infra.email.client.generic import BaseEmailClient
+from src.adapters.email.client.aiosmtplib import AioSmtplibEmailClient
+from src.adapters.email.client.generic import BaseEmailClient
 
 
 @pytest.fixture

@@ -1,39 +1,91 @@
 # Standard Library
-import uuid
-from dataclasses import Field, dataclass, field
-from typing import dataclass_transform
+from typing import Awaitable, Callable, Union
+
+# External Libraries
+from svcs import Container
 
 # VerdanTech Source
-from src.domain.common import Ref, RootEntity
+from src.domain.common import Command, Event
+from src.domain.user import User
+from src.interfaces.persistence.common import AbstractUow
+
+Message = Union[Command, Event]
 
 
-@dataclass_transform(field_specifiers=(Field, field))
-def schema(cls):
+type CommandHandler = Callable[[Command, Container, User], Awaitable[None]]
+type CommandHandlerDict = dict[type[Command], CommandHandler]
+type EventHandler = Callable[[Event, Container, User], Awaitable[None]]
+type EventHandlerDict = dict[type[Event], list[EventHandler]]
+
+class MessageBus:
     """
-    Data transfer schema dataclass settings. Used as a decorator.
-
-    The @dataclass_transform decorator is required for type-checking/dataclass
-    functionality. See (https://peps.python.org/pep-0681/).
-
-    This decorator:
-    - Applies dataclass decorator with arguments:
-        eq=True: Explicit enabling of __eq__() generation.
-        slots=True: slotted classes are user for simple
-            and easy performance gains.
-    """
-    dataclass_settings = {"eq": True, "slots": True}
-    cls = dataclass(**dataclass_settings)(cls)
-    return cls
-
-
-@schema
-class RefSchema[E: RootEntity]:
-    id: uuid.UUID
-    """
-    UUID class is used directly as the the ASGI framework in use
-    (Litestar) currently cannot type it correctly when using the EntityIdType alias.
+    Collates commands and events and provides an interface for handling them.
     """
 
-    @classmethod
-    def from_model(cls, ref: Ref[E]) -> "RefSchema[E]":
-        return cls(id=ref.id)
+    def __init__(
+        self,
+        svcs_container: Container,
+        command_handlers: CommandHandlerDict,
+        event_handlers: EventHandlerDict,
+    ):
+        self.svcs_container = svcs_container
+        self.command_handlers = command_handlers
+        self.event_handlers = event_handlers
+
+        # Locate services
+        self.uow = self.svcs_container.get_abstract(AbstractUow)
+
+    async def handle(self, message: Message, client: User | None = None) -> None:
+        """
+        Handle a message and all resultant events.
+
+        Args:
+            message (Message): The message to handle.
+        """
+        self.queue = [message]
+        while self.queue:
+            message = self.queue.pop(0)
+            if isinstance(message, Command):
+                await self.handle_command(message, client)
+            elif isinstance(message, Event):
+                await self.handle_event(message, client)
+            else:
+                raise ValueError(f"{message} was not an Event or Command")
+
+    async def handle_command(self, command: Command, client: User | None = None) -> None:
+        """
+        Handles a single command. Raises caught exceptions.
+
+        Args:
+            command (Command): the command to handle.
+
+        Raises:
+            Exception: Raises the exception of the command.
+        """
+        try:
+            handler = self.command_handlers[type(command)]
+            if handler is None:
+                raise Exception(f"{command} is unmapped to a handler")
+
+            await handler(command, self.svcs_container, client)
+
+            self.queue.extend(self.uow.collect_new_events())
+
+        except Exception:
+            # TODO add logging
+            raise
+
+    async def handle_event(self, event: Event, client: User | None = None) -> None:
+        """
+        Handles a single event. No exceptions are raised.
+
+        Args:
+            event (Event): the event to handle.
+        """
+        for handler in self.event_handlers[type(event)]:
+            try:
+                await handler(event, self.svcs_container, client)
+                self.queue.extend(self.uow.colllect_new_events())
+            except Exception:
+                # TODO add logging
+                continue

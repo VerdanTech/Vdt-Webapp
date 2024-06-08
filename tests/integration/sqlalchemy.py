@@ -7,8 +7,8 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_asyn
 from sqlalchemy.sql import text
 
 # VerdanTech Source
-from src.infra.persistence.sqlalchemy.mapper.model import Base
-from src.infra.persistence.sqlalchemy.repository.client import AlchemyClient
+from src.adapters.persistence.sqlalchemy.client import AlchemyClient
+from src.adapters.persistence.sqlalchemy.mapper.common import Base
 
 sessionmaker = async_sessionmaker(
     expire_on_commit=False,

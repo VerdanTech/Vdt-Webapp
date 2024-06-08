@@ -4,7 +4,7 @@ from typing import Optional
 # VerdanTech Source
 from src.domain.common import EntityIdType
 from src.domain.user import User
-from src.interfaces.persistence.garden.repository import AbstractGardenRepository
+from src.interfaces.persistence.garden.garden import AbstractGardenRepository
 
 
 class GardenReadOpsController:

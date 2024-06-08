@@ -17,11 +17,61 @@ from typing import Self, Union, dataclass_transform
 # External Libraries
 from attr import attrib
 from attrs import define, evolve, field
+from pydantic import BaseModel, ConfigDict
 
 from .exceptions import EntityIntegrityException
 
 type EntityIdType = uuid.UUID
 type DomainModel = Union[RootEntity, Entity, Value]
+
+
+class Command(BaseModel):
+    """
+    Represents a job the system may perform.
+
+    Pydantic is used for a feature complete validation system
+    for incoming inputs.
+    """
+
+    model_config = ConfigDict(frozen=True)
+
+
+class Event:
+    """
+    Represents something that happened in the system.
+    """
+
+    pass
+
+
+@dataclass_transform(field_specifiers=(attrib, field))
+def event_transform(cls):
+    """
+    "Event" object settings. Used as a decorator.
+
+    The @dataclass_transform decorator is required for type-checking/dataclass
+    functionality. See (https://peps.python.org/pep-0681/).
+
+    This decorator:
+    - Applies attrs @define decorator with arguments:
+        kw_only=True: Positional arguments are not supported
+            for the sake of simplicity and readability.
+        frozen=True: Immutability. If the object is to be modified
+            it must return a modified version of itself
+            (for example, by using evolve()).
+        eq=True: Explicit enabling of __eq__() generation as value
+            objects are equivalent if all their attributes are.
+        slots=True: slotted classes are user for simple
+            and easy performance gains.
+
+    Args:
+        cls (Type[Any]): the class before decoration.
+
+    Returns:
+        Type[ValueT]: the Value class after decoration.
+    """
+    cls = define(kw_only=True, frozen=True, eq=True, slots=True)(cls)
+    return cls
 
 
 class Entity:
@@ -84,6 +134,8 @@ class RootEntity(Entity):
     for each RootEntity.
     """
 
+    events: list[Event] = field(factory=list)
+
     @property
     def ref(self) -> "Ref[Self]":
         """
@@ -104,7 +156,7 @@ class Value:
     """
 
     def transform(self, **kwargs):
-        """Wraps the attrs.evolve function for transforming immutable value objects."""
+        """Wraps the attrs.evolve() function for transforming immutable value objects."""
         return evolve(self, **kwargs)
 
 
@@ -122,10 +174,12 @@ def entity_transform(cls):
             for the sake of simplicity and readability.
         eq=False: Explicit disabling of __eq__() generation as this
             is handled by Id equivalence.
-        slots=True: slotted classes are user for simple
-            and easy performance gains.
+        slots=False: Slotted classes are preferred for performance,
+            but is currently not supported by SQLAlchemy. To make use
+            of SQLAlchemy's imperative mapper and avoid clunky
+            mapping between domain and ORM objects, they are currently disabled.
     """
-    cls = define(kw_only=True, eq=False, slots=True)(cls)
+    cls = define(kw_only=True, eq=False, slots=False)(cls)
     return cls
 
 
@@ -157,13 +211,16 @@ def value_transform(cls):
     - Applies attrs @define decorator with arguments:
         kw_only=True: Positional arguments are not supported
             for the sake of simplicity and readability.
-        frozen=True: Immutability. If the object is to be modified
-            it must return a modified version of itself
-            (for example, by using evolve()).
+        frozen=False: Value objects are supposed to be immutable,
+            so use of frozen=True is preferred to enforce this.
+            However, due to lack of support from SQLAlchemy,
+            this is currently disabled.
         eq=True: Explicit enabling of __eq__() generation as value
             objects are equivalent if all their attributes are.
-        slots=True: slotted classes are user for simple
-            and easy performance gains.
+        slots=False: Slotted classes are preferred for performance,
+            but is currently not supported by SQLAlchemy. To make use
+            of SQLAlchemy's imperative mapper and avoid clunky
+            mapping between domain and ORM objects, they are currently disabled.
 
     Args:
         cls (Type[Any]): the class before decoration.
@@ -172,7 +229,7 @@ def value_transform(cls):
         Type[ValueT]: the Value class after decoration.
     """
 
-    cls = define(kw_only=True, frozen=True, eq=True, slots=True)(cls)
+    cls = define(kw_only=True, frozen=False, eq=True, slots=False)(cls)
     return cls
 
 

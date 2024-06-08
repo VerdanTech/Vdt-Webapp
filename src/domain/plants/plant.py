@@ -1,6 +1,8 @@
 # Standard Library
 from datetime import date, datetime
 from enum import Enum
+
+# External Libraries
 from attrs import field
 
 # VerdanTech Source
@@ -25,10 +27,12 @@ class OriginEnum(Enum):
     SEEDLING_TO_TRANSPLANT = "seelding transplant"
     """A seedling is transplanted directly into the area it will reach maturity in."""
 
+
 @value_transform
 class QuantityHistoryPoint(Value):
     quantity: int
     time: datetime | None
+
 
 @value_transform
 class QuantityHistory(Value):
@@ -64,7 +68,6 @@ class Lifespan(Value):
         )
 
 
-
 @root_entity_transform
 class Plant(RootEntity):
     cultivar_ref: Ref[Cultivar]
@@ -78,8 +81,7 @@ class Plant(RootEntity):
             bool: True if the Plant has any recorded observations.
         """
         return not self.recorded_lifespan.undefined
-        
-    
+
     def similar(self, other) -> bool:
         """
         Returns

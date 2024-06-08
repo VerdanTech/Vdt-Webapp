@@ -2,7 +2,7 @@
 from src.domain import exceptions as domain_exceptions
 from src.domain.user import User
 from src.interfaces.email.emitter import AbstractEmailEmitter
-from src.interfaces.persistence.user.repository import AbstractUserRepository
+from src.interfaces.persistence.user.user import AbstractUserRepository
 from src.ops import exceptions as ops_exceptions
 from src.utils.key_generator import generate_unique_key
 

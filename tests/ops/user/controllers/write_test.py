@@ -4,7 +4,6 @@ from svcs import Container
 
 # VerdanTech Source
 from src.domain.user import User
-from src.domain.user.sanitizers import UserSanitizer
 from src.interfaces.email.emitter import AbstractEmailEmitter
 from src.interfaces.security.crypt import AbstractPasswordCrypt
 from src.ops.user.controllers.write import UserWriteOpsController

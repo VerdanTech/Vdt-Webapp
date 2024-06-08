@@ -1,7 +1,8 @@
 # Standard Library
+import re
 from enum import Enum
 from pathlib import Path
-from typing import Annotated
+from typing import Pattern
 
 # External Libraries
 from decouple import Csv, config
@@ -167,8 +168,14 @@ EMAIL_MIN_LENGTH: int = 1
 EMAIL_MAX_LENGTH: int = 255
 USERNAME_MIN_LENGTH: int = 3
 USERNAME_MAX_LENGTH: int = 50
+USERNAME_PATTERN: Pattern = re.compile(r"[0-9A-Za-z]+")
+USERNAME_PATTERN_DESCRIPTION: str = "Must contain only alphanumeric characters."
 PASSWORD_MIN_LENGTH: int = 6
 PASSWORD_MAX_LENGTH: int = 255
+PASSWORD_PATTERN: Pattern = re.compile(
+    r"""^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d~`!@#$%^&*()_\-+={[}\]|\:;"'<,>.?/]*$"""
+)
+PASSWORD_PATTERN_DESCRIPTION: str = "Password must contain at least one lowercase letter, one uppercase letter, and one digit."
 USER_MAX_EMAILS: int = 3
 VERIFICATION_KEY_MAX_LENGTH: int = 64
 

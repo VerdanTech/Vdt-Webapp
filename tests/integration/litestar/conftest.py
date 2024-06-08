@@ -7,7 +7,7 @@ from litestar.testing import AsyncTestClient
 
 # VerdanTech Source
 from src import settings
-from src.asgi.litestar.app import create_app
+from src.gateway.litestar.app import create_app
 
 
 @pytest.fixture(scope="function")

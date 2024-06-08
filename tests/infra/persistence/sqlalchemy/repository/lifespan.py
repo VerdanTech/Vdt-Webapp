@@ -13,7 +13,7 @@ from sqlalchemy.ext.asyncio import (
 
 # VerdanTech Source
 from src import settings
-from src.infra.persistence.sqlalchemy.repository import AlchemyClient
+from src.adapters.persistence.sqlalchemy.repository import AlchemyClient
 
 # ======================================
 # SQLALCHEMY

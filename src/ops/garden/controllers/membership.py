@@ -5,8 +5,8 @@ from src.domain.garden.services import membership as membership_domain_services
 from src.domain.user import User
 from src.exceptions import ApplicationException, ExceptionResponseEnum
 from src.interfaces.email.emitter import AbstractEmailEmitter
-from src.interfaces.persistence.garden.repository import AbstractGardenRepository
-from src.interfaces.persistence.user.repository import AbstractUserRepository
+from src.interfaces.persistence.garden.garden import AbstractGardenRepository
+from src.interfaces.persistence.user.user import AbstractUserRepository
 from src.ops.exceptions import EntityNotFound
 
 from ..schemas import membership as membership_schemas, read as read_schemas

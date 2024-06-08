@@ -13,7 +13,7 @@ from src.dependencies.factories.ops.user.controllers import (
 from src.dependencies.factories.ops.user.sanitizers import provide_user_sanitizer
 from src.domain.user import UserSanitizer
 from src.interfaces.email.emitter import AbstractEmailEmitter
-from src.interfaces.persistence.user.repository import AbstractUserRepository
+from src.interfaces.persistence.user.user import AbstractUserRepository
 from src.interfaces.security.crypt import AbstractPasswordCrypt
 from src.ops.user import controllers as user_ops
 

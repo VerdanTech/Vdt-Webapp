@@ -13,6 +13,7 @@ from src.domain.user.exceptions import (
     EmailAlreadyVerifiedError,
     EmailConfirmationExpired,
 )
+
 pytestmark = [pytest.mark.unit]
 
 

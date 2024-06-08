@@ -85,7 +85,7 @@ docs:
 #
 .PHONY: schema
 schema:
-	python3 -m litestar --app src.asgi.litestar.app:create_app schema openapi --output schema.yaml
+	python3 -m litestar --app src.gateway.litestar.app:create_app schema openapi --output schema.yaml
 
 # python3.12 ./src/asgi/litestar/patch_openapi.py
 
@@ -94,7 +94,7 @@ schema:
 #
 .PHONY: run
 run:
-	litestar --app src.asgi.litestar.app:create_app run -d
+	litestar --app src.gateway.litestar.app:create_app run -d
 
 #
 # Run Alembic's "revision" command to create database migrations from the current sqlalchemy metadata.

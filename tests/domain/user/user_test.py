@@ -1,7 +1,7 @@
 # Standard Library
+import uuid
 from datetime import datetime
 from typing import ContextManager, List
-import uuid
 
 # External Libraries
 import pytest
@@ -9,7 +9,7 @@ from pytest_mock import MockerFixture
 
 # VerdanTech Source
 from src.domain import exceptions as domain_exceptions
-from src.domain.user import User, exceptions, PasswordResetConfirmation
+from src.domain.user import PasswordResetConfirmation, User, exceptions
 from src.domain.user.email import Email, EmailConfirmation
 from src.interfaces.security.crypt import AbstractPasswordCrypt
 

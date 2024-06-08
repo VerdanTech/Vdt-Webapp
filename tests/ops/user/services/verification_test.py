@@ -4,7 +4,7 @@ from pytest_mock import MockerFixture
 
 # VerdanTech Source
 from src.domain import exceptions as domain_exceptions
-from src.domain.user import User, PasswordResetConfirmation
+from src.domain.user import PasswordResetConfirmation, User
 from src.domain.user.email import Email
 from src.interfaces.email.emitter import AbstractEmailEmitter
 from src.interfaces.persistence.user import AbstractUserRepository

@@ -2,7 +2,7 @@
 from svcs import Container
 
 # VerdanTech Source
-from src.interfaces.persistence.user.repository import AbstractUserRepository
+from src.interfaces.persistence.user.user import AbstractUserRepository
 from src.ops.user.controllers import verification, write
 
 

@@ -22,10 +22,12 @@ class Location(Value):
 class LocationHistory(Value):
     locations: set[Location] = field(factory=set)
 
+
 @value_transform
 class GeometryHistoryPoint(Value):
     geometry: Geometry
     time: datetime | None
+
 
 @value_transform
 class GeometricHistory(Value):

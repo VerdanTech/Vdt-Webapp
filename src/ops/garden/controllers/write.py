@@ -6,8 +6,8 @@ from src.domain.garden.sanitizers import GardenSanitizer
 from src.domain.garden.services import create as create_domain_services
 from src.domain.user import User
 from src.interfaces.email.emitter import AbstractEmailEmitter
-from src.interfaces.persistence.garden.repository import AbstractGardenRepository
-from src.interfaces.persistence.user.repository import AbstractUserRepository
+from src.interfaces.persistence.garden.garden import AbstractGardenRepository
+from src.interfaces.persistence.user.user import AbstractUserRepository
 from src.ops.exceptions import EntityNotFound
 from src.utils.key_generator import generate_unique_key
 

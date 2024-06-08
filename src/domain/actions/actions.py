@@ -1,13 +1,15 @@
+# Standard Library
 from enum import Enum
 
-from src.domain.common import root_entity_transform, RootEntity, Ref
+# VerdanTech Source
+from src.domain.common import Ref, RootEntity, root_entity_transform
 from src.domain.user import User
 from src.domain.utils import TimeWindow
 
 from .reminder import Reminder
 
-class ActionEnum(Enum):
 
+class ActionEnum(Enum):
     # Plants
     SEED_PLANT = "seed plant"
     THIN_PLANT = "thin plants"
@@ -34,6 +36,7 @@ class ActionEnum(Enum):
     # Misc
     CUSTOM = "custom"
     UNDEFINED = "undefined"
+
 
 @root_entity_transform
 class Action(RootEntity):

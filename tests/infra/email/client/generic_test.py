@@ -8,7 +8,7 @@ import pytest
 from pytest_mock import MockerFixture
 
 # VerdanTech Source
-from src.infra.email.client.generic import BaseEmailClient
+from src.adapters.email.client.generic import BaseEmailClient
 
 pytestmark = [pytest.mark.unit]
 
@@ -114,7 +114,7 @@ class TestBaseEmailClient:
             mocker (MockerFixture): pytest-mock
         """
         mocked_processor = mocker.patch(
-            "src.infra.email.client.generic.html2text.HTML2Text.handle",
+            "src.adapters.email.client.generic.html2text.HTML2Text.handle",
             return_value=expected_output,
         )
         output = base_email_client.html_to_plain_text(html_content=html)
@@ -195,7 +195,7 @@ class TestBaseEmailClient:
                 to test on
             mocker (MockerFixture): pytest-mock
         """
-        file_mock = mocker.patch("src.infra.email.client.generic.read_file_async")
+        file_mock = mocker.patch("src.adapters.email.client.generic.read_file_async")
         template_mock = mocker.patch.object(base_email_client, "template_html")
         plaintext_mock = mocker.patch.object(base_email_client, "html_to_plain_text")
         compile_mock = mocker.patch.object(base_email_client, "compile_message")

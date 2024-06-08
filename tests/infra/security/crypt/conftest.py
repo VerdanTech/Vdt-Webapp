@@ -2,7 +2,7 @@
 import pytest
 
 # VerdanTech Source
-from src.infra.security.crypt.passlib import PasslibPasswordCrypt
+from src.adapters.security.crypt.passlib import PasslibPasswordCrypt
 
 
 @pytest.fixture

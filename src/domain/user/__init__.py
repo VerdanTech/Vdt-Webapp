@@ -1,12 +1,26 @@
-from .email import Email, EmailConfirmation
-from .sanitizers import UserSanitizer, UserSanitizerConfig
-from .user import PasswordResetConfirmation, User
+from .commands import (
+    ConfirmPasswordReset,
+    CreateUser,
+    Login,
+    RequestEmailConfirmation,
+    RequestPasswordReset,
+    UpdateUser,
+)
+from .events import EmailPendingConfirmation, UserCreated, UserUpdated
+from .models import Email, EmailConfirmation, PasswordResetConfirmation, User
 
 __all__ = [
     "Email",
     "EmailConfirmation",
-    "User",
     "PasswordResetConfirmation",
-    "UserSanitizer",
-    "UserSanitizerConfig",
+    "User",
+    "CreateUser",
+    "UpdateUser",
+    "Login",
+    "RequestEmailConfirmation",
+    "RequestPasswordReset",
+    "ConfirmPasswordReset",
+    "UserCreated",
+    "UserUpdated",
+    "EmailPendingConfirmation",
 ]

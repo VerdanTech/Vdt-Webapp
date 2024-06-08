@@ -5,7 +5,7 @@ from dataclasses import replace
 import pytest
 
 # VerdanTech Source
-from src.domain.user import User, PasswordResetConfirmation
+from src.domain.user import PasswordResetConfirmation, User
 from src.domain.user.email import Email, EmailConfirmation
 from src.interfaces.persistence.user import AbstractUserRepository
 
