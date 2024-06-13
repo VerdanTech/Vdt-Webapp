@@ -1,6 +1,6 @@
 # VerdanTech Source
+from src.common.interfaces.events.message import schema
 from src.garden.domain.enums import RoleEnum
-from src.common.ops.common import schema
 
 
 @schema

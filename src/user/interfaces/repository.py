@@ -3,9 +3,8 @@ from typing import Protocol
 
 # VerdanTech Source
 from src.common.domain import EntityIdType
-from src.user.domain import User
-
 from src.common.interfaces.persistence import AbstractRepository
+from src.user.domain import User
 
 
 class AbstractUserRepository(AbstractRepository[User], Protocol):
@@ -25,18 +24,6 @@ class AbstractUserRepository(AbstractRepository[User], Protocol):
         """
         ...
 
-    async def add_many(self, users: list[User]) -> list[User]:
-        """
-        Persist a list of new user entities to the repository.
-
-        Args:
-            users (list[User]): the user entities to add.
-
-        Returns:
-            list[User]: the user entities after persistence.
-        """
-        ...
-
     async def update(self, user: User) -> User:
         """
         Persist an existing user entity to the repository.
@@ -49,76 +36,50 @@ class AbstractUserRepository(AbstractRepository[User], Protocol):
         """
         ...
 
-    async def get_user_by_id(self, id: EntityIdType) -> User | None:
+    async def get_by_ids(
+        self, ids: EntityIdType | list[EntityIdType]
+    ) -> User | list[User] | None:
         """
-        Given a user id, return the user to whom it belongs.
+        Given an ID or list of IDs, return the user or users to whom they belong.
 
         Args:
-            id (EntityIdType): the id to search for.
+            ids (EntityIdType | list[EntityIdType]): the ids to search for.
 
         Returns:
-            User | None: the found user, or None if no user was found.
+            User | list[User] | None: the found user or users, or None if no
+                users were found.
         """
         ...
 
-    async def get_users_by_ids(
-        self, ids: list[EntityIdType], return_first_none: bool = False
-    ) -> list[User] | None:
+    async def get_by_usernames(
+        self,
+        usernames: str | list[str],
+    ) -> User | list[User] | None:
         """
-        Given a list of user ids, return the users to whom they belong.
+        Given a username or list of usernames, return the users to whom they belong.
 
         Args:
-            isd (list[EntityIdType]): the ids to search for.
-            return_first_none (bool): if True, None is returned upon
-                discerning that a username was provided that does
-                not exist. Otherwise, a list is returned.
+            usernames (str | list[str]): the usernames to search for.
 
         Returns:
-            list[User]: the found users, or None if any usernames
-                did not exist and return_first_none is True.
+            User | list[User] | None: the found user or users, or None if no
+                users were found.
         """
         ...
 
-    async def get_user_by_username(self, username: str) -> User | None:
+    async def get_by_email_addresss(
+        self, email_addresss: str | list[str]
+    ) -> User | list[User] | None:
         """
-        Given a username, return the user to whom it belongs.
+        Given an email address list of email adresses,
+        return the users to whom they belong.
 
         Args:
-            username (str): the username to search for.
+            email_addresss (str | list[str]): the email_addresss to search for.
 
         Returns:
-            User | None: the found user, or None if no user was found.
-        """
-        ...
-
-    async def get_users_by_usernames(
-        self, usernames: list[str], return_first_none: bool = False
-    ) -> list[User] | None:
-        """
-        Given a list of user usernames, return the users to whom they belong.
-
-        Args:
-            usernames (list[str]): the usernames to search for.
-            return_first_none (bool): if True, None is returned upon
-                discerning that a username was provided that does
-                not exist. Otherwise, a list is returned.
-
-        Returns:
-            list[User]: the found users, or None if any usernames
-                did not exist and return_first_none is True.
-        """
-        ...
-
-    async def get_user_by_email_address(self, email_address: str) -> User | None:
-        """
-        Given an email address, return the user with the
-        email to whom it belongs
-
-        Args:
-            email_address (str): the address to search for.
-
-        Returns:
-            User | None: the found user, or None if no user was found.
+            User | list[User] | None: the found user or users, or None if no
+                users were found.
         """
         ...
 

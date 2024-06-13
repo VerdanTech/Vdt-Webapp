@@ -1,1 +1,2 @@
-from .repository import AbstractRepository, AbstractUow
+from .repository import AbstractRepository
+from .uow import AbstractRepositoryContainer, AbstractUow

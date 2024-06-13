@@ -2,7 +2,7 @@
 import pytest
 
 # VerdanTech Source
-from mocks.infra.persistence.repository.user_mock import MockUserRepository
+from tests.mocks.infra.persistence.repository.user_mock import MockUserRepository
 
 
 @pytest.fixture

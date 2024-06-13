@@ -10,7 +10,7 @@
             "request": "launch",
             "module": "litestar",
             "justMyCode": true,
-            "args": ["--app", "src.gateway.litestar.app:create_app", "run", "-d", "--pdb"],
+            "args": ["--app", "src.entrypoints.litestar.app:create_app", "run", "-d", "--pdb"],
             "pythonArgs": ["-Xfrozen_modules=off"],
         }   
     ]

@@ -8,10 +8,10 @@ from litestar_svcs import SvcsPlugin
 from svcs import Container, Registry
 
 # VerdanTech Source
-from mocks.dependencies.registry import configure_registry
+from tests.mocks.dependencies.registry import configure_registry
 from src import settings
-from src.gateway.litestar.app import create_app
-from src.interfaces.persistence.user.user import AbstractUserRepository
+from src.entrypoints.litestar.app import create_app
+from src.user.interfaces.persistence.user.user import AbstractUserRepository
 
 from .service_overrides import (
     provide_user_mock_repository,

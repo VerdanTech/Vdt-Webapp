@@ -7,7 +7,7 @@ import pytest
 # VerdanTech Source
 from src.user.domain import PasswordResetConfirmation, User
 from src.user.domain.email import Email, EmailConfirmation
-from src.interfaces.persistence.user import AbstractUserRepository
+from src.user.interfaces.persistence.user import AbstractUserRepository
 
 pytestmark = [pytest.mark.databases]
 

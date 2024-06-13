@@ -1,6 +1,6 @@
 # VerdanTech Source
 from src.common.domain import DomainModel, Ref, RootEntity, root_entity_transform
-from src.domain.garden import Garden
+from src.garden.domain import Garden
 from src.user.domain import User
 
 from .cultivar import Cultivar

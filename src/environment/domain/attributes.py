@@ -4,14 +4,14 @@ from enum import Enum
 from typing import TYPE_CHECKING
 
 # VerdanTech Source
-from src.domain.attributes import AttributeCluster, AttributeProfile
+from src.attributes.domain import AttributeCluster, AttributeProfile
 from src.common.domain import root_entity_transform, value_transform
 from src.utils.sanitizers import SpecError
 
 if TYPE_CHECKING:
     # VerdanTech Source
-    from src.domain.garden.garden import Garden
-    from src.domain.workspace.workspace import Workspace
+    from src.garden.domain.garden import Garden
+    from src.workspace.domain.workspace import Workspace
 
 
 type EnvironmentAttributeProfileParentType = Garden | Workspace

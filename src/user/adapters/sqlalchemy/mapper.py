@@ -3,17 +3,33 @@ from datetime import datetime
 from typing import List, Optional
 
 # External Libraries
-from sqlalchemy import DateTime, ForeignKey, String
+from sqlalchemy import Column, DateTime, ForeignKey, String, Table, Uuid
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 # VerdanTech Source
 from src import settings
-
-from src.common.adapters.persistence.sqlalchemy.mapper import BaseAlchemyModel
+from src.common.adapters.persistence.sqlalchemy.mapper import (
+    BaseAlchemyModel,
+    default_uuid,
+    metadata,
+)
 
 # ======================================
 # ENTITIES
 # ======================================
+
+user_table = Table(
+    "users",
+    metadata,
+    Column("id", Uuid, primary_key=True, default=default_uuid),
+    Column("username", String, nullable=False),
+    Column("_password_hash", String, nullable=False),
+    Column("emails"),
+    Column("is_active"),
+    Column("is_superuser"),
+    Column("password_reset_confirmation"),
+    Column("created_at"),
+)
 
 
 class UserAlchemyModel(BaseAlchemyModel):

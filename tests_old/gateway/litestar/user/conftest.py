@@ -1,2 +1,2 @@
 # VerdanTech Source
-from tests_old.domain.user.conftest import user
+from tests.user.unit.conftest import user

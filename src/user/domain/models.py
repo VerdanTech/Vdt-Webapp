@@ -8,17 +8,17 @@ from typing import Optional
 from attrs import field
 
 # VerdanTech Source
-from src.domain import exceptions as domain_exceptions
 from src.common.domain import (
     EntityIdType,
     RootEntity,
     Value,
+    exceptions as domain_exceptions,
     root_entity_transform,
     value_transform,
 )
-from src.user.domain import events
+from src.common.interfaces.security.passwords import AbstractPasswordCrypt
 from src.exceptions import ExceptionResponseEnum
-from src.interfaces.security.crypt import AbstractPasswordCrypt
+from src.user.domain import events
 
 from . import exceptions
 from .exceptions import EmailAlreadyVerifiedError, EmailConfirmationExpired
@@ -117,14 +117,15 @@ class User(RootEntity):
         begin_primary = first_email or begin_verified
 
         email = Email(address=address, primary=begin_primary, verified=begin_verified)
+        self.emails.append(email)
 
         # Request a new email confirmation if required
         if verification:
             self.events.append(
-                events.EmailPendingConfirmation(username=self.username, email=address)
+                events.EmailPendingConfirmation(
+                    username=self.username, email_address=address
+                )
             )
-
-        self.emails.append(email)
 
         # If other emails exist, and the new email is already
         # verified, the primary status of all emails must be
@@ -139,7 +140,7 @@ class User(RootEntity):
         Return the user's primary email
 
         Raises:
-            UserIntegrityError: if the user has no primary emails.
+            EntityIntegrityException: if the user has no primary emails.
 
         Returns:
             Email: the primary email.

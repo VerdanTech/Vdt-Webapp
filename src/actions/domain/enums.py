@@ -1,6 +1,7 @@
 # Standard Library
 from enum import Enum
 
+
 class ActionEnum(Enum):
     # Plants
     SEED_PLANT = "seed plant"

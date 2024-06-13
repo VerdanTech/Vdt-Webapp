@@ -6,17 +6,14 @@ from sqlalchemy import func, select
 from sqlalchemy.orm import make_transient_to_detached, noload, selectinload
 
 # VerdanTech Source
-from .mapper import (
-    EmailAlchemyModel,
-    UserAlchemyModel,
-)
+from src.common.adapters.persistence.sqlalchemy.repository import BaseAlchemyRepository
 from src.common.domain import EntityIdType
 from src.user.domain import User
 
-from src.common.adapters.persistence.sqlalchemy.repository import BaseAlchemyRepository
+from .mapper import EmailAlchemyModel
 
 
-class UserAlchemyRepository(BaseAlchemyRepository[User, UserAlchemyModel]):
+class UserAlchemyRepository(BaseAlchemyRepository[User]):
     """SQLAlchemy implementation of user repository"""
 
     entity = User

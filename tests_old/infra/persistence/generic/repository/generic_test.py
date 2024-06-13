@@ -3,8 +3,8 @@ import pytest
 from pytest_mock import MockerFixture
 
 # VerdanTech Source
-from mocks.infra.persistence.repository import MockBaseRepository
-from src.interfaces.persistence import exceptions
+from tests.mocks.infra.persistence.repository import MockBaseRepository
+from src.common.interfaces.persistence import exceptions
 
 
 class TestBaseRepository:

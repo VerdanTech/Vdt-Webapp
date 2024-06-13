@@ -10,8 +10,8 @@ from svcs import Container
 from src.common.adapters.persistence.sqlalchemy.client import AlchemyClient
 from src.common.interfaces.email import AbstractEmailClient
 from src.common.interfaces.email import AbstractEmailEmitter
-from src.interfaces.persistence.user.user import AbstractUserRepository
-from src.interfaces.security.crypt.crypt import AbstractPasswordCrypt
+from src.user.interfaces.persistence.user.user import AbstractUserRepository
+from src.common.interfaces.security.crypt.crypt import AbstractPasswordCrypt
 from src.ops.user import controllers as user_ops
 
 pytestmark = [pytest.mark.asgi]

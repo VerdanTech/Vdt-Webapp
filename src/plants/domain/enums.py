@@ -1,4 +1,6 @@
+# Standard Library
 from enum import Enum
+
 
 class OriginEnum(Enum):
     """Describes the process by which a plant is brought into being."""

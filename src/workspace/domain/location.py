@@ -6,7 +6,7 @@ from attrs import field
 
 # VerdanTech Source
 from src.common.domain import Ref, Value, value_transform
-from src.domain.geometry import Coordinate, Geometry
+from src.common.domain.geometry import Coordinate, Geometry
 
 from .workspace import Workspace
 

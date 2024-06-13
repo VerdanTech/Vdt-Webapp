@@ -7,7 +7,7 @@ from pytest_mock import MockerFixture
 
 # VerdanTech Source
 from src.user.domain import PasswordResetConfirmation, User
-from src.interfaces.persistence.user import AbstractUserRepository
+from src.user.interfaces.persistence.user import AbstractUserRepository
 from src.utils import key_generator
 
 # ======================================

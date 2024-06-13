@@ -5,7 +5,7 @@ import pytest
 from pytest_mock import MockerFixture
 
 # VerdanTech Source
-from src.interfaces.persistence.common import AbstractRepository
+from src.user.interfaces.persistence.common import AbstractRepository
 from src.utils.sanitizers.repo.exists import ExistsSpec, ExistsSpecConfig
 
 pytestmark = [pytest.mark.unit]

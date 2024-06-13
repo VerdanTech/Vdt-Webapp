@@ -4,7 +4,7 @@ from svcs import Container
 
 # VerdanTech Source
 from src.user.domain import User
-from src.interfaces.security.crypt import AbstractPasswordCrypt
+from src.common.interfaces.security.passwords import AbstractPasswordCrypt
 from src.common.ops import exceptions as ops_exceptions
 from src.ops.user.controllers.auth import UserAuthOpsController
 from src.ops.user.schemas.auth import UserLoginInput

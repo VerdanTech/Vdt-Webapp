@@ -1,6 +1,6 @@
 # VerdanTech Source
-from mocks.infra.persistence.repository.user_mock import MockUserRepository
-from src.interfaces.persistence.user.user import AbstractUserRepository
+from tests.mocks.infra.persistence.repository.user_mock import MockUserRepository
+from src.user.interfaces.persistence.user.user import AbstractUserRepository
 
 session_scoped_mock_user_repository = MockUserRepository()
 

@@ -3,13 +3,13 @@ import uuid
 from datetime import datetime
 
 # VerdanTech Source
-from src.domain.environment.attributes import (
+from src.common.interfaces.events.message import RefSchema, schema
+from src.environment.domain.attributes import (
     EnvironmentAttributeCluster as EnvironmentAttributeClusterSchema,
 )
-from src.domain.garden import Garden, GardenMembership, RoleEnum, VisibilityEnum
-from src.user.domain import User
-from src.common.ops.common import RefSchema, schema
+from src.garden.domain import Garden, GardenMembership, RoleEnum, VisibilityEnum
 from src.ops.user.schemas.read import UserPublicSchema
+from src.user.domain import User
 
 """
 Note: The UUID class is used directly instead of the EntityIdType alias

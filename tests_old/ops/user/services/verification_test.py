@@ -3,11 +3,11 @@ import pytest
 from pytest_mock import MockerFixture
 
 # VerdanTech Source
-from src.domain import exceptions as domain_exceptions
+from src.common.domain import exceptions as domain_exceptions
 from src.user.domain import PasswordResetConfirmation, User
 from src.user.domain.email import Email
 from src.common.interfaces.email import AbstractEmailEmitter
-from src.interfaces.persistence.user import AbstractUserRepository
+from src.user.interfaces.persistence.user import AbstractUserRepository
 from src.common.ops import exceptions as ops_exceptions
 from src.ops.user.services import verification as verification_services
 

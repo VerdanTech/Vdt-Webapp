@@ -8,7 +8,7 @@ from sqlalchemy.sql import text
 
 # VerdanTech Source
 from src.common.adapters.persistence.sqlalchemy.client import AlchemyClient
-from src.adapters.persistence.sqlalchemy.mapper.common import Base
+from src.common.adapters.persistence.sqlalchemy.mapper.common import Base
 
 sessionmaker = async_sessionmaker(
     expire_on_commit=False,

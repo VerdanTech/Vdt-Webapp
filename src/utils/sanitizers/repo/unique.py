@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from typing import Any
 
 # VerdanTech Source
-from src.interfaces.persistence.common import AbstractRepository
+from src.common.interfaces.persistence.common import AbstractRepository
 
 from ..options import SelectEnum
 from ..spec import Spec, SpecConfig, SpecError

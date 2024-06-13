@@ -4,8 +4,7 @@ from dataclasses import dataclass
 # External Libraries
 from sqlalchemy.ext.asyncio import AsyncEngine
 
-# VerdanTech Source
-from .mapper import Base
+from .mapper import metadata
 
 
 @dataclass
@@ -20,7 +19,7 @@ class AlchemyClient:
         creating table metadata on the engine
         """
         async with self.engine.begin() as connection:
-            await connection.run_sync(Base.metadata.create_all)
+            await connection.run_sync(metadata.create_all)
 
     async def close(self) -> None:
         """

@@ -1,15 +1,28 @@
-from .common import CommandHandlerDict, EventHandlerDict
-from src.user.ops.command_handlers import USER_ASGI_COMMAND_HANDLERS
-from src.user.ops.event_handlers import USER_ASGI_EVENT_HANDLERS
-from src.user.domain import User
-from svcs import Container
-from typing import Awaitable, Callable
-from src.common.domain import Command, Event
+# Standard Library
+from typing import Awaitable, Callable, get_type_hints
 
-ASGI_COMMAND_HANDLERS: CommandHandlerDict = USER_ASGI_COMMAND_HANDLERS
-ASGI_EVENT_HANDLERS: EventHandlerDict = USER_ASGI_EVENT_HANDLERS
+# External Libraries
+from attr import define, field
+from svcs import Container
+
+# VerdanTech Source
+from src.common.domain import Command, Event
+from src.user.domain import User
+
+from .queries import Query, QueryResult
 
 type CommandHandler = Callable[[Command, Container, User | None], Awaitable[None]]
-type CommandHandlerDict = dict[type[Command], CommandHandler]
-type EventHandler = Callable[[Event, Container, User | None], Awaitable[None]]
-type EventHandlerDict = dict[type[Event], list[EventHandler]]
+type EventHandler = Callable[[Event, Container], Awaitable[None]]
+type QueryHandler = Callable[[Query, Container, User | None], Awaitable[QueryResult]]
+
+
+@define
+class HandlerContainer:
+    """
+    Contains all command and event handlers registered
+    for a single message processor.
+    """
+
+    commands: dict[type[Command], CommandHandler] = field(factory=dict)
+    events: dict[type[Event], list[EventHandler]] = field(factory=dict)
+    queries: dict[type[Query], QueryHandler] = field(factory=dict)

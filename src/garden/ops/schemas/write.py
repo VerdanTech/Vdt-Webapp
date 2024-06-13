@@ -2,9 +2,9 @@
 from dataclasses import field
 
 # VerdanTech Source
+from src.common.interfaces.events.message import schema
 from src.garden.domain.enums import VisibilityEnum
-from src.domain.garden.sanitizers import GardenSanitizer
-from src.common.ops.common import schema
+from src.garden.domain.sanitizers import GardenSanitizer
 from src.utils.sanitizers.options import GroupErrorsByEnum, SelectEnum as specs
 
 

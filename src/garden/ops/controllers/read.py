@@ -3,8 +3,8 @@ from typing import Optional
 
 # VerdanTech Source
 from src.common.domain import EntityIdType
+from src.common.interfaces.persistence.garden.garden import AbstractGardenRepository
 from src.user.domain import User
-from src.interfaces.persistence.garden.garden import AbstractGardenRepository
 
 
 class GardenReadOpsController:

@@ -1,12 +1,13 @@
 from __future__ import annotations
 
 # Standard Library
-from typing import Any, Generator, Protocol, Type
+import inspect
+from typing import Any, Protocol, Type
 
 # VerdanTech Source
-from src.common.domain import Event, RootEntity
+from src.common.domain import RootEntity
 
-from src.user.interfaces import AbstractUserRepository
+from .exceptions import InterfaceRepositoryError
 
 
 class AbstractRepository[T: RootEntity](Protocol):
@@ -47,66 +48,53 @@ class AbstractRepository[T: RootEntity](Protocol):
         Returns:
             Any: the result of the method.
         """
-        ...
+
+        if not bypass_validation:
+            self.validate_async_dynamic_call_signature(
+                method_name=method_name, **kwargs
+            )
+
+        # Retrieve attribute from repository object
+        if not hasattr(self, method_name):
+            raise ValueError("Invalid call signature")
+        method = getattr(self, method_name)
+
+        return await method(**kwargs)
 
     def validate_async_dynamic_call_signature(self, method_name: str, **kwargs) -> None:
         """
         Validates that an async method with the given name exists on the repository
-        and that it accepts the specified keyword arguments.
+        and that the supplied kwargs matches the method's signature.
 
         Args:
-            method_name (str): The name of the method to validate.
-            **kwargs: The dictionary of keyword arguments
+            method_name (str): the name of the method to validate against.
+            **method_kwargs: the dictionary of keyword arguments
                 that the method is expected to accept.
 
         Raises:
             InterfaceRepositoryError: If the method does not exist, is not an async method,
             or does not accept the specified keyword arguments.
         """
-        ...
+        method = getattr(self, method_name, None)
 
+        if method is None or not inspect.iscoroutinefunction(method):
+            raise InterfaceRepositoryError(
+                f"The method {method_name} does not exist or is not an async method on {type(self).__name__}."
+            )
 
-class AbstractUow(Protocol):
-    """
-    A Unit Of Work (UoW) is a context manager for commiting and rolling back
-    database operations.
+        # Get the signature of the method
+        sig = inspect.signature(method)
+        params = sig.parameters
 
-    It encapsulates all repositories for conveinence.
-    """
+        # Check if all kwargs are in the function's parameters
+        if not all(k in params for k in kwargs):
+            raise InterfaceRepositoryError(
+                f"The method {method_name} does not accept the specified keyword arguments."
+            )
 
-    users: AbstractUserRepository
-
-    async def __aenter__(self) -> AbstractUow:
-        return self
-
-    async def __aexit__(self, *args) -> None:
-        await self.rollback()
-
-    async def commit(self) -> None:
-        """
-        Commits all changes to the database.
-        """
-        await self._commit()
-
-    def collect_new_evets(self) -> Generator[Event, None, None]:
-        """
-        Yields all unhandled events on the touched entities.
-
-        Yields:
-            Generator[Event, None, None]: _description_
-        """
-        for entity in self.users.touched_entities:
-            while entity.events:
-                yield entity.events.pop(0)
-
-    async def _commit(self) -> None:
-        """
-        Commits all changes to the database.
-        """
-        ...
-
-    async def rollback(self) -> None:
-        """
-        Discards all changes to the database.
-        """
-        ...
+        # Check if all required parameters are present in the kwargs
+        for param_name, param in params.items():
+            if param.default is inspect.Parameter.empty and param_name not in kwargs:
+                raise InterfaceRepositoryError(
+                    f"The method {method_name} requires a '{param_name}' argument which is not provided."
+                )

@@ -14,8 +14,8 @@ from src.common.domain import (
 )
 from src.cultivars.domain import Cultivar
 from src.workspace.domain import GeometricHistory, LocationHistory
-from .enums import OriginEnum
 
+from .enums import OriginEnum
 
 
 @value_transform

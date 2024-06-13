@@ -2,7 +2,7 @@
 import pytest
 
 # VerdanTech Source
-from src.gateway.litestar.app import create_app
+from src.entrypoints.litestar.app import create_app
 
 pytestmark = [pytest.mark.asgi]
 

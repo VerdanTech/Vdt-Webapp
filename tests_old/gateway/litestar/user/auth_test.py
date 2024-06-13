@@ -9,9 +9,9 @@ from svcs import Container
 
 # VerdanTech Source
 from src.user.domain import User
-from src.gateway.litestar.user import routes
-from src.interfaces.persistence.user.user import AbstractUserRepository
-from src.interfaces.security.crypt import AbstractPasswordCrypt
+from src.entrypoints.litestar.user import routes
+from src.user.interfaces.persistence.user.user import AbstractUserRepository
+from src.common.interfaces.security.passwords import AbstractPasswordCrypt
 from src.ops.user.schemas import auth as auth_ops_schemas
 
 pytestmark = [pytest.mark.asgi]

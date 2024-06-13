@@ -1,7 +1,7 @@
 # VerdanTech Source
 from src.common.domain import Ref, RootEntity, root_entity_transform
-from src.domain.environment import Environment
-from src.domain.geometry import Geometry
+from src.common.domain.geometry import Geometry
+from src.environment.domain import Environment
 
 from .location import LocationHistory
 

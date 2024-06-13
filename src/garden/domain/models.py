@@ -1,16 +1,3 @@
-# External Libraries
-from attrs import field
-
-# VerdanTech Source
-from src.common.domain import Ref, RootEntity, root_entity_transform
-from src.domain.environment import Environment
-from src.domain.exceptions import FieldNotFound
-from src.user.domain import User
-
-from .enums import RoleEnum, VisibilityEnum
-from .exceptions import MembershipAlreadyConfirmed
-from .membership import GardenMembership
-
 # Standard Library
 from datetime import datetime
 from typing import TYPE_CHECKING
@@ -19,11 +6,20 @@ from typing import TYPE_CHECKING
 from attrs import field
 
 # VerdanTech Source
-from src.common.domain import Ref, Value, value_transform
+from src.common.domain import (
+    Ref,
+    RootEntity,
+    Value,
+    root_entity_transform,
+    value_transform,
+)
+from src.common.domain.exceptions import FieldNotFound
+from src.environment.domain import Environment
 from src.user.domain import User
 
-from .enums import OperationEnum, PermissionEnum, RoleEnum
-from .exceptions import GardenAuthorizationException
+from .enums import OperationEnum, PermissionEnum, RoleEnum, VisibilityEnum
+from .exceptions import GardenAuthorizationException, MembershipAlreadyConfirmed
+from .membership import GardenMembership
 from .permission import permission_rules
 
 
@@ -199,6 +195,7 @@ class Garden(RootEntity):
                 self.memberships.remove(membership)
                 self.memberships.add(new_membership)
         raise FieldNotFound("The User does not have a membership with this Garden.")
+
 
 @value_transform
 class GardenMembership(Value):

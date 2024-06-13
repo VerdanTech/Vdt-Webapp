@@ -8,7 +8,7 @@ import pytest
 # VerdanTech Source
 from src.user.domain import User, PasswordResetConfirmation
 from src.user.domain.email import Email, EmailConfirmation
-from src.adapters.persistence.sqlalchemy.mapper.user import (
+from src.common.adapters.persistence.sqlalchemy.mapper.user import (
     EmailAlchemyModel,
     UserAlchemyMapper,
     UserAlchemyModel,

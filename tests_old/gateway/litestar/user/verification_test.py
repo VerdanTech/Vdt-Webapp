@@ -11,8 +11,8 @@ from svcs import Container
 from src import settings
 from src.user.domain import PasswordResetConfirmation, User
 from src.user.domain.email import Email, EmailConfirmation
-from src.gateway.litestar.user import routes
-from src.interfaces.persistence.user.user import AbstractUserRepository
+from src.entrypoints.litestar.user import routes
+from src.user.interfaces.persistence.user.user import AbstractUserRepository
 from src.ops.user.schemas import verification as verification_ops_schemas
 from src.utils.key_generator import key_generator
 

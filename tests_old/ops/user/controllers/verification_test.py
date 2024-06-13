@@ -7,7 +7,7 @@ from src import settings
 from src.user.domain import User
 from src.user.domain.email import EmailConfirmation
 from src.common.interfaces.email import AbstractEmailEmitter
-from src.interfaces.security.crypt.crypt import AbstractPasswordCrypt
+from src.common.interfaces.security.crypt.crypt import AbstractPasswordCrypt
 from src.common.ops import exceptions as ops_exceptions
 from src.ops.user.controllers.verification import UserVerificationOpsController
 from src.ops.user.schemas.verification import (

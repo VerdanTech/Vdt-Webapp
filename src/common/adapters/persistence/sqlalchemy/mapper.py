@@ -1,8 +1,9 @@
+# Standard Library
+import uuid
+
 # External Libraries
-from sqlalchemy.orm import declarative_base
+from sqlalchemy import MetaData
 
-Base = declarative_base()
+metadata = MetaData()
 
-
-class BaseAlchemyModel(Base):
-    __abstract__ = True
+default_uuid = uuid.uuid4

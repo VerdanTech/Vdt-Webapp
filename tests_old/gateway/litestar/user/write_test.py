@@ -8,8 +8,8 @@ from litestar.testing import AsyncTestClient
 from svcs import Container
 
 # VerdanTech Source
-from src.gateway.litestar.user import routes
-from src.interfaces.persistence.user.user import AbstractUserRepository
+from src.entrypoints.litestar.user import routes
+from src.user.interfaces.persistence.user.user import AbstractUserRepository
 from src.ops.user.schemas import write as write_ops_schemas
 
 pytestmark = [pytest.mark.asgi]

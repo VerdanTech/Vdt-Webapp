@@ -2,8 +2,8 @@
 from typing import Union
 
 # VerdanTech Source
-from src.domain.environment.attributes import FrostDateProfile, GeoCoordinateProfile
-from src.common.ops.common import schema
+from src.common.interfaces.events.message import schema
+from src.environment.domain.attributes import FrostDateProfile, GeoCoordinateProfile
 
 
 @schema

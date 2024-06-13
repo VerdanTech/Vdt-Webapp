@@ -16,8 +16,8 @@ from svcs import Container
 
 # VerdanTech Source
 from src import settings
-from src.adapters.persistence.sqlalchemy.mapper.common import Base
-from src.adapters.persistence.sqlalchemy.repository import AlchemyClient
+from src.common.adapters.persistence.sqlalchemy.mapper.common import Base
+from src.common.adapters.persistence.sqlalchemy.repository import AlchemyClient
 
 function_scoped_alchemy_transaction_key = "function_scoped_alchemy_transaction"
 session_scoped_alchemy_connection_key = "session_scoped_alchemy_connection"

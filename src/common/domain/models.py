@@ -7,8 +7,8 @@ from typing import Self, Union, dataclass_transform
 from attr import attrib
 from attrs import define, evolve, field
 
-from .exceptions import EntityIntegrityException
 from .events import Event
+from .exceptions import EntityIntegrityException
 
 type EntityIdType = uuid.UUID
 type DomainModel = Union[RootEntity, Entity, Value]
@@ -74,7 +74,8 @@ class RootEntity(Entity):
     for each RootEntity.
     """
 
-    events: list[Event] = field(factory=list)
+    events: list[Event] = []
+    """Holds all new events that have been raised during a domain process."""
 
     @property
     def ref(self) -> "Ref[Self]":

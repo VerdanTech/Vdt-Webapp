@@ -5,9 +5,8 @@ from typing import Protocol
 
 class AbstractEmailClient(Protocol):
     """
-    The EmailClient provides an interface between an EmailEmitter and the
-    functionality of reading emails from file, populating templated
-    variables, and sending them to a server.
+    The EmailClient provides an interface for reading emails from file,
+    populating templated variables, and sending them to a server.
     """
 
     async def compile_and_send(

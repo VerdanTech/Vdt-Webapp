@@ -5,7 +5,7 @@ from pytest_mock import MockerFixture
 # VerdanTech Source
 from src.user.domain import User
 from src.common.interfaces.email import AbstractEmailEmitter
-from src.interfaces.persistence.user import AbstractUserRepository
+from src.user.interfaces.persistence.user import AbstractUserRepository
 from src.ops.user.services import email as email_services
 
 pytestmark = [pytest.mark.unit]

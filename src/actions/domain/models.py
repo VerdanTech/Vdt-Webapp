@@ -1,13 +1,17 @@
-
-# VerdanTech Source
-from src.common.domain import Ref, RootEntity, root_entity_transform
-from src.user.domain import User
-from .enums import ActionEnum
 # Standard Library
 from datetime import datetime
 
 # VerdanTech Source
-from src.common.domain import Value, value_transform
+from src.common.domain import (
+    Ref,
+    RootEntity,
+    Value,
+    root_entity_transform,
+    value_transform,
+)
+from src.user.domain import User
+
+from .enums import ActionEnum
 
 
 @value_transform
@@ -16,10 +20,11 @@ class Reminder(Value):
     title: str
     description: str | None = None
 
+
 @root_entity_transform
 class Action(RootEntity):
     action_type: ActionEnum | str
-    #time_window: TimeWindow
+    # time_window: TimeWindow
     reminders: set[Reminder]
     assignees: set[Ref[User]]
     title: str

@@ -9,7 +9,7 @@ from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config
 
 # VerdanTech Source
-from src.adapters.persistence.sqlalchemy.mapper.common import BaseAlchemyModel
+from src.common.adapters.persistence.sqlalchemy.mapper.common import BaseAlchemyModel
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
