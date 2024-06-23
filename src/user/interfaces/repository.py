@@ -67,8 +67,8 @@ class AbstractUserRepository(AbstractRepository[User], Protocol):
         """
         ...
 
-    async def get_by_email_addresss(
-        self, email_addresss: str | list[str]
+    async def get_by_email_addresses(
+        self, email_addresses: str | list[str]
     ) -> User | list[User] | None:
         """
         Given an email address list of email adresses,

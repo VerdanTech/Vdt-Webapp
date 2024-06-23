@@ -10,7 +10,7 @@ from src.common.domain import RootEntity
 from .exceptions import InterfaceRepositoryError
 
 
-class AbstractRepository[T: RootEntity](Protocol):
+class AbstractRepository[RootEntityT: RootEntity](Protocol):
     """
     A Repository is an interface between the domain layer
     and the database layer.
@@ -24,8 +24,7 @@ class AbstractRepository[T: RootEntity](Protocol):
     Protocol: (https://peps.python.org/pep-0544/)
     """
 
-    entity: Type[T]
-    touched_entities: set[T]
+    touched_entities: list[RootEntityT]
     """Tracks the entities which have been affected so that new events may be caught."""
 
     async def async_dynamic_call(

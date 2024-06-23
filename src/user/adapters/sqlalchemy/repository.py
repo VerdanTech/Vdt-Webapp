@@ -17,7 +17,7 @@ class UserAlchemyRepository(BaseAlchemyRepository[User]):
     """SQLAlchemy implementation of user repository"""
 
     entity = User
-    touched_entities: set[User]
+    touched_entities: list[User]
 
     async def add(self, user: User) -> User:
         """

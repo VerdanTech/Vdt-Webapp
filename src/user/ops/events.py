@@ -6,6 +6,7 @@ from src import settings
 from src.common.interfaces.email.client import AbstractEmailClient
 from src.common.interfaces.events import AbstractEventNode
 from src.common.interfaces.persistence import AbstractUow
+from src.common.ops.exceptions import EntityNotFound
 from src.common.ops.processors import asgi_processor, task_processor
 from src.user.domain import events
 from src.utils.key_generator import generate_unique_key
@@ -26,13 +27,23 @@ async def process_email_confirmation(
     uow, event_node = await svcs_container.aget_abstract(AbstractUow, AbstractEventNode)
 
     async with uow:
-        # Generate an email confirmation key if verification is True
+        # Retrieve the user
+        user = await uow.get_by_email(event.email_address)
+        if user is None:
+            raise EntityNotFound("User does not exist")
+
+        # Generate an email confirmation key
         key = await generate_unique_key(
             length=settings.EMAIL_VERIFICATION_KEY_LENGTH,
-            repo=uow.users,
+            repo=uow.repos.users,
             existence_method_name="email_confirmation_key_exists",
             existence_method_argument_name="key",
         )
+
+        # Set the email confirmation key for the user
+        user.email_confirmation_create(address=event.email_address, key=key)
+        await uow.update(user)
+        await uow.commit()
 
         # Emit the email sending event to the task backend
         await event_node.emit(
@@ -61,7 +72,7 @@ async def process_password_reset(
         # Generate an email confirmation key if verification is True
         key = await generate_unique_key(
             length=settings.EMAIL_VERIFICATION_KEY_LENGTH,
-            repo=uow.users,
+            repo=uow.repos.users,
             existence_method_name="password_reset_confirmation_key_exists",
             existence_method_argument_name="key",
         )

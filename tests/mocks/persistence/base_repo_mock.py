@@ -45,6 +45,7 @@ class MockBaseRepository[T: RootEntity](AbstractRepository[T]):
         # New entity
         self._generate_entity_id(entity)
         self.collection.append(entity)
+        self.touched_entities.append(entity)
         return entity
 
     def _add_many(self, entities: List[T]) -> List[T]:

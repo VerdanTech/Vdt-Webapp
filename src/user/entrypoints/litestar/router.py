@@ -2,8 +2,9 @@
 from litestar import Router
 
 from . import urls
+from .auth import UserAuthController
 from .commands import UserCommandController
-from .queries import UserViewController
+from .queries import UserQueryController
 
 
 def create_user_router() -> Router:
@@ -12,6 +13,6 @@ def create_user_router() -> Router:
     """
     user_router = Router(
         path=urls.USER_ROUTER_URL_BASE,
-        route_handlers=[UserCommandController, UserViewController],
+        route_handlers=[UserCommandController, UserQueryController, UserAuthController],
     )
     return user_router

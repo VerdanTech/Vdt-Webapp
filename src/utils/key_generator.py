@@ -4,7 +4,7 @@ import string
 from typing import Callable
 
 # VerdanTech Source
-from src.common.interfaces.persistence.common import AbstractRepository
+from src.common.interfaces.persistence import AbstractRepository
 
 StringIDGeneratorT = (Callable[[int, str], str],)
 

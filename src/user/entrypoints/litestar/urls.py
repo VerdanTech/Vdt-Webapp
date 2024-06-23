@@ -27,6 +27,15 @@ USER_PASSWORD_RESET_CONFIRM_URL: str = "password/confirm/"
 # VIEWS
 # ======================================
 
-USER_VIEW_CONTROLLER_BASE: str = "commands/"
+USER_QUERY_CONTROLLER_BASE: str = "queries/"
 
-USER_PROFILES_URL: str = "{user_ids:str}/profile/"
+USER_PUBLIC_PROFILES_URL: str = "public_profiles/"
+USER_CLIENT_PROFILE_URL: str = "client_profile/"
+
+# ======================================
+# AUTH
+# ======================================
+
+USER_AUTH_CONTROLLER_BASE: str = "auth/"
+
+USER_LOGIN_URL: str = "login/"

@@ -1,12 +1,11 @@
 from .commands import (
     ConfirmPasswordReset,
     CreateUser,
-    Login,
     RequestEmailConfirmation,
     RequestPasswordReset,
     UpdateUser,
 )
-from .events import EmailPendingConfirmation, UserCreated, UserUpdated
+from .events import EmailPendingConfirmation, UserCreated
 from .models import Email, EmailConfirmation, PasswordResetConfirmation, User
 
 __all__ = [
@@ -16,11 +15,9 @@ __all__ = [
     "User",
     "CreateUser",
     "UpdateUser",
-    "Login",
     "RequestEmailConfirmation",
     "RequestPasswordReset",
     "ConfirmPasswordReset",
     "UserCreated",
-    "UserUpdated",
     "EmailPendingConfirmation",
 ]

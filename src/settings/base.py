@@ -134,18 +134,14 @@ EMAIL_CLIENT_SENDER: str = "verdantech@gmail.com"
 # Verification
 class EmailConfirmationOptions(Enum):
     REQUIRED_FOR_NONE = 0
-    REQUIRED_FOR_WRITE = 1
-    REQUIRED_FOR_LOGIN = 2
+    REQUIRED_FOR_LOGIN = 1
 
     @property
     def verification_required(self) -> bool:
-        return (
-            self.value == self.REQUIRED_FOR_WRITE
-            or self.value == self.REQUIRED_FOR_LOGIN
-        )
+        return self.value == self.REQUIRED_FOR_LOGIN
 
 
-EMAIL_CONFIRMATION = EmailConfirmationOptions.REQUIRED_FOR_WRITE
+EMAIL_CONFIRMATION = EmailConfirmationOptions.REQUIRED_FOR_LOGIN
 EMAIL_VERIFICATION_KEY_LENGTH: int = 32
 EMAIL_VERIFICATON_EXPIRY_TIME_HOURS: int = 72
 

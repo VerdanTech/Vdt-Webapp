@@ -10,9 +10,7 @@ from src.common.interfaces.persistence import AbstractUow
 from src.user.domain import User
 
 from .handlers import HandlerContainer
-from .queries import Query, QueryResult
 
-Message = Union[Command, Query, Event]
 Effect = Union[Command, Event]
 
 
@@ -55,22 +53,6 @@ class MessageProcessor:
 
         return decorator
 
-    def add_query(self):
-        def decorator(func):
-            # Retrieve the query type
-            type_hints = get_type_hints(func)
-            query_type: type[Query] = type_hints.get("query", None)
-            if not isinstance(query_type, type(Query)):
-                # TODO
-                raise Exception(
-                    f"Registered event handler with invalid signature: {func}"
-                )
-
-            self.handlers.queries[query_type] = func
-            return func
-
-        return decorator
-
     async def handle_effect(
         self, effect: Effect, svcs_container: Container, client: User | None = None
     ) -> None:
@@ -95,21 +77,6 @@ class MessageProcessor:
 
             # Register any newly added events
             self.queue.extend(uow.collect_new_events())
-
-    async def handle_query(
-        self, query: Query, svcs_container: Container, client: User | None = None
-    ) -> QueryResult:
-        try:
-            handler = self.handlers.queries[type(query)]
-            if handler is None:
-                raise Exception(f"{query} is unmapped to a handler")
-
-            result = await handler(query, svcs_container, client)
-            return result
-
-        except Exception:
-            # TODO add logging
-            raise
 
     async def _handle_command(
         self, command: Command, svcs_container: Container, client: User | None = None

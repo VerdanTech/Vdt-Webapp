@@ -14,6 +14,7 @@ class MockUserRepository(MockBaseRepository[User], AbstractUserRepository):
     """Implementation of a mock user repository for testing"""
 
     entity = User
+    touched_entities: list[User] = list()
 
     async def add(self, user: User) -> User:
         """
@@ -26,18 +27,6 @@ class MockUserRepository(MockBaseRepository[User], AbstractUserRepository):
             User: the user entity after persistence.
         """
         return self._add(user)
-
-    async def add_many(self, users: List[User]) -> List[User]:
-        """
-        Persist a list of new user entities to the repository.
-
-        Args:
-            users (list[User]): the user entities to add.
-
-        Returns:
-            list[User]: the user entities after persistence.
-        """
-        return self._add_many(users)
 
     async def update(self, user: User) -> User:
         """
@@ -52,10 +41,23 @@ class MockUserRepository(MockBaseRepository[User], AbstractUserRepository):
         for i, existing_user in enumerate(self.collection):
             if existing_user.id == user.id:
                 self.collection[i] = user
+                self.touched_entities.append(user)
                 return user
         raise ObjectNotFound("The user does not presently exist in the repository")
 
-    async def get_user_by_id(self, id: EntityIdType) -> User | None:
+    async def get_by_ids(
+        self, ids: EntityIdType | list[EntityIdType]
+    ) -> User | list[User] | None:
+        """
+        Given an ID or list of IDs, return the user or users to whom they belong.
+
+        Args:
+            ids (EntityIdType | list[EntityIdType]): the ids to search for.
+
+        Returns:
+            User | list[User] | None: the found user or users, or None if no
+                users were found.
+        """
         """
         Given a user id, return the user to whom it belongs.
 
@@ -65,24 +67,58 @@ class MockUserRepository(MockBaseRepository[User], AbstractUserRepository):
         Returns:
             User | None: the found user, or None if no user was found.
         """
-        ...
+        raise NotImplementedError
 
-    async def get_user_by_email_address(self, email_address: str) -> User | None:
+    async def get_by_usernames(
+        self,
+        usernames: str | list[str],
+    ) -> User | list[User] | None:
         """
-        Given an email address, return the user with the
-        email to whom it belongs
+        Given a username or list of usernames, return the users to whom they belong.
 
         Args:
-            email_address (str): the address to search for.
+            usernames (str | list[str]): the usernames to search for.
 
         Returns:
-            User | None: the found user, or None if no user was found.
+            User | list[User] | None: the found user or users, or None if no
+                users were found.
         """
+        users = []
+        for user in self.collection:
+            if isinstance(usernames, str) and user.username == usernames:
+                return user
+            elif isinstance(usernames, list) and user.username in usernames:
+                users.append(user)
+        return users or None
+
+    async def get_by_email_addresses(
+        self, email_addresses: str | list[str]
+    ) -> User | list[User] | None:
+        """
+        Given an email address list of email adresses,
+        return the users to whom they belong.
+
+        Args:
+            email_addresss (str | list[str]): the email_addresss to search for.
+
+        Returns:
+            User | list[User] | None: the found user or users, or None if no
+                users were found.
+        """
+        users = []
         for user in self.collection:
             for email in user.emails:
-                if email.address == email_address:
+                if (
+                    isinstance(email_addresses, str)
+                    and email.address == email_addresses
+                ):
                     return user
-        return None
+                elif (
+                    isinstance(email_addresses, list)
+                    and email.address in email_addresses
+                ):
+                    users.append(user)
+        return users or None
 
     async def get_user_by_email_confirmation_key(
         self, email_confirmation_key: str

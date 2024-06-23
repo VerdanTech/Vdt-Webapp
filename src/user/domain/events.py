@@ -57,14 +57,3 @@ class PasswordResetConfirmationCreated(Event):
     email_address: str
     username: str
     key: str
-
-
-@event_transform
-class UserUpdated(Event):
-    """
-    Emitted when a user changes their username, email, or password.
-    """
-
-    userid: EntityIdType
-    new_username: str | None
-    new_email: str | None

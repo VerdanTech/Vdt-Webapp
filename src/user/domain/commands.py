@@ -41,14 +41,14 @@ def username_validator(username: str) -> str:
     return username
 
 
-def password_validator(password: str) -> str:
+def password_validator(password: SecretStr) -> SecretStr:
     """
     Raises:
         ValueError:
             Raised if the password does not match
                 the pattern specified in the settings.
     """
-    if not re.match(settings.PASSWORD_PATTERN, password):
+    if not re.match(settings.PASSWORD_PATTERN, password.get_secret_value()):
         raise ValueError(settings.PASSWORD_PATTERN_DESCRIPTION)
     return password
 
@@ -106,9 +106,9 @@ class CreateUser(Command):
             ValueError: if the username or email address already
                 exist in the database.
         """
-        if await uow.users.username_exists(username=self.username):
+        if await uow.repos.users.username_exists(username=self.username):
             raise ValidationError("Username already exists")
-        if await uow.users.email_exists(email_address=self.email_address):
+        if await uow.repos.users.email_exists(email_address=self.email_address):
             raise ValidationError("Email already exists")
 
 
@@ -145,23 +145,14 @@ class UpdateUser(Command):
             ValueError: if the username or email address already
                 exist in the database.
         """
-        if self.new_username is not None and await uow.users.username_exists(
+        if self.new_username is not None and await uow.repos.users.username_exists(
             username=self.new_username
         ):
             raise ValidationError("Username already exists")
-        if self.new_email_address is not None and await uow.users.email_exists(
+        if self.new_email_address is not None and await uow.repos.users.email_exists(
             email_address=self.new_email_address
         ):
             raise ValidationError("Email already exists")
-
-
-class Login(Command):
-    """
-    Authenticate a user.
-    """
-
-    email_address: EmailStr
-    password: Password
 
 
 class RequestEmailConfirmation(Command):
@@ -204,9 +195,9 @@ class ConfirmPasswordReset(Command):
     def passwords_match(cls, new_password2, values, **kwargs):
         """
         Raises:
-            ValueError: Raised if the two passwords two not match.
+            ValueError: Raised if the two passwords do not match.
         """
         if "new_password1" not in values and new_password2 is None:
             return
-        elif "new_password1" in values and new_password2 != values["password1"]:
+        elif "new_password1" in values and new_password2 != values["new_password1"]:
             raise ValueError("passwords do not match")

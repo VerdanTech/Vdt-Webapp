@@ -119,6 +119,13 @@ class User(RootEntity):
         email = Email(address=address, primary=begin_primary, verified=begin_verified)
         self.emails.append(email)
 
+        # If other emails exist, and the new email is already
+        # verified, the primary status of all emails must be
+        # updated and the oldest emails must be trimmed.
+        if not first_email and begin_verified:
+            self._set_primary_email(email)
+            self._trim_oldest_emails(max_emails=max_emails)
+
         # Request a new email confirmation if required
         if verification:
             self.events.append(
@@ -126,13 +133,6 @@ class User(RootEntity):
                     username=self.username, email_address=address
                 )
             )
-
-        # If other emails exist, and the new email is already
-        # verified, the primary status of all emails must be
-        # updated and the oldest emails must be trimmed.
-        if not first_email and begin_verified:
-            self._set_primary_email(email)
-            self._trim_oldest_emails(max_emails=max_emails)
 
     @property
     def primary_email(self) -> Email:

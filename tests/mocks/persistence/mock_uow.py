@@ -20,10 +20,16 @@ class MockRepositoryContainer(AbstractRepositoryContainer):
 
 
 class MockUow(AbstractUow):
-    async def __aenter__(self):
+    def __init__(self) -> None:
+        """
+        Repos are initialized upon __init__ to be able to mock
+        persistence across multiple contexts, ususally between test
+        setup conditions and the code under test.
+        """
         # Initialize repos
         self.repos = MockRepositoryContainer.enter_uow()
 
+    async def __aenter__(self):
         return await super().__aenter__()
 
     async def _commit(self) -> None:
