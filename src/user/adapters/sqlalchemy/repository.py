@@ -9,11 +9,10 @@ from sqlalchemy.orm import make_transient_to_detached, noload, selectinload
 from src.common.adapters.persistence.sqlalchemy.repository import BaseAlchemyRepository
 from src.common.domain import EntityIdType
 from src.user.domain import User
+from src.user.interfaces.repository import AbstractUserRepository
 
-from .mapper import EmailAlchemyModel
 
-
-class UserAlchemyRepository(BaseAlchemyRepository[User]):
+class UserAlchemyRepository(BaseAlchemyRepository[User], AbstractUserRepository):
     """SQLAlchemy implementation of user repository"""
 
     entity = User
@@ -116,7 +115,7 @@ class UserAlchemyRepository(BaseAlchemyRepository[User]):
         user = self._model_to_entity(user_model)
         return user
 
-    async def get_user_by_email_confirmation_key(
+    async def get_by_email_confirmation_key(
         self, email_confirmation_key: str
     ) -> User | None:
         """
@@ -131,7 +130,7 @@ class UserAlchemyRepository(BaseAlchemyRepository[User]):
         """
         return None
 
-    async def get_user_by_password_reset_confirmation(
+    async def get_by_password_reset_confirmation(
         self, user_id: EntityIdType, password_reset_confirmation_key: str
     ) -> User | None:
         """

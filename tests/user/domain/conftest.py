@@ -34,7 +34,6 @@ class UserMake(factory.Factory):
         self.emails = [EmailMake.build()]
         self.created_at = datetime.now()
         self.events = []
-        print("tersntierstn")
 
 
 @pytest.fixture

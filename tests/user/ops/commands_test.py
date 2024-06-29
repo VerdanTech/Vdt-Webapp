@@ -47,8 +47,8 @@ async def test_create_user_success(
     await handlers.create_user(command=command, svcs_container=svcs_container)
 
     async with uow:
-        persisted_user = await uow.repos.users.get_by_usernames(
-            usernames=command.username
+        persisted_user = await uow.repos.users.get_by_username(
+            username=command.username
         )
 
     # Assert the user was persisted correctly
@@ -136,9 +136,7 @@ async def test_confirm_email_confirmation_user_not_found(
     Args:
         svcs_container (Container): service locator with mock services.
     """
-    nonexistant_key = key_generator(length=settings.EMAIL_VERIFICATION_KEY_LENGTH)
-
-    command = commands.ConfirmEmailConfirmation(key=nonexistant_key)
+    command = commands.ConfirmEmailConfirmation(key=uuid.uuid4())
 
     with pytest.raises(EntityNotFound):
         await handlers.confirm_email_confirmation(
@@ -159,7 +157,7 @@ async def test_confirm_email_confirmation_success(
     uow = await svcs_container.aget(AbstractUow)
 
     existing_email = "existing_email@gmail.com"
-    existing_key = key_generator(length=settings.EMAIL_VERIFICATION_KEY_LENGTH)
+    existing_key = uuid.uuid4()
 
     # Add existing user
     user = User(username="existing_username")
@@ -175,7 +173,7 @@ async def test_confirm_email_confirmation_success(
     )
 
     async with uow:
-        persisted_user = await uow.repos.users.get_by_email_addresses(existing_email)
+        persisted_user = await uow.repos.users.get_by_email_address(existing_email)
 
     # Assert the user was persisted correctly
     assert (
@@ -286,7 +284,7 @@ async def test_confirm_password_reset_key_not_found(
     """
     command = commands.ConfirmPasswordReset(
         user_id=uuid.uuid4(),
-        key=key_generator(length=settings.EMAIL_VERIFICATION_KEY_LENGTH),
+        key=uuid.uuid4(),
         new_password1=SecretStr("New_password12"),
         new_password2=SecretStr("New_password12"),
     )
@@ -309,7 +307,7 @@ async def test_confirm_password_reset_success(
     uow, password_crypt = await svcs_container.aget(AbstractUow, AbstractPasswordCrypt)
 
     existing_email = "existing_email@gmail.com"
-    existing_key = key_generator(length=settings.EMAIL_VERIFICATION_KEY_LENGTH)
+    existing_key = uuid.uuid4()
     new_password = "New_password1"
 
     # Add existing user
@@ -331,7 +329,7 @@ async def test_confirm_password_reset_success(
     )
 
     async with uow:
-        persisted_user = await uow.repos.users.get_by_email_addresses(existing_email)
+        persisted_user = await uow.repos.users.get_by_email_address(existing_email)
 
     # Assert the user was persisted correctly
     assert (

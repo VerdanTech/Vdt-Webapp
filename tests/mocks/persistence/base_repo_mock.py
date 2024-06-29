@@ -4,6 +4,10 @@ from typing import Callable, List
 
 # VerdanTech Source
 from src.common.domain import Entity, RootEntity
+from src.common.interfaces.persistence.exceptions import (
+    ObjectAlreadyExists,
+    ObjectNotFound,
+)
 from src.common.interfaces.persistence.repository import AbstractRepository
 
 
@@ -24,21 +28,21 @@ class MockBaseRepository[T: RootEntity](AbstractRepository[T]):
         """
         entity.id = self.id_factory()
 
-    def _add(self, entity: T) -> T:
+    async def _add(self, entity: T) -> T:
         """Add a generic entity to the repository
 
         Args:
             entity (RootEntity): entity to add
 
         Raises:
-            ValueError: raised if the entity already exists
+            ObjectAlreadyExists: raised if the entity already exists
 
         Returns:
             RootEntity: the entity added
         """
         # Existing entity
         if entity.id is not None:
-            raise ValueError(
+            raise ObjectAlreadyExists(
                 f"ID field of {str(entity)} of type {str(type(entity))} already exists"
             )
 
@@ -48,14 +52,14 @@ class MockBaseRepository[T: RootEntity](AbstractRepository[T]):
         self.touched_entities.append(entity)
         return entity
 
-    def _add_many(self, entities: List[T]) -> List[T]:
+    async def _add_many(self, entities: List[T]) -> List[T]:
         """Add a list of generic entities to the repository
 
         Args:
             entities (List[RootEntity]): entities to add
 
         Raises:
-            ValueError: raised if any of the entities already exist
+            ObjectAlreadyExists: raised if any of the entities already exist
 
         Returns:
             List[RootEntity]: entities added
@@ -65,7 +69,7 @@ class MockBaseRepository[T: RootEntity](AbstractRepository[T]):
         for entity in entities:
             # Existing entity
             if entity.id is not None:
-                raise ValueError(
+                raise ObjectAlreadyExists(
                     f"""
                     ID field of {str(entity)} of type 
                     {str(type(entity))} already exists
@@ -78,3 +82,39 @@ class MockBaseRepository[T: RootEntity](AbstractRepository[T]):
 
         self.collection.extend(persisted_entities)
         return persisted_entities
+
+    async def _update(self, entity: T) -> T:
+        """
+        Persist an existing entity to the repository.
+
+        Args:
+            entity (T): entity to update.
+
+        Raises:
+            ObjectNotFound: raised if the entity does not exist.
+
+        Returns:
+            T: the entity after persistence.
+        """
+        for i, existing_entity in enumerate(self.collection):
+            if existing_entity.id == entity.id:
+                self.collection[i] = entity
+                self.touched_entities.append(entity)
+                return entity
+        raise ObjectNotFound("The user does not presently exist in the repository")
+
+    async def _delete(self, entity: T) -> None:
+        """
+        Delete an existing entity from the repository.
+
+        Args:
+            entity (T): entity to delete
+
+        Raises:
+            ObjectNotFound: raised if the entity does not exist.
+        """
+        for i, existing_entity in enumerate(self.collection):
+            if existing_entity.id == entity.id:
+                self.collection.pop(i)
+                return
+        raise ObjectNotFound("The user does not presently exist in the repository")

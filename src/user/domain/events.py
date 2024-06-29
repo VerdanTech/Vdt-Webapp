@@ -1,3 +1,6 @@
+# Standard Library
+import uuid
+
 # VerdanTech Source
 from src.common.domain import EntityIdType, Event, event_transform
 
@@ -43,7 +46,7 @@ class EmailConfirmationCreated(Event):
 
     email_address: str
     username: str
-    key: str
+    key: uuid.UUID
 
 
 @event_transform
@@ -56,4 +59,4 @@ class PasswordResetConfirmationCreated(Event):
     user_id: EntityIdType
     email_address: str
     username: str
-    key: str
+    key: uuid.UUID

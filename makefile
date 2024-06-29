@@ -99,7 +99,7 @@ run:
 .PHONY: migrations
 migrations:
 	export PYTHONPATH=$(shell pwd); \
-	python src/infra/persistence/sqlalchemy/migrations/create.py -m "$(filter-out $@,$(MAKECMDGOALS))"
+	python src/common/adapters/persistence/sqlalchemy/migrations/create.py -m "$(filter-out $@,$(MAKECMDGOALS))"
 
 #
 # Run Alembic's "upgrade" command to apply migrations to the database.
@@ -107,7 +107,7 @@ migrations:
 .PHONY: migrate
 migrate:
 	export PYTHONPATH=$(shell pwd); \
-	python src/infra/persistence/sqlalchemy/migrations/apply.py
+	python src/common/adapters/persistence/sqlalchemy/migrations/apply.py
 
 #
 # Run Alembic's "downgrade" command to un-apply all migrations.
@@ -115,4 +115,4 @@ migrate:
 .PHONY: reset-migrations
 reset-migrations:
 	export PYTHONPATH=$(shell pwd); \
-	python src/infra/persistence/sqlalchemy/migrations/reset.py --reset
+	python src/common/adapters/persistence/sqlalchemy/migrations/reset.py --reset

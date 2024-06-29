@@ -1,13 +1,10 @@
 from __future__ import annotations
 
 # Standard Library
-import inspect
-from typing import Any, Protocol, Type
+from typing import Protocol
 
 # VerdanTech Source
 from src.common.domain import RootEntity
-
-from .exceptions import InterfaceRepositoryError
 
 
 class AbstractRepository[RootEntityT: RootEntity](Protocol):
@@ -27,73 +24,71 @@ class AbstractRepository[RootEntityT: RootEntity](Protocol):
     touched_entities: list[RootEntityT]
     """Tracks the entities which have been affected so that new events may be caught."""
 
-    async def async_dynamic_call(
-        self,
-        method_name: str,
-        bypass_validation: bool = False,
-        **kwargs,
-    ) -> Any:
+    async def add(self, entity: RootEntityT) -> RootEntityT:
         """
-        Calls the method on the repository given the method name
-        and keyword arguments. Used to configure unique Specs.
+        Persist a new entity to the repository.
 
         Args:
-            method_name (str): name of the method to call.
-            bypass_validation (bool): whether to call
-                self.validate_async_dynamic_call_signature.
-                Used when the arguments have been pre-validated.
-            **kwargs: the arguments to the method.
+            entity (RootEntityT): the entity to add.
 
         Returns:
-            Any: the result of the method.
+            RootEntityT: the entity after persistence.
         """
+        self.touched_entities.append(entity)
+        return await self._add(entity)
 
-        if not bypass_validation:
-            self.validate_async_dynamic_call_signature(
-                method_name=method_name, **kwargs
-            )
-
-        # Retrieve attribute from repository object
-        if not hasattr(self, method_name):
-            raise ValueError("Invalid call signature")
-        method = getattr(self, method_name)
-
-        return await method(**kwargs)
-
-    def validate_async_dynamic_call_signature(self, method_name: str, **kwargs) -> None:
+    async def update(self, entity: RootEntityT) -> RootEntityT:
         """
-        Validates that an async method with the given name exists on the repository
-        and that the supplied kwargs matches the method's signature.
+        Update an existing entity to the repository.
 
         Args:
-            method_name (str): the name of the method to validate against.
-            **method_kwargs: the dictionary of keyword arguments
-                that the method is expected to accept.
+            entity (RootEntityT): the entity to update.
 
-        Raises:
-            InterfaceRepositoryError: If the method does not exist, is not an async method,
-            or does not accept the specified keyword arguments.
+        Returns:
+            RootEntityT: the entity after persistence.
         """
-        method = getattr(self, method_name, None)
+        self.touched_entities.append(entity)
+        return await self._update(entity)
 
-        if method is None or not inspect.iscoroutinefunction(method):
-            raise InterfaceRepositoryError(
-                f"The method {method_name} does not exist or is not an async method on {type(self).__name__}."
-            )
+    async def delete(self, entity: RootEntityT) -> None:
+        """
+        Delete an existing entity from a repository.
 
-        # Get the signature of the method
-        sig = inspect.signature(method)
-        params = sig.parameters
+        Args:
+            entity (RootEntityT): the entity to delete.
+        """
+        self.touched_entities.append(entity)
+        return await self._delete(entity)
 
-        # Check if all kwargs are in the function's parameters
-        if not all(k in params for k in kwargs):
-            raise InterfaceRepositoryError(
-                f"The method {method_name} does not accept the specified keyword arguments."
-            )
+    async def _add(self, entity: RootEntityT) -> RootEntityT:
+        """
+        Persist a new entity to the repository.
 
-        # Check if all required parameters are present in the kwargs
-        for param_name, param in params.items():
-            if param.default is inspect.Parameter.empty and param_name not in kwargs:
-                raise InterfaceRepositoryError(
-                    f"The method {method_name} requires a '{param_name}' argument which is not provided."
-                )
+        Args:
+            entity (RootEntityT): the entity to add.
+
+        Returns:
+            RootEntityT: the entity after persistence.
+        """
+        ...
+
+    async def _update(self, entity: RootEntityT) -> RootEntityT:
+        """
+        Update an existing entity to the repository.
+
+        Args:
+            entity (RootEntityT): the entity to update.
+
+        Returns:
+            RootEntityT: the entity after persistence.
+        """
+        ...
+
+    async def _delete(self, entity: RootEntityT) -> None:
+        """
+        Delete an existing entity from a repository.
+
+        Args:
+            entity (RootEntityT): the entity to delete.
+        """
+        ...

@@ -1,5 +1,6 @@
 # Standard Library
 import re
+import uuid
 
 # External Libraries
 from pydantic import (
@@ -68,11 +69,8 @@ Password = Annotated[
     AfterValidator(password_validator),
 ]
 ConfirmationKey = Annotated[
-    str,
-    Field(
-        min_length=settings.EMAIL_VERIFICATION_KEY_LENGTH,
-        max_length=settings.EMAIL_VERIFICATION_KEY_LENGTH,
-    ),
+    uuid.UUID,
+    Field(),
 ]
 
 

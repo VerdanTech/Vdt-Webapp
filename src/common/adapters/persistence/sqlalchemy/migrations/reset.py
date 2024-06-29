@@ -15,6 +15,9 @@ config_directory = os.path.join(current_directory, "alembic.ini")
 script_location = os.path.join(current_directory, "alembic/")
 
 def reset_migrations():
+    """
+    Script to reset the migrations.
+    """
     alembic_cfg = Config(config_directory)
     alembic_cfg.set_main_option("sqlalchemy.url", settings.ALCHEMY_URI)
     alembic_cfg.set_main_option("script_location", script_location)

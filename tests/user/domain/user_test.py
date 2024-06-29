@@ -185,13 +185,14 @@ class TestUser:
             user (User): user factory fixture.
             mocker (MockerFixture): pytest-mock.
         """
+        key = uuid.uuid4()
         mocker.patch(
             "src.user.domain.models.Email.new_confirmation",
             return_value=Email(
                 address="test2@test.com",
                 verified=False,
                 confirmation=EmailConfirmation(
-                    key="abc", created_at=datetime(2023, 1, 1, 1, 1)
+                    key=key, created_at=datetime(2023, 1, 1, 1, 1)
                 ),
             ),
         )
@@ -205,13 +206,13 @@ class TestUser:
                 address="test2@test.com",
                 verified=False,
                 confirmation=EmailConfirmation(
-                    key="abc", created_at=datetime(2023, 1, 1, 1, 1)
+                    key=key, created_at=datetime(2023, 1, 1, 1, 1)
                 ),
             ),
         ]
         user.emails = existing_emails
 
-        user.email_confirmation_create(address="test2@test.com", key="abc")
+        user.email_confirmation_create(address="test2@test.com", key=key)
 
         assert user.emails == expected_result
 

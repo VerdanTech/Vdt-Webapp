@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 # Standard Library
+import uuid
 from datetime import datetime, timedelta
 from typing import Optional
 
@@ -28,7 +29,7 @@ from .exceptions import EmailAlreadyVerifiedError, EmailConfirmationExpired
 class BaseConfirmation(Value):
     """Base value object for verification through email"""
 
-    key: str
+    key: uuid.UUID
     created_at: datetime = field(factory=datetime.now)
 
     def is_valid(self, expiry_time_hours: int) -> bool:
@@ -152,14 +153,14 @@ class User(RootEntity):
             "User has zero emails with primary = True"
         )
 
-    def email_confirmation_create(self, address: str, key: str) -> None:
+    def email_confirmation_create(self, address: str, key: uuid.UUID) -> None:
         """
         Given an existing email address and confirmation key,
         generate a new confirmation and replace the email.
 
         Args:
             address (str): email address to make confirmation for.
-            key (str): confirmation key to make confirmation with.
+            key (UUID): confirmation key to make confirmation with.
         """
         for index, email in enumerate(self.emails):
             if email.address == address:
@@ -223,20 +224,20 @@ class User(RootEntity):
             plain_password=password
         )
 
-    def password_reset_create(self, key: str) -> None:
+    def password_reset_create(self, key: uuid.UUID) -> None:
         """
         Given a verification key, open a new password reset
         confirmation request on the user object.
 
         Args:
-            key (str): the key to set on the reset confirmation.
+            key (UUID): the key to set on the reset confirmation.
         """
         self.password_reset_confirmation = PasswordResetConfirmation(key=key)
 
     async def password_reset_confirm(
         self,
         user_id: EntityIdType,
-        key: str,
+        key: uuid.UUID,
         new_password: str,
         password_crypt: AbstractPasswordCrypt,
     ) -> None:
@@ -319,14 +320,14 @@ class User(RootEntity):
             datetime.now() - self.created_at
         ) > timedelta(hours=expiry_time_hours)
 
-    def _get_email_by_confirmation_key(self, key: str) -> Email:
+    def _get_email_by_confirmation_key(self, key: uuid.UUID) -> Email:
         """
         Given an email confirmation key, return the
         email on the user with a matching key,
         or raise an exception if not found.
 
         Args:
-            key (str): the key to search for
+            key (uuid.UUID): the key to search for
 
         Raises:
             EmailConfirmationKeyNotFound: if a matching
@@ -393,12 +394,12 @@ class Email(Value):
     confirmation: Optional[EmailConfirmation] = None
     verified_at: Optional[datetime] = None
 
-    def new_confirmation(self, key: str) -> Email:
+    def new_confirmation(self, key: uuid.UUID) -> Email:
         """
         Create a new email confirmation on email.
 
         Args:
-            key (str): the verification key to set.
+            key (uuid.UUID): the verification key to set.
 
         Raises:
             EmailAlreadyVerifiedException: raised when email

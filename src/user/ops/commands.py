@@ -128,8 +128,8 @@ async def request_email_confirmation(
 
     async with uow:
         # Retrieve user from persistence
-        user = await uow.repos.users.get_by_email_addresses(
-            email_addresses=command.email_address
+        user = await uow.repos.users.get_by_email_address(
+            email_address=command.email_address
         )
         if user is None:
             raise EntityNotFound("The email address does not exist.")
@@ -159,9 +159,7 @@ async def confirm_email_confirmation(
 
     async with uow:
         # Retrieve user from persistence
-        user = await uow.repos.users.get_user_by_email_confirmation_key(
-            email_confirmation_key=command.key
-        )
+        user = await uow.repos.users.get_by_email_confirmation_key(key=command.key)
         if user is None:
             raise EntityNotFound("The email verification key does not exist.")
 
@@ -194,8 +192,8 @@ async def request_password_reset(
 
     async with uow:
         # Retrieve user from persistence
-        user = await uow.repos.users.get_by_email_addresses(
-            email_addresses=command.email_address
+        user = await uow.repos.users.get_by_email_address(
+            email_address=command.email_address
         )
         if user is None:
             raise EntityNotFound("The email address does not exist.")
@@ -237,8 +235,8 @@ async def confirm_password_reset(
 
     async with uow:
         # Retrieve user from persistence
-        user = await uow.repos.users.get_user_by_password_reset_confirmation(
-            user_id=command.user_id, password_reset_confirmation_key=command.key
+        user = await uow.repos.users.get_by_password_reset_confirmation(
+            user_id=command.user_id, key=command.key
         )
         if user is None:
             raise EntityNotFound("The password reset does not exist.")

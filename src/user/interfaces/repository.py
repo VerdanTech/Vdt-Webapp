@@ -1,4 +1,5 @@
 # Standard Library
+import uuid
 from typing import Protocol
 
 # VerdanTech Source
@@ -12,80 +13,53 @@ class AbstractUserRepository(AbstractRepository[User], Protocol):
 
     entity = User
 
-    async def add(self, user: User) -> User:
+    # ======================================
+    # General methods
+    # ======================================
+
+    async def get_by_id(self, id: EntityIdType) -> User | None:
         """
-        Persist a new user entity to the repository.
+        Given an ID return the user to whom it belongs.
 
         Args:
-            user (User): the user entity to add.
+            id (EntityIdType): the id to search for.
 
         Returns:
-            User: the user entity after persistence.
+            User | None: the found user, or None if no
+                user was found.
         """
         ...
 
-    async def update(self, user: User) -> User:
-        """
-        Persist an existing user entity to the repository.
-
-        Args:
-            user (User): user entity to update.
-
-        Returns:
-            User: the user entity after persistence.
-        """
-        ...
-
-    async def get_by_ids(
-        self, ids: EntityIdType | list[EntityIdType]
-    ) -> User | list[User] | None:
-        """
-        Given an ID or list of IDs, return the user or users to whom they belong.
-
-        Args:
-            ids (EntityIdType | list[EntityIdType]): the ids to search for.
-
-        Returns:
-            User | list[User] | None: the found user or users, or None if no
-                users were found.
-        """
-        ...
-
-    async def get_by_usernames(
+    async def get_by_username(
         self,
-        usernames: str | list[str],
-    ) -> User | list[User] | None:
-        """
-        Given a username or list of usernames, return the users to whom they belong.
-
-        Args:
-            usernames (str | list[str]): the usernames to search for.
-
-        Returns:
-            User | list[User] | None: the found user or users, or None if no
-                users were found.
-        """
-        ...
-
-    async def get_by_email_addresses(
-        self, email_addresses: str | list[str]
-    ) -> User | list[User] | None:
-        """
-        Given an email address list of email adresses,
-        return the users to whom they belong.
-
-        Args:
-            email_addresss (str | list[str]): the email_addresss to search for.
-
-        Returns:
-            User | list[User] | None: the found user or users, or None if no
-                users were found.
-        """
-        ...
-
-    async def get_user_by_email_confirmation_key(
-        self, email_confirmation_key: str
+        username: str,
     ) -> User | None:
+        """
+        Given a username, return the users to whom it belongs.
+
+        Args:
+            username (str): the username to search for.
+
+        Returns:
+            User | None: the found user, or None if no
+                user was found.
+        """
+        ...
+
+    async def get_by_email_address(self, email_address: str) -> User | None:
+        """
+        Given an email address return the user to whom it belongs.
+
+        Args:
+            email_address (str): the email addresss to search for.
+
+        Returns:
+            User | None: the found user, or None if no
+                user was found.
+        """
+        ...
+
+    async def get_by_email_confirmation_key(self, key: uuid.UUID) -> User | None:
         """
         Given an email confirmation key, return the user with
         the email to whom it belongs.
@@ -98,8 +72,8 @@ class AbstractUserRepository(AbstractRepository[User], Protocol):
         """
         ...
 
-    async def get_user_by_password_reset_confirmation(
-        self, user_id: EntityIdType, password_reset_confirmation_key: str
+    async def get_by_password_reset_confirmation(
+        self, user_id: EntityIdType, key: uuid.UUID
     ) -> User | None:
         """
         Given a password reset key and user ID, return the user with
@@ -129,17 +103,17 @@ class AbstractUserRepository(AbstractRepository[User], Protocol):
 
     async def email_exists(self, email_address: str) -> bool:
         """
-        Check the existence of an email_address in the repository.
+        Check the existence of an email address in the repository.
 
         Args:
-            email (str): the email to check uniqueness of.
+            email_address (str): the email to check existence of.
 
         Returns:
             bool: true if the email exists.
         """
         ...
 
-    async def email_confirmation_key_exists(self, key: str) -> bool:
+    async def email_confirmation_key_exists(self, key: uuid.UUID) -> bool:
         """
         Check the existence of an email confirmatiion key in the repository.
 
@@ -151,7 +125,7 @@ class AbstractUserRepository(AbstractRepository[User], Protocol):
         """
         ...
 
-    async def password_reset_confirmation_key_exists(self, key: str) -> bool:
+    async def password_reset_confirmation_key_exists(self, key: uuid.UUID) -> bool:
         """
         Check the existence of an password reset confirmatiion key
         in the repository.
@@ -164,3 +138,7 @@ class AbstractUserRepository(AbstractRepository[User], Protocol):
             bool: true if the password reset confirmation key exists.
         """
         ...
+
+    # ======================================
+    # Query-only methods
+    # ======================================

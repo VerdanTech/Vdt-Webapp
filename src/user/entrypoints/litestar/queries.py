@@ -28,7 +28,6 @@ class UserQueryController(Controller):
     async def public_profiles(
         self,
         data: queries.PublicProfilesQuery,
-        request: Request,
         state: State,
         svcs_container: Container = Dependency(skip_validation=True),
     ) -> list[queries.UserPublicSchema]:
@@ -47,7 +46,7 @@ class UserQueryController(Controller):
         svcs_container.register_local_value(State, state)
         with litestar_exception_map():
             user_schemas = await queries.public_profiles(
-                query=data, svcs_container=svcs_container, client=request.user
+                query=data, svcs_container=svcs_container
             )
         return user_schemas
 
@@ -60,7 +59,6 @@ class UserQueryController(Controller):
     )
     async def client_profiles(
         self,
-        data: queries.ClientProfileQuery,
         request: Request,
         state: State,
         svcs_container: Container = Dependency(skip_validation=True),
@@ -79,7 +77,5 @@ class UserQueryController(Controller):
         """
         svcs_container.register_local_value(State, state)
         with litestar_exception_map():
-            user_schema = await queries.client_profile(
-                query=data, svcs_container=svcs_container, client=request.user
-            )
+            user_schema = await queries.client_profile(client=request.user)
         return user_schema

@@ -1,3 +1,6 @@
+# Standard Library
+import uuid
+
 # External Libraries
 from svcs import Container
 
@@ -9,7 +12,6 @@ from src.common.interfaces.persistence import AbstractUow
 from src.common.ops.exceptions import EntityNotFound
 from src.common.ops.processors import asgi_processor, task_processor
 from src.user.domain import events
-from src.utils.key_generator import generate_unique_key
 
 
 @asgi_processor.add_event()
@@ -33,12 +35,7 @@ async def process_email_confirmation(
             raise EntityNotFound("User does not exist")
 
         # Generate an email confirmation key
-        key = await generate_unique_key(
-            length=settings.EMAIL_VERIFICATION_KEY_LENGTH,
-            repo=uow.repos.users,
-            existence_method_name="email_confirmation_key_exists",
-            existence_method_argument_name="key",
-        )
+        key = uuid.uuid4()
 
         # Set the email confirmation key for the user
         user.email_confirmation_create(address=event.email_address, key=key)
@@ -70,12 +67,7 @@ async def process_password_reset(
 
     async with uow:
         # Generate an email confirmation key if verification is True
-        key = await generate_unique_key(
-            length=settings.EMAIL_VERIFICATION_KEY_LENGTH,
-            repo=uow.repos.users,
-            existence_method_name="password_reset_confirmation_key_exists",
-            existence_method_argument_name="key",
-        )
+        key = uuid.uuid4()
 
         # Emit the email sending event to the task backend
         await event_node.emit(
@@ -110,7 +102,7 @@ async def send_email_confirmation(
         subject=settings.EMAIL_SUBJECT_EMAIL_CONFIRMATION,
         username=event.username,
         client_base_url=settings.CLIENT_BASE_URL,
-        verification_url=settings.CLIENT_EMAIL_VERIFICATION_URL + event.key,
+        verification_url=settings.CLIENT_EMAIL_VERIFICATION_URL + str(event.key),
     )
 
 
@@ -136,5 +128,5 @@ async def send_password_reset(
         user_id=event.user_id,
         username=event.username,
         client_base_url=settings.CLIENT_BASE_URL,
-        verification_url=settings.CLIENT_EMAIL_VERIFICATION_URL + event.key,
+        verification_url=settings.CLIENT_EMAIL_VERIFICATION_URL + str(event.key),
     )
