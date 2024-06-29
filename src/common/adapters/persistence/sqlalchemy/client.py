@@ -4,7 +4,7 @@ from dataclasses import dataclass
 # External Libraries
 from sqlalchemy.ext.asyncio import AsyncEngine
 
-from .mapper import metadata
+from .mapper import mapper_registry
 
 
 @dataclass
@@ -19,7 +19,7 @@ class AlchemyClient:
         creating table metadata on the engine
         """
         async with self.engine.begin() as connection:
-            await connection.run_sync(metadata.create_all)
+            await connection.run_sync(mapper_registry.metadata.create_all)
 
     async def close(self) -> None:
         """
