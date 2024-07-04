@@ -6,22 +6,20 @@ import pytest
 from sqlalchemy.ext.asyncio import AsyncConnection, AsyncSession
 
 # VerdanTech Source
-# from src.user.adapters.sqlalchemy import UserAlchemyRepository
+from src.user.adapters.sqlalchemy import UserAlchemyRepository
 from src.user.interfaces import AbstractUserRepository
+from tests.common.adapters.persistence.sqlalchemy import (
+    function_scoped_sql_transaction,
+    session_scoped_sql_connection,
+)
 from tests.mocks.persistence.user_mock import MockUserRepository
 from tests.user.domain.conftest import user  # noqa: F401 - pytest fixture
 
-# from tests_old.infra.persistence.sqlalchemy.repository.lifespan import (
-# function_scoped_sql_transaction,
-# session_scoped_sql_connection,
-# )
-
 
 def provide_user_alchemy_repository(
-    transaction: AsyncSession,
-) -> "UserAlchemyRepository":
-    pass
-    # return UserAlchemyRepository(transaction=transaction)
+    sqlalchemy_session: AsyncSession,
+) -> UserAlchemyRepository:
+    return UserAlchemyRepository(session=sqlalchemy_session)
 
 
 def provide_user_mock_repository() -> MockUserRepository:
@@ -31,7 +29,7 @@ def provide_user_mock_repository() -> MockUserRepository:
 @pytest.fixture(
     params=[
         (provide_user_mock_repository, "mock"),
-        (provide_user_mock_repository, "sqlalchemy"),
+        (provide_user_alchemy_repository, "sqlalchemy"),
     ]
 )
 def user_repo(request) -> AbstractUserRepository:
@@ -43,8 +41,6 @@ def user_repo(request) -> AbstractUserRepository:
         return provider()
 
 
-# TODO fix test transactions
-"""
 @pytest.fixture(scope="session")
 async def sql_connection() -> AsyncGenerator[AsyncConnection, None]:
     async with session_scoped_sql_connection() as connection:
@@ -52,11 +48,10 @@ async def sql_connection() -> AsyncGenerator[AsyncConnection, None]:
 
 
 @pytest.fixture(scope="function")
-async def sql_transaction(
+async def sqlalchemy_session(
     sql_connection: AsyncConnection,
 ) -> AsyncGenerator[AsyncSession, None]:
     async with function_scoped_sql_transaction(
         connection=sql_connection
     ) as transaction:
         yield transaction
-"""

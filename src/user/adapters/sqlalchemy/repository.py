@@ -1,123 +1,126 @@
 # Standard Library
-from typing import List
+import uuid
 
 # External Libraries
 from sqlalchemy import func, select
-from sqlalchemy.orm import make_transient_to_detached, noload, selectinload
+from sqlalchemy.orm import noload, selectinload
 
 # VerdanTech Source
 from src.common.adapters.persistence.sqlalchemy.repository import BaseAlchemyRepository
-from src.common.domain import EntityIdType
+import uuid
 from src.user.domain import User
+from src.user.domain.models import Email
 from src.user.interfaces.repository import AbstractUserRepository
+
+from .mapper import user_email_table, user_table
 
 
 class UserAlchemyRepository(BaseAlchemyRepository[User], AbstractUserRepository):
     """SQLAlchemy implementation of user repository"""
 
-    entity = User
-    touched_entities: list[User]
+    # ======================================
+    # General methods
+    # ======================================
 
-    async def add(self, user: User) -> User:
+    async def _add(self, entity: User) -> User:
         """
-        Persist a new user entity to the repository.
+        Persist a new entity to the repository.
 
         Args:
-            user (User): the user entity to add.
+            entity (User): the entity to add.
 
         Returns:
-            User: the user entity after persistence.
+            User: the entity after persistence.
         """
-        user_model = self._entity_to_model(user)
-        self.transaction.add(user_model)
-        await self.transaction.flush()
-        self.transaction.expunge(user_model)
-        user = self._model_to_entity(user_model)
-        return user
+        self.session.add(entity)
+        return entity
 
-    async def add_many(self, users: List[User]) -> List[User]:
+    async def _update(self, entity: User) -> User:
         """
-        Persist a list of new user entities to the repository.
+        Update an existing entity to the repository.
 
         Args:
-            users (list[User]): the user entities to add.
+            entity (User): the entity to update.
 
         Returns:
-            list[User]: the user entities after persistence.
+            User: the entity after persistence.
         """
-        ...
+        entity = await self.session.merge(entity)
+        return entity
 
-    async def update(self, user: User) -> User:
+    async def _delete(self, entity: User) -> None:
         """
-        Persist an existing user entity to the repository.
+        Delete an existing entity from a repository.
 
         Args:
-            user (User): user entity to update.
-
-        Returns:
-            User: the user entity after persistence.
+            entity (RootEntityT): the entity to delete.
         """
-        user_model = self._entity_to_model(user)
-        make_transient_to_detached(user_model)
-        user_model = await self.transaction.merge(user_model)
-        self.transaction.add(user_model)
-        await self.transaction.flush()
-        user = self._model_to_entity(user_model)
-        return user
+        await self.session.delete(entity)
 
-    async def get_user_by_id(self, id: EntityIdType) -> User | None:
+    async def get_by_id(self, id: uuid.UUID) -> User | None:
         """
-        Given a user id, return the user to whom it belongs.
+        Given an ID return the user to whom it belongs.
 
         Args:
-            id (EntityIdType): the id to search for.
+            id (uuid.UUID): the id to search for.
 
         Returns:
-            User | None: the found user, or None if no user was found.
+            User | None: the found user, or None if no
+                user was found.
         """
         statement = (
-            select(UserAlchemyModel)
-            .options(selectinload(UserAlchemyModel.emails))
-            .filter(UserAlchemyModel.id == id)
+            select(User)
+            .options(selectinload(User.emails))
+            .filter(user_table.c.id == id)
         )
-        query = await self.transaction.execute(statement)
-        user_model = query.unique().scalar_one_or_none()
-
-        if user_model is None:
-            return None
-
-        user = self._model_to_entity(user_model)
+        query = await self.session.execute(statement)
+        user = query.unique().scalar_one_or_none()
         return user
 
-    async def get_user_by_email_address(self, email_address: str) -> User | None:
-        """
-        Given an email address, return the user with the
-        email to whom it belongs
-
-        Args:
-            email_address (str): the address to search for.
-
-        Returns:
-            User | None: the found user, or None if no user was found.
-        """
-        statement = (
-            select(EmailAlchemyModel)
-            .options(selectinload(EmailAlchemyModel.user))
-            .filter(EmailAlchemyModel.address == email_address)
-        )
-        query = await self.transaction.execute(statement)
-        email_model = query.unique().scalar_one_or_none()
-
-        if email_model is None:
-            return None
-        user_model = email_model.user
-
-        user = self._model_to_entity(user_model)
-        return user
-
-    async def get_by_email_confirmation_key(
-        self, email_confirmation_key: str
+    async def get_by_username(
+        self,
+        username: str,
     ) -> User | None:
+        """
+        Given a username, return the users to whom it belongs.
+
+        Args:
+            username (str): the username to search for.
+
+        Returns:
+            User | None: the found user, or None if no
+                user was found.
+        """
+        statement = (
+            select(User)
+            .options(selectinload(User.emails))
+            .filter(func.lower(user_table.c.username) == func.lower(username))
+        )
+        query = await self.session.execute(statement)
+        user = query.unique().scalar_one_or_none()
+        return user
+
+    async def get_by_email_address(self, email_address: str) -> User | None:
+        """
+        Given an email address return the user to whom it belongs.
+
+        Args:
+            email_address (str): the email addresss to search for.
+
+        Returns:
+            User | None: the found user, or None if no
+                user was found.
+        """
+        statement = (
+            select(Email)
+            .options(selectinload(Email.user))
+            .filter(user_email_table.c.address == email_address)
+        )
+        query = await self.session.execute(statement)
+        email = query.unique().scalar_one_or_none()
+        return email.user
+
+    async def get_by_email_confirmation_key(self, key: uuid.UUID) -> User | None:
         """
         Given an email confirmation key, return the user with
         the email to whom it belongs.
@@ -128,23 +131,38 @@ class UserAlchemyRepository(BaseAlchemyRepository[User], AbstractUserRepository)
         Returns:
             User | None: the found user, or None if no user was found.
         """
-        return None
+        statement = (
+            select(Email)
+            .options(selectinload(Email.user))
+            .filter(user_email_table.c.email_confirmation_key == key)
+        )
+        query = await self.session.execute(statement)
+        email = query.unique().scalar_one_or_none()
+        return email.user
 
     async def get_by_password_reset_confirmation(
-        self, user_id: EntityIdType, password_reset_confirmation_key: str
+        self, user_id: uuid.UUID, key: uuid.UUID
     ) -> User | None:
         """
         Given a password reset key and user ID, return the user with
         the password reset confirmation and ID to whom they belong.
 
         Args:
-            user_id (EntityIdType): the user's ID.
+            user_id (uuid.UUID): the user's ID.
             key (str): password reset confirmation key.
 
         Returns:
             User | None: the found user, or None if no user was found.
         """
-        return None
+        statement = (
+            select(User)
+            .options(selectinload(User.emails))
+            .filter(user_table.c.id == id)
+            .filter(user_table.c.password_reset_confirmation_key == key)
+        )
+        query = await self.session.execute(statement)
+        user = query.unique().scalar_one_or_none()
+        return user
 
     async def username_exists(self, username: str) -> bool:
         """
@@ -158,73 +176,35 @@ class UserAlchemyRepository(BaseAlchemyRepository[User], AbstractUserRepository)
             bool: true if the username exists.
         """
         statement = (
-            select(UserAlchemyModel)
-            .filter(func.lower(UserAlchemyModel.username) == func.lower(username))
-            .options(noload(UserAlchemyModel.emails))
+            select(User)
+            .filter(func.lower(User.username) == func.lower(username))
+            .options(noload(User.emails))
         )
-        query = await self.transaction.execute(statement)
-        user_model = query.scalar_one_or_none()
+        query = await self.session.execute(statement)
+        user = query.scalar_one_or_none()
 
-        return user_model is not None
+        return user is not None
 
     async def email_exists(self, email_address: str) -> bool:
         """
-        Check the existence of an email_address in the repository.
+        Check the existence of an email address in the repository.
 
         Args:
-            email (str): the email to check uniqueness of.
+            email_address (str): the email to check existence of.
 
         Returns:
             bool: true if the email exists.
         """
         statement = (
-            select(EmailAlchemyModel)
-            .filter(EmailAlchemyModel.address == email_address)
-            .options(noload(EmailAlchemyModel.user))
+            select(Email)
+            .filter(Email.address == email_address)
+            .options(noload(Email.user))
         )
-        query = await self.transaction.execute(statement)
-        email_model = query.scalar_one_or_none()
+        query = await self.sessino.execute(statement)
+        email = query.scalar_one_or_none()
 
-        return email_model is not None
+        return email is not None
 
-    async def email_confirmation_key_exists(self, key: str) -> bool:
-        """
-        Check the existence of an email confirmatiion key in the repository.
-
-        Args:
-            key (str): the email confirmation key to check uniqueness of.
-
-        Returns:
-            bool: true if the email confirmation key exists.
-        """
-        statement = (
-            select(EmailAlchemyModel)
-            .filter(EmailAlchemyModel.confirmation_key == key)
-            .options(noload(EmailAlchemyModel.user))
-        )
-        query = await self.transaction.execute(statement)
-        email_model = query.scalar_one_or_none()
-
-        return email_model is not None
-
-    async def password_reset_confirmation_key_exists(self, key: str) -> bool:
-        """
-        Check the existence of an password reset confirmatiion key
-        in the repository.
-
-        Args:
-            key (str): the password reset confirmation key to
-                check uniqueness of.
-
-        Returns:
-            bool: true if the password reset confirmation key exists.
-        """
-        statement = (
-            select(UserAlchemyModel)
-            .filter(UserAlchemyModel.password_reset_confirmation_key == key)
-            .options(noload(UserAlchemyModel.emails))
-        )
-        query = await self.transaction.execute(statement)
-        user_model = query.scalar_one_or_none()
-
-        return user_model is not None
+    # ======================================
+    # Query-only methods
+    # ======================================

@@ -3,7 +3,6 @@ from .events import Event, event_transform
 from .models import (
     DomainModel,
     Entity,
-    EntityIdType,
     Ref,
     RootEntity,
     Value,

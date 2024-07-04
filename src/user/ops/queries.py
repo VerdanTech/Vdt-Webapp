@@ -16,7 +16,7 @@ from src.user.domain import Email, User
 from src.user.domain.commands import EmailStr, Password
 
 """
-Note: The UUID class is used directly instead of the EntityIdType alias
+Note: The UUID class is used directly instead of the uuid.UUID alias
 because Litestar schema generation currently types it as Any. 
 """
 

@@ -9,7 +9,7 @@ from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 
 # VerdanTech Source
 from src import settings
-from src.common.adapters.persistence.common.exceptions import ClientLifecycleError
+from src.common.interfaces.persistence import exceptions
 
 from .client import AlchemyClient
 
@@ -29,7 +29,7 @@ async def get_alchemy_client(state: LitestarGlobalState) -> AlchemyClient:
     """
     client = getattr(state, settings.ALCHEMY_CLIENT_NAME, None)
     if client is None:
-        raise ClientLifecycleError(
+        raise exceptions.RepositoryError(
             "SqlAlchemy client was expected to be initialized but no initialization has occured."
         )
     return client
@@ -47,7 +47,7 @@ async def litestar_alchemy_client_lifespan(app: Litestar) -> AsyncGenerator[None
     """
     uri = getattr(app.state, "alchemy_uri", None)
     if uri is None:
-        raise ValueError(
+        raise exceptions.RepositoryError(
             "SqlAlchemy connection URI not set on Litestar application state."
         )
 

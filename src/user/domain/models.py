@@ -10,7 +10,6 @@ from attrs import field
 
 # VerdanTech Source
 from src.common.domain import (
-    EntityIdType,
     RootEntity,
     Value,
     exceptions as domain_exceptions,
@@ -172,7 +171,7 @@ class User(RootEntity):
         )
 
     def email_confirmation_confirm(
-        self, key: str, max_emails: int, expiry_time_hours: int
+        self, key: uuid.UUID, max_emails: int, expiry_time_hours: int
     ) -> None:
         """
         Given a verification key, verify the email
@@ -236,7 +235,7 @@ class User(RootEntity):
 
     async def password_reset_confirm(
         self,
-        user_id: EntityIdType,
+        user_id: uuid.UUID,
         key: uuid.UUID,
         new_password: str,
         password_crypt: AbstractPasswordCrypt,
@@ -246,7 +245,7 @@ class User(RootEntity):
         only if the provided key is correct.
 
         Args:
-            user_id (EntityIdType): the id of the user on the password reset confirmation.
+            user_id (uuid.UUID): the id of the user on the password reset confirmation.
             key (str): the password reset confirmation key.
             new_password (str): the new password to set.
             password_crypt (AbstractPasswordCrypt): password crypt interface.

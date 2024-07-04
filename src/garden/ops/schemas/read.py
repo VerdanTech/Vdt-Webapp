@@ -12,7 +12,7 @@ from src.ops.user.schemas.read import UserPublicSchema
 from src.user.domain import User
 
 """
-Note: The UUID class is used directly instead of the EntityIdType alias
+Note: The UUID class is used directly instead of the uuid.UUID alias
 because Litestar schema generation currently types it as Any. 
 """
 

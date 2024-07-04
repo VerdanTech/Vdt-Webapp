@@ -15,7 +15,7 @@ from typing_extensions import Annotated
 
 # VerdanTech Source
 from src import settings
-from src.common.domain import Command, EntityIdType
+from src.common.domain import Command
 from src.common.interfaces.persistence import AbstractUow
 
 # Load all banned usernames
@@ -184,7 +184,7 @@ class ConfirmPasswordReset(Command):
     Closes a password resest request.
     """
 
-    user_id: EntityIdType
+    user_id: uuid.UUID
     key: ConfirmationKey
     new_password1: Password
     new_password2: Password

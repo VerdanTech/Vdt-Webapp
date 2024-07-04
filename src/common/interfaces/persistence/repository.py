@@ -5,6 +5,7 @@ from typing import Protocol
 
 # VerdanTech Source
 from src.common.domain import RootEntity
+from src.common.interfaces.persistence.exceptions import ObjectAlreadyExists
 
 
 class AbstractRepository[RootEntityT: RootEntity](Protocol):
@@ -21,7 +22,7 @@ class AbstractRepository[RootEntityT: RootEntity](Protocol):
     Protocol: (https://peps.python.org/pep-0544/)
     """
 
-    touched_entities: list[RootEntityT]
+    touched_entities: list[RootEntityT] = list()
     """Tracks the entities which have been affected so that new events may be caught."""
 
     async def add(self, entity: RootEntityT) -> RootEntityT:
@@ -34,6 +35,12 @@ class AbstractRepository[RootEntityT: RootEntity](Protocol):
         Returns:
             RootEntityT: the entity after persistence.
         """
+        # Existing entity
+        if entity.id is not None:
+            raise ObjectAlreadyExists(
+                f"ID field of {str(entity)} of type {str(type(entity))} already exists"
+            )
+
         self.touched_entities.append(entity)
         return await self._add(entity)
 

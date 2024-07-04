@@ -1,10 +1,5 @@
-# Standard Library
-import uuid
-
 # External Libraries
 from pydantic import BaseModel, ConfigDict
-
-type EntityIdType = uuid.UUID
 
 
 class Command(BaseModel):

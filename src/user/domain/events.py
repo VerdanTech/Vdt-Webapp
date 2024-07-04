@@ -2,7 +2,7 @@
 import uuid
 
 # VerdanTech Source
-from src.common.domain import EntityIdType, Event, event_transform
+from src.common.domain import Event, event_transform
 
 
 @event_transform
@@ -11,7 +11,7 @@ class UserCreated(Event):
     Emitted when a new user is created.
     """
 
-    userid: EntityIdType
+    userid: uuid.UUID
     username: str
     email_address: str
 
@@ -32,7 +32,7 @@ class PasswordPendingReset(Event):
     Emitted when a new password reset is required.
     """
 
-    user_id: EntityIdType
+    user_id: uuid.UUID
     username: str
     email_address: str
 
@@ -56,7 +56,7 @@ class PasswordResetConfirmationCreated(Event):
     and is pending a notification.
     """
 
-    user_id: EntityIdType
+    user_id: uuid.UUID
     email_address: str
     username: str
     key: uuid.UUID

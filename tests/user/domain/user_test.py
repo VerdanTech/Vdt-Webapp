@@ -27,7 +27,6 @@ class TestUser:
     # ======================================
     # User.email_create() tests
     # ======================================
-
     def test_email_create_first_no_verification(self, user: User) -> None:
         """
         Ensure that when no other emails exist and verification is
@@ -47,7 +46,6 @@ class TestUser:
             and user.emails[0].verified is True
             and not user.events
         )
-
     def test_email_create_first_verification(
         self,
         user: User,
@@ -77,7 +75,6 @@ class TestUser:
             and user.events[0].username == user.username
             and user.events[0].email_address == email_address
         )
-
     def test_email_create_non_first_no_verification(self, user: User) -> None:
         """
         Ensure that when other emails do exist and verification is
@@ -87,7 +84,6 @@ class TestUser:
         Args:
             user (User): user fixture.
         """
-        print(user.events)
         user.emails = [
             Email(address="test2@test.com", primary=True),
             Email(address="test3@test.com", primary=True),
@@ -95,7 +91,6 @@ class TestUser:
         email_address = "test@test.com"
 
         user.email_create(address=email_address, max_emails=2, verification=False)
-        print(user.events)
         assert (
             len(user.emails) == 2
             and user.emails[0].address == email_address

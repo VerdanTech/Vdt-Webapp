@@ -2,7 +2,7 @@
 from dataclasses import field
 
 # VerdanTech Source
-from src.common.domain import EntityIdType, Ref, Value
+import uuid, Ref, Value
 from src.workspace.domain.workspace import Workspace
 
 from .plant import Plant

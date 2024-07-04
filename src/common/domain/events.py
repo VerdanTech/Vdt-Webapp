@@ -1,13 +1,9 @@
 # Standard Library
-import uuid
 from typing import dataclass_transform
 
 # External Libraries
 from attr import attrib
 from attrs import define, field
-
-type EntityIdType = uuid.UUID
-
 
 class Event:
     """

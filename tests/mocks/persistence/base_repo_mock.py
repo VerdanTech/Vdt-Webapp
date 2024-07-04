@@ -40,13 +40,6 @@ class MockBaseRepository[T: RootEntity](AbstractRepository[T]):
         Returns:
             RootEntity: the entity added
         """
-        # Existing entity
-        if entity.id is not None:
-            raise ObjectAlreadyExists(
-                f"ID field of {str(entity)} of type {str(type(entity))} already exists"
-            )
-
-        # New entity
         self._generate_entity_id(entity)
         self.collection.append(entity)
         self.touched_entities.append(entity)

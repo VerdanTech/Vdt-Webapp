@@ -22,5 +22,19 @@ In short, this backend is an asynchronous HTTP and websocket application in Pyth
 # Contributing
 
 
-Notes on testing: 
+Notes:
+- In domain models, avoid assigning collections back into themselves. Instead of:
+
+self.emails = [
+    email.make_unprimary()
+    for email in self.emails
+    if email != new_primary_email
+]
+
+use:
+for index, email in enumerate(self.emails):
+    if email != new_primary_email:
+        self.emails[index] = email.make_unprimary()
+
+This is because SqlAlchemy has proven to be a slightly leaky abstraction when mapping domain objects, as it messes with assignment of collections.
 - Prefer to use mocker.patch.object over mocker.patch

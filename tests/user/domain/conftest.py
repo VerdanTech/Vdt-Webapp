@@ -3,11 +3,13 @@ from datetime import datetime
 
 # External Libraries
 import factory
+from faker import Faker
 import pytest
 
 # VerdanTech Source
 from src.user.domain import Email, User
 
+fake = Faker()
 
 class EmailMake(factory.Factory):
     class Meta:
@@ -37,5 +39,10 @@ class UserMake(factory.Factory):
 
 
 @pytest.fixture
-def user():
-    return UserMake.build()
+def user() -> User:
+    user = User(username=fake.name())
+    user.emails = [Email(address=fake.email(), primary=True, verified=True)]
+    user._password_hash = "some_password"
+    user.created_at = datetime.now()
+    user.events = []
+    return user

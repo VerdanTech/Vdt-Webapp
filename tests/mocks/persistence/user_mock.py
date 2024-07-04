@@ -2,7 +2,7 @@
 import uuid
 
 # VerdanTech Source
-from src.common.domain import EntityIdType
+import uuid
 from src.user.domain import User
 from src.user.interfaces.repository import AbstractUserRepository
 
@@ -12,15 +12,12 @@ from .base_repo_mock import MockBaseRepository
 class MockUserRepository(MockBaseRepository[User], AbstractUserRepository):
     """Implementation of a mock user repository for testing"""
 
-    entity = User
-    touched_entities: list[User] = list()
-
-    async def get_by_id(self, id: EntityIdType) -> User | None:
+    async def get_by_id(self, id: uuid.UUID) -> User | None:
         """
         Given an ID return the user to whom it belongs.
 
         Args:
-            id (EntityIdType): the id to search for.
+            id (uuid.UUID): the id to search for.
 
         Returns:
             User | None: the found user, or None if no
@@ -85,14 +82,14 @@ class MockUserRepository(MockBaseRepository[User], AbstractUserRepository):
         return None
 
     async def get_by_password_reset_confirmation(
-        self, user_id: EntityIdType, key: uuid.UUID
+        self, user_id: uuid.UUID, key: uuid.UUID
     ) -> User | None:
         """
         Given a password reset key and user ID, return the user with
         the password reset confirmation and ID to whom they belong.
 
         Args:
-            user_id (EntityIdType): the user's ID.
+            user_id (uuid.UUID): the user's ID.
             key (str): password reset confirmation key.
 
         Returns:
@@ -134,40 +131,4 @@ class MockUserRepository(MockBaseRepository[User], AbstractUserRepository):
             for email in user.emails:
                 if email.address == email_address:
                     return True
-        return False
-
-    async def email_confirmation_key_exists(self, key: uuid.UUID) -> bool:
-        """
-        Check the existence of an email confirmatiion key in the repository.
-
-        Args:
-            key (str): the email confirmation key to check uniqueness of.
-
-        Returns:
-            bool: true if the email confirmation key exists.
-        """
-        for user in self.collection:
-            for email in user.emails:
-                if email.confirmation is not None and email.confirmation.key == key:
-                    return True
-        return False
-
-    async def password_reset_confirmation_key_exists(self, key: uuid.UUID) -> bool:
-        """
-        Check the existence of an password reset confirmatiion key
-        in the repository.
-
-        Args:
-            key (str): the password reset confirmation key to
-                check uniqueness of.
-
-        Returns:
-            bool: true if the password reset confirmation key exists.
-        """
-        for user in self.collection:
-            if (
-                user.password_reset_confirmation is not None
-                and user.password_reset_confirmation.key == key
-            ):
-                return True
         return False

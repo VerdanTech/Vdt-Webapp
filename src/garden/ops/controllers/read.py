@@ -2,7 +2,7 @@
 from typing import Optional
 
 # VerdanTech Source
-from src.common.domain import EntityIdType
+import uuid
 from src.common.interfaces.persistence.garden.garden import AbstractGardenRepository
 from src.user.domain import User
 

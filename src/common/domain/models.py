@@ -10,7 +10,6 @@ from attrs import define, evolve, field
 from .events import Event
 from .exceptions import EntityIntegrityException
 
-type EntityIdType = uuid.UUID
 type DomainModel = Union[RootEntity, Entity, Value]
 
 
@@ -97,7 +96,7 @@ class Entity:
     are equal if they share the same ID.
     """
 
-    id: EntityIdType | None = None
+    id: uuid.UUID | None = None
     """Not included in __init__ as the ID is assigned at persistence."""
     created_at: datetime = field(factory=datetime.now, init=False)
     """Not included in __init__ as the timestamp is assigned with a factory."""
@@ -111,7 +110,7 @@ class Entity:
         """If an ID has not been assigned, the entity has not been persisted."""
         return self.id is not None
 
-    def id_or_error(self) -> EntityIdType:
+    def id_or_error(self) -> uuid.UUID:
         """
         Returns the id of the Entity.
 
@@ -121,7 +120,7 @@ class Entity:
                 before it is persisted for the first time.
 
         Returns:
-            EntityIdType: the id of the Entity.
+            uuid.UUID: the id of the Entity.
         """
         if self.id is None:
             raise EntityIntegrityException(
@@ -184,4 +183,4 @@ class Ref[E: RootEntity](Value):
     only by referencing RootEntitys by ID.
     """
 
-    id: EntityIdType
+    id: uuid.UUID

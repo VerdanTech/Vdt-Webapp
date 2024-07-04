@@ -1,34 +1,14 @@
 # External Libraries
-from attr import define, field
+from attr import field
 from sqlalchemy.ext.asyncio import AsyncSession as AlchemySession, async_sessionmaker
 
 # VerdanTech Source
 from src import settings
-from src.common.interfaces.persistence import AbstractRepositoryContainer, AbstractUow
-from src.user.adapters.sqlalchemy.repository import UserAlchemyRepository
+from src.common.interfaces.persistence import AbstractUow
 
-from ..sqlalchemy.client import AlchemyClient
+from .repositories import StandardRepositoryContainer, DatabaseClients
 
 sessionmaker = async_sessionmaker(expire_on_commit=False)
-
-
-@define
-class DatabaseClients:
-    alchemy_client: AlchemyClient
-
-
-@define
-class StandardRepositoryContainer(AbstractRepositoryContainer):
-    users: UserAlchemyRepository
-
-    @classmethod
-    def enter_uow(
-        cls, alchemy_session: AlchemySession
-    ) -> "StandardRepositoryContainer":
-        return StandardRepositoryContainer(
-            users=UserAlchemyRepository(session=alchemy_session)
-        )
-
 
 class StandardUow(AbstractUow):
     clients: DatabaseClients
