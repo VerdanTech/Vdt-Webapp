@@ -18,4 +18,3 @@ class StandardRepositoryContainer(AbstractRepositoryContainer):
         return StandardRepositoryContainer(
             users=UserAlchemyRepository(session=alchemy_session)
         )
-

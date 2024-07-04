@@ -62,8 +62,8 @@ def value_transform(cls):
 
     This decorator:
     - Applies attrs @define decorator with arguments:
-        kw_only=True: Positional arguments are not supported
-            for the sake of simplicity and readability.
+        kw_only=False: Positional arguments are supported
+            as it is required for SqlAlchemy composites.
         frozen=False: Value objects are supposed to be immutable,
             so use of frozen=True is preferred to enforce this.
             However, due to lack of support from SQLAlchemy,
@@ -82,7 +82,7 @@ def value_transform(cls):
         Type[ValueT]: the Value class after decoration.
     """
 
-    cls = define(kw_only=True, frozen=False, eq=True, slots=False)(cls)
+    cls = define(kw_only=False, frozen=False, eq=True, slots=False)(cls)
     return cls
 
 

@@ -1,8 +1,12 @@
 # Standard Library
+import uuid
 from dataclasses import field
 
+# External Libraries
+import Ref
+import Value
+
 # VerdanTech Source
-import uuid, Ref, Value
 from src.workspace.domain.workspace import Workspace
 
 from .plant import Plant

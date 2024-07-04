@@ -1,5 +1,5 @@
 # Standard Library
-from typing import AsyncGenerator
+from typing import AsyncGenerator, Callable
 
 # External Libraries
 import pytest
@@ -32,13 +32,21 @@ def provide_user_mock_repository() -> MockUserRepository:
         (provide_user_alchemy_repository, "sqlalchemy"),
     ]
 )
-def user_repo(request) -> AbstractUserRepository:
+async def user_repo(request, sql_connection: AsyncConnection) -> AbstractUserRepository:
+    provider: Callable[..., AbstractUserRepository]
+    provider_type: str
     provider, provider_type = request.param
-    print(provider)
-    if provider_type == "mock":
-        return provider()
-    elif provider_type == "sqlalchemy":
-        return provider()
+
+    match provider_type:
+        case "mock":
+            return provider()
+        case "sqlalchemy":
+            async with function_scoped_sql_transaction(
+                connection=sql_connection
+            ) as session:
+                return provider(session)
+
+    raise ValueError(f"Unknown provider type for repository tests: {provider_type}")
 
 
 @pytest.fixture(scope="session")

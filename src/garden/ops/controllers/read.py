@@ -1,8 +1,8 @@
 # Standard Library
+import uuid
 from typing import Optional
 
 # VerdanTech Source
-import uuid
 from src.common.interfaces.persistence.garden.garden import AbstractGardenRepository
 from src.user.domain import User
 

@@ -2,7 +2,6 @@
 import uuid
 
 # VerdanTech Source
-import uuid
 from src.user.domain import User
 from src.user.interfaces.repository import AbstractUserRepository
 

@@ -53,12 +53,12 @@ def expected_error_context(request) -> ContextManager:
         return pytest.raises(request.param)
 
 
-# TODO
-# Was needed previously to help with nasty async issuse with sqlalchemy
-# @pytest.fixture(scope="session", autouse=True)
+@pytest.fixture(scope="session", autouse=True)
 def event_loop(request):
     """
     Creates an instance of the default event loop for the test session.
+
+    Session scoped as to enable the use of session-scoped connections.
 
     https://www.core27.co/post/transactional-unit-tests-with-pytest-and-async-sqlalchemy
     """
@@ -71,8 +71,8 @@ def event_loop(request):
 @pytest.fixture(scope="function")
 def svcs_container() -> Container:
     """
-    Fixture returning an empty Container for per-test
-    dependency configuration.
+    Fixture returning an services container
+    with a registry full of mock adapters.
 
     Returns:
         Container: svcs container.

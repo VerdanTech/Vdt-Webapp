@@ -3,7 +3,6 @@ import uuid
 from typing import Protocol
 
 # VerdanTech Source
-import uuid
 from src.common.interfaces.persistence import AbstractRepository
 from src.user.domain import User
 

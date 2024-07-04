@@ -5,7 +5,10 @@ from typing import Protocol
 
 # VerdanTech Source
 from src.common.domain import RootEntity
-from src.common.interfaces.persistence.exceptions import ObjectAlreadyExists
+from src.common.interfaces.persistence.exceptions import (
+    ObjectAlreadyExists,
+    ObjectNotFound,
+)
 
 
 class AbstractRepository[RootEntityT: RootEntity](Protocol):
@@ -54,6 +57,12 @@ class AbstractRepository[RootEntityT: RootEntity](Protocol):
         Returns:
             RootEntityT: the entity after persistence.
         """
+        # Non-existing entity
+        if entity.id is None:
+            raise ObjectNotFound(
+                f"ID field of {str(entity)} of type {str(type(entity))} does not exist."
+            )
+
         self.touched_entities.append(entity)
         return await self._update(entity)
 
@@ -64,6 +73,12 @@ class AbstractRepository[RootEntityT: RootEntity](Protocol):
         Args:
             entity (RootEntityT): the entity to delete.
         """
+        # Non-existing entity
+        if entity.id is None:
+            raise ObjectNotFound(
+                f"ID field of {str(entity)} of type {str(type(entity))} does not exist."
+            )
+
         self.touched_entities.append(entity)
         return await self._delete(entity)
 

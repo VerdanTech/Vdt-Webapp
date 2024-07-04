@@ -46,6 +46,7 @@ class TestUser:
             and user.emails[0].verified is True
             and not user.events
         )
+
     def test_email_create_first_verification(
         self,
         user: User,
@@ -75,6 +76,7 @@ class TestUser:
             and user.events[0].username == user.username
             and user.events[0].email_address == email_address
         )
+
     def test_email_create_non_first_no_verification(self, user: User) -> None:
         """
         Ensure that when other emails do exist and verification is

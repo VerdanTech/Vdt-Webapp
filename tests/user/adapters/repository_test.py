@@ -9,7 +9,7 @@ from src.common.interfaces.persistence.exceptions import (
     ObjectAlreadyExists,
     ObjectNotFound,
 )
-from src.user.domain import PasswordResetConfirmation, User
+from src.user.domain import User
 from src.user.interfaces import AbstractUserRepository
 
 pytestmark = [pytest.mark.databases]
@@ -31,9 +31,9 @@ class TestAbstractUserRepository:
                 repository to test.
             user (User): user factory fixture.
         """
-        result = await user_repo.add(user)
+        user.id = uuid.uuid4()
         with pytest.raises(ObjectAlreadyExists):
-            await user_repo.add(result)
+            await user_repo.add(user)
 
     async def test_add_success(
         self, user_repo: AbstractUserRepository, user: User
@@ -47,10 +47,7 @@ class TestAbstractUserRepository:
             user (User): user factory fixture.
         """
         await user_repo.add(user)
-
-        result = await user_repo.get_by_email_address(
-            email_address=user.emails[0].address
-        )
+        result = await user_repo.get_by_username(username=user.username)
         assert (
             result is not None
             and result.id is not None

@@ -1,3 +1,7 @@
+# Standard Library
+import uuid
+from datetime import datetime
+
 # External Libraries
 from sqlalchemy import (
     Boolean,
@@ -10,6 +14,7 @@ from sqlalchemy import (
     Uuid,
 )
 from sqlalchemy.orm import composite, relationship
+
 # VerdanTech Source
 from src.common.adapters.persistence.sqlalchemy.mapper import (
     default_uuid,
@@ -17,7 +22,8 @@ from src.common.adapters.persistence.sqlalchemy.mapper import (
 )
 from src.user.domain import Email, EmailConfirmation, PasswordResetConfirmation, User
 
-def base_confirmation_composite_values(self) -> tuple[Uuid, DateTime]:
+
+def base_confirmation_composite_values(self) -> tuple[uuid.UUID, datetime]:
     """
     Required by SqlAlchemy to map value objects to composites (multiple columns).
 
@@ -26,8 +32,13 @@ def base_confirmation_composite_values(self) -> tuple[Uuid, DateTime]:
     """
     return self.key, self.created_at
 
+
 setattr(EmailConfirmation, "__composite_values__", base_confirmation_composite_values)
-setattr(PasswordResetConfirmation, "__composite_values__", base_confirmation_composite_values)
+setattr(
+    PasswordResetConfirmation,
+    "__composite_values__",
+    base_confirmation_composite_values,
+)
 
 user_table = Table(
     "user_table",
@@ -52,13 +63,12 @@ user_email_table = Table(
         ForeignKey("user_table.id", ondelete="CASCADE"),
         primary_key=True,
     ),
-    Column("_list_index", Integer, primary_key=True),
-    Column("address", String, nullable=False, unique=True),
+    Column("address", String, primary_key=True, nullable=False, unique=True),
     Column("verified", Boolean, nullable=False),
     Column("primary", Boolean, nullable=False),
     Column("confirmation_key", Uuid, nullable=True),
     Column("confirmation_created_at", DateTime, nullable=True),
-    Column("verified_at", DateTime, nullable=False),
+    Column("verified_at", DateTime, nullable=True),
 )
 
 mapper_registry.map_imperatively(
@@ -69,7 +79,7 @@ mapper_registry.map_imperatively(
         # Adding the back_populates causes issues when reassining the entire collection.
         "emails": relationship(
             Email,
-            order_by=user_email_table.c._list_index,
+            order_by=user_email_table.c.verified_at,
             collection_class=list,
         ),
         "password_reset_confirmation": composite(

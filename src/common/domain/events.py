@@ -5,6 +5,7 @@ from typing import dataclass_transform
 from attr import attrib
 from attrs import define, field
 
+
 class Event:
     """
     Represents something that happened in the system.

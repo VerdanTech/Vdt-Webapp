@@ -23,7 +23,7 @@ engine = create_async_engine(settings.ALCHEMY_URI, echo=True)
 
 sessionmaker = async_sessionmaker(
     expire_on_commit=False,
-    autoflush=False,
+    autoflush=True,
 )
 
 alchemy_client = AlchemyClient(engine=engine)

@@ -1,4 +1,5 @@
 # Standard Library
+import pdb
 import uuid
 
 # External Libraries
@@ -7,7 +8,6 @@ from sqlalchemy.orm import noload, selectinload
 
 # VerdanTech Source
 from src.common.adapters.persistence.sqlalchemy.repository import BaseAlchemyRepository
-import uuid
 from src.user.domain import User
 from src.user.domain.models import Email
 from src.user.interfaces.repository import AbstractUserRepository
@@ -93,8 +93,8 @@ class UserAlchemyRepository(BaseAlchemyRepository[User], AbstractUserRepository)
         """
         statement = (
             select(User)
-            .options(selectinload(User.emails))
-            .filter(func.lower(user_table.c.username) == func.lower(username))
+            # .options(selectinload(User.emails))
+            .filter(func.lower(user_table.c.username) == username.lower())
         )
         query = await self.session.execute(statement)
         user = query.unique().scalar_one_or_none()
@@ -112,13 +112,15 @@ class UserAlchemyRepository(BaseAlchemyRepository[User], AbstractUserRepository)
                 user was found.
         """
         statement = (
-            select(Email)
-            .options(selectinload(Email.user))
-            .filter(user_email_table.c.address == email_address)
+            select(User).join(User.emails).filter(Email.address == email_address)
         )
         query = await self.session.execute(statement)
-        email = query.unique().scalar_one_or_none()
-        return email.user
+        user = query.unique().scalar_one_or_none()
+
+        if user is None:
+            return None
+
+        return user
 
     async def get_by_email_confirmation_key(self, key: uuid.UUID) -> User | None:
         """

@@ -3,13 +3,14 @@ from datetime import datetime
 
 # External Libraries
 import factory
-from faker import Faker
 import pytest
+from faker import Faker
 
 # VerdanTech Source
 from src.user.domain import Email, User
 
 fake = Faker()
+
 
 class EmailMake(factory.Factory):
     class Meta:
