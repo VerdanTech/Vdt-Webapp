@@ -197,8 +197,7 @@ async def test_client_profile_no_client(svcs_container: Container) -> None:
     """
     client = None
     with pytest.raises(ApplicationException):
-        await queries.client_profile(client=client) # type: ignore
-
+        await queries.client_profile(client=client)  # type: ignore
 
 
 async def test_client_profile_success(svcs_container: Container, user: User) -> None:

@@ -1,7 +1,8 @@
 # Standard Library
-from typing import Type, TypeVar, dataclass_transform
 import uuid
 from datetime import datetime
+from typing import Type, TypeVar, dataclass_transform
+
 # External Libraries
 import cattrs
 from attr import attrib, define, field
@@ -13,6 +14,7 @@ from src.common.domain.models import DomainModel
 cattrs_converter = cattrs.Converter()
 cattrs_converter.register_structure_hook(uuid.UUID, lambda v, _: v)
 cattrs_converter.register_structure_hook(datetime, lambda v, _: v)
+
 
 @dataclass_transform(field_specifiers=(attrib, field))
 def query_result_transform(cls):
