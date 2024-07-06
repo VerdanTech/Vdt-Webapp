@@ -45,7 +45,7 @@ class UserFullSchema(QueryResult[User]):
     username: str
     emails: list[EmailSchema]
     is_superuser: bool
-    created_at: datetime | None
+    created_at: datetime
 
 
 @query_result_transform

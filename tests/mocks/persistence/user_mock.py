@@ -131,3 +131,19 @@ class MockUserRepository(MockBaseRepository[User], AbstractUserRepository):
                 if email.address == email_address:
                     return True
         return False
+
+    # ======================================
+    # Query-only methods
+    # ======================================
+
+    async def get_by_ids(self, ids: list[uuid.UUID]) -> list[User]:
+        """
+        Given a list of IDs return the users to whom they belong.
+
+        Args:
+            ids (list[uuid.UUID]): the ids to search for.
+
+        Returns:
+            list[User]: the found users.
+        """
+        return [user for user in self.collection if user.id in ids]

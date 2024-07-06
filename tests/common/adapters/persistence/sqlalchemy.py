@@ -3,7 +3,7 @@ from contextlib import asynccontextmanager
 from typing import AsyncGenerator
 
 # External Libraries
-from sqlalchemy import event
+from sqlalchemy import Connection, event
 from sqlalchemy.ext.asyncio import (
     AsyncConnection,
     AsyncSession,
@@ -47,7 +47,10 @@ async def function_scoped_sql_transaction(
     def end_savepoint(session, transaction):
         nonlocal nested
         if not nested.is_active:
-            nested = connection.sync_connection.begin_nested()
+            sync_connection = connection.sync_connection
+            if not isinstance(sync_connection, Connection):
+                raise ValueError("No transaction is active")
+            nested = sync_connection.begin_nested()
 
     try:
         yield transaction

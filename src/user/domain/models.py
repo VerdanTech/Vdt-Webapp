@@ -63,12 +63,12 @@ class PasswordResetConfirmation(BaseConfirmation):
 class User(RootEntity):
     """User entity model"""
 
-    username: str
+    username: str  # type: ignore
     emails: list[Email] = field(factory=list)
     _password_hash: str | None = None
     is_active: bool = True
     is_superuser: bool = False
-    password_reset_confirmation: Optional[PasswordResetConfirmation] = None
+    password_reset_confirmation: PasswordResetConfirmation | None = None
 
     def email_create(
         self,

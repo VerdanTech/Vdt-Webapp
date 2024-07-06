@@ -1,10 +1,8 @@
 # Standard Library
-import pdb
 import uuid
 
 # External Libraries
 from sqlalchemy import func, select
-from sqlalchemy.orm import noload, selectinload
 
 # VerdanTech Source
 from src.common.adapters.persistence.sqlalchemy.repository import BaseAlchemyRepository
@@ -68,10 +66,7 @@ class UserAlchemyRepository(BaseAlchemyRepository[User], AbstractUserRepository)
             User | None: the found user, or None if no
                 user was found.
         """
-        statement = (
-            select(User)
-            .filter(user_table.c.id == id)
-        )
+        statement = select(User).filter(user_table.c.id == id)
         query = await self.session.execute(statement)
         user = query.unique().scalar_one_or_none()
         return user
@@ -90,16 +85,15 @@ class UserAlchemyRepository(BaseAlchemyRepository[User], AbstractUserRepository)
             User | None: the found user, or None if no
                 user was found.
         """
-        statement = (
-            select(User)
-            .filter(func.lower(user_table.c.username) == username.lower())
+        statement = select(User).filter(
+            func.lower(user_table.c.username) == username.lower()
         )
         query = await self.session.execute(statement)
         user = query.unique().scalar_one_or_none()
 
         if user is None:
             return None
-        
+
         return user
 
     async def get_by_email_address(self, email_address: str) -> User | None:
@@ -114,7 +108,9 @@ class UserAlchemyRepository(BaseAlchemyRepository[User], AbstractUserRepository)
                 user was found.
         """
         statement = (
-            select(User).join(Email, User.emails).filter(Email.address == email_address)
+            select(User)
+            .join(user_email_table)
+            .filter(user_email_table.c.address == email_address)
         )
         query = await self.session.execute(statement)
         user = query.unique().scalar_one_or_none()
@@ -136,7 +132,8 @@ class UserAlchemyRepository(BaseAlchemyRepository[User], AbstractUserRepository)
             User | None: the found user, or None if no user was found.
         """
         statement = (
-            select(User).join(Email, User.emails)
+            select(User)
+            .join(user_email_table)
             .filter(user_email_table.c.confirmation_key == key)
         )
         query = await self.session.execute(statement)
@@ -144,7 +141,7 @@ class UserAlchemyRepository(BaseAlchemyRepository[User], AbstractUserRepository)
 
         if user is None:
             return None
-        
+
         return user
 
     async def get_by_password_reset_confirmation(
@@ -163,7 +160,7 @@ class UserAlchemyRepository(BaseAlchemyRepository[User], AbstractUserRepository)
         """
         statement = (
             select(User)
-            .options(selectinload(User.emails))
+            .join(user_email_table)
             .filter(user_table.c.id == user_id)
             .filter(user_table.c.password_reset_confirmation_key == key)
         )
@@ -182,10 +179,8 @@ class UserAlchemyRepository(BaseAlchemyRepository[User], AbstractUserRepository)
         Returns:
             bool: true if the username exists.
         """
-        statement = (
-            select(User)
-            .filter(func.lower(User.username) == func.lower(username))
-            .options(noload(User.emails))
+        statement = select(User).filter(
+            func.lower(user_table.c.username) == func.lower(username)
         )
         query = await self.session.execute(statement)
         user = query.scalar_one_or_none()
@@ -202,11 +197,7 @@ class UserAlchemyRepository(BaseAlchemyRepository[User], AbstractUserRepository)
         Returns:
             bool: true if the email exists.
         """
-        statement = (
-            select(Email)
-            .filter(Email.address == email_address)
-            .options(noload(Email.user))
-        )
+        statement = select(Email).filter(user_email_table.c.address == email_address)
         query = await self.session.execute(statement)
         email = query.scalar_one_or_none()
 
@@ -215,3 +206,19 @@ class UserAlchemyRepository(BaseAlchemyRepository[User], AbstractUserRepository)
     # ======================================
     # Query-only methods
     # ======================================
+
+    async def get_by_ids(self, ids: list[uuid.UUID]) -> list[User]:
+        """
+        Given a list of IDs return the users to whom they belong.
+
+        Args:
+            ids (list[uuid.UUID]): the ids to search for.
+
+        Returns:
+            list[User]: the found users.
+        """
+        statement = select(User).filter(user_table.c.id.in_(ids))
+        query = await self.session.execute(statement)
+        users = query.scalars().all()
+
+        return list(users)

@@ -177,7 +177,7 @@ class TestAbstractUserRepository:
 
         if isinstance(user_repo, UserAlchemyRepository):
             await user_repo.session.commit()
-        
+
         result = await user_repo.get_by_id(id=user.id_or_error())
         assert result is not None and result.id == user.id
 
@@ -337,7 +337,6 @@ class TestAbstractUserRepository:
         user = await user_repo.add(user)
         if isinstance(user_repo, UserAlchemyRepository):
             await user_repo.session.commit()
-
 
         result = await user_repo.get_by_password_reset_confirmation(
             user_id=user.id_or_error(), key=key

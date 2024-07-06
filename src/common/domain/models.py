@@ -98,8 +98,9 @@ class Entity:
 
     id: uuid.UUID | None = None
     """Not included in __init__ as the ID is assigned at persistence."""
-    created_at: datetime = field(factory=datetime.now, init=False)
-    """Not included in __init__ as the timestamp is assigned with a factory."""
+    created_at: datetime = field(factory=datetime.now, init=True)
+    """Included in __init__ despite the timestamp being assigned with a factory
+    due to incompatibilities with cattrs structuring."""
 
     def __eq__(self, other) -> bool:
         """Two entities are equivalent if they share the same ID."""

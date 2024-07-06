@@ -1,3 +1,6 @@
+# Standard Library
+import uuid
+
 # External Libraries
 import pytest
 from pydantic import SecretStr
@@ -9,6 +12,7 @@ from src import settings
 from src.common.interfaces.persistence.uow import AbstractUow
 from src.common.interfaces.security.passwords import AbstractPasswordCrypt
 from src.common.ops.exceptions import EntityNotFound
+from src.exceptions import ApplicationException
 from src.user.domain.models import User
 from src.user.ops import queries
 
@@ -142,3 +146,67 @@ async def test_verify_password_success_correct_password(
     result = await queries.verify_password(query=query, svcs_container=svcs_container)
 
     assert result.verified is True
+
+
+# ======================================
+# public_profiles() tests
+# ======================================
+
+
+async def test_public_profiles_success(svcs_container: Container) -> None:
+    """
+    Ensure that the profiles query returns a list of public user schemas.
+
+    Args:
+        svcs_container (Container): service locator with mock services.
+    """
+    uow = await svcs_container.aget_abstract(AbstractUow)
+
+    # Add existing users
+    users = [User(username="user1"), User(username="user2"), User(username="user3")]
+    async with uow:
+        for user in users:
+            await uow.repos.users.add(user)
+        await uow.commit()
+
+    nonexistant_id = uuid.uuid4()
+    query = queries.PublicProfilesQuery(user_ids=[user.id_or_error() for user in users])
+    query.user_ids.append(nonexistant_id)
+
+    result = await queries.public_profiles(query=query, svcs_container=svcs_container)
+
+    assert (
+        queries.UserPublicSchema.cast(users[0]) in result
+        and queries.UserPublicSchema.cast(users[1]) in result
+        and queries.UserPublicSchema.cast(users[2]) in result
+        and nonexistant_id not in [user.id for user in result]
+    )
+
+
+# ======================================
+# client_profile() tests
+# ======================================
+
+
+async def test_client_profile_no_client(svcs_container: Container) -> None:
+    """
+    Ensure that the method raises an exception for no client user.
+
+    Args:
+        svccs_container (Container): service locator with mock services.
+    """
+    client = None
+    with pytest.raises(ApplicationException):
+        await queries.client_profile(client=client) # type: ignore
+
+
+
+async def test_client_profile_success(svcs_container: Container, user: User) -> None:
+    """
+    Ensure that the method returns the client user's full schema.
+
+    Args:
+        svcs_container (Container): service locator with mock services.
+    """
+    result = await queries.client_profile(client=user)
+    assert result == queries.UserFullSchema.cast(user)

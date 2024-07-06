@@ -13,7 +13,7 @@ from tests.common.adapters.persistence.sqlalchemy import (
     session_scoped_sql_connection,
 )
 from tests.mocks.persistence.user_mock import MockUserRepository
-from tests.user.domain.conftest import user  # noqa: F401 - pytest fixture
+from tests.user.conftest import user  # noqa: F401 - pytest fixture
 
 
 def provide_user_alchemy_repository(
