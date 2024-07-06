@@ -9,7 +9,9 @@ from src.common.interfaces.persistence.exceptions import (
     ObjectAlreadyExists,
     ObjectNotFound,
 )
+from src.user.adapters.sqlalchemy.repository import UserAlchemyRepository
 from src.user.domain import User
+from src.user.domain.models import EmailConfirmation
 from src.user.interfaces import AbstractUserRepository
 
 pytestmark = [pytest.mark.databases]
@@ -87,6 +89,9 @@ class TestAbstractUserRepository:
         """
         user = await user_repo.add(user)
 
+        if isinstance(user_repo, UserAlchemyRepository):
+            await user_repo.session.commit()
+
         new_username = "new_username"
         new_email = "new_email"
         user.username = new_username
@@ -133,6 +138,10 @@ class TestAbstractUserRepository:
             user (User): user factory fixture.
         """
         user = await user_repo.add(user)
+
+        if isinstance(user_repo, UserAlchemyRepository):
+            await user_repo.session.commit()
+
         await user_repo.delete(user)
         persisted_user = await user_repo.get_by_id(id=user.id_or_error())
 
@@ -165,6 +174,10 @@ class TestAbstractUserRepository:
             user (User): user factory fixture.
         """
         user = await user_repo.add(user)
+
+        if isinstance(user_repo, UserAlchemyRepository):
+            await user_repo.session.commit()
+        
         result = await user_repo.get_by_id(id=user.id_or_error())
         assert result is not None and result.id == user.id
 
@@ -197,6 +210,9 @@ class TestAbstractUserRepository:
             user (User): user factory fixture.
         """
         user = await user_repo.add(user)
+        if isinstance(user_repo, UserAlchemyRepository):
+            await user_repo.session.commit()
+
         result = await user_repo.get_by_username(username=user.username)
         assert (
             result is not None
@@ -233,6 +249,8 @@ class TestAbstractUserRepository:
             user (User): user factory fixture.
         """
         await user_repo.add(user)
+        if isinstance(user_repo, UserAlchemyRepository):
+            await user_repo.session.commit()
 
         result = await user_repo.get_by_email_address(
             email_address=user.emails[0].address
@@ -268,8 +286,10 @@ class TestAbstractUserRepository:
             user (User): user factory fixture.
         """
         key = uuid.uuid4()
-        user.emails[0] = user.emails[0].new_confirmation(key=key)
+        user.emails[0] = user.emails[0].transform(confirmation=EmailConfirmation(key))
         await user_repo.add(user)
+        if isinstance(user_repo, UserAlchemyRepository):
+            await user_repo.session.commit()
 
         result = await user_repo.get_by_email_confirmation_key(key=key)
         assert (
@@ -293,6 +313,9 @@ class TestAbstractUserRepository:
             user (User): user factory fixture.
         """
         user = await user_repo.add(user)
+        if isinstance(user_repo, UserAlchemyRepository):
+            await user_repo.session.commit()
+
         result = await user_repo.get_by_password_reset_confirmation(
             user_id=user.id_or_error(), key=uuid.uuid4()
         )
@@ -312,6 +335,9 @@ class TestAbstractUserRepository:
         key = uuid.uuid4()
         user.password_reset_create(key=key)
         user = await user_repo.add(user)
+        if isinstance(user_repo, UserAlchemyRepository):
+            await user_repo.session.commit()
+
 
         result = await user_repo.get_by_password_reset_confirmation(
             user_id=user.id_or_error(), key=key

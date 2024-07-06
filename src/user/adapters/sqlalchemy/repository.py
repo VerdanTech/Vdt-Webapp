@@ -70,7 +70,6 @@ class UserAlchemyRepository(BaseAlchemyRepository[User], AbstractUserRepository)
         """
         statement = (
             select(User)
-            .options(selectinload(User.emails))
             .filter(user_table.c.id == id)
         )
         query = await self.session.execute(statement)
@@ -93,11 +92,14 @@ class UserAlchemyRepository(BaseAlchemyRepository[User], AbstractUserRepository)
         """
         statement = (
             select(User)
-            # .options(selectinload(User.emails))
             .filter(func.lower(user_table.c.username) == username.lower())
         )
         query = await self.session.execute(statement)
         user = query.unique().scalar_one_or_none()
+
+        if user is None:
+            return None
+        
         return user
 
     async def get_by_email_address(self, email_address: str) -> User | None:
@@ -112,7 +114,7 @@ class UserAlchemyRepository(BaseAlchemyRepository[User], AbstractUserRepository)
                 user was found.
         """
         statement = (
-            select(User).join(User.emails).filter(Email.address == email_address)
+            select(User).join(Email, User.emails).filter(Email.address == email_address)
         )
         query = await self.session.execute(statement)
         user = query.unique().scalar_one_or_none()
@@ -134,13 +136,16 @@ class UserAlchemyRepository(BaseAlchemyRepository[User], AbstractUserRepository)
             User | None: the found user, or None if no user was found.
         """
         statement = (
-            select(Email)
-            .options(selectinload(Email.user))
-            .filter(user_email_table.c.email_confirmation_key == key)
+            select(User).join(Email, User.emails)
+            .filter(user_email_table.c.confirmation_key == key)
         )
         query = await self.session.execute(statement)
-        email = query.unique().scalar_one_or_none()
-        return email.user
+        user = query.unique().scalar_one_or_none()
+
+        if user is None:
+            return None
+        
+        return user
 
     async def get_by_password_reset_confirmation(
         self, user_id: uuid.UUID, key: uuid.UUID
@@ -159,7 +164,7 @@ class UserAlchemyRepository(BaseAlchemyRepository[User], AbstractUserRepository)
         statement = (
             select(User)
             .options(selectinload(User.emails))
-            .filter(user_table.c.id == id)
+            .filter(user_table.c.id == user_id)
             .filter(user_table.c.password_reset_confirmation_key == key)
         )
         query = await self.session.execute(statement)
@@ -202,7 +207,7 @@ class UserAlchemyRepository(BaseAlchemyRepository[User], AbstractUserRepository)
             .filter(Email.address == email_address)
             .options(noload(Email.user))
         )
-        query = await self.sessino.execute(statement)
+        query = await self.session.execute(statement)
         email = query.scalar_one_or_none()
 
         return email is not None

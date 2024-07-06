@@ -81,6 +81,7 @@ mapper_registry.map_imperatively(
             Email,
             order_by=user_email_table.c.verified_at,
             collection_class=list,
+            cascade="all, delete-orphan",
         ),
         "password_reset_confirmation": composite(
             PasswordResetConfirmation,
