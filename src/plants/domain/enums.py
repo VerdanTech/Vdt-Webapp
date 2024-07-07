@@ -9,5 +9,5 @@ class OriginEnum(Enum):
     """A seed is sown directly into the area it will reach maturity in."""
     SEED_TRANSPLANT = "seed transplant"
     """A seed is sown in one area and then transplanted into the area it will reach maturity in."""
-    SEEDLING_TO_TRANSPLANT = "seelding transplant"
+    SEEDLING_TO_TRANSPLANT = "seedding transplant"
     """A seedling is transplanted directly into the area it will reach maturity in."""

@@ -8,6 +8,8 @@ from src.common.domain.cultivars import Cultivar
 from src.common.domain.utils import TimeWindow
 from src.environment.domain import Environment
 
+class PlantingTimeWindow(Value):
+    
 
 @value_transform
 class PlantingWindow(Value):
@@ -25,4 +27,3 @@ class PlantingWindow(Value):
 @value_transform
 class PlantingCalendar(Value):
     planting_windows: set[PlantingWindow]
-    scope: TimeWindow
