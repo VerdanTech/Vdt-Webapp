@@ -8,10 +8,11 @@ from src.common.domain.cultivars import Cultivar
 from src.common.domain.utils import TimeWindow
 from src.environment.domain import Environment
 
-class PlantingTimeWindow(Value):
-    
 
-@value_transform
+class PlantingTimeWindow(Value):
+    pass
+
+
 class PlantingWindow(Value):
     """
     Represents a set of TimeWindows that pertain to a specific

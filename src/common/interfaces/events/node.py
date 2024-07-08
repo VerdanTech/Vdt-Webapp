@@ -6,7 +6,9 @@ from src.common.domain.events import Event
 
 
 class AbstractEventNode(Protocol):
-    def __init__(self, client: )
+    def __init__(self) -> None:
+        pass
+
     async def emit(self, event: Event, subject: str):
         pass
 

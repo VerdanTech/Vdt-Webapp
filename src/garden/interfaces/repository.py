@@ -1,56 +1,61 @@
 # Standard Library
+import uuid
 from typing import Protocol
 
 # VerdanTech Source
-from src.garden.domain.garden import Garden
-
-from ..generic import AbstractRepository
+from src.common.interfaces.persistence import AbstractRepository
+from src.garden.domain import Garden
 
 
 class AbstractGardenRepository(AbstractRepository[Garden], Protocol):
     """Data persistence interface for the Garden domain model"""
 
-    entity = Garden
+    # ======================================
+    # General methods
+    # ======================================
 
-    async def add(self, garden: Garden) -> Garden:
+    async def get_by_id(self, id: uuid.UUID) -> Garden | None:
         """
-        Persist a new garden entity to the repository.
+        Given an ID return the garden to whom it belongs.
 
         Args:
-            garden (Garden): the garden entity to add.
+            id (uuid.UUID): the id to search for.
 
         Returns:
-            Garden: the garden entity after persistence.
+            Garden | None: the found garden, or None if no
+                garden was found.
         """
         ...
 
-    async def update(self, garden: Garden) -> Garden:
+    async def get_by_name(self, name: str) -> Garden | None:
         """
-        Persist an existing garden entity to the repository.
+        Given a garden name return the garden to whom it belongs.
 
         Args:
-            garden (Garden): garden entity to update.
+            name (str): the name to search for.
 
         Returns:
-            Garden: the garden entity after persistence.
+            Garden | None: the found garden, or None if no
+                garden was found.
         """
         ...
 
-    async def get_garden_by_key(self, key: str) -> Garden | None:
+    async def get_by_key(self, key: str) -> Garden | None:
         """
-        Given a garden key id, return the garden to whom it belongs.
+        Given a garden key return the garden to whom it belongs.
 
         Args:
             key (str): the key to search for.
 
         Returns:
-            Garden | None: the found garden, or None if no garden was found.
+            Garden | None: the found garden, or None if no
+                garden was found.
         """
         ...
 
-    async def key_id_exists(self, key: str) -> bool:
+    async def key_exists(self, key: str) -> bool:
         """
-        Given a garden key id, return True if a matching garden exists.
+        Given a garden key, return True if a matching garden exists.
 
         Args:
             key (str): the key to check existence of.

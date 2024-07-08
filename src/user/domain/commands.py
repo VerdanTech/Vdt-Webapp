@@ -5,6 +5,7 @@ import uuid
 # External Libraries
 from pydantic import (
     AfterValidator,
+    BeforeValidator,
     EmailStr,
     Field,
     SecretStr,
@@ -18,12 +19,12 @@ from src import settings
 from src.common.domain import Command
 from src.common.interfaces.persistence import AbstractUow
 
-# Load all banned usernames
-banned_usernames = []
-with open(settings.static_path("banned_fields/usernames.txt"), "r") as file:
+# Load all banned garden names and keys
+banned_fields = []
+with open(settings.static_path("banned_fields.txt"), "r") as file:
     for line in file:
-        username = line.strip()
-        banned_usernames.append(username.lower())
+        field = line.strip()
+        banned_fields.append(field.lower())
 
 
 def username_validator(username: str) -> str:
@@ -37,7 +38,7 @@ def username_validator(username: str) -> str:
     """
     if not re.match(settings.USERNAME_PATTERN, username):
         raise ValueError(settings.USERNAME_PATTERN_DESCRIPTION)
-    if username.lower() in banned_usernames:
+    if username.lower() in banned_fields:
         raise ValueError("unsafe or offensive")
     return username
 
@@ -59,6 +60,8 @@ Username = Annotated[
     Field(
         min_length=settings.USERNAME_MIN_LENGTH, max_length=settings.USERNAME_MAX_LENGTH
     ),
+    # Trim beginning and end whitespace before validation
+    BeforeValidator(lambda v: v.strip()),
     AfterValidator(username_validator),
 ]
 Password = Annotated[
@@ -66,6 +69,7 @@ Password = Annotated[
     Field(
         min_length=settings.PASSWORD_MIN_LENGTH, max_length=settings.PASSWORD_MAX_LENGTH
     ),
+    # Trim beginning and end whitespace before validation
     AfterValidator(password_validator),
 ]
 ConfirmationKey = Annotated[

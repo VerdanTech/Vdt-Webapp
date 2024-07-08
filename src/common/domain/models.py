@@ -74,6 +74,9 @@ def value_transform(cls):
             but is currently not supported by SQLAlchemy. To make use
             of SQLAlchemy's imperative mapper and avoid clunky
             mapping between domain and ORM objects, they are currently disabled.
+        unsafe_hash=True: Hashability is required for use in sets and dicts.
+            It would normally come as part of frozen=True, but it has to
+            be unsafe due to the lack of support from SQLAlchemy.
 
     Args:
         cls (Type[Any]): the class before decoration.
@@ -82,7 +85,9 @@ def value_transform(cls):
         Type[ValueT]: the Value class after decoration.
     """
 
-    cls = define(kw_only=False, frozen=False, eq=True, slots=False)(cls)
+    cls = define(kw_only=False, frozen=False, eq=True, slots=False, unsafe_hash=True)(
+        cls
+    )
     return cls
 
 

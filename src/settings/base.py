@@ -39,6 +39,7 @@ else:
     CLIENT_BASE_URL: str = "http://" + CLIENT_DOMAIN + "/"
 CLIENT_EMAIL_VERIFICATION_URL: str = CLIENT_BASE_URL + "register/verify/"
 CLIENT_PASSWORD_RESET_URL: str = CLIENT_BASE_URL + "password_reset/"
+CLIENT_GARDENS_URL: str = CLIENT_BASE_URL + "app/gardens/"
 
 # ======================================
 # ALLOWED HOSTS SETTINGS
@@ -151,6 +152,9 @@ EMAIL_SUBJECT_EMAIL_CONFIRMATION: str = "Email verification - VerdanTech"
 # Password reset
 EMAIL_FILEPATH_PASSWORD_RESET = email_path("password_reset.html")
 EMAIL_SUBJECT_PASSWORD_RESET: str = "Password reset - VerdanTech"
+# Garden invite
+EMAIL_FILEPATH_GARDEN_INVITE = email_path("garden_invite.html")
+EMAIL_SUBJECT_GARDEN_INVITE: str = "You've been invited to a Garden - VerdanTech"
 
 # ============================================================================
 # DOMAIN MODEL SETTINGS
@@ -179,4 +183,17 @@ VERIFICATION_KEY_MAX_LENGTH: int = 64
 # GARDEN SETTINGS
 # ======================================
 
-GARDEN_STR_ID_LENGTH: int = 12
+GARDEN_NAME_MIN_LENGTH: int = 2
+GARDEN_NAME_MAX_LENGTH: int = 50
+GARDEN_NAME_PATTERN: Pattern = re.compile(r"[0-9A-Za-z ]+")
+GARDEN_NAME_PATTERN_DESCRIPTION: str = (
+    "Must contain only alphanumeric characters and spaces."
+)
+GARDEN_KEY_MIN_LENGTH: int = 4
+GARDEN_KEY_MAX_LENGTH: int = 16
+GARDEN_KEY_KEYGEN_DEFAULT_LENGTH: int = 4
+"""Default length of the keygen portion of the garden key. """
+GARDEN_KEY_PATTERN: Pattern = re.compile(r"[0-9A-Za-z]+")
+GARDEN_KEY_PATTERN_DESCRIPTION: str = "Must contain only alphanumeric characters."
+MAX_GARDEN_RANDOM_PLANT_KEY_GENERATION_ATTEMPTS: 4
+"""The maximum amount of times the key generator will generate an id with a random plant name before reverting to only random characters."""

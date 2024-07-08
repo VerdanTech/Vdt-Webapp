@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING, Generator, Protocol
 # VerdanTech Source
 from src.common.domain import Event
 from src.common.domain.models import RootEntity
+from src.garden.interfaces.repository import AbstractGardenRepository
 
 if TYPE_CHECKING:
     # VerdanTech Source
@@ -14,6 +15,7 @@ if TYPE_CHECKING:
 
 class AbstractRepositoryContainer(Protocol):
     users: AbstractUserRepository
+    gardens: AbstractGardenRepository
 
     @classmethod
     def enter_uow(cls) -> AbstractRepositoryContainer:
@@ -30,6 +32,8 @@ class AbstractRepositoryContainer(Protocol):
         """
         for user in self.users.touched_entities:
             yield user
+        for garden in self.gardens.touched_entities:
+            yield garden
 
 
 class AbstractUow(Protocol):
@@ -41,6 +45,7 @@ class AbstractUow(Protocol):
     """
 
     repos: AbstractRepositoryContainer
+    events: list[Event] = []
 
     async def __aenter__(self) -> AbstractUow:
         return self
@@ -59,8 +64,14 @@ class AbstractUow(Protocol):
         Yields all unhandled events on the entities which were touched during the operation.
 
         Yields:
+
             Generator[Event, None, None]: all new events.
         """
+        # Yield all events directly set on the uow
+        while self.events:
+            yield self.events.pop(0)
+
+        # Yield all events from entities that were changed
         for entity in self.repos.touched_entities:
             while entity.events:
                 yield entity.events.pop(0)

@@ -4,7 +4,7 @@ import string
 
 
 def key_generator(
-    length: int, chars: str = string.ascii_uppercase + string.digits
+    length: int, chars: str = string.ascii_lowercase + string.digits
 ) -> str:
     """Generate a random string.
 

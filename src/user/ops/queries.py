@@ -15,11 +15,6 @@ from src.exceptions import ApplicationException
 from src.user.domain import Email, User
 from src.user.domain.commands import EmailStr, Password
 
-"""
-Note: The UUID class is used directly instead of the uuid.UUID alias
-because Litestar schema generation currently types it as Any. 
-"""
-
 # ======================================
 # QueryResults
 # ======================================
@@ -146,7 +141,6 @@ async def public_profiles(
     Args:
         query (ProfilesQuery): the query object.
         svcs_container (Container): service locator.
-        client (User | None): the client user.
 
     Returns:
         list[UserPublicSchema]: the list of public profiles.

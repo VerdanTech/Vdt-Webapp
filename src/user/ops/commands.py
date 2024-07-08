@@ -27,7 +27,7 @@ async def create_user(
     )
 
     async with uow:
-        # Validate command against uow
+        # Validate command against database state ie., existing fields
         await command.validate_against_uow(uow=uow)
 
         # Create a new user
@@ -79,7 +79,7 @@ async def update_user(
     )
 
     async with uow:
-        # Validate command against uow
+        # Validate command against database state ie., existing fields
         await command.validate_against_uow(uow=uow)
 
         # Authenticate password
