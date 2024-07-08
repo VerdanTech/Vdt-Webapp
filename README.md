@@ -60,6 +60,7 @@ The current workflow for setting up development environments is standardized to 
 
 ## Contributing
 
+See the documentation for contributing instructions.
 
 
 
