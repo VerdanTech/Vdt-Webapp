@@ -58,10 +58,8 @@ test-cov:
 format:
 	isort ./src
 	isort ./tests
-	isort ./mocks
 	black src
 	black tests
-	black mocks
 
 #
 # Lint check all source and test code.
@@ -70,7 +68,6 @@ format:
 lint:
 	ruff check ./src
 	ruff check ./tests
-	ruff check ./mocks
 	pyright ./src
 
 #
@@ -85,7 +82,7 @@ docs:
 #
 .PHONY: schema
 schema:
-	python3 -m litestar --app src.asgi.litestar.app:create_app schema openapi --output schema.yaml
+	python3 -m litestar --app src.common.entrypoints.litestar.app:create_app schema openapi --output schema.yaml
 
 # python3.12 ./src/asgi/litestar/patch_openapi.py
 
@@ -94,7 +91,7 @@ schema:
 #
 .PHONY: run
 run:
-	litestar --app src.asgi.litestar.app:create_app run -d
+	litestar --app src.common.entrypoints.litestar.app:create_app run -d
 
 #
 # Run Alembic's "revision" command to create database migrations from the current sqlalchemy metadata.
@@ -102,7 +99,7 @@ run:
 .PHONY: migrations
 migrations:
 	export PYTHONPATH=$(shell pwd); \
-	python src/infra/persistence/sqlalchemy/migrations/create.py -m "$(filter-out $@,$(MAKECMDGOALS))"
+	python src/common/adapters/persistence/sqlalchemy/migrations/create.py -m "$(filter-out $@,$(MAKECMDGOALS))"
 
 #
 # Run Alembic's "upgrade" command to apply migrations to the database.
@@ -110,7 +107,7 @@ migrations:
 .PHONY: migrate
 migrate:
 	export PYTHONPATH=$(shell pwd); \
-	python src/infra/persistence/sqlalchemy/migrations/apply.py
+	python src/common/adapters/persistence/sqlalchemy/migrations/apply.py
 
 #
 # Run Alembic's "downgrade" command to un-apply all migrations.
@@ -118,4 +115,4 @@ migrate:
 .PHONY: reset-migrations
 reset-migrations:
 	export PYTHONPATH=$(shell pwd); \
-	python src/infra/persistence/sqlalchemy/migrations/reset.py --reset
+	python src/common/adapters/persistence/sqlalchemy/migrations/reset.py --reset

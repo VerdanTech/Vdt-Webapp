@@ -8,8 +8,7 @@ import pytest
 from svcs import Container
 
 # VerdanTech Source
-from mocks.dependencies.registry import mock_registry
-from mocks.infra.security.mock_crypt import MockPasswordCrypt
+from tests.mocks.registry import mock_registry
 
 
 @pytest.fixture
@@ -59,6 +58,8 @@ def event_loop(request):
     """
     Creates an instance of the default event loop for the test session.
 
+    Session scoped as to enable the use of session-scoped connections.
+
     https://www.core27.co/post/transactional-unit-tests-with-pytest-and-async-sqlalchemy
     """
     policy = asyncio.get_event_loop_policy()
@@ -67,16 +68,11 @@ def event_loop(request):
     loop.close()
 
 
-@pytest.fixture
-def mock_password_crypt():
-    return MockPasswordCrypt()
-
-
-@pytest.fixture
+@pytest.fixture(scope="function")
 def svcs_container() -> Container:
     """
-    Fixture returning an empty Container for per-test
-    dependency configuration.
+    Fixture returning an services container
+    with a registry full of mock adapters.
 
     Returns:
         Container: svcs container.

@@ -7,9 +7,11 @@ authors = [
 ]
 dependencies = [
     "litestar[standard, jwt]",
+    "taskiq",
+    "taskiq-nats",
+    "nats-py",
     "svcs",
     "litestar-svcs",
-    "saq",
     "sqlalchemy",
     "asyncpg",
     "alembic",
@@ -21,6 +23,7 @@ dependencies = [
     "email-validator",
     "python-decouple",
     "shapely",
+    "cattrs",
 ]
 requires-python = ">=3.12"
 readme = "README.md"
