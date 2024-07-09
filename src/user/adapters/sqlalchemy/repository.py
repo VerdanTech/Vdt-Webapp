@@ -20,41 +20,6 @@ class UserAlchemyRepository(BaseAlchemyRepository[User], AbstractUserRepository)
     # General methods
     # ======================================
 
-    async def _add(self, entity: User) -> User:
-        """
-        Persist a new entity to the repository.
-
-        Args:
-            entity (User): the entity to add.
-
-        Returns:
-            User: the entity after persistence.
-        """
-        self.session.add(entity)
-        return entity
-
-    async def _update(self, entity: User) -> User:
-        """
-        Update an existing entity to the repository.
-
-        Args:
-            entity (User): the entity to update.
-
-        Returns:
-            User: the entity after persistence.
-        """
-        entity = await self.session.merge(entity)
-        return entity
-
-    async def _delete(self, entity: User) -> None:
-        """
-        Delete an existing entity from a repository.
-
-        Args:
-            entity (RootEntityT): the entity to delete.
-        """
-        await self.session.delete(entity)
-
     async def get_by_id(self, id: uuid.UUID) -> User | None:
         """
         Given an ID return the user to whom it belongs.

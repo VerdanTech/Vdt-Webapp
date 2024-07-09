@@ -26,7 +26,7 @@ class UserAuthController(Controller):
 
     @post(
         path=urls.USER_LOGIN_URL,
-        name=url_to_route_name(urls.USER_LOGIN_URL),
+        name=url_to_route_name(urls.USER_ROUTER_URL_BASE, urls.USER_LOGIN_URL),
         opt={"exclude_from_auth": True},
         summary="User login",
         description="Authenticate the request with JWT cookie authentication.",

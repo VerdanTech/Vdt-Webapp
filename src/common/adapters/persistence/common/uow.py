@@ -6,7 +6,8 @@ from sqlalchemy.ext.asyncio import AsyncSession as AlchemySession, async_session
 from src import settings
 from src.common.interfaces.persistence import AbstractUow
 
-from .repositories import DatabaseClients, StandardRepositoryContainer
+from .clients import DatabaseClients
+from .repositories import StandardRepositoryContainer
 
 sessionmaker = async_sessionmaker(expire_on_commit=False)
 

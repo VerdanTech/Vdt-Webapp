@@ -1,3 +1,6 @@
+# Standard Library
+import uuid
+
 # External Libraries
 from litestar import Controller, Request, get
 from litestar.datastructures import State
@@ -20,14 +23,16 @@ class UserQueryController(Controller):
 
     @get(
         path=urls.USER_PUBLIC_PROFILES_URL,
-        name=url_to_route_name(urls.USER_PUBLIC_PROFILES_URL),
+        name=url_to_route_name(
+            urls.USER_ROUTER_URL_BASE, urls.USER_PUBLIC_PROFILES_URL
+        ),
         summary="User public profiles view.",
         description="Returns the profiles of the user ids given.",
         response_description="The list of users requested.",
     )
     async def public_profiles(
         self,
-        data: queries.PublicProfilesQuery,
+        user_ids: list[uuid.UUID],
         state: State,
         svcs_container: Container = Dependency(skip_validation=True),
     ) -> list[queries.UserPublicSchema]:
@@ -44,6 +49,7 @@ class UserQueryController(Controller):
             list[UserPublicSchema]: the retrieved public profiles.
         """
         svcs_container.register_local_value(State, state)
+        data = queries.PublicProfilesQuery(user_ids=user_ids)
         with litestar_exception_map():
             user_schemas = await queries.public_profiles(
                 query=data, svcs_container=svcs_container
@@ -52,7 +58,7 @@ class UserQueryController(Controller):
 
     @get(
         path=urls.USER_CLIENT_PROFILE_URL,
-        name=url_to_route_name(urls.USER_CLIENT_PROFILE_URL),
+        name=url_to_route_name(urls.USER_ROUTER_URL_BASE, urls.USER_CLIENT_PROFILE_URL),
         summary="User client profile view.",
         description="Returns the profile of the authenticated user.",
         response_description="The profile of the authenticated user.",

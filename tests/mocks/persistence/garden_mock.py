@@ -2,18 +2,14 @@
 import uuid
 
 # VerdanTech Source
-from src.common.adapters.persistence.sqlalchemy.repository import BaseAlchemyRepository
-from src.garden.domain.models import Garden
+from src.garden.domain import Garden
 from src.garden.interfaces.repository import AbstractGardenRepository
 
-# from sqlalchemy import select
+from .base_repo_mock import MockBaseRepository
 
 
-# from .mapper import garden_table, garden_membership_table
-
-
-class GardenAlchemyRepository(BaseAlchemyRepository[Garden], AbstractGardenRepository):
-    """SQLAlchemy implementation of garden repository"""
+class MockGardenRepository(MockBaseRepository[Garden], AbstractGardenRepository):
+    """Implementation of a mock garden repository for testing"""
 
     # ======================================
     # General methods
@@ -30,7 +26,10 @@ class GardenAlchemyRepository(BaseAlchemyRepository[Garden], AbstractGardenRepos
             Garden | None: the found garden, or None if no
                 garden was found.
         """
-        ...
+        for garden in self.collection:
+            if garden.id == id:
+                return garden
+        return None
 
     async def get_by_name(self, name: str) -> Garden | None:
         """
@@ -43,7 +42,10 @@ class GardenAlchemyRepository(BaseAlchemyRepository[Garden], AbstractGardenRepos
             Garden | None: the found garden, or None if no
                 garden was found.
         """
-        ...
+        for garden in self.collection:
+            if garden.name == name:
+                return garden
+        return None
 
     async def get_by_key(self, key: str) -> Garden | None:
         """
@@ -56,7 +58,10 @@ class GardenAlchemyRepository(BaseAlchemyRepository[Garden], AbstractGardenRepos
             Garden | None: the found garden, or None if no
                 garden was found.
         """
-        ...
+        for garden in self.collection:
+            if garden.key == key:
+                return garden
+        return None
 
     async def key_exists(self, key: str) -> bool:
         """
@@ -68,8 +73,7 @@ class GardenAlchemyRepository(BaseAlchemyRepository[Garden], AbstractGardenRepos
         Returns:
             bool: the result of the existence check.
         """
-        ...
-
-    # ======================================
-    # Query-only methods
-    # ======================================
+        for garden in self.collection:
+            if garden.key.lower() == key.lower():
+                return True
+        return False

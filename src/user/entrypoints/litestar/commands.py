@@ -24,7 +24,7 @@ class UserCommandController(Controller):
 
     @post(
         path=urls.USER_CREATE_URL,
-        name=url_to_route_name(urls.USER_CREATE_URL),
+        name=url_to_route_name(urls.USER_ROUTER_URL_BASE, urls.USER_CREATE_URL),
         opt={"exclude_from_auth": True},
         summary="User registration.",
         description=f"Registers a new user. Requires email confirmation: {settings.EMAIL_CONFIRMATION.verification_required}.",
@@ -51,7 +51,9 @@ class UserCommandController(Controller):
 
     @post(
         path=urls.USER_EMAIL_VERIFICATION_REQUEST_URL,
-        name=url_to_route_name(urls.USER_EMAIL_VERIFICATION_REQUEST_URL),
+        name=url_to_route_name(
+            urls.USER_ROUTER_URL_BASE, urls.USER_EMAIL_VERIFICATION_REQUEST_URL
+        ),
         opt={"exclude_from_auth": True},
         summary="Email confirmation request.",
         description="Requests a new email verification email be sent to the email address.",
@@ -79,7 +81,9 @@ class UserCommandController(Controller):
 
     @post(
         path=urls.USER_EMAIL_VERIFICATION_CONFIRM_URL,
-        name=url_to_route_name(urls.USER_EMAIL_VERIFICATION_CONFIRM_URL),
+        name=url_to_route_name(
+            urls.USER_ROUTER_URL_BASE, urls.USER_EMAIL_VERIFICATION_CONFIRM_URL
+        ),
         opt={"exclude_from_auth": True},
         summary="Email confirmation.",
         description="Closes an email confirmation and verifies the email address.",
@@ -107,7 +111,9 @@ class UserCommandController(Controller):
 
     @post(
         path=urls.USER_PASSWORD_RESET_REQUEST_URL,
-        name=url_to_route_name(urls.USER_PASSWORD_RESET_REQUEST_URL),
+        name=url_to_route_name(
+            urls.USER_ROUTER_URL_BASE, urls.USER_PASSWORD_RESET_REQUEST_URL
+        ),
         opt={"exclude_from_auth": True},
         summary="Password reset request.",
         description="Open a new password reset request and sends confirmation email.",
@@ -135,7 +141,9 @@ class UserCommandController(Controller):
 
     @post(
         path=urls.USER_PASSWORD_RESET_CONFIRM_URL,
-        name=url_to_route_name(urls.USER_PASSWORD_RESET_CONFIRM_URL),
+        name=url_to_route_name(
+            urls.USER_ROUTER_URL_BASE, urls.USER_PASSWORD_RESET_CONFIRM_URL
+        ),
         opt={"exclude_from_auth": True},
         summary="Password reset confirm.",
         description="Closes a password reset request and changes the password",

@@ -7,6 +7,7 @@ from src.common.domain import Ref
 from src.common.interfaces.email.client import AbstractEmailClient
 from src.common.interfaces.events import AbstractEventNode
 from src.common.interfaces.persistence import AbstractUow
+from src.common.ops.exceptions import EntityNotFound
 from src.common.ops.processors import asgi_processor, task_processor
 from src.garden.domain import GardenInvite, GardenMembership, RoleEnum, events
 from src.garden.domain.exceptions import GardenAuthorizationException
@@ -28,9 +29,15 @@ async def process_garden_invite(
     uow, event_node = await svcs_container.aget_abstract(AbstractUow, AbstractEventNode)
 
     async with uow:
-        # Retrieve the garden and client
+        # Retrieve garden
         garden = await uow.repos.gardens.get_by_id(event.garden_ref.id)
+        if garden is None:
+            raise EntityNotFound("This Garden does not exist.")
+
+        # Retrieve client
         client = await uow.repos.users.get_by_id(event.client_ref.id)
+        if client is None:
+            raise EntityNotFound("This User does not exist.")
 
         # Retrieve client's membership
         client_membership = garden.get_membership(user=client)
@@ -86,6 +93,10 @@ async def process_garden_invite(
                 for user in users
             ]
             invites += viewer_invites
+
+        # Return if no invites remain
+        if not invites:
+            return
 
         # Create the memberships
         memberships = [

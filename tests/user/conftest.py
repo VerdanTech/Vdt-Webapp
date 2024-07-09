@@ -1,6 +1,6 @@
 # Standard Library
 from datetime import datetime
-
+from sqlalchemy.orm import make_transient
 # External Libraries
 import factory
 import pytest
@@ -46,4 +46,6 @@ def user() -> User:
     user._password_hash = "some_password"
     user.created_at = datetime.now()
     user.events = []
+
+    make_transient(user)
     return user
