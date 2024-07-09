@@ -3,7 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession as AsyncSession
 from svcs import Registry
 
 # VerdanTech Source
-from src.common.adapters.email.aiosmtplib import provide_aiosmtplib_client
+from src.common.adapters.email import provide_aiosmtplib_client
 from src.common.adapters.events.nats import provide_nats_event_node
 from src.common.adapters.persistence.common import provide_standard_uow
 from src.common.adapters.persistence.sqlalchemy import (

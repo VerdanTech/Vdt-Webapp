@@ -1,6 +1,5 @@
 # Standard Library
 from datetime import datetime
-
 # External Libraries
 import factory
 import pytest

@@ -1,7 +1,6 @@
 # Standard Library
 import uuid
 from datetime import datetime
-from re import A
 
 # External Libraries
 from svcs import Container
@@ -10,7 +9,7 @@ from svcs import Container
 from src import settings
 from src.common.interfaces.persistence.uow import AbstractUow
 from src.common.ops.queries import QueryResult, RefSchema, query_result_transform
-from src.environment.domain.environment import Environment
+from src.environment.domain import Environment
 from src.garden.domain import (
     Garden,
     GardenMembership,

@@ -8,15 +8,17 @@ from src.common.interfaces.persistence.uow import (
 )
 
 from .user_mock import MockUserRepository
+from .garden_mock import MockGardenRepository
 
 
 @define
 class MockRepositoryContainer(AbstractRepositoryContainer):
     users: MockUserRepository
+    gardens: MockGardenRepository
 
     @classmethod
     def enter_uow(cls) -> "MockRepositoryContainer":
-        return MockRepositoryContainer(users=MockUserRepository())
+        return MockRepositoryContainer(users=MockUserRepository(), gardens=MockGardenRepository())
 
 
 class MockUow(AbstractUow):

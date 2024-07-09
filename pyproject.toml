@@ -6,7 +6,7 @@ authors = [
     { name = "Nathaniel King", email = "nathanielarking@gmail.com" }
 ]
 dependencies = [
-    "litestar[standard, jwt]",
+    "litestar[standard, jwt]==2.9.1",
     "taskiq",
     "taskiq-nats",
     "nats-py",

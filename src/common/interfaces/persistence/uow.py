@@ -6,10 +6,10 @@ from typing import TYPE_CHECKING, Generator, Protocol
 # VerdanTech Source
 from src.common.domain import Event
 from src.common.domain.models import RootEntity
-from src.garden.interfaces.repository import AbstractGardenRepository
 
 if TYPE_CHECKING:
     # VerdanTech Source
+    from src.garden.interfaces.repository import AbstractGardenRepository
     from src.user.interfaces import AbstractUserRepository
 
 

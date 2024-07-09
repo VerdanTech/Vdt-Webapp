@@ -6,11 +6,10 @@ from typing import TYPE_CHECKING
 # VerdanTech Source
 from src.attributes.domain import AttributeCluster, AttributeProfile
 from src.common.domain import root_entity_transform, value_transform
-from src.utils.sanitizers import SpecError
 
 if TYPE_CHECKING:
     # VerdanTech Source
-    from src.garden.domain.garden import Garden
+    from src.garden.domain import Garden
     from src.workspace.domain.workspace import Workspace
 
 
@@ -47,10 +46,8 @@ class FrostDateProfile(EnvironmentAttributeProfile):
 
     def sanitize(self) -> None:
         if self.last_frost_date > self.first_frost_date:
-            raise SpecError(
-                message={
-                    "MultiFieldError": "The last frost date cannot be later than the first frost date."
-                }
+            raise ValueError(
+                "The last frost date cannot be later than the first frost date."
             )
 
 
