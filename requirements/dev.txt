@@ -4,15 +4,15 @@
 #
 #    pip-compile --extra=dev --extra=test --output-file=requirements/dev.txt pyproject.toml
 #
-aiofiles==24.1.0
+aiofiles==23.2.1
     # via verdantech_api (pyproject.toml)
 aiosmtplib==3.0.1
     # via verdantech_api (pyproject.toml)
-alembic==1.13.2
+alembic==1.13.0
     # via verdantech_api (pyproject.toml)
 annotated-types==0.7.0
     # via pydantic
-anyio==4.4.0
+anyio==4.1.0
     # via
     #   httpx
     #   litestar
@@ -24,17 +24,17 @@ argon2-cffi-bindings==21.2.0
     # via argon2-cffi
 asyncpg==0.29.0
     # via verdantech_api (pyproject.toml)
-attrs==23.2.0
+attrs==23.1.0
     # via
     #   cattrs
     #   svcs
-babel==2.15.0
+babel==2.13.1
     # via mkdocs-material
-black==24.4.2
+black==23.11.0
     # via verdantech_api (pyproject.toml)
 cattrs==23.2.3
     # via verdantech_api (pyproject.toml)
-certifi==2024.7.4
+certifi==2023.11.17
     # via
     #   httpcore
     #   httpx
@@ -57,76 +57,76 @@ colorama==0.4.6
     # via
     #   griffe
     #   mkdocs-material
-coverage[toml]==7.5.4
+coverage[toml]==7.3.2
     # via verdantech_api (pyproject.toml)
-cryptography==42.0.8
+cryptography==41.0.7
     # via litestar
-dnspython==2.6.1
+dnspython==2.4.2
     # via email-validator
-ecdsa==0.19.0
+ecdsa==0.18.0
     # via python-jose
-editorconfig==0.12.4
+editorconfig==0.12.3
     # via jsbeautifier
-email-validator==2.2.0
+email-validator==2.1.0.post1
     # via verdantech_api (pyproject.toml)
 factory-boy==3.3.0
     # via verdantech_api (pyproject.toml)
-faker==26.0.0
+faker==20.1.0
     # via
     #   factory-boy
     #   polyfactory
 fast-query-parsers==1.0.3
     # via litestar
-fastjsonschema==2.20.0
+fastjsonschema==2.19.0
     # via validate-pyproject
 ghp-import==2.1.0
     # via mkdocs
-greenlet==3.0.3
+greenlet==3.0.1
     # via sqlalchemy
-griffe==0.47.0
+griffe==0.38.0
     # via mkdocstrings-python
 h11==0.14.0
     # via
     #   httpcore
     #   uvicorn
-html2text==2024.2.26
+html2text==2020.1.16
     # via verdantech_api (pyproject.toml)
-httpcore==1.0.5
+httpcore==1.0.2
     # via httpx
 httptools==0.6.1
     # via uvicorn
-httpx==0.27.0
+httpx==0.25.2
     # via litestar
-idna==3.7
+idna==3.6
     # via
     #   anyio
     #   email-validator
     #   httpx
     #   requests
-importlib-metadata==8.0.0
+importlib-metadata==7.1.0
     # via taskiq
 iniconfig==2.0.0
     # via pytest
-isort==5.13.2
+isort==5.12.0
     # via verdantech_api (pyproject.toml)
-jinja2==3.1.4
+jinja2==3.1.2
     # via
     #   litestar
     #   mkdocs
     #   mkdocs-material
     #   mkdocstrings
     #   pytest-html
-jsbeautifier==1.15.1
+jsbeautifier==1.14.11
     # via litestar
-litestar[jwt,standard]==2.9.1
+litestar[jwt,standard]==2.4.4
     # via
     #   litestar-svcs
     #   verdantech_api (pyproject.toml)
 litestar-svcs==0.1.2
     # via verdantech_api (pyproject.toml)
-mako==1.3.5
+mako==1.3.0
     # via alembic
-markdown==3.6
+markdown==3.5.1
     # via
     #   mkdocs
     #   mkdocs-autorefs
@@ -135,54 +135,49 @@ markdown==3.6
     #   pymdown-extensions
 markdown-it-py==3.0.0
     # via rich
-markupsafe==2.1.5
+markupsafe==2.1.3
     # via
     #   jinja2
     #   mako
     #   mkdocs
-    #   mkdocs-autorefs
     #   mkdocstrings
 mdurl==0.1.2
     # via markdown-it-py
 mergedeep==1.3.4
-    # via
-    #   mkdocs
-    #   mkdocs-get-deps
-mkdocs==1.6.0
+    # via mkdocs
+mkdocs==1.5.3
     # via
     #   mkdocs-autorefs
     #   mkdocs-material
     #   mkdocstrings
     #   verdantech_api (pyproject.toml)
-mkdocs-autorefs==1.0.1
+mkdocs-autorefs==0.5.0
     # via mkdocstrings
-mkdocs-get-deps==0.2.0
-    # via mkdocs
-mkdocs-material==9.5.28
+mkdocs-material==9.4.14
     # via verdantech_api (pyproject.toml)
 mkdocs-material-extensions==1.3.1
     # via mkdocs-material
-mkdocstrings[python]==0.25.1
+mkdocstrings[python]==0.24.0
     # via
     #   mkdocstrings-python
     #   verdantech_api (pyproject.toml)
-mkdocstrings-python==1.10.5
+mkdocstrings-python==1.7.5
     # via mkdocstrings
-msgspec==0.18.6
+msgspec==0.18.4
     # via litestar
-multidict==6.0.5
+multidict==6.0.4
     # via litestar
 mypy-extensions==1.0.0
     # via black
-nats-py==2.8.0
+nats-py==2.7.2
     # via
     #   taskiq-nats
     #   verdantech_api (pyproject.toml)
-nodeenv==1.9.1
+nodeenv==1.8.0
     # via pyright
-numpy==2.0.0
+numpy==1.26.4
     # via shapely
-packaging==24.1
+packaging==23.2
     # via
     #   black
     #   mkdocs
@@ -192,91 +187,90 @@ paginate==0.5.6
     # via mkdocs-material
 passlib==1.7.4
     # via verdantech_api (pyproject.toml)
-pathspec==0.12.1
+pathspec==0.11.2
     # via
     #   black
     #   mkdocs
-platformdirs==4.2.2
+platformdirs==4.0.0
     # via
     #   black
-    #   mkdocs-get-deps
+    #   mkdocs
     #   mkdocstrings
-pluggy==1.5.0
+pluggy==1.3.0
     # via pytest
-polyfactory==2.16.1
+polyfactory==2.12.0
     # via litestar
-pyasn1==0.6.0
+pyasn1==0.5.1
     # via
     #   python-jose
     #   rsa
-pycparser==2.22
+pycparser==2.21
     # via cffi
 pycron==3.0.0
     # via taskiq
-pydantic==2.8.2
+pydantic==2.7.3
     # via taskiq
-pydantic-core==2.20.1
+pydantic-core==2.18.4
     # via pydantic
-pygments==2.18.0
+pygments==2.17.2
     # via
     #   mkdocs-material
     #   rich
-pymdown-extensions==10.8.1
+pymdown-extensions==10.5
     # via
     #   mkdocs-material
     #   mkdocstrings
-pyright==1.1.370
+pyright==1.1.343
     # via verdantech_api (pyproject.toml)
-pytest==8.2.2
+pytest==7.4.3
     # via
     #   pytest-asyncio
     #   pytest-html
     #   pytest-metadata
     #   pytest-mock
     #   verdantech_api (pyproject.toml)
-pytest-asyncio==0.23.7
+pytest-asyncio==0.21.1
     # via verdantech_api (pyproject.toml)
 pytest-html==4.1.1
     # via verdantech_api (pyproject.toml)
-pytest-metadata==3.1.1
+pytest-metadata==3.0.0
     # via pytest-html
-pytest-mock==3.14.0
+pytest-mock==3.12.0
     # via verdantech_api (pyproject.toml)
-python-dateutil==2.9.0.post0
+python-dateutil==2.8.2
     # via
     #   faker
     #   ghp-import
 python-decouple==3.8
     # via verdantech_api (pyproject.toml)
-python-dotenv==1.0.1
+python-dotenv==1.0.0
     # via uvicorn
 python-jose==3.3.0
     # via litestar
-pytz==2024.1
+pytz==2023.3.post1
     # via taskiq
 pyyaml==6.0.1
     # via
     #   litestar
     #   mkdocs
-    #   mkdocs-get-deps
     #   pymdown-extensions
     #   pyyaml-env-tag
     #   uvicorn
 pyyaml-env-tag==0.1
     # via mkdocs
-regex==2024.5.15
+regex==2023.10.3
     # via mkdocs-material
-requests==2.32.3
+requests==2.31.0
     # via mkdocs-material
-rich==13.7.1
+rich==13.7.0
     # via
     #   litestar
     #   rich-click
-rich-click==1.8.3
+rich-click==1.7.1
     # via litestar
 rsa==4.9
     # via python-jose
-ruff==0.5.1
+ruff==0.1.6
     # via verdantech_api (pyproject.toml)
 shapely==2.0.4
     # via verdantech_api (pyproject.toml)
@@ -285,7 +279,7 @@ six==1.16.0
     #   ecdsa
     #   jsbeautifier
     #   python-dateutil
-sniffio==1.3.1
+sniffio==1.3.0
     # via
     #   anyio
     #   httpx
@@ -293,11 +287,11 @@ sqlalchemy==2.0.23
     # via
     #   alembic
     #   verdantech_api (pyproject.toml)
-svcs==24.1.0
+svcs==23.21.0
     # via
     #   litestar-svcs
     #   verdantech_api (pyproject.toml)
-taskiq==0.11.6
+taskiq==0.11.3
     # via
     #   taskiq-nats
     #   verdantech_api (pyproject.toml)
@@ -305,7 +299,7 @@ taskiq-dependencies==1.5.3
     # via taskiq
 taskiq-nats==0.4.0
     # via verdantech_api (pyproject.toml)
-typing-extensions==4.12.2
+typing-extensions==4.8.0
     # via
     #   alembic
     #   litestar
@@ -315,21 +309,24 @@ typing-extensions==4.12.2
     #   rich-click
     #   sqlalchemy
     #   taskiq
-urllib3==2.2.2
+urllib3==2.1.0
     # via requests
-uvicorn[standard]==0.30.1
+uvicorn[standard]==0.24.0.post1
     # via litestar
 uvloop==0.19.0
     # via
     #   litestar
     #   uvicorn
-validate-pyproject==0.18
+validate-pyproject==0.15
     # via verdantech_api (pyproject.toml)
-watchdog==4.0.1
+watchdog==3.0.0
     # via mkdocs
-watchfiles==0.22.0
+watchfiles==0.21.0
     # via uvicorn
 websockets==12.0
     # via uvicorn
 zipp==3.19.2
     # via importlib-metadata
+
+# The following packages are considered to be unsafe in a requirements file:
+# setuptools

@@ -4,15 +4,15 @@
 #
 #    pip-compile --output-file=requirements/main.txt pyproject.toml
 #
-aiofiles==24.1.0
+aiofiles==23.2.1
     # via verdantech_api (pyproject.toml)
 aiosmtplib==3.0.1
     # via verdantech_api (pyproject.toml)
-alembic==1.13.2
+alembic==1.13.0
     # via verdantech_api (pyproject.toml)
 annotated-types==0.7.0
     # via pydantic
-anyio==4.4.0
+anyio==4.1.0
     # via
     #   httpx
     #   litestar
@@ -24,13 +24,13 @@ argon2-cffi-bindings==21.2.0
     # via argon2-cffi
 asyncpg==0.29.0
     # via verdantech_api (pyproject.toml)
-attrs==23.2.0
+attrs==23.1.0
     # via
     #   cattrs
     #   svcs
 cattrs==23.2.3
     # via verdantech_api (pyproject.toml)
-certifi==2024.7.4
+certifi==2023.11.17
     # via
     #   httpcore
     #   httpx
@@ -43,110 +43,110 @@ click==8.1.7
     #   litestar
     #   rich-click
     #   uvicorn
-cryptography==42.0.8
+cryptography==41.0.7
     # via litestar
-dnspython==2.6.1
+dnspython==2.4.2
     # via email-validator
-ecdsa==0.19.0
+ecdsa==0.18.0
     # via python-jose
-editorconfig==0.12.4
+editorconfig==0.12.3
     # via jsbeautifier
-email-validator==2.2.0
+email-validator==2.1.0.post1
     # via verdantech_api (pyproject.toml)
-faker==26.0.0
+faker==20.1.0
     # via polyfactory
 fast-query-parsers==1.0.3
     # via litestar
-greenlet==3.0.3
+greenlet==3.0.1
     # via sqlalchemy
 h11==0.14.0
     # via
     #   httpcore
     #   uvicorn
-html2text==2024.2.26
+html2text==2020.1.16
     # via verdantech_api (pyproject.toml)
-httpcore==1.0.5
+httpcore==1.0.2
     # via httpx
 httptools==0.6.1
     # via uvicorn
-httpx==0.27.0
+httpx==0.25.2
     # via litestar
-idna==3.7
+idna==3.6
     # via
     #   anyio
     #   email-validator
     #   httpx
-importlib-metadata==8.0.0
+importlib-metadata==7.1.0
     # via taskiq
-jinja2==3.1.4
+jinja2==3.1.2
     # via litestar
-jsbeautifier==1.15.1
+jsbeautifier==1.14.11
     # via litestar
-litestar[jwt,standard]==2.9.1
+litestar[jwt,standard]==2.4.4
     # via
     #   litestar-svcs
     #   verdantech_api (pyproject.toml)
 litestar-svcs==0.1.2
     # via verdantech_api (pyproject.toml)
-mako==1.3.5
+mako==1.3.0
     # via alembic
 markdown-it-py==3.0.0
     # via rich
-markupsafe==2.1.5
+markupsafe==2.1.3
     # via
     #   jinja2
     #   mako
 mdurl==0.1.2
     # via markdown-it-py
-msgspec==0.18.6
+msgspec==0.18.4
     # via litestar
-multidict==6.0.5
+multidict==6.0.4
     # via litestar
-nats-py==2.8.0
+nats-py==2.7.2
     # via
     #   taskiq-nats
     #   verdantech_api (pyproject.toml)
-numpy==2.0.0
+numpy==1.26.4
     # via shapely
-packaging==24.1
+packaging==24.0
     # via taskiq
 passlib==1.7.4
     # via verdantech_api (pyproject.toml)
-polyfactory==2.16.1
+polyfactory==2.12.0
     # via litestar
-pyasn1==0.6.0
+pyasn1==0.5.1
     # via
     #   python-jose
     #   rsa
-pycparser==2.22
+pycparser==2.21
     # via cffi
 pycron==3.0.0
     # via taskiq
-pydantic==2.8.2
+pydantic==2.7.3
     # via taskiq
-pydantic-core==2.20.1
+pydantic-core==2.18.4
     # via pydantic
-pygments==2.18.0
+pygments==2.17.2
     # via rich
-python-dateutil==2.9.0.post0
+python-dateutil==2.8.2
     # via faker
 python-decouple==3.8
     # via verdantech_api (pyproject.toml)
-python-dotenv==1.0.1
+python-dotenv==1.0.0
     # via uvicorn
 python-jose==3.3.0
     # via litestar
-pytz==2024.1
+pytz==2023.3.post1
     # via taskiq
 pyyaml==6.0.1
     # via
     #   litestar
     #   uvicorn
-rich==13.7.1
+rich==13.7.0
     # via
     #   litestar
     #   rich-click
-rich-click==1.8.3
+rich-click==1.7.1
     # via litestar
 rsa==4.9
     # via python-jose
@@ -157,7 +157,7 @@ six==1.16.0
     #   ecdsa
     #   jsbeautifier
     #   python-dateutil
-sniffio==1.3.1
+sniffio==1.3.0
     # via
     #   anyio
     #   httpx
@@ -165,11 +165,11 @@ sqlalchemy==2.0.23
     # via
     #   alembic
     #   verdantech_api (pyproject.toml)
-svcs==24.1.0
+svcs==23.21.0
     # via
     #   litestar-svcs
     #   verdantech_api (pyproject.toml)
-taskiq==0.11.6
+taskiq==0.11.3
     # via
     #   taskiq-nats
     #   verdantech_api (pyproject.toml)
@@ -177,7 +177,7 @@ taskiq-dependencies==1.5.3
     # via taskiq
 taskiq-nats==0.4.0
     # via verdantech_api (pyproject.toml)
-typing-extensions==4.12.2
+typing-extensions==4.8.0
     # via
     #   alembic
     #   litestar
@@ -187,13 +187,13 @@ typing-extensions==4.12.2
     #   rich-click
     #   sqlalchemy
     #   taskiq
-uvicorn[standard]==0.30.1
+uvicorn[standard]==0.24.0.post1
     # via litestar
 uvloop==0.19.0
     # via
     #   litestar
     #   uvicorn
-watchfiles==0.22.0
+watchfiles==0.21.0
     # via uvicorn
 websockets==12.0
     # via uvicorn
