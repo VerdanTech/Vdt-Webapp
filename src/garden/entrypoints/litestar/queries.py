@@ -16,7 +16,7 @@ class GardenQueryController(Controller):
     """Garden read operations controller"""
 
     path = urls.GARDEN_QUERY_CONTROLLER_URL_BASE
-    tags = ["users"]
+    tags = ["gardens"]
 
     @get(
         path=urls.GARDEN_UNIQUE_KEY_URL,

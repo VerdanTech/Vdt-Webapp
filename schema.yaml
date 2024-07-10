@@ -559,7 +559,7 @@ paths:
           headers: {}
       summary: Generate a new, unique garden key.
       tags:
-      - users
+      - gardens
   /vdtapi/users/commands/create:
     post:
       deprecated: false
