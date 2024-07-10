@@ -9,11 +9,12 @@
 	// Features to add to the dev container. More info: https://containers.dev/features.
 	"features": {
 		// Used to configure a non-root user.
-		"ghcr.io/devcontainers/features/common-utils:2": {
-			"username": "devuser",
-			"userUid": "1000",
-			"userGid": "1000"
-		}
+		// Disabled for now due to inability to make compatile with uv.
+		//"ghcr.io/devcontainers/features/common-utils:2": {
+			//"username": "devuser",
+			//"userUid": "1000",
+			//"userGid": "1000"
+		//}
 
 		// Used to access the Docker tool from within the container.
 		//"docker-in-docker": {
@@ -28,7 +29,18 @@
 	// Commands to be run after the container is created.
 	"postCreateCommand": {
 		// Give non-root user file permissions. See: (https://github.com/microsoft/vscode-remote-release/issues/4646).
-		"nonroot_permissions": "chown -R 1000:1000 ."
+		//"nonroot_permissions": "chown -R 1000:1000 .",
+		// Allow uv to write to the tmp folder as root user.
+		"uv_permissions": "chmod 777 /tmp",
+
+		// Make git trust the root user.
+		"enable_git_root_user": "git config --global --add safe.directory /workspaces/VerdanTech-Backend",
+		
+		// Copy the default environment variables into the actual environment file
+		"copy_default_env" : "cp .env-default .env",
+
+		// Migrate the sql database
+		"alembic_migrate": "make migrate"
 	},
 	
 
@@ -62,5 +74,6 @@
 	},
 
 	// Uncomment to connect as an existing user other than the container default. More info: https://aka.ms/dev-containers-non-root.
-	"remoteUser": "devuser"
+	// Set to the root user as devuser is not in use
+	"remoteUser": "root"
 }

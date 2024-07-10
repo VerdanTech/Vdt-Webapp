@@ -6,13 +6,13 @@ authors = [
     { name = "Nathaniel King", email = "nathanielarking@gmail.com" }
 ]
 dependencies = [
-    "litestar[standard, jwt]==2.9.1",
+    "litestar[standard, jwt]",
     "taskiq",
     "taskiq-nats",
     "nats-py",
     "svcs",
     "litestar-svcs",
-    "sqlalchemy",
+    "sqlalchemy==2.0.30",
     "asyncpg",
     "alembic",
     "passlib",

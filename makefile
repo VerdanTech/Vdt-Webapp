@@ -2,17 +2,17 @@
 # Compile all dependencies specified in pyproject.toml into requirements.
 #
 .PHONY: compile-dependencies
-compile-dependencies:
-	pip-compile --resolver backtracking -o requirements/main.txt pyproject.toml
-	pip-compile --extra test --resolver backtracking -o requirements/test.txt pyproject.toml
-	pip-compile --extra test --extra dev --resolver backtracking -o requirements/dev.txt pyproject.toml
+compile-deps:
+	uv pip compile pyproject.toml -o requirements/main.txt
+	uv pip compile --extra test pyproject.toml -o requirements/test.txt
+	uv pip compile --extra test --extra dev pyproject.toml -o requirements/dev.txt 
 
 #
 # Install all dependencies frozen in requirements/dev.txt.
 #
-.PHONY: sync-dependencies
-sync-dependencies:
-	pip-sync requirements/dev.txt
+.PHONY: sync-deps
+sync-deps:
+	uv pip sync --system requirements/dev.txt
 
 #
 # Run all tests.

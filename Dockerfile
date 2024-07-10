@@ -5,8 +5,12 @@ WORKDIR /workdir
 COPY ./requirements ./requirements
 
 #  Update pip tooling
-RUN pip install --upgrade pip pip-tools wheel
-# Install dependencies
-RUN pip-sync requirements/dev.txt
+RUN pip install --upgrade pip
 
-CMD ["litestar", "run"]
+# Install package manager
+RUN pip install uv
+
+# Install dependencies
+RUN uv pip install --system -r requirements/dev.txt
+
+#CMD ["litestar", "run"]
