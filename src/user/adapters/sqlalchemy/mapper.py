@@ -8,7 +8,6 @@ from sqlalchemy import (
     Column,
     DateTime,
     ForeignKey,
-    Integer,
     String,
     Table,
     Uuid,
@@ -75,6 +74,7 @@ mapper_registry.map_imperatively(
     User,
     user_table,
     properties={
+        # Relationships
         # Note the lack of a back_populates here, as the relationship is one-way.
         # Adding the back_populates causes issues when reassining the entire collection.
         "emails": relationship(
@@ -83,6 +83,8 @@ mapper_registry.map_imperatively(
             collection_class=list,
             cascade="all, delete-orphan",
         ),
+
+        # Composites (one-to-one value objects)
         "password_reset_confirmation": composite(
             PasswordResetConfirmation,
             user_table.c.password_reset_confirmation_key,
@@ -94,7 +96,10 @@ mapper_registry.map_imperatively(
     Email,
     user_email_table,
     properties={
+        # Relationships
         "user": relationship(User, back_populates="emails"),
+
+        # Composites (one-to-one value objects)
         "confirmation": composite(
             EmailConfirmation,
             user_email_table.c.confirmation_key,

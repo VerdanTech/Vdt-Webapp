@@ -190,3 +190,16 @@ class Ref[E: RootEntity](Value):
     """
 
     id: uuid.UUID
+
+    def __composite_values__(self) -> tuple[uuid.UUID]:
+        """
+        Required by SqlAlchemy to map value objects to composites (multiple columns).
+
+        This would usually be put in the adapters section, 
+        but since Ref is used everywhere it is more convenient here. 
+
+        Returns:
+            tuple[Uuid]: the composite values.
+        """
+        # Note the , used to return a tuple 
+        return self.id,

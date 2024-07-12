@@ -91,20 +91,30 @@ class GardenMembership(Value):
 
     GardenMemberships connect Users and Gardens,
     allowing conditional access with different roles.
+
+    Attributes:
+        user_ref (Ref[User]): the holder of the membership.
+        inviter_ref (Ref[User] | None): the user responsible for creating the membership.
+        role (RoleEnum): the persmissions of the membership.
+        accepted (bool): whether the membership invitation has been accepted.
+        accepted_at (datetime | None): the time the membership was accepted.
+        favorite (bool): whether the membership is marked as a favorite.
+        created_at (datetime): the time the membership.
     """
 
-    garden_ref: Ref["Garden"]
-    """The garden the membership exists on."""
     user_ref: Ref[User]
-    """The holder of the membership."""
     inviter_ref: Ref[User] | None
-    """The user responsible for creating the membership."""
     role: RoleEnum = RoleEnum.VIEW
-    """The persmissions of the membership."""
-    accepted: bool = False
-    """Whether the membership invitation has been accepted."""
+    accepted_at: datetime | None = None
     favorite: bool = False
     created_at: datetime = field(factory=datetime.now)
+
+    @property
+    def accepted(self) -> bool:
+        """
+        Whether the membership invitation has been accepted.
+        """
+        return self.accepted_at is not None
 
     def authorize(self, operation: OperationEnum) -> bool:
         """
@@ -177,17 +187,24 @@ class Garden(RootEntity):
     It groups together multiple Users via GardenMemberships,
     and serves as a one-to-many reference point for Workspaces, Plantsets,
     and most other application models.
+
+    Attributes:
+        name (str): Nnn-unique name.
+        key (str): unique shortand name for URLs - unique.
+        creator (Ref[User]): user who created the Garden.
+        visibility (VisibilityEnum): controls which non-member users can view this Garden.
+        memberships (set[GardenMembership]): all memberships in the Garden. One per User.
+        description (str): optional description.
+        is_active (bool): whether the Garden is active. Marks for deletion.
     """
 
     name: str  # type: ignore
     key: str  # type: ignore
     creator_ref: Ref[User] | None  # type: ignore
     visibility: VisibilityEnum = VisibilityEnum.PRIVATE
-    environment_ref: Ref[Environment] | None = None
     memberships: set[GardenMembership] = field(factory=set)
-    """There must exist only one GardenMembership for any given User."""
     description: str = ""
-    expired: bool = False
+    is_active: bool = True
 
     @property
     def num_memberships(self) -> int:
@@ -198,6 +215,19 @@ class Garden(RootEntity):
             int: the number of memberships.
         """
         return len(self.memberships)
+    
+    def is_user_member(self, user: User) -> bool:
+        """
+        Returns whether the user has a membership in the garden,
+        pending acceptance or not.
+
+        Args:
+            user (User): the user to check membership for.
+
+        Returns:
+            bool: whether the user is a member of the garden.
+        """
+        return any(membership.user_ref.id == user.id for membership in self.memberships)
 
     def get_membership(self, user: User) -> GardenMembership | None:
         """
@@ -245,7 +275,7 @@ class Garden(RootEntity):
                         "The invite to this Garden has already been accepted."
                     )
 
-                new_membership = membership.transform(accepted=True)
+                new_membership = membership.transform(accepted=True, accepted_at=datetime.now())
                 self.memberships.remove(membership)
                 self.memberships.add(new_membership)
 
