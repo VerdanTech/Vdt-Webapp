@@ -1,6 +1,5 @@
-def url_to_route_name(url: str) -> str:
+def url_to_route_name(prefix: str, url: str) -> str:
     """
-    TODO
     Constructs a route operation ID / name from a URL.
 
     Args:
@@ -9,4 +8,5 @@ def url_to_route_name(url: str) -> str:
     Returns:
         str: the equivalent route ID.
     """
-    return url
+    url = url.replace("/", "_")
+    return prefix + url

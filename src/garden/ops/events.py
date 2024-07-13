@@ -7,6 +7,7 @@ from src.common.domain import Ref
 from src.common.interfaces.email.client import AbstractEmailClient
 from src.common.interfaces.events import AbstractEventNode
 from src.common.interfaces.persistence import AbstractUow
+from src.common.ops.exceptions import EntityNotFound
 from src.common.ops.processors import asgi_processor, task_processor
 from src.garden.domain import GardenInvite, GardenMembership, RoleEnum, events
 from src.garden.domain.exceptions import GardenAuthorizationException
@@ -28,9 +29,15 @@ async def process_garden_invite(
     uow, event_node = await svcs_container.aget_abstract(AbstractUow, AbstractEventNode)
 
     async with uow:
-        # Retrieve the garden and client
+        # Retrieve garden
         garden = await uow.repos.gardens.get_by_id(event.garden_ref.id)
+        if garden is None:
+            raise EntityNotFound("This Garden does not exist.")
+
+        # Retrieve client
         client = await uow.repos.users.get_by_id(event.client_ref.id)
+        if client is None:
+            raise EntityNotFound("This User does not exist.")
 
         # Retrieve client's membership
         client_membership = garden.get_membership(user=client)
@@ -42,13 +49,13 @@ async def process_garden_invite(
         # For each of the admin, editor, and viewer ids
         # which were provided and for which the client has
         # permission to authorize for, create a GardenInvite
-        # for every existing user and append them to the list.
+        # for every existing user which is not already a member
         invites: list[GardenInvite] = []
         if event.admin_ids and client_membership.authorize(
             operation=PermissionRouter.invite(role=RoleEnum.ADMIN),
         ):
             users = await uow.repos.users.get_by_ids(event.admin_ids)
-            admin_invites = [
+            invites += [
                 GardenInvite(
                     user_ref=Ref(id=user.id_or_error()),
                     role=RoleEnum.ADMIN,
@@ -56,13 +63,14 @@ async def process_garden_invite(
                     user_email=user.primary_email.address,
                 )
                 for user in users
+                if not garden.is_user_member(user)
             ]
-            invites += admin_invites
+
         if event.editor_ids and client_membership.authorize(
             operation=PermissionRouter.invite(role=RoleEnum.EDIT),
         ):
             users = await uow.repos.users.get_by_ids(event.editor_ids)
-            editor_invites = [
+            invites += [
                 GardenInvite(
                     user_ref=Ref(id=user.id_or_error()),
                     role=RoleEnum.EDIT,
@@ -70,13 +78,14 @@ async def process_garden_invite(
                     user_email=user.primary_email.address,
                 )
                 for user in users
+                if not garden.is_user_member(user)
             ]
-            invites += editor_invites
+
         if event.viewer_ids and client_membership.authorize(
             operation=PermissionRouter.invite(role=RoleEnum.VIEW),
         ):
             users = await uow.repos.users.get_by_ids(event.viewer_ids)
-            viewer_invites = [
+            invites += [
                 GardenInvite(
                     user_ref=Ref(id=user.id_or_error()),
                     role=RoleEnum.VIEW,
@@ -84,8 +93,12 @@ async def process_garden_invite(
                     user_email=user.primary_email.address,
                 )
                 for user in users
+                if not garden.is_user_member(user)
             ]
-            invites += viewer_invites
+
+        # Return if no invites remain
+        if not invites:
+            return
 
         # Create the memberships
         memberships = [

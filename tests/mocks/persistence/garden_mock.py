@@ -1,14 +1,15 @@
 # Standard Library
 import uuid
-from typing import Protocol
 
 # VerdanTech Source
-from src.common.interfaces.persistence import AbstractRepository
 from src.garden.domain import Garden
+from src.garden.interfaces.repository import AbstractGardenRepository
+
+from .base_repo_mock import MockBaseRepository
 
 
-class AbstractGardenRepository(AbstractRepository[Garden], Protocol):
-    """Data persistence interface for the Garden domain model"""
+class MockGardenRepository(MockBaseRepository[Garden], AbstractGardenRepository):
+    """Implementation of a mock garden repository for testing"""
 
     # ======================================
     # General methods
@@ -25,7 +26,10 @@ class AbstractGardenRepository(AbstractRepository[Garden], Protocol):
             Garden | None: the found garden, or None if no
                 garden was found.
         """
-        ...
+        for garden in self.collection:
+            if garden.id == id:
+                return garden
+        return None
 
     async def get_by_key(self, key: str) -> Garden | None:
         """
@@ -38,7 +42,10 @@ class AbstractGardenRepository(AbstractRepository[Garden], Protocol):
             Garden | None: the found garden, or None if no
                 garden was found.
         """
-        ...
+        for garden in self.collection:
+            if garden.key == key:
+                return garden
+        return None
 
     async def key_exists(self, key: str) -> bool:
         """
@@ -51,4 +58,7 @@ class AbstractGardenRepository(AbstractRepository[Garden], Protocol):
         Returns:
             bool: the result of the existence check.
         """
-        ...
+        for garden in self.collection:
+            if garden.key.lower() == key.lower():
+                return True
+        return False

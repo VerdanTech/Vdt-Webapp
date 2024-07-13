@@ -6,7 +6,6 @@ from litestar import status_codes
 from litestar.exceptions import (
     ClientException as LitestarClientException,
     InternalServerException as LitestarServerException,
-    ValidationException as LitestarValidationException,
 )
 
 # VerdanTech Source

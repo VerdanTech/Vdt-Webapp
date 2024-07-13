@@ -24,7 +24,6 @@ class Reminder(Value):
 @root_entity_transform
 class Action(RootEntity):
     action_type: ActionEnum | str
-    # time_window: TimeWindow
     reminders: set[Reminder]
     assignees: set[Ref[User]]
     title: str

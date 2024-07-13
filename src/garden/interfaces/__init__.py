@@ -1,1 +1,1 @@
-from .repository import AbstractUserRepository
+from .repository import AbstractGardenRepository

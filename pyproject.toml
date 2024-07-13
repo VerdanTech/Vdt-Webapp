@@ -12,7 +12,7 @@ dependencies = [
     "nats-py",
     "svcs",
     "litestar-svcs",
-    "sqlalchemy",
+    "sqlalchemy==2.0.30",
     "asyncpg",
     "alembic",
     "passlib",
