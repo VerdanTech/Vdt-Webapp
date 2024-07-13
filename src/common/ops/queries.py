@@ -71,3 +71,7 @@ class RefSchema[T: DomainModel](QueryResult[Ref]):
 
 class Query(BaseModel):
     model_config = ConfigDict(frozen=True)
+
+    @classmethod
+    def __str__(cls) -> str:
+        return str(type(cls)) + "Query"

@@ -11,3 +11,7 @@ class Command(BaseModel):
     """
 
     model_config = ConfigDict(frozen=True)
+
+    @classmethod
+    def __str__(cls) -> str:
+        return str(type(cls)) + "Command"

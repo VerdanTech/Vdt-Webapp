@@ -28,10 +28,11 @@ class UserCommandController(Controller):
         opt={"exclude_from_auth": True},
         summary="User registration.",
         description=f"Registers a new user. Requires email confirmation: {settings.EMAIL_CONFIRMATION.verification_required}.",
+        operation_id=str(commands.UserCreate)
     )
     async def user_create(
         self,
-        data: commands.CreateUser,
+        data: commands.UserCreate,
         state: State,
         svcs_container: Container = Dependency(skip_validation=True),
     ) -> None:
@@ -39,7 +40,7 @@ class UserCommandController(Controller):
         Calls the user creation application command.
 
         Args:
-            data (CreateUser): input command.
+            data (UserCreate): input command.
             state (State): Litestar global app state.
             svcs_container (Container): service locator.
         """
@@ -56,10 +57,11 @@ class UserCommandController(Controller):
         summary="Email confirmation request.",
         description="Requests a new email verification email be sent to the email address.",
         response_description="An email confirmation has been sent to the address.",
+        operation_id=str(commands.UserRequestEmailConfirmation)
     )
-    async def user_email_confirmation_request(
+    async def user_request_email_confirmation(
         self,
-        data: commands.RequestEmailConfirmation,
+        data: commands.UserRequestEmailConfirmation,
         state: State,
         svcs_container: Container = Dependency(skip_validation=True),
     ) -> None:
@@ -67,7 +69,7 @@ class UserCommandController(Controller):
         Calls the email confirmation request application command.
 
         Args:
-            data (RequestEmailConfirmation): input command.
+            data (UserRequestEmailConfirmation): input command.
             state (State): Litestar global state.
             svcs_container (Container): service locator.
         """
@@ -84,10 +86,11 @@ class UserCommandController(Controller):
         summary="Email confirmation.",
         description="Closes an email confirmation and verifies the email address.",
         response_description="The email has been verified.",
+        operation_id=str(commands.UserConfirmEmailConfirmation)
     )
-    async def user_email_confirmation_confirm(
+    async def user_confirm_email_confirmation(
         self,
-        data: commands.ConfirmEmailConfirmation,
+        data: commands.UserConfirmEmailConfirmation,
         state: State,
         svcs_container: Container = Dependency(skip_validation=True),
     ) -> None:
@@ -95,7 +98,7 @@ class UserCommandController(Controller):
         Calls the email confirmation confirm application command.
 
         Args:
-            data (ConfirmEmailConfirmation): input command.
+            data (UserConfirmEmailConfirmation): input command.
             state (State): Litestar global state.
             svcs_container (Container): service locator.
         """
@@ -112,10 +115,11 @@ class UserCommandController(Controller):
         summary="Password reset request.",
         description="Open a new password reset request and sends confirmation email.",
         response_description="A password reset confirmation has been sent to the email address, if it exists.",
+        operation_id=str(commands.UserRequestPasswordReset)
     )
-    async def user_password_reset_request(
+    async def user_request_password_reset(
         self,
-        data: commands.RequestPasswordReset,
+        data: commands.UserRequestPasswordReset,
         state: State,
         svcs_container: Container = Dependency(skip_validation=True),
     ) -> None:
@@ -123,7 +127,7 @@ class UserCommandController(Controller):
         Calls the password reset request application command.
 
         Args:
-            data (RequestPasswordReset): input command
+            data (UserRequestPasswordReset): input command
             state (State): Litestar global state.
             svcs_container (Container): service locator.
         """
@@ -140,10 +144,11 @@ class UserCommandController(Controller):
         summary="Password reset confirm.",
         description="Closes a password reset request and changes the password",
         response_description="The password has been successfully updated.",
+        operation_id=str(commands.UserConfirmPasswordReset)
     )
-    async def user_password_reset_confirm(
+    async def user_confirm_password_reset(
         self,
-        data: commands.ConfirmPasswordReset,
+        data: commands.UserConfirmPasswordReset,
         state: State,
         svcs_container: Container = Dependency(skip_validation=True),
     ) -> None:
@@ -151,7 +156,7 @@ class UserCommandController(Controller):
         Calls the password reset confirmation application command.
 
         Args:
-            data (ConfirmPasswordReset): input command
+            data (UserConfirmPasswordReset): input command
             state (State): Litestar global state.
             svcs_container (Container): service locator.
         """

@@ -77,7 +77,7 @@ class PasswordVerificationQuery(Query):
     password: Password
 
 
-class PublicProfilesQuery(Query):
+class UserPublicProfiles(Query):
     """
     Retrieves public profiles for a list of user IDs.
     """
@@ -132,7 +132,7 @@ async def verify_password(
 
 
 async def public_profiles(
-    query: PublicProfilesQuery,
+    query: UserPublicProfiles,
     svcs_container: Container,
 ) -> list[UserPublicSchema]:
     """

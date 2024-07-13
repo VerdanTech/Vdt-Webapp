@@ -24,10 +24,11 @@ class UserQueryController(Controller):
         summary="User public profiles view.",
         description="Returns the profiles of the user ids given.",
         response_description="The list of users requested.",
+        operation_id=str(queries.UserPublicProfiles)
     )
     async def public_profiles(
         self,
-        data: queries.PublicProfilesQuery,
+        data: queries.UserPublicProfiles,
         state: State,
         svcs_container: Container = Dependency(skip_validation=True),
     ) -> list[queries.UserPublicSchema]:
@@ -35,7 +36,7 @@ class UserQueryController(Controller):
         Calls the public profiles query.
 
         Args:
-            data (PublicProfilesQuery): input query.
+            data (UserPublicProfiles): input query.
             request (Request): Litestar http request object.
             state (State): Litestar global app state.
             svcs_container (Container): service locator.
@@ -56,8 +57,9 @@ class UserQueryController(Controller):
         summary="User client profile view.",
         description="Returns the profile of the authenticated user.",
         response_description="The profile of the authenticated user.",
+        operation_id="UserClientProfileQuery"
     )
-    async def client_profiles(
+    async def client_profile(
         self,
         request: Request,
         state: State,
@@ -67,7 +69,7 @@ class UserQueryController(Controller):
         Calls the client profile query.
 
         Args:
-            data (PublicProfilesQuery): input query.
+            data (UserPublicProfiles): input query.
             request (Request): Litestar http request object.
             state (State): Litestar global app state.
             svcs_container (Container): service locator.
