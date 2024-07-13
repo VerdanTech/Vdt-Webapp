@@ -1,68 +1,20 @@
 components:
   schemas:
-    AcceptInvite:
+    EmailSchema:
       properties:
-        garden_key:
-          maxLength: 16
-          minLength: 4
+        address:
           type: string
+        primary:
+          type: boolean
+        verified:
+          type: boolean
       required:
-      - garden_key
-      title: AcceptInvite
+      - address
+      - primary
+      - verified
+      title: EmailSchema
       type: object
-    ChangeMembershipRole:
-      properties:
-        garden_id:
-          format: uuid
-          type: string
-        role:
-          enum:
-          - admin
-          - editor
-          - viewer
-          type: string
-        user_id:
-          format: uuid
-          type: string
-      required:
-      - garden_id
-      - role
-      - user_id
-      title: ChangeMembershipRole
-      type: object
-    ConfirmEmailConfirmation:
-      properties:
-        key:
-          format: uuid
-          type: string
-      required:
-      - key
-      title: ConfirmEmailConfirmation
-      type: object
-    ConfirmPasswordReset:
-      properties:
-        key:
-          format: uuid
-          type: string
-        new_password1:
-          maxLength: 255
-          minLength: 6
-          type: string
-        new_password2:
-          maxLength: 255
-          minLength: 6
-          type: string
-        user_id:
-          format: uuid
-          type: string
-      required:
-      - key
-      - new_password1
-      - new_password2
-      - user_id
-      title: ConfirmPasswordReset
-      type: object
-    CreateGarden:
+    GardenCreateCommand:
       properties:
         admin_ids:
           default: []
@@ -70,6 +22,9 @@ components:
             format: uuid
             type: string
           type: array
+        description:
+          default: ''
+          type: string
         editor_ids:
           default: []
           items:
@@ -99,33 +54,9 @@ components:
           type: string
       required:
       - name
-      title: CreateGarden
+      title: GardenCreateCommand
       type: object
-    CreateUser:
-      properties:
-        email_address:
-          format: email
-          type: string
-        password1:
-          maxLength: 255
-          minLength: 6
-          type: string
-        password2:
-          maxLength: 255
-          minLength: 6
-          type: string
-        username:
-          maxLength: 50
-          minLength: 3
-          type: string
-      required:
-      - email_address
-      - password1
-      - password2
-      - username
-      title: CreateUser
-      type: object
-    DeleteMembership:
+    GardenMembershipAcceptCommand:
       properties:
         garden_key:
           maxLength: 16
@@ -133,23 +64,9 @@ components:
           type: string
       required:
       - garden_key
-      title: DeleteMembership
+      title: GardenMembershipAcceptCommand
       type: object
-    EmailSchema:
-      properties:
-        address:
-          type: string
-        primary:
-          type: boolean
-        verified:
-          type: boolean
-      required:
-      - address
-      - primary
-      - verified
-      title: EmailSchema
-      type: object
-    MembershipInvite:
+    GardenMembershipCreateCommand:
       properties:
         admin_ids:
           default: []
@@ -174,41 +91,19 @@ components:
           type: array
       required:
       - garden_id
-      title: MembershipInvite
+      title: GardenMembershipCreateCommand
       type: object
-    PasswordVerificationQuery:
+    GardenMembershipDeleteCommand:
       properties:
-        email_address:
-          format: email
-          type: string
-        password:
-          maxLength: 255
-          minLength: 6
+        garden_key:
+          maxLength: 16
+          minLength: 4
           type: string
       required:
-      - email_address
-      - password
-      title: PasswordVerificationQuery
+      - garden_key
+      title: GardenMembershipDeleteCommand
       type: object
-    RequestEmailConfirmation:
-      properties:
-        email_address:
-          format: email
-          type: string
-      required:
-      - email_address
-      title: RequestEmailConfirmation
-      type: object
-    RequestPasswordReset:
-      properties:
-        email_address:
-          format: email
-          type: string
-      required:
-      - email_address
-      title: RequestPasswordReset
-      type: object
-    RevokeMembership:
+    GardenMembershipRevokeCommand:
       properties:
         garden_id:
           format: uuid
@@ -219,7 +114,27 @@ components:
       required:
       - garden_id
       - user_id
-      title: RevokeMembership
+      title: GardenMembershipRevokeCommand
+      type: object
+    GardenMembershipRoleChangeCommand:
+      properties:
+        garden_id:
+          format: uuid
+          type: string
+        role:
+          enum:
+          - admin
+          - editor
+          - viewer
+          type: string
+        user_id:
+          format: uuid
+          type: string
+      required:
+      - garden_id
+      - role
+      - user_id
+      title: GardenMembershipRoleChangeCommand
       type: object
     UniqueGardenKeyResult:
       properties:
@@ -228,6 +143,62 @@ components:
       required:
       - key
       title: UniqueGardenKeyResult
+      type: object
+    UserConfirmEmailConfirmationCommand:
+      properties:
+        key:
+          format: uuid
+          type: string
+      required:
+      - key
+      title: UserConfirmEmailConfirmationCommand
+      type: object
+    UserConfirmPasswordResetCommand:
+      properties:
+        key:
+          format: uuid
+          type: string
+        new_password1:
+          maxLength: 255
+          minLength: 6
+          type: string
+        new_password2:
+          maxLength: 255
+          minLength: 6
+          type: string
+        user_id:
+          format: uuid
+          type: string
+      required:
+      - key
+      - new_password1
+      - new_password2
+      - user_id
+      title: UserConfirmPasswordResetCommand
+      type: object
+    UserCreateCommand:
+      properties:
+        email_address:
+          format: email
+          type: string
+        password1:
+          maxLength: 255
+          minLength: 6
+          type: string
+        password2:
+          maxLength: 255
+          minLength: 6
+          type: string
+        username:
+          maxLength: 50
+          minLength: 3
+          type: string
+      required:
+      - email_address
+      - password1
+      - password2
+      - username
+      title: UserCreateCommand
       type: object
     UserFullSchema:
       properties:
@@ -253,6 +224,20 @@ components:
       - username
       title: UserFullSchema
       type: object
+    UserPasswordVerificationQuery:
+      properties:
+        email_address:
+          format: email
+          type: string
+        password:
+          maxLength: 255
+          minLength: 6
+          type: string
+      required:
+      - email_address
+      - password
+      title: UserPasswordVerificationQuery
+      type: object
     UserPublicSchema:
       properties:
         id:
@@ -264,6 +249,24 @@ components:
       - id
       - username
       title: UserPublicSchema
+      type: object
+    UserRequestEmailConfirmationCommand:
+      properties:
+        email_address:
+          format: email
+          type: string
+      required:
+      - email_address
+      title: UserRequestEmailConfirmationCommand
+      type: object
+    UserRequestPasswordResetCommand:
+      properties:
+        email_address:
+          format: email
+          type: string
+      required:
+      - email_address
+      title: UserRequestPasswordResetCommand
       type: object
   securitySchemes:
     BearerToken:
@@ -290,12 +293,12 @@ paths:
     post:
       deprecated: false
       description: Accepts a Garden Membership.
-      operationId: VdtapiGardensCommandsAcceptInviteAcceptInvite
+      operationId: GardenMembershipAcceptCommandOp
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/AcceptInvite'
+              $ref: '#/components/schemas/GardenMembershipAcceptCommand'
         required: true
       responses:
         '201':
@@ -333,12 +336,12 @@ paths:
     post:
       deprecated: false
       description: Changes the role on another's Garden Membership.
-      operationId: VdtapiGardensCommandsChangeRoleChangeRole
+      operationId: GardenMembershipRoleChangeCommandOp
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ChangeMembershipRole'
+              $ref: '#/components/schemas/GardenMembershipRoleChangeCommand'
         required: true
       responses:
         '201':
@@ -376,12 +379,12 @@ paths:
     post:
       deprecated: false
       description: Creates a new Garden and invites requested users.
-      operationId: VdtapiGardensCommandsCreateGardenCreate
+      operationId: GardenCreateCommandOp
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateGarden'
+              $ref: '#/components/schemas/GardenCreateCommand'
         required: true
       responses:
         '201':
@@ -419,12 +422,12 @@ paths:
     post:
       deprecated: false
       description: Creates new Garden Memberships and sends email confirmation emails.
-      operationId: VdtapiGardensCommandsInviteInvite
+      operationId: GardenMembershipCreateCommandOp
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/MembershipInvite'
+              $ref: '#/components/schemas/GardenMembershipCreateCommand'
         required: true
       responses:
         '201':
@@ -462,12 +465,12 @@ paths:
     post:
       deprecated: false
       description: Removes one's own Garden Membership from a garden.
-      operationId: VdtapiGardensCommandsLeaveLeave
+      operationId: GardenMembershipDeleteCommandOp
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/DeleteMembership'
+              $ref: '#/components/schemas/GardenMembershipDeleteCommand'
         required: true
       responses:
         '201':
@@ -505,12 +508,12 @@ paths:
     post:
       deprecated: false
       description: Removes another's Garden Membership from a garden.
-      operationId: VdtapiGardensCommandsRevokeRevokeMembership
+      operationId: GardenMembershipRevokeCommandOp
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/RevokeMembership'
+              $ref: '#/components/schemas/GardenMembershipRevokeCommand'
         required: true
       responses:
         '201':
@@ -548,7 +551,7 @@ paths:
     get:
       deprecated: false
       description: Generates a unique garden key given a plant name and a random string.
-      operationId: VdtapiGardensQueriesGenerateGardenKeyGenerateUniqueGardenKey
+      operationId: GardenGenerateUniqueKeyQuery
       responses:
         '200':
           content:
@@ -564,12 +567,12 @@ paths:
     post:
       deprecated: false
       description: 'Registers a new user. Requires email confirmation: False.'
-      operationId: VdtapiUsersCommandsCreateUserCreate
+      operationId: UserCreateCommandOp
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateUser'
+              $ref: '#/components/schemas/UserCreateCommand'
         required: true
       responses:
         '201':
@@ -607,12 +610,12 @@ paths:
     post:
       deprecated: false
       description: Closes an email confirmation and verifies the email address.
-      operationId: VdtapiUsersCommandsEmailVerificationConfirmUserEmailConfirmationConfirm
+      operationId: UserConfirmEmailConfirmationCommandOp
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ConfirmEmailConfirmation'
+              $ref: '#/components/schemas/UserConfirmEmailConfirmationCommand'
         required: true
       responses:
         '201':
@@ -650,12 +653,12 @@ paths:
     post:
       deprecated: false
       description: Requests a new email verification email be sent to the email address.
-      operationId: VdtapiUsersCommandsEmailVerificationRequestUserEmailConfirmationRequest
+      operationId: UserRequestEmailConfirmationCommandOp
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/RequestEmailConfirmation'
+              $ref: '#/components/schemas/UserRequestEmailConfirmationCommand'
         required: true
       responses:
         '201':
@@ -693,12 +696,12 @@ paths:
     post:
       deprecated: false
       description: Authenticate the request with JWT cookie authentication.
-      operationId: VdtapiUsersCommandsLoginUserLogin
+      operationId: UserLoginCommand
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/PasswordVerificationQuery'
+              $ref: '#/components/schemas/UserPasswordVerificationQuery'
         required: true
       responses:
         '201':
@@ -740,12 +743,12 @@ paths:
     post:
       deprecated: false
       description: Closes a password reset request and changes the password
-      operationId: VdtapiUsersCommandsPasswordConfirmUserPasswordResetConfirm
+      operationId: UserConfirmPasswordResetCommandOp
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ConfirmPasswordReset'
+              $ref: '#/components/schemas/UserConfirmPasswordResetCommand'
         required: true
       responses:
         '201':
@@ -783,12 +786,12 @@ paths:
     post:
       deprecated: false
       description: Open a new password reset request and sends confirmation email.
-      operationId: VdtapiUsersCommandsPasswordRequestUserPasswordResetRequest
+      operationId: UserRequestPasswordResetCommandOp
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/RequestPasswordReset'
+              $ref: '#/components/schemas/UserRequestPasswordResetCommand'
         required: true
       responses:
         '201':
@@ -827,7 +830,7 @@ paths:
     get:
       deprecated: false
       description: Returns the profile of the authenticated user.
-      operationId: VdtapiUsersQueriesClientProfileClientProfiles
+      operationId: UserClientProfileQuery
       responses:
         '200':
           content:
@@ -843,7 +846,7 @@ paths:
     get:
       deprecated: false
       description: Returns the profiles of the user ids given.
-      operationId: VdtapiUsersQueriesPublicProfilesPublicProfiles
+      operationId: UserPublicProfilesQueryOp
       parameters:
       - allowEmptyValue: false
         allowReserved: false

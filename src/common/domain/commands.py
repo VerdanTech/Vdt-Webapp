@@ -13,5 +13,6 @@ class Command(BaseModel):
     model_config = ConfigDict(frozen=True)
 
     @classmethod
-    def __str__(cls) -> str:
-        return str(type(cls)) + "Command"
+    def to_operation_id(cls) -> str:
+        """Converts the Command's type to an operation ID for use with OpenAPI."""
+        return str(cls.__name__) + "Op"

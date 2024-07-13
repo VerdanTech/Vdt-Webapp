@@ -37,7 +37,7 @@ async def test_create_user_success(
     # Locate services
     uow = await svcs_container.aget(AbstractUow)
 
-    command = commands.UserCreate(
+    command = commands.UserCreateCommand(
         username="new_username",
         email_address="new_email_address@test.com",
         password1=SecretStr("New_password12"),
@@ -62,7 +62,7 @@ async def test_create_user_success(
     # Assert the follow up event was raised correctly
     assert isinstance(
         next(uow.collect_new_events(), None), events.EmailPendingConfirmation
-    ) and isinstance(next(uow.collect_new_events(), None), events.UserCreated)
+    ) and isinstance(next(uow.collect_new_events(), None), events.UserCreateCommandd)
 
 
 # ======================================
@@ -82,7 +82,7 @@ async def test_request_email_confirmation_email_not_found(
     """
     nonexistant_email = "nonexistant_email@gmail.com"
 
-    command = commands.UserRequestEmailConfirmation(email_address=nonexistant_email)
+    command = commands.UserRequestEmailConfirmationCommand(email_address=nonexistant_email)
 
     with pytest.raises(EntityNotFound):
         await handlers.request_email_confirmation(
@@ -110,7 +110,7 @@ async def test_email_confirmation_request_success(
         await uow.repos.users.add(user)
         await uow.commit()
 
-    command = commands.UserRequestEmailConfirmation(email_address=existing_email)
+    command = commands.UserRequestEmailConfirmationCommand(email_address=existing_email)
     await handlers.request_email_confirmation(
         command=command, svcs_container=svcs_container
     )
@@ -136,7 +136,7 @@ async def test_confirm_email_confirmation_user_not_found(
     Args:
         svcs_container (Container): service locator with mock services.
     """
-    command = commands.UserConfirmEmailConfirmation(key=uuid.uuid4())
+    command = commands.UserConfirmEmailConfirmationCommand(key=uuid.uuid4())
 
     with pytest.raises(EntityNotFound):
         await handlers.confirm_email_confirmation(
@@ -167,7 +167,7 @@ async def test_confirm_email_confirmation_success(
         await uow.repos.users.add(user)
         await uow.commit()
 
-    command = commands.UserConfirmEmailConfirmation(key=existing_key)
+    command = commands.UserConfirmEmailConfirmationCommand(key=existing_key)
     await handlers.confirm_email_confirmation(
         command=command, svcs_container=svcs_container
     )
@@ -199,7 +199,7 @@ async def test_request_password_reset_email_not_found(
     """
     nonexistant_email = "nonexistant_email@gmail.com"
 
-    command = commands.UserRequestPasswordReset(email_address=nonexistant_email)
+    command = commands.UserRequestPasswordResetCommand(email_address=nonexistant_email)
 
     with pytest.raises(EntityNotFound):
         await handlers.request_password_reset(
@@ -232,7 +232,7 @@ async def test_request_password_reset_email_found_but_unprimary(
         await uow.repos.users.add(user)
         await uow.commit()
 
-    command = commands.UserRequestPasswordReset(email_address=existing_unprimary_email)
+    command = commands.UserRequestPasswordResetCommand(email_address=existing_unprimary_email)
 
     with pytest.raises(EntityNotFound):
         await handlers.request_password_reset(
@@ -259,7 +259,7 @@ async def test_request_password_reset_success(
     async with uow:
         await uow.repos.users.add(user)
         await uow.commit()
-    command = commands.UserRequestPasswordReset(email_address=existing_email)
+    command = commands.UserRequestPasswordResetCommand(email_address=existing_email)
     await handlers.request_password_reset(
         command=command, svcs_container=svcs_container
     )
@@ -282,7 +282,7 @@ async def test_confirm_password_reset_key_not_found(
     Args:
         svcs_container (Container): service locator with mock services.
     """
-    command = commands.UserConfirmPasswordReset(
+    command = commands.UserConfirmPasswordResetCommand(
         user_id=uuid.uuid4(),
         key=uuid.uuid4(),
         new_password1=SecretStr("New_password12"),
@@ -318,7 +318,7 @@ async def test_confirm_password_reset_success(
         await uow.repos.users.add(user)
         await uow.commit()
 
-    command = commands.UserConfirmPasswordReset(
+    command = commands.UserConfirmPasswordResetCommand(
         user_id=user.id_or_error(),
         key=existing_key,
         new_password1=SecretStr(new_password),

@@ -31,7 +31,7 @@ async def test_verify_password_user_not_found(svcs_container: Container) -> None
     """
     nonexistant_email = "nonexistant_email@gmail.com"
 
-    query = queries.PasswordVerificationQuery(
+    query = queries.UserPasswordVerificationQuery(
         email_address=nonexistant_email, password=SecretStr("Test_password1")
     )
 
@@ -67,7 +67,7 @@ async def test_verify_password_email_confirmation_required(
         await uow.repos.users.add(user)
         await uow.commit()
 
-    query = queries.PasswordVerificationQuery(
+    query = queries.UserPasswordVerificationQuery(
         email_address=existing_email, password=SecretStr("Test_password1")
     )
 
@@ -104,7 +104,7 @@ async def test_verify_password_success_incorrect_password(
         await uow.repos.users.add(user)
         await uow.commit()
 
-    query = queries.PasswordVerificationQuery(
+    query = queries.UserPasswordVerificationQuery(
         email_address=existing_email, password=SecretStr(existing_password)
     )
 
@@ -139,7 +139,7 @@ async def test_verify_password_success_correct_password(
         await uow.repos.users.add(user)
         await uow.commit()
 
-    query = queries.PasswordVerificationQuery(
+    query = queries.UserPasswordVerificationQuery(
         email_address=existing_email, password=SecretStr(existing_password)
     )
 
@@ -170,7 +170,7 @@ async def test_public_profiles_success(svcs_container: Container) -> None:
         await uow.commit()
 
     nonexistant_id = uuid.uuid4()
-    query = queries.UserPublicProfiles(user_ids=[user.id_or_error() for user in users])
+    query = queries.UserPublicProfilesQuery(user_ids=[user.id_or_error() for user in users])
     query.user_ids.append(nonexistant_id)
 
     result = await queries.public_profiles(query=query, svcs_container=svcs_container)

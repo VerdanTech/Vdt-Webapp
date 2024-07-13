@@ -16,7 +16,7 @@ from .queries import generate_unique_garden_key
 
 @asgi_processor.add_command()
 async def create_garden(
-    command: commands.CreateGarden, svcs_container: Container, client: User
+    command: commands.GardenCreateCommand, svcs_container: Container, client: User
 ) -> None:
     """
     Main garden creation operation.
@@ -29,7 +29,7 @@ async def create_garden(
     6. Emits the PendingInvites event.
 
     Args:
-        command (commands.CreateGarden): garden creation command.
+        command (commands.GardenCreateCommand): garden creation command.
         svcs_container (Container): service locator.
         client (User): the client user responsible for the command.
     """
@@ -85,13 +85,13 @@ async def create_garden(
 
 @asgi_processor.add_command()
 async def create_invites(
-    command: commands.MembershipInvite, svcs_container: Container, client: User
+    command: commands.GardenMembershipCreateCommand, svcs_container: Container, client: User
 ) -> None:
     """
     Create a new set of garden membership invites by emitting the PendingInvites event.
 
     Args:
-        command (commands.MembershipInvite): invite creation command.
+        command (commands.GardenMembershipCreateCommand): invite creation command.
         svcs_container (Container): service locator.
         client (User): the client user responsible for the command.
 
@@ -116,13 +116,13 @@ async def create_invites(
 
 @asgi_processor.add_command()
 async def accept_invite(
-    command: commands.AcceptInvite, svcs_container: Container, client: User
+    command: commands.GardenMembershipAcceptCommand, svcs_container: Container, client: User
 ) -> None:
     """
     Accepts a GardenMembership invite.
 
     Args:
-        command (commands.AcceptInvite): membership acceptance command.
+        command (commands.GardenMembershipAcceptCommand): membership acceptance command.
         svcs_container (Container): service locator.
         client (User): the client user responsible for the command.
 
@@ -151,13 +151,13 @@ async def accept_invite(
 
 @asgi_processor.add_command()
 async def delete_membership(
-    command: commands.DeleteMembership, svcs_container: Container, client: User
+    command: commands.GardenMembershipDeleteCommand, svcs_container: Container, client: User
 ) -> None:
     """
     Removes the client from the garden.
 
     Args:
-        command (commands.DeleteMembership): membership deletion command.
+        command (commands.GardenMembershipDeleteCommand): membership deletion command.
         svcs_container (Container): service locator.
         client (User): the client user responsible for the command.
 
@@ -182,13 +182,13 @@ async def delete_membership(
 
 @asgi_processor.add_command()
 async def revoke_membership(
-    command: commands.RevokeMembership, svcs_container: Container, client: User
+    command: commands.GardenMembershipRevokeCommand, svcs_container: Container, client: User
 ) -> None:
     """
     Removes a User that is not the client from a Garden.
 
     Args:
-        command (commands.RevokeMembership): membership revoke command.
+        command (commands.GardenMembershipRevokeCommand): membership revoke command.
         svcs_container (Container): service locator.
         client (User): the client user responsible for the command.
 
@@ -220,13 +220,13 @@ async def revoke_membership(
 
 @asgi_processor.add_command()
 async def change_role(
-    command: commands.ChangeMembershipRole, svcs_container: Container, client: User
+    command: commands.GardenMembershipRoleChangeCommand, svcs_container: Container, client: User
 ) -> None:
     """
     Changes the role of a GardenMembership.
 
     Args:
-        command (commands.DeleteMembership): membership role change command.
+        command (commands.GardenMembershipDeleteCommand): membership role change command.
         svcs_container (Container): service locator.
         client (User): the client user responsible for the command.
 

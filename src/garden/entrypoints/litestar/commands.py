@@ -26,10 +26,11 @@ class GardenCommandController(Controller):
         name=url_to_route_name(urls.GARDEN_ROUTER_URL_BASE, urls.GARDEN_CREATE_URL),
         summary="Garden creation.",
         description="Creates a new Garden and invites requested users.",
+        operation_id=commands.GardenCreateCommand.to_operation_id()
     )
     async def garden_create(
         self,
-        data: commands.CreateGarden,
+        data: commands.GardenCreateCommand,
         request: Request,
         state: State,
         svcs_container: Container = Dependency(skip_validation=True),
@@ -39,7 +40,7 @@ class GardenCommandController(Controller):
 
         Args:
             request (Request): Litestar incoming request object.
-            data (CreateGarden): input command.
+            data (GardenCreateCommand): input command.
             state (State): Litestar global app state.
             svcs_container (Container): service locator.
         """
@@ -54,10 +55,11 @@ class GardenCommandController(Controller):
         name=url_to_route_name(urls.GARDEN_ROUTER_URL_BASE, urls.GARDEN_INVITE_URL),
         summary="Garden membership invitiation.",
         description="Creates new Garden Memberships and sends email confirmation emails.",
+        operation_id=commands.GardenMembershipCreateCommand.to_operation_id()
     )
     async def invite(
         self,
-        data: commands.MembershipInvite,
+        data: commands.GardenMembershipCreateCommand,
         request: Request,
         state: State,
         svcs_container: Container = Dependency(skip_validation=True),
@@ -67,7 +69,7 @@ class GardenCommandController(Controller):
 
         Args:
             request (Request): Litestar incoming request object.
-            data (MembershipInvite): input command.
+            data (GardenMembershipCreateCommand): input command.
             state (State): Litestar global app state.
             svcs_container (Container): service locator.
         """
@@ -84,10 +86,11 @@ class GardenCommandController(Controller):
         ),
         summary="Garden membership invitiation acceptance.",
         description="Accepts a Garden Membership.",
+        operation_id=commands.GardenMembershipAcceptCommand.to_operation_id()
     )
     async def accept_invite(
         self,
-        data: commands.AcceptInvite,
+        data: commands.GardenMembershipAcceptCommand,
         request: Request,
         state: State,
         svcs_container: Container = Dependency(skip_validation=True),
@@ -97,7 +100,7 @@ class GardenCommandController(Controller):
 
         Args:
             request (Request): Litestar incoming request object.
-            data (AcceptInvite): input command.
+            data (GardenMembershipAcceptCommand): input command.
             state (State): Litestar global app state.
             svcs_container (Container): service locator.
         """
@@ -112,10 +115,11 @@ class GardenCommandController(Controller):
         name=url_to_route_name(urls.GARDEN_ROUTER_URL_BASE, urls.GARDEN_LEAVE_URL),
         summary="Garden membership deletion.",
         description="Removes one's own Garden Membership from a garden.",
+        operation_id=commands.GardenMembershipDeleteCommand.to_operation_id()
     )
     async def leave(
         self,
-        data: commands.DeleteMembership,
+        data: commands.GardenMembershipDeleteCommand,
         request: Request,
         state: State,
         svcs_container: Container = Dependency(skip_validation=True),
@@ -125,7 +129,7 @@ class GardenCommandController(Controller):
 
         Args:
             request (Request): Litestar incoming request object.
-            data (AcceptInvite): input command.
+            data (GardenMembershipAcceptCommand): input command.
             state (State): Litestar global app state.
             svcs_container (Container): service locator.
         """
@@ -140,10 +144,11 @@ class GardenCommandController(Controller):
         name=url_to_route_name(urls.GARDEN_ROUTER_URL_BASE, urls.GARDEN_REVOKE_URL),
         summary="Removes a user from a garden.",
         description="Removes another's Garden Membership from a garden.",
+        operation_id=commands.GardenMembershipRevokeCommand.to_operation_id()
     )
     async def revoke_membership(
         self,
-        data: commands.RevokeMembership,
+        data: commands.GardenMembershipRevokeCommand,
         request: Request,
         state: State,
         svcs_container: Container = Dependency(skip_validation=True),
@@ -153,7 +158,7 @@ class GardenCommandController(Controller):
 
         Args:
             request (Request): Litestar incoming request object.
-            data (RevokeMembership): input command.
+            data (GardenMembershipRevokeCommand): input command.
             state (State): Litestar global app state.
             svcs_container (Container): service locator.
 
@@ -173,10 +178,11 @@ class GardenCommandController(Controller):
         ),
         summary="Garden Membership role change.",
         description="Changes the role on another's Garden Membership.",
+        operation_id=commands.GardenMembershipRoleChangeCommand.to_operation_id()
     )
     async def change_role(
         self,
-        data: commands.ChangeMembershipRole,
+        data: commands.GardenMembershipRoleChangeCommand,
         request: Request,
         state: State,
         svcs_container: Container = Dependency(skip_validation=True),
@@ -186,7 +192,7 @@ class GardenCommandController(Controller):
 
         Args:
             request (Request): Litestar incoming request object.
-            data (ChangeMembershipRole): input command.
+            data (GardenMembershipRoleChangeCommand): input command.
             state (State): Litestar global app state.
             svcs_container (Container): service locator.
 

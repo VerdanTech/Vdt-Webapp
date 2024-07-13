@@ -34,7 +34,7 @@ class UserAuthController(Controller):
     )
     async def user_login(
         self,
-        data: queries.PasswordVerificationQuery,
+        data: queries.UserPasswordVerificationQuery,
         state: State,
         svcs_container: Container = Dependency(skip_validation=True),
     ) -> Response[None]:
@@ -43,7 +43,7 @@ class UserAuthController(Controller):
         the user in with a JWT cookie authentication scheme.
 
         Args:
-            data (PasswordVerificationQuery): input query.
+            data (UserPasswordVerificationQuery): input query.
             state (State): litestar application state.
             svcs_container (Container): service container.
 

@@ -6,7 +6,7 @@ from src.common.domain import Event, event_transform
 
 
 @event_transform
-class UserCreated(Event):
+class UserCreateCommandd(Event):
     """
     Emitted when a new user is created.
     """

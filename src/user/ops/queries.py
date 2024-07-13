@@ -68,7 +68,7 @@ class PasswordVerificationResult(QueryResult[None]):
 # ======================================
 
 
-class PasswordVerificationQuery(Query):
+class UserPasswordVerificationQuery(Query):
     """
     Verifies the password of a user.
     """
@@ -77,7 +77,7 @@ class PasswordVerificationQuery(Query):
     password: Password
 
 
-class UserPublicProfiles(Query):
+class UserPublicProfilesQuery(Query):
     """
     Retrieves public profiles for a list of user IDs.
     """
@@ -91,13 +91,13 @@ class UserPublicProfiles(Query):
 
 
 async def verify_password(
-    query: PasswordVerificationQuery, svcs_container: Container
+    query: UserPasswordVerificationQuery, svcs_container: Container
 ) -> PasswordVerificationResult:
     """
     Verifies the password of a user.
 
     Args:
-        query (PasswordVerificationQuery): the query object.
+        query (UserPasswordVerificationQuery): the query object.
 
     Returns:
         PasswordVerificationResult: indicates verified as true if the user can be authenticated,
@@ -132,7 +132,7 @@ async def verify_password(
 
 
 async def public_profiles(
-    query: UserPublicProfiles,
+    query: UserPublicProfilesQuery,
     svcs_container: Container,
 ) -> list[UserPublicSchema]:
     """
