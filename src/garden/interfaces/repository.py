@@ -44,7 +44,7 @@ class AbstractGardenRepository(AbstractRepository[Garden], Protocol):
         """
         Given a garden key, return True if a matching garden exists.
         Comparison should be case insensitive.
-        
+
         Args:
             key (str): the key to check existence of.
 

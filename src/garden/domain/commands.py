@@ -82,6 +82,7 @@ class CreateGarden(Command):
 
     name: GardenName
     key: GardenKey | None
+    description: str = ""
     visibility: VisibilityEnum = VisibilityEnum.PRIVATE
     admin_ids: list[uuid.UUID] = []
     editor_ids: list[uuid.UUID] = []

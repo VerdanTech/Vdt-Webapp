@@ -2,6 +2,7 @@
 import re
 import uuid
 from typing import Any
+
 # External Libraries
 from pydantic import (
     AfterValidator,
@@ -10,9 +11,10 @@ from pydantic import (
     Field,
     SecretStr,
     ValidationError,
-    validator, SecretStr
+    validator,
 )
 from typing_extensions import Annotated
+
 # VerdanTech Source
 from src import settings
 from src.common.domain import Command
@@ -52,6 +54,7 @@ def password_validator(password: SecretStr) -> SecretStr:
     if not re.match(settings.PASSWORD_PATTERN, password.get_secret_value()):
         raise ValueError(settings.PASSWORD_PATTERN_DESCRIPTION)
     return password
+
 
 Username = Annotated[
     str,

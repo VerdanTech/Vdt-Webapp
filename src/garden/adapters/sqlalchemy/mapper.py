@@ -3,10 +3,12 @@ from sqlalchemy import (
     Boolean,
     Column,
     DateTime,
+    Enum,
     ForeignKey,
     String,
     Table,
-    Uuid, Enum, Text
+    Text,
+    Uuid,
 )
 from sqlalchemy.orm import composite, relationship
 
@@ -15,8 +17,8 @@ from src.common.adapters.persistence.sqlalchemy.mapper import (
     default_uuid,
     mapper_registry,
 )
-from src.garden.domain import Garden, GardenMembership, VisibilityEnum, RoleEnum
 from src.common.domain import Ref
+from src.garden.domain import Garden, GardenMembership, RoleEnum, VisibilityEnum
 
 garden_table = Table(
     "garden_table",
@@ -55,7 +57,7 @@ mapper_registry.map_imperatively(
     properties={
         # Note the lack of a back_populates here, as the relationship is one-way.
         # Adding the back_populates causes issues when reassining the entire collection.
-        "membership": relationship(
+        "memberships": relationship(
             GardenMembership,
             collection_class=set,
             cascade="all, delete-orphan",

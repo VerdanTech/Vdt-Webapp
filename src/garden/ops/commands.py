@@ -1,4 +1,5 @@
 # External Libraries
+from datetime import datetime
 from svcs import Container
 
 # VerdanTech Source
@@ -51,16 +52,15 @@ async def create_garden(
 
         # Create a new garden
         garden = Garden(
-            name=command.name, key=key, creator_ref=Ref(id=client.id_or_error())
+            name=command.name, key=key, creator_ref=Ref(id=client.id_or_error()), description=command.description
         )
 
         # Create a membership for the creator.
         creator_membership = GardenMembership(
-            garden_ref=garden.ref,
             inviter_ref=None,
             user_ref=client.ref,
             role=RoleEnum.ADMIN,
-            accepted=True,
+            accepted_at=datetime.now(),
         )
         garden.memberships.add(creator_membership)
 

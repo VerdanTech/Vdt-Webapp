@@ -191,9 +191,10 @@ GARDEN_NAME_PATTERN_DESCRIPTION: str = (
 )
 GARDEN_KEY_MIN_LENGTH: int = 4
 GARDEN_KEY_MAX_LENGTH: int = 16
-GARDEN_KEY_KEYGEN_DEFAULT_LENGTH: int = 4
-"""Default length of the keygen portion of the garden key. """
+GARDEN_KEY_KEYGEN_DEFAULT_LENGTH_NO_PLANT_NAME: int = 6
+GARDEN_KEY_KEYGEN_DEFAULT_LENGTH_PLANT_NAME: int = 3
+"""Default length of the keygen portion of the garden key. when generated with or without a plant name."""
 GARDEN_KEY_PATTERN: Pattern = re.compile(r"[0-9A-Za-z]+")
 GARDEN_KEY_PATTERN_DESCRIPTION: str = "Must contain only alphanumeric characters."
-MAX_GARDEN_RANDOM_PLANT_KEY_GENERATION_ATTEMPTS: 4
+MAX_GARDEN_RANDOM_PLANT_KEY_GENERATION_ATTEMPTS: int = 4
 """The maximum amount of times the key generator will generate an id with a random plant name before reverting to only random characters."""

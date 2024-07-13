@@ -62,7 +62,8 @@ async def process_garden_invite(
                     user_username=user.username,
                     user_email=user.primary_email.address,
                 )
-                for user in users if not garden.is_user_member(user)
+                for user in users
+                if not garden.is_user_member(user)
             ]
 
         if event.editor_ids and client_membership.authorize(
@@ -76,9 +77,10 @@ async def process_garden_invite(
                     user_username=user.username,
                     user_email=user.primary_email.address,
                 )
-                for user in users if not garden.is_user_member(user)
+                for user in users
+                if not garden.is_user_member(user)
             ]
-            
+
         if event.viewer_ids and client_membership.authorize(
             operation=PermissionRouter.invite(role=RoleEnum.VIEW),
         ):
@@ -90,7 +92,8 @@ async def process_garden_invite(
                     user_username=user.username,
                     user_email=user.primary_email.address,
                 )
-                for user in users if not garden.is_user_member(user)
+                for user in users
+                if not garden.is_user_member(user)
             ]
 
         # Return if no invites remain

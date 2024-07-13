@@ -3,15 +3,7 @@ import uuid
 from datetime import datetime
 
 # External Libraries
-from sqlalchemy import (
-    Boolean,
-    Column,
-    DateTime,
-    ForeignKey,
-    String,
-    Table,
-    Uuid,
-)
+from sqlalchemy import Boolean, Column, DateTime, ForeignKey, String, Table, Uuid
 from sqlalchemy.orm import composite, relationship
 
 # VerdanTech Source
@@ -83,7 +75,6 @@ mapper_registry.map_imperatively(
             collection_class=list,
             cascade="all, delete-orphan",
         ),
-
         # Composites (one-to-one value objects)
         "password_reset_confirmation": composite(
             PasswordResetConfirmation,
@@ -98,7 +89,6 @@ mapper_registry.map_imperatively(
     properties={
         # Relationships
         "user": relationship(User, back_populates="emails"),
-
         # Composites (one-to-one value objects)
         "confirmation": composite(
             EmailConfirmation,
