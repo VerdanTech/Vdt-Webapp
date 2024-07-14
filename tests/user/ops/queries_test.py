@@ -170,7 +170,9 @@ async def test_public_profiles_success(svcs_container: Container) -> None:
         await uow.commit()
 
     nonexistant_id = uuid.uuid4()
-    query = queries.UserPublicProfilesQuery(user_ids=[user.id_or_error() for user in users])
+    query = queries.UserPublicProfilesQuery(
+        user_ids=[user.id_or_error() for user in users]
+    )
     query.user_ids.append(nonexistant_id)
 
     result = await queries.public_profiles(query=query, svcs_container=svcs_container)

@@ -61,8 +61,8 @@ async def test_create_user_success(
 
     # Assert the follow up event was raised correctly
     assert isinstance(
-        next(uow.collect_new_events(), None), events.EmailPendingConfirmation
-    ) and isinstance(next(uow.collect_new_events(), None), events.UserCreateCommandd)
+        next(uow.collect_new_events(), None), events.EmailPendingConfirmationEvent
+    ) and isinstance(next(uow.collect_new_events(), None), events.UserCreatedEvent)
 
 
 # ======================================
@@ -82,7 +82,9 @@ async def test_request_email_confirmation_email_not_found(
     """
     nonexistant_email = "nonexistant_email@gmail.com"
 
-    command = commands.UserRequestEmailConfirmationCommand(email_address=nonexistant_email)
+    command = commands.UserRequestEmailConfirmationCommand(
+        email_address=nonexistant_email
+    )
 
     with pytest.raises(EntityNotFound):
         await handlers.request_email_confirmation(
@@ -94,7 +96,7 @@ async def test_email_confirmation_request_success(
     svcs_container: Container,
 ) -> None:
     """
-    Ensure that the operation creates a new EmailPendingConfirmation event
+    Ensure that the operation creates a new EmailPendingConfirmationEvent event
 
     Args:
         svcs_container (Container): service locator with mock services.
@@ -117,7 +119,7 @@ async def test_email_confirmation_request_success(
 
     # Assert the follow up event was raised correctly
     assert isinstance(
-        next(uow.collect_new_events(), None), events.EmailPendingConfirmation
+        next(uow.collect_new_events(), None), events.EmailPendingConfirmationEvent
     )
 
 
@@ -232,7 +234,9 @@ async def test_request_password_reset_email_found_but_unprimary(
         await uow.repos.users.add(user)
         await uow.commit()
 
-    command = commands.UserRequestPasswordResetCommand(email_address=existing_unprimary_email)
+    command = commands.UserRequestPasswordResetCommand(
+        email_address=existing_unprimary_email
+    )
 
     with pytest.raises(EntityNotFound):
         await handlers.request_password_reset(
@@ -244,7 +248,7 @@ async def test_request_password_reset_success(
     svcs_container: Container,
 ) -> None:
     """
-    Ensure that the operation creates a new PasswordPendingReset event.
+    Ensure that the operation creates a new PasswordPendingResetEvent event.
 
     Args:
         svcs_container (Container): service locator with mock services.
@@ -264,7 +268,9 @@ async def test_request_password_reset_success(
         command=command, svcs_container=svcs_container
     )
 
-    assert isinstance(next(uow.collect_new_events(), None), events.PasswordPendingReset)
+    assert isinstance(
+        next(uow.collect_new_events(), None), events.PasswordPendingResetEvent
+    )
 
 
 # ======================================

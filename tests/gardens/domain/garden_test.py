@@ -11,9 +11,12 @@ from svcs import Container
 # VerdanTech Source
 from src.common.domain import exceptions as domain_exceptions
 from src.garden.domain import Garden, GardenMembership, exceptions, generate_garden_key
-from tests.user.conftest import user # noqa: F401 - pytest fixture
+from tests.user.conftest import user  # noqa: F401 - pytest fixture
+
 pytestmark = [pytest.mark.unit]
-from src.user.domain import User 
+# VerdanTech Source
+from src.user.domain import User
+
 
 def test_generate_garden_key() -> None:
     pass
@@ -21,6 +24,7 @@ def test_generate_garden_key() -> None:
 
 class TestGarden:
     pass
+
     # ======================================
     # Garden.num_memberships() tests
     # ======================================

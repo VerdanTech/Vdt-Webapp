@@ -30,7 +30,7 @@ class UserAuthController(Controller):
         opt={"exclude_from_auth": True},
         summary="User login",
         description="Authenticate the request with JWT cookie authentication.",
-        operation_id="UserLoginCommand"
+        operation_id="UserLoginCommand",
     )
     async def user_login(
         self,

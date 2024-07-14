@@ -29,7 +29,7 @@ class UserQueryController(Controller):
         summary="User public profiles view.",
         description="Returns the profiles of the user ids given.",
         response_description="The list of users requested.",
-        operation_id=queries.UserPublicProfilesQuery.to_operation_id()
+        operation_id=queries.UserPublicProfilesQuery.to_operation_id(),
     )
     async def public_profiles(
         self,
@@ -63,7 +63,7 @@ class UserQueryController(Controller):
         summary="User client profile view.",
         description="Returns the profile of the authenticated user.",
         response_description="The profile of the authenticated user.",
-        operation_id="UserClientProfileQuery"
+        operation_id="UserClientProfileQuery",
     )
     async def client_profile(
         self,

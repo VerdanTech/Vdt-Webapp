@@ -28,7 +28,7 @@ class UserCommandController(Controller):
         opt={"exclude_from_auth": True},
         summary="User registration.",
         description=f"Registers a new user. Requires email confirmation: {settings.EMAIL_CONFIRMATION.verification_required}.",
-        operation_id=commands.UserCreateCommand.to_operation_id()
+        operation_id=commands.UserCreateCommand.to_operation_id(),
     )
     async def user_create(
         self,
@@ -59,7 +59,7 @@ class UserCommandController(Controller):
         summary="Email confirmation request.",
         description="Requests a new email verification email be sent to the email address.",
         response_description="An email confirmation has been sent to the address.",
-        operation_id=commands.UserRequestEmailConfirmationCommand.to_operation_id()
+        operation_id=commands.UserRequestEmailConfirmationCommand.to_operation_id(),
     )
     async def user_request_email_confirmation(
         self,
@@ -90,7 +90,7 @@ class UserCommandController(Controller):
         summary="Email confirmation.",
         description="Closes an email confirmation and verifies the email address.",
         response_description="The email has been verified.",
-        operation_id=commands.UserConfirmEmailConfirmationCommand.to_operation_id()
+        operation_id=commands.UserConfirmEmailConfirmationCommand.to_operation_id(),
     )
     async def user_confirm_email_confirmation(
         self,
@@ -121,7 +121,7 @@ class UserCommandController(Controller):
         summary="Password reset request.",
         description="Open a new password reset request and sends confirmation email.",
         response_description="A password reset confirmation has been sent to the email address, if it exists.",
-        operation_id=commands.UserRequestPasswordResetCommand.to_operation_id()
+        operation_id=commands.UserRequestPasswordResetCommand.to_operation_id(),
     )
     async def user_request_password_reset(
         self,
@@ -152,7 +152,7 @@ class UserCommandController(Controller):
         summary="Password reset confirm.",
         description="Closes a password reset request and changes the password",
         response_description="The password has been successfully updated.",
-        operation_id=commands.UserConfirmPasswordResetCommand.to_operation_id()
+        operation_id=commands.UserConfirmPasswordResetCommand.to_operation_id(),
     )
     async def user_confirm_password_reset(
         self,

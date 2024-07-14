@@ -19,7 +19,7 @@ from src.common.adapters.persistence.sqlalchemy import AlchemyClient
 # SQLALCHEMY
 # ======================================
 
-engine = create_async_engine(settings.ALCHEMY_URI, echo=True)
+engine = create_async_engine(settings.POSTGRES_URI, echo=True)
 
 sessionmaker = async_sessionmaker(
     expire_on_commit=False,

@@ -6,7 +6,7 @@ from src.common.domain import Event, event_transform
 
 
 @event_transform
-class UserCreateCommandd(Event):
+class UserCreatedEvent(Event):
     """
     Emitted when a new user is created.
     """
@@ -17,7 +17,7 @@ class UserCreateCommandd(Event):
 
 
 @event_transform
-class EmailPendingConfirmation(Event):
+class EmailPendingConfirmationEvent(Event):
     """
     Emitted when a new email confirmation is required.
     """
@@ -27,7 +27,7 @@ class EmailPendingConfirmation(Event):
 
 
 @event_transform
-class PasswordPendingReset(Event):
+class PasswordPendingResetEvent(Event):
     """
     Emitted when a new password reset is required.
     """
@@ -38,7 +38,7 @@ class PasswordPendingReset(Event):
 
 
 @event_transform
-class EmailConfirmationCreated(Event):
+class EmailConfirmationCreatedEvent(Event):
     """
     Emitted when an email confirmation has been created
     and is pending a notification.
@@ -50,7 +50,7 @@ class EmailConfirmationCreated(Event):
 
 
 @event_transform
-class PasswordResetConfirmationCreated(Event):
+class PasswordResetConfirmationCreatedEvent(Event):
     """
     Emitted when an passwor reset confirmation has been created
     and is pending a notification.

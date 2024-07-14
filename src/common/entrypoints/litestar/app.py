@@ -12,7 +12,7 @@ from .openapi import openapi_config
 from .router import create_base_router
 
 
-def create_app(alchemy_uri: str = settings.ALCHEMY_URI) -> "Litestar":
+def create_app(alchemy_uri: str = settings.POSTGRES_URI) -> "Litestar":
     base_router = create_base_router()
 
     return Litestar(

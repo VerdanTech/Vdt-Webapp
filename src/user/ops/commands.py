@@ -12,7 +12,9 @@ from src.user.domain import User, commands, events
 
 @asgi_processor.add_command()
 async def create_user(
-    command: commands.UserCreateCommand, svcs_container: Container, client: User | None = None
+    command: commands.UserCreateCommand,
+    svcs_container: Container,
+    client: User | None = None,
 ) -> None:
     """
     Main user creation operation.
@@ -49,7 +51,7 @@ async def create_user(
         user = await uow.repos.users.add(user)
         await uow.commit()
         user.events.append(
-            events.UserCreateCommandd(
+            events.UserCreatedEvent(
                 userid=user.id_or_error(),
                 username=user.username,
                 email_address=command.email_address,
@@ -136,7 +138,7 @@ async def request_email_confirmation(
 
         # Request a new email confirmation
         user.events.append(
-            events.EmailPendingConfirmation(
+            events.EmailPendingConfirmationEvent(
                 username=user.username, email_address=command.email_address
             )
         )
@@ -207,7 +209,7 @@ async def request_password_reset(
 
         # Request a new password reset
         user.events.append(
-            events.PasswordPendingReset(
+            events.PasswordPendingResetEvent(
                 user_id=user.id,
                 username=user.username,
                 email_address=command.email_address,

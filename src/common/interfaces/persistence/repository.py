@@ -16,11 +16,12 @@ class AbstractRepository[RootEntityT: RootEntity](Protocol):
     A Repository is an interface between the domain layer
     and the database layer.
 
-    T: a Repository is characterized by one
-        type of RootEntity. As RootEntitys are defined as entities
-        which compose transactional and consistency boundaries,
-        they are the objects that get persisted through interaction
-        with the Repository.
+    Types:
+        - RootEntityT: a Repository is characterized by one
+            type of RootEntity. As RootEntitys are defined as entities
+            which compose transactional and consistency boundaries,
+            they are the objects that get persisted through interaction
+            with the Repository.
 
     Protocol: (https://peps.python.org/pep-0544/)
     """

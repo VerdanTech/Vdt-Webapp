@@ -7,7 +7,7 @@ from src import settings
 from src.common.interfaces.persistence import AbstractUow
 
 from .clients import DatabaseClients
-from .repositories import StandardRepositoryContainer
+from .repository import StandardRepositoryContainer
 
 sessionmaker = async_sessionmaker(expire_on_commit=False)
 

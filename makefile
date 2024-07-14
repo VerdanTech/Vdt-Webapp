@@ -1,7 +1,7 @@
 #
 # Compile all dependencies specified in pyproject.toml into requirements.
 #
-.PHONY: compile-dependencies
+.PHONY: compile-deps
 compile-deps:
 	uv pip compile pyproject.toml -o requirements/main.txt
 	uv pip compile --extra test pyproject.toml -o requirements/test.txt
@@ -38,9 +38,9 @@ test-db:
 #
 # Run all application integration tests.
 #
-.PHONY: test-asgi
-test-asgi:
-	pytest -m asgi
+.PHONY: test-intg
+test-intg:
+	pytest -m integration
 
 
 #
@@ -108,11 +108,3 @@ migrations:
 migrate:
 	export PYTHONPATH=$(shell pwd); \
 	python src/common/adapters/persistence/sqlalchemy/migrations/apply.py
-
-#
-# Run Alembic's "downgrade" command to un-apply all migrations.
-#
-.PHONY: reset-migrations
-reset-migrations:
-	export PYTHONPATH=$(shell pwd); \
-	python src/common/adapters/persistence/sqlalchemy/migrations/reset.py --reset
