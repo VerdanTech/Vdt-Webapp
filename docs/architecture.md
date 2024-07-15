@@ -55,6 +55,7 @@ The operations layer serves to orchestrate the domain layer, connect it with ser
 The operation handlers can be thought of as "use-cases" or individual workflows relevant to consumers of the app.
 
 A typical ops workflow involves:
+
 1. Locate all services, including a UnitOfWork.
 2. Open the UnitOfWork context manager.
 3. Validate any command against the UnitOfWork.
@@ -89,6 +90,27 @@ Query handlers take a Query object, a service locator container, and an optional
 
 ## Interfaces
 
+In order to avoid the domain and operations layer being dependent on implementation details, any services they need to be interacted with are put behind abstract interfaces. This inverts the dependency of the domain on the services by making both the domain and service dependent on the interface.
+
+The advantage of this is decoupling between layers of the application. Changing the database involves writing new adapters for the interfaces, but the changes are limited to the adapters, because the interface remains the same. An example of the usefulness of this property will be seen in the future when a cache system for differential synchronization will be implemented - as persisting domain objects to a cache vs. a database will be able to be abstracted through the same interface.
+
+Generally, anything that involves a stateful dependency, such as SqlAlchemy code that maintains a connection to a database, and anything that will likely need to be switched out at some point, is worth putting behind an interface. Libraries which provide stateless utilities do not need to be abstracted in this way.
+
+Interfaces are implemented using Python's Protocol type. Some examples of interfaces are:
+1. A Repository class provides connectivity between the domain models and the database, including adding new entities to the database and retrieving entities.
+2. The UnitOfWork interface contains all repositories required by the application and provides a context manager for managing database transactions.
+3. The EventNode interface allows the application to push events to an event stream, so the ASGI process and task backend can communicate.
+
 ## Adapters
 
+The adapters layer contains implementations of the interfaces.
+
+Adapters are organized using the `svcs` library, which provides a service locator registry and container. All required adapters and their factory functions are added to the registry, and the entrypoints initialize a service container from that registry to pass into the operations layer, allowing the operations handlers to locate services as needed. 
+
 ## Entrypoints
+
+The entrypoints layer contains the application process code including the ASGI application and the task backend, as both of these processes are the gateways through which the operations layer is connected to the network.
+
+For the ASGI application, a general rule is that there is one route handler per command/query handler. There should be no business/application logic executed in the route handler - the function of the route handler is to call the operation handler. The utility of the route handler, in the case of the Litestar framework, is taking the Command, Query, and QueryResult objects defined in the domain and ops layers, and handling all network-related de/serialization, as well as generating an OpenAPI schema.
+
+The task backend can receive tasks from the ASGI process, as well as schedule its own tasks using cron jobs. The main purpose of the task backend will be to implement special computation tasks such as differential synchronization for multi-client editing, simulated annealing for generation of planting arrangements, and interacting with external APIs. 
