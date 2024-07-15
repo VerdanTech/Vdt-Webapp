@@ -31,22 +31,6 @@ class MockGardenRepository(MockBaseRepository[Garden], AbstractGardenRepository)
                 return garden
         return None
 
-    async def get_by_name(self, name: str) -> Garden | None:
-        """
-        Given a garden name return the garden to whom it belongs.
-
-        Args:
-            name (str): the name to search for.
-
-        Returns:
-            Garden | None: the found garden, or None if no
-                garden was found.
-        """
-        for garden in self.collection:
-            if garden.name == name:
-                return garden
-        return None
-
     async def get_by_key(self, key: str) -> Garden | None:
         """
         Given a garden key return the garden to whom it belongs.
@@ -66,6 +50,7 @@ class MockGardenRepository(MockBaseRepository[Garden], AbstractGardenRepository)
     async def key_exists(self, key: str) -> bool:
         """
         Given a garden key, return True if a matching garden exists.
+        Comparison should be case insensitive.
 
         Args:
             key (str): the key to check existence of.

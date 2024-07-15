@@ -1,11 +1,11 @@
 # Standard Library
-from typing import Protocol
+from typing import Protocol, Any
 
 # VerdanTech Source
 from src.common.domain import RootEntity
 
 
-class AbstractMapper[RootEntityT: RootEntity, DatabaseModelT](Protocol):
+class AbstractMapper[RootEntityT: RootEntity, DatabaseModelT: Any](Protocol):
     """
     Interface for python object -> database representation functionality.
     We only expect RootEntitys because they are supposed to define

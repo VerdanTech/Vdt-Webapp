@@ -12,13 +12,15 @@ from src.user.domain import User, commands, events
 
 @asgi_processor.add_command()
 async def create_user(
-    command: commands.CreateUser, svcs_container: Container, client: User | None = None
+    command: commands.UserCreateCommand,
+    svcs_container: Container,
+    client: User | None = None,
 ) -> None:
     """
     Main user creation operation.
 
     Args:
-        command (commands.CreateUser): user creation command.
+        command (commands.UserCreateCommand): user creation command.
         svcs_container (Container): service locator.
     """
     # Locate services
@@ -49,7 +51,7 @@ async def create_user(
         user = await uow.repos.users.add(user)
         await uow.commit()
         user.events.append(
-            events.UserCreated(
+            events.UserCreatedEvent(
                 userid=user.id_or_error(),
                 username=user.username,
                 email_address=command.email_address,
@@ -59,7 +61,7 @@ async def create_user(
 
 @asgi_processor.add_command()
 async def update_user(
-    command: commands.UpdateUser,
+    command: commands.UserUpdateCommand,
     svcs_container: Container,
     client: User | None = None,
 ) -> None:
@@ -67,7 +69,7 @@ async def update_user(
     User username, email, and password update operation.
 
     Args:
-        command (commands.UpdateUser): user update command.
+        command (commands.UserUpdateCommand): user update command.
         svcs_container (Container): service locator.
     """
     if client is None:
@@ -113,14 +115,14 @@ async def update_user(
 
 @asgi_processor.add_command()
 async def request_email_confirmation(
-    command: commands.RequestEmailConfirmation, svcs_container: Container
+    command: commands.UserRequestEmailConfirmationCommand, svcs_container: Container
 ) -> None:
     """
     Given an unverified email, create a new email confirmation,
     and send an email confirmation email.
 
     Args:
-        command (commands.RequestEmailConfirmation): email confirmation request command.
+        command (commands.UserRequestEmailConfirmationCommand): email confirmation request command.
         svcs_container (Container): service locator.
     """
     # Locate services
@@ -136,7 +138,7 @@ async def request_email_confirmation(
 
         # Request a new email confirmation
         user.events.append(
-            events.EmailPendingConfirmation(
+            events.EmailPendingConfirmationEvent(
                 username=user.username, email_address=command.email_address
             )
         )
@@ -144,14 +146,14 @@ async def request_email_confirmation(
 
 @asgi_processor.add_command()
 async def confirm_email_confirmation(
-    command: commands.ConfirmEmailConfirmation, svcs_container: Container
+    command: commands.UserConfirmEmailConfirmationCommand, svcs_container: Container
 ) -> None:
     """
     Given an email confirmation key, verify the email
     if it exists and is in a verifiable state.
 
     Args:
-        command (commands.ConfirmEmailConfirmation): email confirmation confirm command.
+        command (commands.UserConfirmEmailConfirmationCommand): email confirmation confirm command.
         svcs_container (Container): service locator.
     """
     # Locate services
@@ -177,14 +179,14 @@ async def confirm_email_confirmation(
 
 @asgi_processor.add_command()
 async def request_password_reset(
-    command: commands.RequestPasswordReset, svcs_container: Container
+    command: commands.UserRequestPasswordResetCommand, svcs_container: Container
 ) -> None:
     """
     Given an email, find the user associated, open up a new
     password reset request, and emit the reset email.
 
     Args:
-        command (commands.RequestPasswordReset): password reset request command.
+        command (commands.UserRequestPasswordResetCommand): password reset request command.
         svcs_container (Container): service locator.
     """
     # Locate services
@@ -207,7 +209,7 @@ async def request_password_reset(
 
         # Request a new password reset
         user.events.append(
-            events.PasswordPendingReset(
+            events.PasswordPendingResetEvent(
                 user_id=user.id,
                 username=user.username,
                 email_address=command.email_address,
@@ -217,7 +219,7 @@ async def request_password_reset(
 
 @asgi_processor.add_command()
 async def confirm_password_reset(
-    command: commands.ConfirmPasswordReset, svcs_container: Container
+    command: commands.UserConfirmPasswordResetCommand, svcs_container: Container
 ) -> None:
     """
     Given a user ID, password confirmation key,
@@ -225,7 +227,7 @@ async def confirm_password_reset(
     the key, and set the new password.
 
     Args:
-        command (commands.UpdateUser): user password reset confirm command.
+        command (commands.UserUpdateCommand): user password reset confirm command.
         svcs_container (Container): service locator.
     """
     # Locate services

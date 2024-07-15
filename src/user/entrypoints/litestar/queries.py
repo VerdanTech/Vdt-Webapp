@@ -29,6 +29,7 @@ class UserQueryController(Controller):
         summary="User public profiles view.",
         description="Returns the profiles of the user ids given.",
         response_description="The list of users requested.",
+        operation_id=queries.UserPublicProfilesQuery.to_operation_id(),
     )
     async def public_profiles(
         self,
@@ -40,7 +41,7 @@ class UserQueryController(Controller):
         Calls the public profiles query.
 
         Args:
-            data (PublicProfilesQuery): input query.
+            data (UserPublicProfilesQuery): input query.
             request (Request): Litestar http request object.
             state (State): Litestar global app state.
             svcs_container (Container): service locator.
@@ -49,7 +50,7 @@ class UserQueryController(Controller):
             list[UserPublicSchema]: the retrieved public profiles.
         """
         svcs_container.register_local_value(State, state)
-        data = queries.PublicProfilesQuery(user_ids=user_ids)
+        data = queries.UserPublicProfilesQuery(user_ids=user_ids)
         with litestar_exception_map():
             user_schemas = await queries.public_profiles(
                 query=data, svcs_container=svcs_container
@@ -62,8 +63,9 @@ class UserQueryController(Controller):
         summary="User client profile view.",
         description="Returns the profile of the authenticated user.",
         response_description="The profile of the authenticated user.",
+        operation_id="UserClientProfileQuery",
     )
-    async def client_profiles(
+    async def client_profile(
         self,
         request: Request,
         state: State,
@@ -73,7 +75,7 @@ class UserQueryController(Controller):
         Calls the client profile query.
 
         Args:
-            data (PublicProfilesQuery): input query.
+            data (UserPublicProfilesQuery): input query.
             request (Request): Litestar http request object.
             state (State): Litestar global app state.
             svcs_container (Container): service locator.

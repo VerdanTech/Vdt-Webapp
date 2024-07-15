@@ -20,7 +20,7 @@ def apply_migration():
     Script to apply current migrations to the database.
     """
     alembic_cfg = Config(config_directory)
-    alembic_cfg.set_main_option("sqlalchemy.url", settings.ALCHEMY_URI)
+    alembic_cfg.set_main_option("sqlalchemy.url", settings.POSTGRES_URI)
     alembic_cfg.set_main_option("script_location", script_location)
     command.upgrade(alembic_cfg, "head")
 

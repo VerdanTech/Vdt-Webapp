@@ -71,3 +71,8 @@ class RefSchema[T: DomainModel](QueryResult[Ref]):
 
 class Query(BaseModel):
     model_config = ConfigDict(frozen=True)
+
+    @classmethod
+    def to_operation_id(cls) -> str:
+        """Converts the Query's type to an operation ID for use with OpenAPI."""
+        return str(cls.__name__) + "Op"

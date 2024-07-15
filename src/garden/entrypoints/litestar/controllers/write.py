@@ -49,7 +49,7 @@ class GardenWriteApiController(Controller):
         Calls the garden creation application operation.
 
         Args:
-            data (UserCreateInput): input DTO.
+            data (UserCreateCommandInput): input DTO.
             svcs_container (Container): svcs service
                 locator container.
 

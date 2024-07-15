@@ -21,13 +21,12 @@ def entity_transform(cls):
     The @dataclass_transform decorator is required for type-checking/dataclass
     functionality. See (https://peps.python.org/pep-0681/).
 
-    This decorator:
-    - Applies attrs @define decorator with arguments:
-        kw_only=True: Positional arguments are not supported
+    This decorator applies attrs @define decorator with arguments:
+        - kw_only=True: Positional arguments are not supported
             for the sake of simplicity and readability.
-        eq=False: Explicit disabling of __eq__() generation as this
+        - eq=False: Explicit disabling of __eq__() generation as this
             is handled by Id equivalence.
-        slots=False: Slotted classes are preferred for performance,
+        - slots=False: Slotted classes are preferred for performance,
             but is currently not supported by SQLAlchemy. To make use
             of SQLAlchemy's imperative mapper and avoid clunky
             mapping between domain and ORM objects, they are currently disabled.
@@ -45,8 +44,7 @@ def root_entity_transform(cls):
     The @dataclass_transform decorator is required for type-checking/dataclass
     functionality. See (https://peps.python.org/pep-0681/).
 
-    This decorator:
-    - Applies @entity_transform decorator.
+    This decorator applies the @entity_transform decorator.
     """
     cls = entity_transform(cls)
     return cls
@@ -60,21 +58,20 @@ def value_transform(cls):
     The @dataclass_transform decorator is required for type-checking/dataclass
     functionality. See (https://peps.python.org/pep-0681/).
 
-    This decorator:
-    - Applies attrs @define decorator with arguments:
-        kw_only=False: Positional arguments are supported
+    This decorator applies attrs @define decorator with arguments:
+        - kw_only=False: Positional arguments are supported
             as it is required for SqlAlchemy composites.
-        frozen=False: Value objects are supposed to be immutable,
+        - frozen=False: Value objects are supposed to be immutable,
             so use of frozen=True is preferred to enforce this.
             However, due to lack of support from SQLAlchemy,
             this is currently disabled.
-        eq=True: Explicit enabling of __eq__() generation as value
+        - eq=True: Explicit enabling of __eq__() generation as value
             objects are equivalent if all their attributes are.
-        slots=False: Slotted classes are preferred for performance,
+        - slots=False: Slotted classes are preferred for performance,
             but is currently not supported by SQLAlchemy. To make use
             of SQLAlchemy's imperative mapper and avoid clunky
             mapping between domain and ORM objects, they are currently disabled.
-        unsafe_hash=True: Hashability is required for use in sets and dicts.
+        - unsafe_hash=True: Hashability is required for use in sets and dicts.
             It would normally come as part of frozen=True, but it has to
             be unsafe due to the lack of support from SQLAlchemy.
 
@@ -190,3 +187,16 @@ class Ref[E: RootEntity](Value):
     """
 
     id: uuid.UUID
+
+    def __composite_values__(self) -> tuple[uuid.UUID]:
+        """
+        Required by SqlAlchemy to map value objects to composites (multiple columns).
+
+        This would usually be put in the adapters section,
+        but since Ref is used everywhere it is more convenient here.
+
+        Returns:
+            tuple[Uuid]: the composite values.
+        """
+        # Note the , used to return a tuple
+        return (self.id,)

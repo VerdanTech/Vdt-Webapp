@@ -16,13 +16,13 @@ from src.user.domain import events
 
 @asgi_processor.add_event()
 async def process_email_confirmation(
-    event: events.EmailPendingConfirmation, svcs_container: Container
+    event: events.EmailPendingConfirmationEvent, svcs_container: Container
 ) -> None:
     """
     Creates a new email confirmation and queues an email notification.
 
     Args:
-        event (events.EmailPendingConfirmation): pending confirmation event.
+        event (events.EmailPendingConfirmationEvent): pending confirmation event.
         svcs_container (Container): service locator.
     """
     # Locate services
@@ -44,7 +44,7 @@ async def process_email_confirmation(
 
         # Emit the email sending event to the task backend
         await event_node.emit(
-            events.EmailConfirmationCreated(
+            events.EmailConfirmationCreatedEvent(
                 email_address=event.email_address, username=event.username, key=key
             ),
             subject="general_domain_events",
@@ -53,13 +53,13 @@ async def process_email_confirmation(
 
 @asgi_processor.add_event()
 async def process_password_reset(
-    event: events.PasswordPendingReset, svcs_container: Container
+    event: events.PasswordPendingResetEvent, svcs_container: Container
 ) -> None:
     """
     Creates a new password reset and queues an email notification.
 
     Args:
-        event (events.PasswordPendingReset): pending reset confirmation event.
+        event (events.PasswordPendingResetEvent): pending reset confirmation event.
         svcs_container (Container): service locator.
     """
     # Locate services
@@ -71,7 +71,7 @@ async def process_password_reset(
 
         # Emit the email sending event to the task backend
         await event_node.emit(
-            events.PasswordResetConfirmationCreated(
+            events.PasswordResetConfirmationCreatedEvent(
                 user_id=event.user_id,
                 email_address=event.email_address,
                 username=event.username,
@@ -83,13 +83,13 @@ async def process_password_reset(
 
 @task_processor.add_event()
 async def send_email_confirmation(
-    event: events.EmailConfirmationCreated, svcs_container: Container
+    event: events.EmailConfirmationCreatedEvent, svcs_container: Container
 ) -> None:
     """
     Sends an email confirmation email.
 
     Args:
-        event (events.EmailConfirmationCreated): email confirmation created event.
+        event (events.EmailConfirmationCreatedEvent): email confirmation created event.
         svcs_container (Container): service locator.
     """
     # Locate services
@@ -108,13 +108,13 @@ async def send_email_confirmation(
 
 @task_processor.add_event()
 async def send_password_reset(
-    event: events.PasswordResetConfirmationCreated, svcs_container: Container
+    event: events.PasswordResetConfirmationCreatedEvent, svcs_container: Container
 ) -> None:
     """
     Sends a password reset email.
 
     Args:
-        event (events.PasswordResetConfirmationCreated): password reset created event.
+        event (events.PasswordResetConfirmationCreatedEvent): password reset created event.
         svcs_container (Container): service locator.
     """
     # Locate services
