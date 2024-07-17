@@ -268,6 +268,28 @@ components:
       - email_address
       title: UserRequestPasswordResetCommand
       type: object
+    ValidationException:
+      description: Validation Exception
+      examples:
+      - detail: Bad Request
+        extra: {}
+        status_code: 400
+      properties:
+        detail:
+          type: string
+        extra:
+          anyOf:
+          - additionalProperties: {}
+            type: object
+          - items: {}
+            type: array
+          - type: 'null'
+        status_code:
+          type: integer
+      required:
+      - detail
+      - status_code
+      type: object
   securitySchemes:
     BearerToken:
       bearerFormat: JWT
@@ -308,26 +330,7 @@ paths:
           content:
             application/json:
               schema:
-                description: Validation Exception
-                examples:
-                - detail: Bad Request
-                  extra: {}
-                  status_code: 400
-                properties:
-                  detail:
-                    type: string
-                  extra:
-                    additionalProperties: {}
-                    type:
-                    - 'null'
-                    - object
-                    - array
-                  status_code:
-                    type: integer
-                required:
-                - detail
-                - status_code
-                type: object
+                $ref: '#/components/schemas/ValidationException'
           description: Bad request syntax or unsupported method
       summary: Garden membership invitiation acceptance.
       tags:
@@ -351,26 +354,7 @@ paths:
           content:
             application/json:
               schema:
-                description: Validation Exception
-                examples:
-                - detail: Bad Request
-                  extra: {}
-                  status_code: 400
-                properties:
-                  detail:
-                    type: string
-                  extra:
-                    additionalProperties: {}
-                    type:
-                    - 'null'
-                    - object
-                    - array
-                  status_code:
-                    type: integer
-                required:
-                - detail
-                - status_code
-                type: object
+                $ref: '#/components/schemas/ValidationException'
           description: Bad request syntax or unsupported method
       summary: Garden Membership role change.
       tags:
@@ -394,26 +378,7 @@ paths:
           content:
             application/json:
               schema:
-                description: Validation Exception
-                examples:
-                - detail: Bad Request
-                  extra: {}
-                  status_code: 400
-                properties:
-                  detail:
-                    type: string
-                  extra:
-                    additionalProperties: {}
-                    type:
-                    - 'null'
-                    - object
-                    - array
-                  status_code:
-                    type: integer
-                required:
-                - detail
-                - status_code
-                type: object
+                $ref: '#/components/schemas/ValidationException'
           description: Bad request syntax or unsupported method
       summary: Garden creation.
       tags:
@@ -437,26 +402,7 @@ paths:
           content:
             application/json:
               schema:
-                description: Validation Exception
-                examples:
-                - detail: Bad Request
-                  extra: {}
-                  status_code: 400
-                properties:
-                  detail:
-                    type: string
-                  extra:
-                    additionalProperties: {}
-                    type:
-                    - 'null'
-                    - object
-                    - array
-                  status_code:
-                    type: integer
-                required:
-                - detail
-                - status_code
-                type: object
+                $ref: '#/components/schemas/ValidationException'
           description: Bad request syntax or unsupported method
       summary: Garden membership invitiation.
       tags:
@@ -480,26 +426,7 @@ paths:
           content:
             application/json:
               schema:
-                description: Validation Exception
-                examples:
-                - detail: Bad Request
-                  extra: {}
-                  status_code: 400
-                properties:
-                  detail:
-                    type: string
-                  extra:
-                    additionalProperties: {}
-                    type:
-                    - 'null'
-                    - object
-                    - array
-                  status_code:
-                    type: integer
-                required:
-                - detail
-                - status_code
-                type: object
+                $ref: '#/components/schemas/ValidationException'
           description: Bad request syntax or unsupported method
       summary: Garden membership deletion.
       tags:
@@ -523,26 +450,7 @@ paths:
           content:
             application/json:
               schema:
-                description: Validation Exception
-                examples:
-                - detail: Bad Request
-                  extra: {}
-                  status_code: 400
-                properties:
-                  detail:
-                    type: string
-                  extra:
-                    additionalProperties: {}
-                    type:
-                    - 'null'
-                    - object
-                    - array
-                  status_code:
-                    type: integer
-                required:
-                - detail
-                - status_code
-                type: object
+                $ref: '#/components/schemas/ValidationException'
           description: Bad request syntax or unsupported method
       summary: Removes a user from a garden.
       tags:
@@ -582,26 +490,7 @@ paths:
           content:
             application/json:
               schema:
-                description: Validation Exception
-                examples:
-                - detail: Bad Request
-                  extra: {}
-                  status_code: 400
-                properties:
-                  detail:
-                    type: string
-                  extra:
-                    additionalProperties: {}
-                    type:
-                    - 'null'
-                    - object
-                    - array
-                  status_code:
-                    type: integer
-                required:
-                - detail
-                - status_code
-                type: object
+                $ref: '#/components/schemas/ValidationException'
           description: Bad request syntax or unsupported method
       summary: User registration.
       tags:
@@ -625,26 +514,7 @@ paths:
           content:
             application/json:
               schema:
-                description: Validation Exception
-                examples:
-                - detail: Bad Request
-                  extra: {}
-                  status_code: 400
-                properties:
-                  detail:
-                    type: string
-                  extra:
-                    additionalProperties: {}
-                    type:
-                    - 'null'
-                    - object
-                    - array
-                  status_code:
-                    type: integer
-                required:
-                - detail
-                - status_code
-                type: object
+                $ref: '#/components/schemas/ValidationException'
           description: Bad request syntax or unsupported method
       summary: Email confirmation.
       tags:
@@ -668,26 +538,7 @@ paths:
           content:
             application/json:
               schema:
-                description: Validation Exception
-                examples:
-                - detail: Bad Request
-                  extra: {}
-                  status_code: 400
-                properties:
-                  detail:
-                    type: string
-                  extra:
-                    additionalProperties: {}
-                    type:
-                    - 'null'
-                    - object
-                    - array
-                  status_code:
-                    type: integer
-                required:
-                - detail
-                - status_code
-                type: object
+                $ref: '#/components/schemas/ValidationException'
           description: Bad request syntax or unsupported method
       summary: Email confirmation request.
       tags:
@@ -715,26 +566,7 @@ paths:
           content:
             application/json:
               schema:
-                description: Validation Exception
-                examples:
-                - detail: Bad Request
-                  extra: {}
-                  status_code: 400
-                properties:
-                  detail:
-                    type: string
-                  extra:
-                    additionalProperties: {}
-                    type:
-                    - 'null'
-                    - object
-                    - array
-                  status_code:
-                    type: integer
-                required:
-                - detail
-                - status_code
-                type: object
+                $ref: '#/components/schemas/ValidationException'
           description: Bad request syntax or unsupported method
       summary: User login
       tags:
@@ -758,26 +590,7 @@ paths:
           content:
             application/json:
               schema:
-                description: Validation Exception
-                examples:
-                - detail: Bad Request
-                  extra: {}
-                  status_code: 400
-                properties:
-                  detail:
-                    type: string
-                  extra:
-                    additionalProperties: {}
-                    type:
-                    - 'null'
-                    - object
-                    - array
-                  status_code:
-                    type: integer
-                required:
-                - detail
-                - status_code
-                type: object
+                $ref: '#/components/schemas/ValidationException'
           description: Bad request syntax or unsupported method
       summary: Password reset confirm.
       tags:
@@ -802,26 +615,7 @@ paths:
           content:
             application/json:
               schema:
-                description: Validation Exception
-                examples:
-                - detail: Bad Request
-                  extra: {}
-                  status_code: 400
-                properties:
-                  detail:
-                    type: string
-                  extra:
-                    additionalProperties: {}
-                    type:
-                    - 'null'
-                    - object
-                    - array
-                  status_code:
-                    type: integer
-                required:
-                - detail
-                - status_code
-                type: object
+                $ref: '#/components/schemas/ValidationException'
           description: Bad request syntax or unsupported method
       summary: Password reset request.
       tags:
@@ -873,26 +667,7 @@ paths:
           content:
             application/json:
               schema:
-                description: Validation Exception
-                examples:
-                - detail: Bad Request
-                  extra: {}
-                  status_code: 400
-                properties:
-                  detail:
-                    type: string
-                  extra:
-                    additionalProperties: {}
-                    type:
-                    - 'null'
-                    - object
-                    - array
-                  status_code:
-                    type: integer
-                required:
-                - detail
-                - status_code
-                type: object
+                $ref: '#/components/schemas/ValidationException'
           description: Bad request syntax or unsupported method
       summary: User public profiles view.
       tags:
