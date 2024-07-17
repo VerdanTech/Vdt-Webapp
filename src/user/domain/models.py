@@ -61,7 +61,7 @@ class PasswordResetConfirmation(BaseConfirmation):
 
 @root_entity_transform
 class User(RootEntity):
-    """User entity model"""
+    """User entity model."""
 
     username: str  # type: ignore
     emails: list[Email] = field(factory=list)
@@ -129,7 +129,7 @@ class User(RootEntity):
         # Request a new email confirmation if required
         if verification:
             self.events.append(
-                events.EmailPendingConfirmation(
+                events.EmailPendingConfirmationEvent(
                     username=self.username, email_address=address
                 )
             )

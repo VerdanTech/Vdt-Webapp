@@ -25,7 +25,7 @@ async def litestar_client(alchemy_transaction) -> AsyncGenerator[AsyncTestClient
         Iterator[AsyncGenerator[AsyncTestClient, None]]: test client
             instance.
     """
-    app = create_app(alchemy_uri=settings.ALCHEMY_URI)
+    app = create_app(alchemy_uri=settings.POSTGRES_URI)
 
     async with AsyncTestClient(
         app=app,

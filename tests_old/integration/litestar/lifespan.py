@@ -31,7 +31,7 @@ sessionmaker = async_sessionmaker(
 @asynccontextmanager
 async def session_scoped_sql_client() -> AsyncGenerator[AlchemyClient, None]:
     engine = create_async_engine(
-        settings.ALCHEMY_URI, echo=True, isolation_level="AUTOCOMMIT"
+        settings.POSTGRES_URI, echo=True, isolation_level="AUTOCOMMIT"
     )
     client = AlchemyClient(engine=engine)
     await client.init()

@@ -1,8 +1,8 @@
 from .commands import (
-    ChangeMembershipRole,
-    CreateGarden,
-    MembershipInvite,
-    RevokeMembership,
+    GardenCreateCommand,
+    GardenMembershipCreateCommand,
+    GardenMembershipRevokeCommand,
+    GardenMembershipRoleChangeCommand,
 )
 from .enums import RoleEnum, VisibilityEnum
 from .models import (

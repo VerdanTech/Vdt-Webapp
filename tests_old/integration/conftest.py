@@ -20,7 +20,7 @@ async def alchemy_transaction() -> AsyncGenerator[AsyncSession, None]:
     Runs independently from the application transactions.
     """
     async with function_scoped_sql_transaction(
-        alchemy_uri=settings.ALCHEMY_URI
+        alchemy_uri=settings.POSTGRES_URI
     ) as transaction:
         yield transaction
 

@@ -72,7 +72,7 @@ class TestUser:
             user.emails[0].address == email_address
             and user.emails[0].primary is True
             and user.emails[0].verified is False
-            and isinstance(user.events[0], events.EmailPendingConfirmation)
+            and isinstance(user.events[0], events.EmailPendingConfirmationEvent)
             and user.events[0].username == user.username
             and user.events[0].email_address == email_address
         )
@@ -132,7 +132,7 @@ class TestUser:
             and user.emails[2].primary is False
             and user.emails[2].verified is False
             and user.emails[0].primary is True
-            and isinstance(user.events[0], events.EmailPendingConfirmation)
+            and isinstance(user.events[0], events.EmailPendingConfirmationEvent)
             and user.events[0].username == user.username
             and user.events[0].email_address == email_address
         )

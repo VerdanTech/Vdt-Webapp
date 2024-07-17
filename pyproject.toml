@@ -1,6 +1,6 @@
 [project]
 name = "verdantech_api"
-version = "1.0.0"
+version = "0.1.0"
 description = 'API of the VerdanTech web application.'
 authors = [
     { name = "Nathaniel King", email = "nathanielarking@gmail.com" }

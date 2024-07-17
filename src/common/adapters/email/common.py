@@ -4,6 +4,7 @@ import re
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from pathlib import Path
+from typing import Any
 
 # External Libraries
 import html2text
@@ -36,13 +37,13 @@ class BaseEmailClient(AbstractEmailClient):
         self.password = password
         self.sender = sender
 
-    def template_html(self, html_content: str, **kwargs) -> str:
+    def template_html(self, html_content: str, **kwargs: dict[str, Any]) -> str:
         """
         Replace templated variables contained in {{}} with kwargs.
 
         Args:
             filepath (str): the path of the email html document.
-            kwargs: arguments to insert into html.
+            kwargs (dict[str, Any]): arguments to insert into html.
 
         Raises:
             ValueError: Raised if not all templated valued are
@@ -134,7 +135,7 @@ class BaseEmailClient(AbstractEmailClient):
         return message
 
     async def compile_and_send(
-        self, filepath: Path, receiver: str, subject: str, **kwargs
+        self, filepath: Path, receiver: str, subject: str, **kwargs: dict[str, Any]
     ):
         """
         Compile email from html and send it as html
@@ -144,7 +145,7 @@ class BaseEmailClient(AbstractEmailClient):
             filepath (Path): path of the html content.
             receiver (str): recipient address.
             subject (str): subject line of the message.
-            kwargs: arguments to insert into html.
+            kwargs (dict[str, Any]): arguments to insert into html.
         """
 
         html_content = await read_file_async(filepath=filepath)

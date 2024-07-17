@@ -31,7 +31,7 @@ class TestUserWriteApiController:
             user_repo (AbstractUserRepository): user repository fixture.
         """
         path = litestar_client.app.route_reverse(routes.USER_CREATE_NAME)
-        input_data = write_ops_schemas.UserCreateInput(
+        input_data = write_ops_schemas.UserCreateCommandInput(
             username="new_username",
             email_address="new_email@gmail.com",
             password1="New_password*1",
@@ -61,7 +61,7 @@ class TestUserWriteApiController:
         """
         user_repo = await svcs_container.aget(AbstractUserRepository)
         path = litestar_client.app.route_reverse(routes.USER_CREATE_NAME)
-        input_data = write_ops_schemas.UserCreateInput(
+        input_data = write_ops_schemas.UserCreateCommandInput(
             username="new_username",
             email_address="new_email@gmail.com",
             password1="New_password*1",

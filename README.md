@@ -10,58 +10,50 @@
 [![Pull Requests][prs-shield]][prs-url]
 
 <!-- PROJECT LOGO -->
+<br />
 <div align="center">
+  <a href="https://github.com/VerdanTech">
+    <img src="https://github.com/VerdanTech/.github/blob/main/profile/graphics/logo.png" alt="Logo" width="200" height="200">
+  </a>
 
-<h3 align="center">VerdanTech-Backend</h3>
+<h3 align="center">VerdanTech - Backend</h3>
 
-<p align="center">
-A garden productivity API built with async Python. 
-<br />
-<a href="https://github.com/VerdanTech/VerdanTech-Deployment"><strong>Deploy it yourself »</strong></a>
-<br />
-
-<a href="https://github.com/github_username/repo_name">Report Bug</a>
-·
-<a href="https://github.com/github_username/repo_name/issues">Request Feature</a>
-·
-<a href="link to discord">Discord</a>
-·
-<a href="https://youtu.be/jGFHhRVdxRM">YouTube</a>
-<br />
-</p>
-
+  <p align="center">
+    A garden productivity tool, agro-ecology model, and IoT platform
+    for a sustainable and cooperative future.
+    <br />
+    <!-- 
+    <a href=""><strong>Try it yourself »</strong></a>
+    <br />
+    -->
+    <br />
+    <a href="https://discord.gg/U8ps6YCc">Discord</a>
+    <!-- 
+    ·
+    <a href="https://youtu.be/jGFHhRVdxRM">YouTube</a>
+    ·
+    <a href="">Donate</a>
+    --> 
+    <br />
+  </p>
 </div>
 
-The python backend implements a clean architecture pattern, meaning that the functions of the application are segregated in a way that minimizes coupling. Quick summaries for the layers:
-- The domain layer holds the core business logic and is made up of four components: Entities, which are objects with IDs and individuality that represent concepts in the problem space, RootEntities which are entities that make up Collections of documents or SQL tables in the database, meaning they represent consistency boundaries of data, value objects, which are ID-less and immutable, and represent individual-less states, and services, which encapsulate core logic in the problem domain that can't be relegated to any of the other options. All these concepts are implemented using native Python dataclasses. The domain layer also holds interfaces that are relied upon by the domain layer and application layer
-- The application layer orchestrates the domain layer and connects it to implementations of the interfaces. The application layer has two parts: the operaions sections, which are high level application functions and make up the main API (are-one to one with http API routes), and the services sections, which comprise more granular orchestrations of the domain logic and are called in the operations.
-- The infrastrure contains implementations of the domain service interfaces, such as database implementations of the repository interface. The only repository in use so far is a MongoDB Motor (async pymongo) implementation. The repository abstraction makes it possible to use different implementations in the future, but I havent investigated the potential compatibility with a sql database (plan to stick with mongo)
-- The API layer is the http and websocket wrapping around the application layer, and is implemented using the Litestar 
+See the [main project readme](https://github.com/VerdanTech) for background on this repository.
 
-Why repository and data mappers ? https://shawnmc.cool/active-record-how-we-got-persistence-perfectly-wrong
+The backend for the VerdanTech web application is an async Python HTTP and (eventually) websocket API implemented with a domain-driven architecture. From a technical perspective, the main goal of the backend is to be transparent and extensible to the end of adequately capturing the field of agro-ecology within digital models usable for contextualized application.
 
+The key dependencies of this application are:
+- [Litestar](https://litestar.dev/) as an ASGI framework
+- [Taskiq](https://taskiq-python.github.io/) as a task backend
+- [Sqlalchemy](https://www.sqlalchemy.org/) + [Alembic](https://alembic.sqlalchemy.org/en/latest/) + [Postgres](https://www.postgresql.org/) for persistence
+- [NATS](https://nats.io/) as an event stream
+- [Shapely](https://shapely.readthedocs.io/en/stable/) for geometry
+- [Attrs](https://www.attrs.org/en/stable/), [Cattrs](https://catt.rs/en/stable/), and [Pydantic](https://docs.pydantic.dev/latest/) for object modelling
+- [Passlib](https://pypi.org/project/passlib/) for encryption
 
-# Development
+# Contributing
 
-## Environment
-
-The current workflow for setting up development environments is standardized to use [Development Containers](https://containers.dev/). This allows testing with real service dependencies while maximizing reproduceability with minimal effort It comes at the cost of requiring the VSCode IDE and Docker. Currently there only exists one instruction set for use with Windows, but more will be added as needed.
-
-### Windows Devcontainer
-
-1. Install the [Windows Subsystem for Linux](https://learn.microsoft.com/en-us/windows/wsl/install). This may require changing Windows or Bios settings for virtualization.
-2. Install Docker Engine through [Docker Desktop](https://www.docker.com/products/docker-desktop/) Start Docker Engine.
-3. Install [VSCode](https://code.visualstudio.com/) and [Dev Containers](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) extension.
-3. Run command `Clone repository into container volume.` and enter the name of the repository: `VerdanTech/VerdanTech-Backend`. Cloning the repository into the container brings optimal performance, but if that doesn't work,clone the repository into a Windows foldew and run `Run folder in container.`
-4. Copy .env-default into .env.
-5. Run `make migrate`.
-
-## Documentation
-
-## Contributing
-
-
-
+See the [documentation](./docs/index.md) for contributing instructions. The [setup](./docs/setup.md) contains instructions for setting up the development environment.
 
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->

@@ -2,38 +2,25 @@ site_name: VerdanTech-API
 
 nav:
   - Home: 'index.md'
+  - Architecture: 'architecture.md'
   - Setup: 'setup.md'
   - Changelog: 'changelog.md'
-  - Roadmap: 'roadmap.md'
-  - Architecture: 'architecture.md'
-  - OpenAPI: 'openapi.md'
+  - Makefile: 'makefile.md'
+  - Environment Variables: 'environment_vars.md'
+  - Settings: 'settings.md'
+  - Resources: 'resources.md'
   - 'Codebase':
-    - 'Overview': 'codebase/overview.md'
-    - 'Settings': 'codebase/settings.md' 
-    - 'Domain':
-      - 'Overview': 'codebase/domain/overview.md'
-      - 'Models':
-        - 'User': 'codebase/domain/models/user.md'
-      - 'Interfaces':
-        - 'Serializer': 'codebase/domain/interfaces/serializer.md'
-        - 'Repository': 'codebase/domain/interfaces/repository.md'
-        - 'Email': 'codebase/domain/interfaces/email.md'
-        - 'Password Encryption': 'codebase/domain/interfaces/password_crypt.md'
-      - 'Utilities':
-        - 'Sanitizers': 'codebase/domain/utilities/sanitizers.md'
-    - 'Application':
-      - 'User': 'codebase/ops/user.md'
-    - 'API':
-      - 'Litestar': codebase/api/litestar.md
-    - 'Infrastructure':
-      - 'Serializer': 'codebase/infra/serializer.md'
-      - 'Repository': 'codebase/infra/repository.md'
-      - 'Email': 'codebase/infra/email.md'
-      - 'Password Encryption': 'codebase/infra/password_crypt.md'
-
-  - Contributing: 'contributing.md'
-  - Release Notes: 'release_notes.md'
-  - Community: 'community.md'
+    - 'Overview': './codebase/index.md'
+    - 'Common':
+      - 'Domain': './codebase/common/domain.md'
+      - 'Operations': './codebase/common/ops.md'
+      - 'Interfaces': './codebase/common/interfaces.md'
+      - 'Adapters': './codebase/common/adapters.md'
+      - 'Entrypoints': './codebase/common/entrypoints.md'
+    - 'User':
+      - 'Domain': './codebase/user/domain.md'
+      - 'Operations': './codebase/user/ops.md'
+      - 'Interfaces': './codebase/user/interfaces.md'
 
 theme:
   name: material

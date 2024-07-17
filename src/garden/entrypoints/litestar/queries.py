@@ -23,6 +23,7 @@ class GardenQueryController(Controller):
         name=url_to_route_name(urls.GARDEN_ROUTER_URL_BASE, urls.GARDEN_UNIQUE_KEY_URL),
         summary="Generate a new, unique garden key.",
         description="Generates a unique garden key given a plant name and a random string.",
+        operation_id="GardenGenerateUniqueKeyQuery",
     )
     async def generate_unique_garden_key(
         self,

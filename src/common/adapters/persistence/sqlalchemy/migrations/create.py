@@ -22,7 +22,7 @@ def create_migration(message: str):
         message (str): the migration message to apply to the migration.
     """
     alembic_cfg = Config(config_directory)
-    alembic_cfg.set_main_option("sqlalchemy.url", settings.ALCHEMY_URI)
+    alembic_cfg.set_main_option("sqlalchemy.url", settings.POSTGRES_URI)
     alembic_cfg.set_main_option("script_location", script_location)
     command.revision(alembic_cfg, message=message, autogenerate=True)
 

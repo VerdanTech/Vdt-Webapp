@@ -12,27 +12,17 @@ from decouple import Csv, config
 # ============================================================================
 
 # ======================================
-# OPENAPI SETTINGS
-# ======================================
-
-OPENAPI_TITLE: str = "VerdanTech-Backend"
-OPENAPI_VERSION: str = "v0.0.1"
-OPENAPI_DOCUMENTATION_URL: str = "https://github.com/VerdanTech/VerdanTech-Backend"
-OPENAPI_LICENSE: str = "GPL-3.0-or-later"
-
-# ======================================
 # URL SETTINGS
 # ======================================
 
-USING_HTTPS = config("USING_HTTPS", default=False, cast=bool)
-BASE_DOMAIN = config("BASE_DOMAIN", cast=str, default="127.0.0.1")
+USING_HTTPS = config("USING_HTTPS", cast=bool, default=False)
 API_URL_BASE: str = "/vdtapi"
 
 # ======================================
 # CLIENT RELATED SETTINGS
 # ======================================
 
-CLIENT_DOMAIN: str = "verdantech.io"
+CLIENT_DOMAIN: str = config("CLIENT_DOMAIN", cast=str, default="verdantech.io")  # type: ignore
 if USING_HTTPS:
     CLIENT_BASE_URL: str = "https://" + CLIENT_DOMAIN + "/"
 else:
@@ -68,45 +58,34 @@ JWT_SECRET = str(config("JWT_SECRET", cast=str, default="developmentsecret123"))
 # ============================================================================
 
 # ======================================
-# QUEUE SETTINGS
+# TASK BACKEND SETTINGS
 # ======================================
 
-SAQ_WORKERS = 1
+NUM_TASK_WORKERS = 1
 
 # ======================================
 # DATABASE SETTINGS
 # ======================================
 
 # Postgres
-POSTGRES_DB_NAME = config("POSTGRES_DB_NAME", cast=str)
-POSTGRES_DB_USER = config("POSTGRES_DB_USER", cast=str)
-POSTGRES_DB_PASSWORD = config("POSTGRES_DB_PASSWORD", cast=str)
-POSTGRES_URI = str(  # Todo: fix str() required for type checker.
-    config(
-        "POSTGRES_DB_URI",
-        cast=str,
-        default=f"postgresql+asyncpg://{POSTGRES_DB_USER}:{POSTGRES_DB_PASSWORD}@postgres:5432/{POSTGRES_DB_NAME}",
-    )
+POSTGRES_URI = config(
+    "POSTGRES_DB_URI",
+    cast=str,
+    default="postgresql+asyncpg://verdantech_db:xkrytusefhrerifuthrh@postgres:5432/dev_db",
 )
 
 # Sqlalchemy
-ALCHEMY_URI = POSTGRES_URI
 # Name of the client attribute in the global app state
 ALCHEMY_CLIENT_NAME: str = "sqlalchemy_client"
 # Whether to commit database transactions - disabled in testing
 ALCHEMY_TRANSACTION_COMMIT = True
-
-# Redis
-REDIS_URI: str = "redis://localhost"
 
 # ======================================
 # FILE SETTINGS
 # ======================================
 
 BASE_DIR = Path(__file__).resolve().parent.parent
-
 STATIC_BASE_DIR: str = "static/"
-
 EMAIL_BASE_DIR: str = "static/emails/"
 
 
@@ -134,8 +113,8 @@ EMAIL_CLIENT_SENDER: str = "verdantech@gmail.com"
 
 # Verification
 class EmailConfirmationOptions(Enum):
-    REQUIRED_FOR_NONE = 0
-    REQUIRED_FOR_LOGIN = 1
+    REQUIRED_FOR_NONE = "none"
+    REQUIRED_FOR_LOGIN = "required"
 
     @property
     def verification_required(self) -> bool:
@@ -143,7 +122,6 @@ class EmailConfirmationOptions(Enum):
 
 
 EMAIL_CONFIRMATION = EmailConfirmationOptions.REQUIRED_FOR_LOGIN
-EMAIL_VERIFICATION_KEY_LENGTH: int = 32
 EMAIL_VERIFICATON_EXPIRY_TIME_HOURS: int = 72
 
 # Email confirmation
@@ -164,8 +142,6 @@ EMAIL_SUBJECT_GARDEN_INVITE: str = "You've been invited to a Garden - VerdanTech
 # USER SETTINGS
 # ======================================
 
-EMAIL_MIN_LENGTH: int = 1
-EMAIL_MAX_LENGTH: int = 255
 USERNAME_MIN_LENGTH: int = 3
 USERNAME_MAX_LENGTH: int = 50
 USERNAME_PATTERN: Pattern = re.compile(r"[0-9A-Za-z]+")
@@ -177,7 +153,6 @@ PASSWORD_PATTERN: Pattern = re.compile(
 )
 PASSWORD_PATTERN_DESCRIPTION: str = "Password must contain at least one lowercase letter, one uppercase letter, and one digit."
 USER_MAX_EMAILS: int = 3
-VERIFICATION_KEY_MAX_LENGTH: int = 64
 
 # ======================================
 # GARDEN SETTINGS
@@ -191,10 +166,12 @@ GARDEN_NAME_PATTERN_DESCRIPTION: str = (
 )
 GARDEN_KEY_MIN_LENGTH: int = 4
 GARDEN_KEY_MAX_LENGTH: int = 16
+GARDEN_KEY_PATTERN: Pattern = re.compile(r"[0-9A-Za-z-]+")
+GARDEN_KEY_PATTERN_DESCRIPTION: str = (
+    "Must contain only alphanumeric characters and hyphens."
+)
 GARDEN_KEY_KEYGEN_DEFAULT_LENGTH_NO_PLANT_NAME: int = 6
 GARDEN_KEY_KEYGEN_DEFAULT_LENGTH_PLANT_NAME: int = 3
 """Default length of the keygen portion of the garden key. when generated with or without a plant name."""
-GARDEN_KEY_PATTERN: Pattern = re.compile(r"[0-9A-Za-z]+")
-GARDEN_KEY_PATTERN_DESCRIPTION: str = "Must contain only alphanumeric characters."
 MAX_GARDEN_RANDOM_PLANT_KEY_GENERATION_ATTEMPTS: int = 4
 """The maximum amount of times the key generator will generate an id with a random plant name before reverting to only random characters."""

@@ -79,7 +79,7 @@ ConfirmationKey = Annotated[
 ]
 
 
-class CreateUser(Command):
+class UserCreateCommand(Command):
     """
     Create a new user.
     """
@@ -115,7 +115,7 @@ class CreateUser(Command):
             raise ValidationError("Email already exists")
 
 
-class UpdateUser(Command):
+class UserUpdateCommand(Command):
     """
     Update a user's username, email address, or password fields.
     """
@@ -158,7 +158,7 @@ class UpdateUser(Command):
             raise ValidationError("Email already exists")
 
 
-class RequestEmailConfirmation(Command):
+class UserRequestEmailConfirmationCommand(Command):
     """
     Puts in a request to have
     an email address verified.
@@ -167,7 +167,7 @@ class RequestEmailConfirmation(Command):
     email_address: EmailStr
 
 
-class ConfirmEmailConfirmation(Command):
+class UserConfirmEmailConfirmationCommand(Command):
     """
     Closes an email confirmation request.
     """
@@ -175,7 +175,7 @@ class ConfirmEmailConfirmation(Command):
     key: ConfirmationKey
 
 
-class RequestPasswordReset(Command):
+class UserRequestPasswordResetCommand(Command):
     """
     Puts in a request to reset the user's
     password through email.
@@ -184,7 +184,7 @@ class RequestPasswordReset(Command):
     email_address: EmailStr
 
 
-class ConfirmPasswordReset(Command):
+class UserConfirmPasswordResetCommand(Command):
     """
     Closes a password resest request.
     """

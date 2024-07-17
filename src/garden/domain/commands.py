@@ -75,7 +75,7 @@ GardenKey = Annotated[
 ]
 
 
-class CreateGarden(Command):
+class GardenCreateCommand(Command):
     """
     Create a new garden.
     """
@@ -103,7 +103,7 @@ class CreateGarden(Command):
             raise ValidationError("Garden key already exists")
 
 
-class MembershipInvite(Command):
+class GardenMembershipCreateCommand(Command):
     """
     Garden invitation command.
 
@@ -120,7 +120,7 @@ class MembershipInvite(Command):
     viewer_ids: list[uuid.UUID] = []
 
 
-class AcceptInvite(Command):
+class GardenMembershipAcceptCommand(Command):
     """
     Garden membership invitation acceptance command.
 
@@ -130,7 +130,7 @@ class AcceptInvite(Command):
     garden_key: GardenKey
 
 
-class DeleteMembership(Command):
+class GardenMembershipDeleteCommand(Command):
     """
     Garden membership deletion command.
     """
@@ -138,7 +138,7 @@ class DeleteMembership(Command):
     garden_key: GardenKey
 
 
-class RevokeMembership(Command):
+class GardenMembershipRevokeCommand(Command):
     """
     Garden membership removal command.
 
@@ -151,7 +151,7 @@ class RevokeMembership(Command):
     user_id: uuid.UUID
 
 
-class ChangeMembershipRole(Command):
+class GardenMembershipRoleChangeCommand(Command):
     """
     Garden membership role change command.
 
