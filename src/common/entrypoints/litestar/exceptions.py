@@ -7,6 +7,7 @@ from litestar.exceptions import (
     ClientException as LitestarClientException,
     InternalServerException as LitestarServerException,
 )
+from pydantic import ValidationError as PydanticValidationError
 
 # VerdanTech Source
 from src import exceptions

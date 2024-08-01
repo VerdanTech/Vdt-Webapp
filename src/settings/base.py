@@ -28,7 +28,7 @@ if USING_HTTPS:
 else:
     CLIENT_BASE_URL: str = "http://" + CLIENT_DOMAIN + "/"
 CLIENT_EMAIL_VERIFICATION_URL: str = CLIENT_BASE_URL + "register/verify/"
-CLIENT_PASSWORD_RESET_URL: str = CLIENT_BASE_URL + "password_reset/"
+CLIENT_PASSWORD_RESET_URL: str = CLIENT_BASE_URL + "login/reset-password/"
 CLIENT_GARDENS_URL: str = CLIENT_BASE_URL + "app/gardens/"
 
 # ======================================
@@ -142,34 +142,14 @@ EMAIL_SUBJECT_GARDEN_INVITE: str = "You've been invited to a Garden - VerdanTech
 # USER SETTINGS
 # ======================================
 
-USERNAME_MIN_LENGTH: int = 3
-USERNAME_MAX_LENGTH: int = 50
-USERNAME_PATTERN: Pattern = re.compile(r"[0-9A-Za-z]+")
-USERNAME_PATTERN_DESCRIPTION: str = "Must contain only alphanumeric characters."
-PASSWORD_MIN_LENGTH: int = 6
-PASSWORD_MAX_LENGTH: int = 255
-PASSWORD_PATTERN: Pattern = re.compile(
-    r"""^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d~`!@#$%^&*()_\-+={[}\]|\:;"'<,>.?/]*$"""
-)
-PASSWORD_PATTERN_DESCRIPTION: str = "Password must contain at least one lowercase letter, one uppercase letter, and one digit."
-USER_MAX_EMAILS: int = 3
+USER_MAX_EMAILS = 3
 
 # ======================================
 # GARDEN SETTINGS
 # ======================================
 
-GARDEN_NAME_MIN_LENGTH: int = 2
-GARDEN_NAME_MAX_LENGTH: int = 50
-GARDEN_NAME_PATTERN: Pattern = re.compile(r"[0-9A-Za-z ]+")
-GARDEN_NAME_PATTERN_DESCRIPTION: str = (
-    "Must contain only alphanumeric characters and spaces."
-)
-GARDEN_KEY_MIN_LENGTH: int = 4
-GARDEN_KEY_MAX_LENGTH: int = 16
-GARDEN_KEY_PATTERN: Pattern = re.compile(r"[0-9A-Za-z-]+")
-GARDEN_KEY_PATTERN_DESCRIPTION: str = (
-    "Must contain only alphanumeric characters and hyphens."
-)
+
+# Garden key field
 GARDEN_KEY_KEYGEN_DEFAULT_LENGTH_NO_PLANT_NAME: int = 6
 GARDEN_KEY_KEYGEN_DEFAULT_LENGTH_PLANT_NAME: int = 3
 """Default length of the keygen portion of the garden key. when generated with or without a plant name."""

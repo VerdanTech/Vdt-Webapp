@@ -1,24 +1,29 @@
 # Standard Library
 import re
 import uuid
-from typing import Any
 
 # External Libraries
-from pydantic import (
-    AfterValidator,
-    BeforeValidator,
-    EmailStr,
-    Field,
-    SecretStr,
-    ValidationError,
-    validator,
-)
-from typing_extensions import Annotated
+from pydantic import EmailStr, Field, SecretStr, model_validator
+from pydantic_core import PydanticCustomError
+from typing_extensions import Annotated, Self
 
 # VerdanTech Source
 from src import settings
-from src.common.domain import Command
+from src.common.domain import Command, ValidatorWrapper
 from src.common.interfaces.persistence import AbstractUow
+
+# Constants
+USERNAME_MIN_LENGTH = 3
+USERNAME_MAX_LENGTH = 50
+USERNAME_PATTERN = r"^[a-zA-Z0-9_]*$"
+USERNAME_PATTERN_DESCRIPTION = "only alphanumeric characters and underscores."
+USERNAME_FIELD_DESCRIPTION = f"Must be between {USERNAME_MIN_LENGTH} and {USERNAME_MAX_LENGTH} characters long and contain {USERNAME_PATTERN_DESCRIPTION}"
+
+PASSWORD_MIN_LENGTH = 6
+PASSWORD_MAX_LENGTH = 255
+PASSWORD_PATTERN = r"^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*\W).*$"
+PASSWORD_PATTERN_DESCRIPTION = "at least one lowercase letter, one uppercase letter, one digit, and one special character"
+PASSWORD_FIELD_DESCRIPTION = f"Must be between {PASSWORD_MIN_LENGTH} and {PASSWORD_MAX_LENGTH} characters long and contain {PASSWORD_PATTERN_DESCRIPTION}"
 
 # Load all banned garden names and keys
 banned_fields = []
@@ -28,50 +33,68 @@ with open(settings.static_path("banned_fields.txt"), "r") as file:
         banned_fields.append(field.lower())
 
 
-def username_validator(username: str) -> str:
+def username_validator(value: str) -> str:
     """
     Raises:
         ValueError:
+            Raised if the username does not match
+                the required length.
             Raised if the username does not match
                 the pattern specified in the settings.
             If the username is included
                 within the banned usernames list.
     """
-    if not re.match(settings.USERNAME_PATTERN, username):
-        raise ValueError(settings.USERNAME_PATTERN_DESCRIPTION)
-    if username.lower() in banned_fields:
-        raise ValueError("unsafe or offensive")
-    return username
+    value = value.strip()
+
+    if len(value) < USERNAME_MIN_LENGTH:
+        raise AssertionError(f"Must be at least {USERNAME_MIN_LENGTH} characters long")
+    if len(value) > USERNAME_MAX_LENGTH:
+        raise AssertionError(f"Must be at most {USERNAME_MAX_LENGTH} characters long")
+    if not re.match(USERNAME_PATTERN, value):
+        raise AssertionError(f"Must contain {USERNAME_PATTERN_DESCRIPTION}")
+    if value.lower() in banned_fields:
+        raise AssertionError("Denied: matches a reserved name or is offensive")
+    return value
 
 
-def password_validator(password: SecretStr) -> SecretStr:
+def password_validator(value: SecretStr) -> SecretStr:
     """
     Raises:
-        ValueError:
+        AssertionError:
             Raised if the password does not match
-                the pattern specified in the settings.
+                the required length.
+            The pattern specified in the settings.
     """
-    if not re.match(settings.PASSWORD_PATTERN, password.get_secret_value()):
-        raise ValueError(settings.PASSWORD_PATTERN_DESCRIPTION)
-    return password
+    if len(value) < PASSWORD_MIN_LENGTH:
+        raise AssertionError(f"Must be at least {PASSWORD_MIN_LENGTH} characters long")
+    if len(value) > PASSWORD_MAX_LENGTH:
+        raise AssertionError(f"Must be at most {PASSWORD_MAX_LENGTH} characters long")
+    if not re.match(PASSWORD_PATTERN, value.get_secret_value()):
+        raise AssertionError(f"Must contain {PASSWORD_PATTERN_DESCRIPTION}")
+    return value
 
 
 Username = Annotated[
     str,
+    ValidatorWrapper(username_validator),
+    # Note: Field used only for annotation, to allow custom error messages.
     Field(
-        min_length=settings.USERNAME_MIN_LENGTH, max_length=settings.USERNAME_MAX_LENGTH
+        min_length=USERNAME_MIN_LENGTH,
+        max_length=USERNAME_MAX_LENGTH,
+        description=USERNAME_FIELD_DESCRIPTION,
+        json_schema_extra={"pattern": USERNAME_PATTERN},
     ),
-    # Trim beginning and end whitespace before validation
-    BeforeValidator(lambda v: v.strip()),
-    AfterValidator(username_validator),
 ]
 Password = Annotated[
     SecretStr,
+    ValidatorWrapper(password_validator),
+    # Note: Field used only for annotation, to allow custom error messages.
     Field(
-        min_length=settings.PASSWORD_MIN_LENGTH, max_length=settings.PASSWORD_MAX_LENGTH
+        min_length=PASSWORD_MIN_LENGTH,
+        max_length=PASSWORD_MAX_LENGTH,
+        description=PASSWORD_PATTERN_DESCRIPTION,
+        json_schema_extra={"pattern": PASSWORD_PATTERN},
     ),
-    # Trim beginning and end whitespace before validation
-    AfterValidator(password_validator),
 ]
 ConfirmationKey = Annotated[
     uuid.UUID,
@@ -89,14 +112,15 @@ class UserCreateCommand(Command):
     password1: Password
     password2: Password
 
-    @validator("password2")
-    def passwords_match(cls, password2, values, **kwargs):
+    @model_validator(mode="after")
+    def passwords_match(self) -> Self:
         """
         Raises:
-            ValueError: Raised if the two passwords two not match.
+            AssertionError: Raised if the two passwords do not match.
         """
-        if "password1" in values and password2 != values["password1"]:
-            raise ValueError("passwords do not match")
+        if self.password1 != self.password2:
+            raise AssertionError("Passwords do not match")
+        return self
 
     async def validate_against_uow(self, uow: AbstractUow):
         """
@@ -106,13 +130,13 @@ class UserCreateCommand(Command):
             uow (AbstractUow): Unit of work providing database access.
 
         Raises:
-            ValueError: if the username or email address already
+            AssertionError: if the username or email address already
                 exist in the database.
         """
         if await uow.repos.users.username_exists(username=self.username):
-            raise ValidationError("Username already exists")
+            raise AssertionError("Username already exists")
         if await uow.repos.users.email_exists(email_address=self.email_address):
-            raise ValidationError("Email already exists")
+            raise AssertionError("Email already exists")
 
 
 class UserUpdateCommand(Command):
@@ -126,16 +150,15 @@ class UserUpdateCommand(Command):
     new_password1: Password | None = None
     new_password2: Password | None = None
 
-    @validator("new_password2")
-    def passwords_match(cls, password2, values, **kwargs):
+    @model_validator(mode="after")
+    def passwords_match(self) -> Self:
         """
         Raises:
-            ValueError: Raised if the two passwords two not match.
+            AssertionError: Raised if the two passwords do not match.
         """
-        if "password1" not in values and password2 is None:
-            return
-        elif "password1" in values and password2 != values["password1"]:
-            raise ValueError("passwords do not match")
+        if self.new_password1 != self.new_password2:
+            raise PydanticCustomError("password1", "Passwords do not match")
+        return self
 
     async def validate_against_uow(self, uow: AbstractUow):
         """
@@ -145,17 +168,17 @@ class UserUpdateCommand(Command):
             uow (AbstractUow): Unit of work providing database access.
 
         Raises:
-            ValueError: if the username or email address already
+            AssertionError: if the username or email address already
                 exist in the database.
         """
         if self.new_username is not None and await uow.repos.users.username_exists(
             username=self.new_username
         ):
-            raise ValidationError("Username already exists")
+            raise AssertionError("Username already exists")
         if self.new_email_address is not None and await uow.repos.users.email_exists(
             email_address=self.new_email_address
         ):
-            raise ValidationError("Email already exists")
+            raise AssertionError("Email already exists")
 
 
 class UserRequestEmailConfirmationCommand(Command):
@@ -194,13 +217,12 @@ class UserConfirmPasswordResetCommand(Command):
     new_password1: Password
     new_password2: Password
 
-    @validator("new_password2")
-    def passwords_match(cls, new_password2, values, **kwargs):
+    @model_validator(mode="after")
+    def passwords_match(self) -> Self:
         """
         Raises:
-            ValueError: Raised if the two passwords do not match.
+            AssertionError: Raised if the two passwords do not match.
         """
-        if "new_password1" not in values and new_password2 is None:
-            return
-        elif "new_password1" in values and new_password2 != values["new_password1"]:
-            raise ValueError("passwords do not match")
+        if self.new_password1 != self.new_password2:
+            raise PydanticCustomError("password1", "Passwords do not match")
+        return self

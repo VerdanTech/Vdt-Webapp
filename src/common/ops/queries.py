@@ -60,7 +60,7 @@ class QueryResult[T: DomainModel | None]:
 
 
 @query_result_transform
-class RefSchema[T: DomainModel](QueryResult[Ref]):
+class RefSchema(QueryResult[Ref]):
     id: uuid.UUID
 
 
@@ -70,7 +70,7 @@ class RefSchema[T: DomainModel](QueryResult[Ref]):
 
 
 class Query(BaseModel):
-    model_config = ConfigDict(frozen=True)
+    model_config = ConfigDict(frozen=True, regex_engine="python-re")
 
     @classmethod
     def to_operation_id(cls) -> str:

@@ -3,15 +3,33 @@ import re
 import uuid
 
 # External Libraries
-from pydantic import AfterValidator, BeforeValidator, Field, ValidationError
+from pydantic import BeforeValidator, Field, ValidationError
 from typing_extensions import Annotated
 
 # VerdanTech Source
 from src import settings
-from src.common.domain import Command
+from src.common.domain import Command, ValidatorWrapper
 from src.common.interfaces.persistence import AbstractUow
 
 from .enums import RoleEnum, VisibilityEnum
+
+# Constants
+GARDEN_NAME_MIN_LENGTH = 2
+GARDEN_NAME_MAX_LENGTH = 50
+GARDEN_NAME_PATTERN = r"[0-9A-Za-z ]+"
+GARDEN_NAME_PATTERN_DESCRIPTION: str = "only alphanumeric characters and spaces."
+GARDEN_NAME_FIELD_DESCRIPTION = f"Must be between {GARDEN_NAME_MIN_LENGTH} and {GARDEN_NAME_MAX_LENGTH} characters long and contain {GARDEN_NAME_PATTERN_DESCRIPTION}"
+
+GARDEN_KEY_MIN_LENGTH = 4
+GARDEN_KEY_MAX_LENGTH = 16
+GARDEN_KEY_PATTERN = r"[0-9A-Za-z-]+"
+GARDEN_KEY_PATTERN_DESCRIPTION = "only alphanumeric characters and hyphens."
+GARDEN_KEY_FIELD_DESCRIPTION = f"Must be between {GARDEN_KEY_MIN_LENGTH} and {GARDEN_KEY_MAX_LENGTH} characters long and contain {GARDEN_KEY_PATTERN_DESCRIPTION}"
+
+GARDEN_DESCRIPTION_MAX_LENGTH = 1400
+GARDEN_DESCRIPTION_FIELD_DESCRIPTION = (
+    f"Must be at most {GARDEN_DESCRIPTION_MAX_LENGTH} characters long"
+)
 
 # Load all banned garden names and keys
 banned_fields = []
@@ -21,7 +39,7 @@ with open(settings.static_path("banned_fields.txt"), "r") as file:
         banned_fields.append(field.lower())
 
 
-def garden_name_validator(garden_name: str) -> str:
+def garden_name_validator(value: str) -> str:
     """
     Raises:
         ValueError:
@@ -30,14 +48,20 @@ def garden_name_validator(garden_name: str) -> str:
             If the name is included
                 within the banned names list.
     """
-    if not re.match(settings.GARDEN_NAME_PATTERN, garden_name):
-        raise ValueError(settings.GARDEN_NAME_PATTERN_DESCRIPTION)
-    if garden_name.lower() in banned_fields:
-        raise ValueError("unsafe or offensive")
-    return garden_name
+    value = value.strip()
+
+    if len(value) < GARDEN_NAME_MIN_LENGTH:
+        raise ValueError(f"Must be at least {GARDEN_NAME_MIN_LENGTH} characters long")
+    if len(value) > GARDEN_NAME_MAX_LENGTH:
+        raise ValueError(f"Must be at most {GARDEN_NAME_MAX_LENGTH} characters long")
+    if not re.match(GARDEN_NAME_PATTERN, value):
+        raise ValueError(f"Must contain {GARDEN_NAME_PATTERN_DESCRIPTION}")
+    if value.lower() in banned_fields:
+        raise ValueError("Denied: matches a reserved name or is offensive")
+    return value
 
 
-def garden_key_validator(garden_key: str) -> str:
+def garden_key_validator(value: str) -> str:
     """
     Raises:
         ValueError:
@@ -46,32 +70,48 @@ def garden_key_validator(garden_key: str) -> str:
             If the key is included
                 within the banned keys list.
     """
-    if not re.match(settings.GARDEN_KEY_PATTERN, garden_key):
-        raise ValueError(settings.GARDEN_KEY_PATTERN_DESCRIPTION)
-    if garden_key.lower() in banned_fields:
-        raise ValueError("unsafe or offensive")
-    return garden_key
+    value = value.strip().lower()
+
+    if len(value) < GARDEN_KEY_MIN_LENGTH:
+        raise ValueError(f"Must be at least {GARDEN_KEY_MIN_LENGTH} characters long")
+    if len(value) > GARDEN_KEY_MAX_LENGTH:
+        raise ValueError(f"Must be at most {GARDEN_KEY_MAX_LENGTH} characters long")
+    if not re.match(GARDEN_KEY_PATTERN, value):
+        raise ValueError(f"Must contain {GARDEN_KEY_PATTERN_DESCRIPTION}")
+    if value.lower() in banned_fields:
+        raise ValueError("Denied: matches a reserved name or is offensive")
+    return value
 
 
 GardenName = Annotated[
     str,
+    ValidatorWrapper(garden_name_validator),
+    # Note: Field used only for annotation, to allow custom error messages.
     Field(
-        min_length=settings.GARDEN_NAME_MIN_LENGTH,
-        max_length=settings.GARDEN_NAME_MAX_LENGTH,
+        min_length=GARDEN_NAME_MIN_LENGTH,
+        max_length=GARDEN_NAME_MAX_LENGTH,
+        description=GARDEN_NAME_FIELD_DESCRIPTION,
+        json_schema_extra={"pattern": GARDEN_NAME_PATTERN},
     ),
-    # Trim beginning and end whitespace before validation
-    BeforeValidator(lambda v: v.strip()),
-    AfterValidator(garden_name_validator),
 ]
 GardenKey = Annotated[
     str,
+    ValidatorWrapper(garden_key_validator),
+    # Note: Field used only for annotation, to allow custom error messages.
     Field(
-        min_length=settings.GARDEN_KEY_MIN_LENGTH,
-        max_length=settings.GARDEN_KEY_MAX_LENGTH,
+        min_length=GARDEN_KEY_MIN_LENGTH,
+        max_length=GARDEN_KEY_MAX_LENGTH,
+        description=GARDEN_KEY_FIELD_DESCRIPTION,
+        json_schema_extra={"pattern": GARDEN_KEY_PATTERN},
     ),
-    # Trim beginning and end whitespace and apply lowercase before validation
-    BeforeValidator(lambda v: v.strip().lower()),
-    AfterValidator(garden_key_validator),
+]
+GardenDescription = Annotated[
+    str,
+    Field(
+        max_length=GARDEN_DESCRIPTION_MAX_LENGTH,
+        description=GARDEN_DESCRIPTION_FIELD_DESCRIPTION,
+    ),
+    BeforeValidator(lambda v: v.strip()),
 ]
 
 
@@ -82,7 +122,7 @@ class GardenCreateCommand(Command):
 
     name: GardenName
     key: GardenKey | None
-    description: str = ""
+    description: GardenDescription = ""
     visibility: VisibilityEnum = VisibilityEnum.PRIVATE
     admin_ids: list[uuid.UUID] = []
     editor_ids: list[uuid.UUID] = []

@@ -1,4 +1,5 @@
 # Standard Library
+import pdb
 from typing import Awaitable, Callable, Union, get_type_hints
 
 # External Libraries
@@ -87,7 +88,7 @@ class MessageProcessor:
             Exception: Raises the exception of the command if any.
         """
         # Locate services
-        uow = svcs_container.get_abstract(AbstractUow)
+        uow = await svcs_container.aget_abstract(AbstractUow)
 
         self.queue = [effect]
         while self.queue:
@@ -114,6 +115,7 @@ class MessageProcessor:
         Raises:
             Exception: Raises the exception of the command.
         """
+        pdb.set_trace()
         try:
             handler = self.handlers.commands[type(command)]
             if handler is None:

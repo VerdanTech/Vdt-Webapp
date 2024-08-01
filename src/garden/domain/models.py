@@ -23,6 +23,7 @@ from .enums import OperationEnum, PermissionEnum, RoleEnum, VisibilityEnum
 from .events import MembershipAccepted, MembershipRevoked
 from .exceptions import GardenAuthorizationException, MembershipAlreadyConfirmed
 from .permission import PermissionRouter, permission_rules
+from .commands import GARDEN_KEY_MAX_LENGTH
 
 # Load all plant names
 plant_names = []
@@ -37,7 +38,7 @@ with open(settings.static_path("plant_names.txt"), "r") as file:
     """
     for line in file:
         plant_name = line.strip()
-        if len(plant_name) < settings.GARDEN_KEY_MAX_LENGTH:
+        if len(plant_name) < GARDEN_KEY_MAX_LENGTH:
             plant_names.append(plant_name.lower().replace(" ", "-"))
 
 
@@ -63,7 +64,7 @@ def generate_garden_key(use_random_plant_name: bool) -> str:
         key = random.choice(plant_names)
         keygen_length = min(
             settings.GARDEN_KEY_KEYGEN_DEFAULT_LENGTH_PLANT_NAME,
-            settings.GARDEN_KEY_MAX_LENGTH - (len(key) + 1),
+            GARDEN_KEY_MAX_LENGTH - (len(key) + 1),
         )
         # Ensure generated key starts with a number
         if keygen_length > 0:

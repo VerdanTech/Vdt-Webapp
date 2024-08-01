@@ -95,7 +95,9 @@ markupsafe==2.1.3
 mdurl==0.1.2
     # via markdown-it-py
 msgspec==0.18.4
-    # via litestar
+    # via
+    #   verdantech-api (pyproject.toml)
+    #   litestar
 multidict==6.0.4
     # via litestar
 nats-py==2.7.2

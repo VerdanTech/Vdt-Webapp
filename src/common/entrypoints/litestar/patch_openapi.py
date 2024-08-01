@@ -34,52 +34,36 @@ def patch_schema(schema_filename="schema.yaml"):
 
     def extract_validation_exception(data):
         """
-        Fixes the generated Litestar schema's to share all 400 validation 
+        Fixes the generated Litestar schema's to share all 400 validation
         exception responses with a single referenced component.
         """
         # Construct the validation exception schema
         validation_exception_schema = {
             "description": "Validation Exception",
-            "examples": [
-                {
-                    "detail": "Bad Request",
-                    "extra": {},
-                    "status_code": 400
-                }
-            ],
+            "examples": [{"detail": "Bad Request", "extra": {}, "status_code": 400}],
             "properties": {
-                "detail": {
-                    "type": "string"
-                },
+                "detail": {"type": "string"},
                 "extra": {
                     "additionalProperties": {},
-                    "type": [
-                        "null",
-                        "object",
-                        "array"
-                    ]
+                    "type": ["null", "object", "array"],
                 },
-                "status_code": {
-                    "type": "integer"
-                }
+                "status_code": {"type": "integer"},
             },
-            "required": [
-                "detail",
-                "status_code"
-            ],
-            "type": "object"
+            "required": ["detail", "status_code"],
+            "type": "object",
         }
-        data["components"]["schemas"]["ValidationException"] = validation_exception_schema
+        data["components"]["schemas"][
+            "ValidationException"
+        ] = validation_exception_schema
 
         # Replace all inline validation exception schemas with a reference
         for path, path_item in data["paths"].items():
             for method, operation in path_item.items():
                 if "responses" in operation:
-                    if '400' in operation["responses"]:
-                        operation["responses"]['400']["content"]["application/json"]["schema"] = {
-                            "$ref": "#/components/schemas/ValidationException"
-                        }
-        
+                    if "400" in operation["responses"]:
+                        operation["responses"]["400"]["content"]["application/json"][
+                            "schema"
+                        ] = {"$ref": "#/components/schemas/ValidationException"}
 
     extract_validation_exception(data)
     define_extra_types(data)

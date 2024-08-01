@@ -1,4 +1,4 @@
-from .commands import Command
+from .commands import Command, ValidatorWrapper
 from .events import Event, event_transform
 from .models import (
     DomainModel,

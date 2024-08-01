@@ -40,8 +40,8 @@ async def test_create_user_success(
     command = commands.UserCreateCommand(
         username="new_username",
         email_address="new_email_address@test.com",
-        password1=SecretStr("New_password12"),
-        password2=SecretStr("New_password12"),
+        password1=SecretStr("New_password12$"),
+        password2=SecretStr("New_password12$"),
     )
 
     await handlers.create_user(command=command, svcs_container=svcs_container)
@@ -291,8 +291,8 @@ async def test_confirm_password_reset_key_not_found(
     command = commands.UserConfirmPasswordResetCommand(
         user_id=uuid.uuid4(),
         key=uuid.uuid4(),
-        new_password1=SecretStr("New_password12"),
-        new_password2=SecretStr("New_password12"),
+        new_password1=SecretStr("New_password12$"),
+        new_password2=SecretStr("New_password12$"),
     )
     with pytest.raises(EntityNotFound):
         await handlers.confirm_password_reset(
@@ -314,7 +314,7 @@ async def test_confirm_password_reset_success(
 
     existing_email = "existing_email@gmail.com"
     existing_key = uuid.uuid4()
-    new_password = "New_password1"
+    new_password = "New_password1$"
 
     # Add existing user
     user = User(username="existing_username")

@@ -13,7 +13,7 @@ from src.common.ops.exceptions import EntityNotFound
 from src.common.ops.queries import Query, QueryResult, query_result_transform
 from src.exceptions import ApplicationException
 from src.user.domain import Email, User
-from src.user.domain.commands import EmailStr, Password
+from src.user.domain.commands import EmailStr, Password, Username
 
 # ======================================
 # QueryResults
@@ -83,6 +83,14 @@ class UserPublicProfilesQuery(Query):
     """
 
     user_ids: list[uuid.UUID]
+
+
+class UserSearchQuery(Query):
+    """
+    Retrieves public profiles with usernames similar to the query.
+    """
+
+    username: Username
 
 
 # ======================================
@@ -168,3 +176,19 @@ async def client_profile(client: User) -> UserFullSchema:
     if client is None:
         raise ApplicationException("Client is not authenticated.")
     return UserFullSchema.cast(client)
+
+
+async def username_search(
+    query: UserSearchQuery, svcs_container: Container
+) -> list[UserPublicSchema]:
+    """
+    Returns a list of users with usernames that most closely match the query.
+
+    Args:
+        query (UserSearchQuery): the query object.
+        svcs_container (Container): service locator.
+
+    Returns:
+        list[UserPublicSchema]: the list of public profiles.
+    """
+    ...

@@ -1,5 +1,40 @@
 components:
   schemas:
+    AssociatedPartialsResult:
+      properties:
+        admin_memberships:
+          items:
+            $ref: '#/components/schemas/GardenPartialSchema'
+          type: array
+        edit_memberships:
+          items:
+            $ref: '#/components/schemas/GardenPartialSchema'
+          type: array
+        favorites:
+          items:
+            $ref: '#/components/schemas/GardenPartialSchema'
+          type: array
+        pending_memberships:
+          items:
+            $ref: '#/components/schemas/GardenPartialSchema'
+          type: array
+        recently_viewed:
+          items:
+            $ref: '#/components/schemas/GardenPartialSchema'
+          type: array
+        view_memberships:
+          items:
+            $ref: '#/components/schemas/GardenPartialSchema'
+          type: array
+      required:
+      - admin_memberships
+      - edit_memberships
+      - favorites
+      - pending_memberships
+      - recently_viewed
+      - view_memberships
+      title: AssociatedPartialsResult
+      type: object
     EmailSchema:
       properties:
         address:
@@ -34,8 +69,12 @@ components:
         key:
           oneOf:
           - type: 'null'
-          - type: string
+          - description: Must be between 4 and 16 characters long and contain only
+              alphanumeric characters and hyphens.
+            type: string
         name:
+          description: Must be between 2 and 50 characters long and contain only alphanumeric
+            characters and spaces.
           maxLength: 50
           minLength: 2
           type: string
@@ -56,9 +95,55 @@ components:
       - name
       title: GardenCreateCommand
       type: object
+    GardenFullSchema:
+      properties:
+        creator_ref:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/RefSchema'
+        description:
+          type: string
+        environment_ref:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/RefSchema'
+        expired:
+          type: boolean
+        id:
+          format: uuid
+          type: string
+        key:
+          type: string
+        memberships:
+          items:
+            $ref: '#/components/schemas/GardenMembershipFullSchema'
+          type: array
+        name:
+          type: string
+        num_memberships:
+          type: integer
+        visibility:
+          enum:
+          - private
+          - unlisted
+          - public
+          type: string
+      required:
+      - description
+      - expired
+      - id
+      - key
+      - memberships
+      - name
+      - num_memberships
+      - visibility
+      title: GardenFullSchema
+      type: object
     GardenMembershipAcceptCommand:
       properties:
         garden_key:
+          description: Must be between 4 and 16 characters long and contain only alphanumeric
+            characters and hyphens.
           maxLength: 16
           minLength: 4
           type: string
@@ -96,12 +181,46 @@ components:
     GardenMembershipDeleteCommand:
       properties:
         garden_key:
+          description: Must be between 4 and 16 characters long and contain only alphanumeric
+            characters and hyphens.
           maxLength: 16
           minLength: 4
           type: string
       required:
       - garden_key
       title: GardenMembershipDeleteCommand
+      type: object
+    GardenMembershipFullSchema:
+      properties:
+        accepted:
+          type: boolean
+        created_at:
+          format: date-time
+          type: string
+        favorite:
+          type: boolean
+        garden_ref:
+          $ref: '#/components/schemas/RefSchema'
+        inviter_ref:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/RefSchema'
+        role:
+          enum:
+          - admin
+          - editor
+          - viewer
+          type: string
+        user_ref:
+          $ref: '#/components/schemas/RefSchema'
+      required:
+      - accepted
+      - created_at
+      - favorite
+      - garden_ref
+      - role
+      - user_ref
+      title: GardenMembershipFullSchema
       type: object
     GardenMembershipRevokeCommand:
       properties:
@@ -136,6 +255,44 @@ components:
       - user_id
       title: GardenMembershipRoleChangeCommand
       type: object
+    GardenPartialSchema:
+      properties:
+        creator_ref:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/RefSchema'
+        id:
+          format: uuid
+          type: string
+        key:
+          type: string
+        name:
+          type: string
+        num_memberships:
+          type: integer
+        visibility:
+          enum:
+          - private
+          - unlisted
+          - public
+          type: string
+      required:
+      - id
+      - key
+      - name
+      - num_memberships
+      - visibility
+      title: GardenPartialSchema
+      type: object
+    RefSchema:
+      properties:
+        id:
+          format: uuid
+          type: string
+      required:
+      - id
+      title: RefSchema
+      type: object
     UniqueGardenKeyResult:
       properties:
         key:
@@ -159,12 +316,18 @@ components:
           format: uuid
           type: string
         new_password1:
+          description: at least one lowercase letter, one uppercase letter, one digit,
+            and one special character
           maxLength: 255
           minLength: 6
+          pattern: ^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*\W).*$
           type: string
         new_password2:
+          description: at least one lowercase letter, one uppercase letter, one digit,
+            and one special character
           maxLength: 255
           minLength: 6
+          pattern: ^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*\W).*$
           type: string
         user_id:
           format: uuid
@@ -182,16 +345,25 @@ components:
           format: email
           type: string
         password1:
+          description: at least one lowercase letter, one uppercase letter, one digit,
+            and one special character
           maxLength: 255
           minLength: 6
+          pattern: ^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*\W).*$
           type: string
         password2:
+          description: at least one lowercase letter, one uppercase letter, one digit,
+            and one special character
           maxLength: 255
           minLength: 6
+          pattern: ^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*\W).*$
           type: string
         username:
+          description: Must be between 3 and 50 characters long and contain only alphanumeric
+            characters and underscores.
           maxLength: 50
           minLength: 3
+          pattern: ^[a-zA-Z0-9_]*$
           type: string
       required:
       - email_address
@@ -230,8 +402,11 @@ components:
           format: email
           type: string
         password:
+          description: at least one lowercase letter, one uppercase letter, one digit,
+            and one special character
           maxLength: 255
           minLength: 6
+          pattern: ^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*\W).*$
           type: string
       required:
       - email_address
@@ -455,11 +630,60 @@ paths:
       summary: Removes a user from a garden.
       tags:
       - gardens
+  /vdtapi/gardens/queries/associated:
+    get:
+      deprecated: false
+      description: Returns a partial representation of all gardens that are associated
+        with the client
+      operationId: GardenAssociatedPartialsQueryOp
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AssociatedPartialsResult'
+          description: Request fulfilled, document follows
+          headers: {}
+      summary: Returns a partial representation of all gardens that are associated
+        with the client
+      tags:
+      - gardens
+  /vdtapi/gardens/queries/full_by_key:
+    get:
+      deprecated: false
+      description: Returns a full representation of gardens given by a key.
+      operationId: GardenFullByKeyQueryOp
+      parameters:
+      - allowEmptyValue: false
+        allowReserved: false
+        deprecated: false
+        in: query
+        name: garden_key
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GardenFullSchema'
+          description: Request fulfilled, document follows
+          headers: {}
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationException'
+          description: Bad request syntax or unsupported method
+      summary: Returns a full representation of a garden by its key.
+      tags:
+      - gardens
   /vdtapi/gardens/queries/generate_garden_key:
     get:
       deprecated: false
       description: Generates a unique garden key given a plant name and a random string.
-      operationId: GardenGenerateUniqueKeyQuery
+      operationId: GardenGenerateUniqueKeyQueryOp
       responses:
         '200':
           content:
@@ -469,6 +693,76 @@ paths:
           description: Request fulfilled, document follows
           headers: {}
       summary: Generate a new, unique garden key.
+      tags:
+      - gardens
+  /vdtapi/gardens/queries/most_relevant:
+    get:
+      deprecated: false
+      description: Returns a partial representation of most relevant gardens to the
+        user, ordered by relevance.
+      operationId: GardenMostRelevantPartialsQueryOp
+      parameters:
+      - allowEmptyValue: false
+        allowReserved: false
+        deprecated: false
+        in: query
+        name: max_gardens
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/GardenPartialSchema'
+                type: array
+          description: Request fulfilled, document follows
+          headers: {}
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationException'
+          description: Bad request syntax or unsupported method
+      summary: Returns a partial representation of most relevant gardens to the user.
+      tags:
+      - gardens
+  /vdtapi/gardens/queries/partials_by_key:
+    get:
+      deprecated: false
+      description: Returns a partial representation of gardens given by keys, provided
+        they exist and the client is authorized to use them.
+      operationId: GardenPartialsByKeysQueryOp
+      parameters:
+      - allowEmptyValue: false
+        allowReserved: false
+        deprecated: false
+        in: query
+        name: garden_keys
+        required: true
+        schema:
+          items:
+            type: string
+          type: array
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/GardenPartialSchema'
+                type: array
+          description: Request fulfilled, document follows
+          headers: {}
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationException'
+          description: Bad request syntax or unsupported method
+      summary: Returns a partial representation of gardens given by keys.
       tags:
       - gardens
   /vdtapi/users/commands/create:
@@ -547,7 +841,7 @@ paths:
     post:
       deprecated: false
       description: Authenticate the request with JWT cookie authentication.
-      operationId: UserLoginCommand
+      operationId: UserLoginCommandOp
       requestBody:
         content:
           application/json:
@@ -624,7 +918,7 @@ paths:
     get:
       deprecated: false
       description: Returns the profile of the authenticated user.
-      operationId: UserClientProfileQuery
+      operationId: UserClientProfileQueryOp
       responses:
         '200':
           content:

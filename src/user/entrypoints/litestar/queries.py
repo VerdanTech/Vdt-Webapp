@@ -63,7 +63,7 @@ class UserQueryController(Controller):
         summary="User client profile view.",
         description="Returns the profile of the authenticated user.",
         response_description="The profile of the authenticated user.",
-        operation_id="UserClientProfileQuery",
+        operation_id="UserClientProfileQueryOp",
     )
     async def client_profile(
         self,
