@@ -66,12 +66,13 @@ class AssociatedPartialsResult(QueryResult[None]):
     of all gardens associated with the client.
     """
 
-    favorites: set[GardenPartialSchema]
-    pending_memberships: set[GardenPartialSchema]
-    admin_memberships: set[GardenPartialSchema]
-    edit_memberships: set[GardenPartialSchema]
-    view_memberships: set[GardenPartialSchema]
-    recently_viewed: set[GardenPartialSchema]
+    gardens: set[GardenPartialSchema]
+    favorites: set[uuid.UUID]
+    pending_memberships: set[uuid.UUID]
+    admin_memberships: set[uuid.UUID]
+    edit_memberships: set[uuid.UUID]
+    view_memberships: set[uuid.UUID]
+    recently_viewed: set[uuid.UUID]
 
 
 @query_result_transform

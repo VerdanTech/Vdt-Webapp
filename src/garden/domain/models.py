@@ -19,11 +19,11 @@ from src.common.domain.exceptions import FieldNotFound
 from src.user.domain import User
 from src.utils import key_generator
 
+from .commands import GARDEN_KEY_MAX_LENGTH
 from .enums import OperationEnum, PermissionEnum, RoleEnum, VisibilityEnum
 from .events import MembershipAccepted, MembershipRevoked
 from .exceptions import GardenAuthorizationException, MembershipAlreadyConfirmed
 from .permission import PermissionRouter, permission_rules
-from .commands import GARDEN_KEY_MAX_LENGTH
 
 # Load all plant names
 plant_names = []

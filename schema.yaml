@@ -59,6 +59,8 @@ components:
           type: array
         description:
           default: ''
+          description: Must be at most 1400 characters long
+          maxLength: 1400
           type: string
         editor_ids:
           default: []
@@ -71,12 +73,14 @@ components:
           - type: 'null'
           - description: Must be between 4 and 16 characters long and contain only
               alphanumeric characters and hyphens.
+            pattern: '[0-9A-Za-z-]+'
             type: string
         name:
           description: Must be between 2 and 50 characters long and contain only alphanumeric
             characters and spaces.
           maxLength: 50
           minLength: 2
+          pattern: '[0-9A-Za-z ]+'
           type: string
         viewer_ids:
           default: []
@@ -146,6 +150,7 @@ components:
             characters and hyphens.
           maxLength: 16
           minLength: 4
+          pattern: '[0-9A-Za-z-]+'
           type: string
       required:
       - garden_key
@@ -185,6 +190,7 @@ components:
             characters and hyphens.
           maxLength: 16
           minLength: 4
+          pattern: '[0-9A-Za-z-]+'
           type: string
       required:
       - garden_key
@@ -316,15 +322,17 @@ components:
           format: uuid
           type: string
         new_password1:
-          description: at least one lowercase letter, one uppercase letter, one digit,
-            and one special character
+          description: Must be between 6 and 255 characters long and contain at least
+            one lowercase letter, one uppercase letter, one digit, and one special
+            character
           maxLength: 255
           minLength: 6
           pattern: ^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*\W).*$
           type: string
         new_password2:
-          description: at least one lowercase letter, one uppercase letter, one digit,
-            and one special character
+          description: Must be between 6 and 255 characters long and contain at least
+            one lowercase letter, one uppercase letter, one digit, and one special
+            character
           maxLength: 255
           minLength: 6
           pattern: ^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*\W).*$
@@ -345,15 +353,17 @@ components:
           format: email
           type: string
         password1:
-          description: at least one lowercase letter, one uppercase letter, one digit,
-            and one special character
+          description: Must be between 6 and 255 characters long and contain at least
+            one lowercase letter, one uppercase letter, one digit, and one special
+            character
           maxLength: 255
           minLength: 6
           pattern: ^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*\W).*$
           type: string
         password2:
-          description: at least one lowercase letter, one uppercase letter, one digit,
-            and one special character
+          description: Must be between 6 and 255 characters long and contain at least
+            one lowercase letter, one uppercase letter, one digit, and one special
+            character
           maxLength: 255
           minLength: 6
           pattern: ^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*\W).*$
@@ -402,8 +412,9 @@ components:
           format: email
           type: string
         password:
-          description: at least one lowercase letter, one uppercase letter, one digit,
-            and one special character
+          description: Must be between 6 and 255 characters long and contain at least
+            one lowercase letter, one uppercase letter, one digit, and one special
+            character
           maxLength: 255
           minLength: 6
           pattern: ^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*\W).*$

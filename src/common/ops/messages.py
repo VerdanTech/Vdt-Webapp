@@ -44,6 +44,8 @@ class MessageProcessor:
     handlers: HandlerContainer = HandlerContainer()
 
     def add_command(self):
+        pdb.set_trace()
+
         def decorator(func):
             # Retrieve the command type
             type_hints = get_type_hints(func)

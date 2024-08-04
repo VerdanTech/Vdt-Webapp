@@ -5,6 +5,7 @@ from litestar.datastructures import State
 # VerdanTech Source
 from src import settings
 from src.common.adapters.persistence.sqlalchemy import litestar_alchemy_client_lifespan
+from src.common.ops.processors import asgi_processor
 
 from .auth import jwt_cookie_auth
 from .dependencies import svcs_plugin

@@ -57,7 +57,7 @@ def username_validator(value: str) -> str:
     return value
 
 
-def password_validator(value: SecretStr) -> SecretStr:
+def password_validator(value: str) -> str:
     """
     Raises:
         AssertionError:
@@ -65,11 +65,12 @@ def password_validator(value: SecretStr) -> SecretStr:
                 the required length.
             The pattern specified in the settings.
     """
+    print(value)
     if len(value) < PASSWORD_MIN_LENGTH:
         raise AssertionError(f"Must be at least {PASSWORD_MIN_LENGTH} characters long")
     if len(value) > PASSWORD_MAX_LENGTH:
         raise AssertionError(f"Must be at most {PASSWORD_MAX_LENGTH} characters long")
-    if not re.match(PASSWORD_PATTERN, value.get_secret_value()):
+    if not re.match(PASSWORD_PATTERN, value):
         raise AssertionError(f"Must contain {PASSWORD_PATTERN_DESCRIPTION}")
     return value
 
@@ -79,10 +80,12 @@ Username = Annotated[
     ValidatorWrapper(username_validator),
     # Note: Field used only for annotation, to allow custom error messages.
     Field(
-        min_length=USERNAME_MIN_LENGTH,
-        max_length=USERNAME_MAX_LENGTH,
         description=USERNAME_FIELD_DESCRIPTION,
-        json_schema_extra={"pattern": USERNAME_PATTERN},
+        json_schema_extra={
+            "min_length": USERNAME_MIN_LENGTH,
+            "max_length": USERNAME_MAX_LENGTH,
+            "pattern": USERNAME_PATTERN,
+        },
     ),
 ]
 Password = Annotated[
@@ -90,10 +93,12 @@ Password = Annotated[
     ValidatorWrapper(password_validator),
     # Note: Field used only for annotation, to allow custom error messages.
     Field(
-        min_length=PASSWORD_MIN_LENGTH,
-        max_length=PASSWORD_MAX_LENGTH,
-        description=PASSWORD_PATTERN_DESCRIPTION,
-        json_schema_extra={"pattern": PASSWORD_PATTERN},
+        description=PASSWORD_FIELD_DESCRIPTION,
+        json_schema_extra={
+            "min_length": PASSWORD_MIN_LENGTH,
+            "max_length": PASSWORD_MAX_LENGTH,
+            "pattern": PASSWORD_PATTERN,
+        },
     ),
 ]
 ConfirmationKey = Annotated[
