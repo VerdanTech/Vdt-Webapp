@@ -82,8 +82,10 @@ docs:
 #
 .PHONY: schema
 schema:
-	python3 -m litestar --app src.common.entrypoints.litestar.app:create_app schema openapi --output schema.yaml
+	python3 -m litestar --app src.common.entrypoints.litestar.app:create_app schema openapi --output ./schema/openapi.yaml
 	python3.12 ./src/common/entrypoints/litestar/patch_openapi.py
+	export PYTHONPATH=$(shell pwd); \
+	python src/common/adapters/utils/spec_manager.py
 
 #
 # Run the backend server with uvicorn.

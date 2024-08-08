@@ -1,8 +1,11 @@
 # In main.py
 from .manager import spec_manager
 
-# Make sure to import your other files so their specs are registered
-import src.user.domain.specs
-
 if __name__ == "__main__":
-    spec_manager.dump_to_json("specs.json")
+    with open("specs.json", "w") as file:
+        # Make sure to import all files so their specs are registered
+        # VerdanTech Source
+        import src.user.domain.specs
+
+        json = spec_manager.to_json()
+        file.write(json)

@@ -2,7 +2,7 @@
 import yaml
 
 
-def patch_schema(schema_filename="schema.yaml"):
+def patch_schema(schema_filename="./schema/openapi.yaml"):
     with open(schema_filename, "r") as file:
         data = yaml.safe_load(file)
 

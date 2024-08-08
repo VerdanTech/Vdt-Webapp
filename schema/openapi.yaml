@@ -4,32 +4,43 @@ components:
       properties:
         admin_memberships:
           items:
-            $ref: '#/components/schemas/GardenPartialSchema'
+            format: uuid
+            type: string
           type: array
         edit_memberships:
           items:
-            $ref: '#/components/schemas/GardenPartialSchema'
+            format: uuid
+            type: string
           type: array
         favorites:
+          items:
+            format: uuid
+            type: string
+          type: array
+        gardens:
           items:
             $ref: '#/components/schemas/GardenPartialSchema'
           type: array
         pending_memberships:
           items:
-            $ref: '#/components/schemas/GardenPartialSchema'
+            format: uuid
+            type: string
           type: array
         recently_viewed:
           items:
-            $ref: '#/components/schemas/GardenPartialSchema'
+            format: uuid
+            type: string
           type: array
         view_memberships:
           items:
-            $ref: '#/components/schemas/GardenPartialSchema'
+            format: uuid
+            type: string
           type: array
       required:
       - admin_memberships
       - edit_memberships
       - favorites
+      - gardens
       - pending_memberships
       - recently_viewed
       - view_memberships
