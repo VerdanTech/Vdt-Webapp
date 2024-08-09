@@ -1,35 +1,18 @@
 # Standard Library
-import re
 import uuid
 
 # External Libraries
-from pydantic import BeforeValidator, Field, ValidationError
+from pydantic import AfterValidator, BeforeValidator, Field, field_validator
 from typing_extensions import Annotated
 
 # VerdanTech Source
-from src import settings
-from src.common.domain import Command, ValidatorWrapper
+from src import exceptions, settings
+from src.common.adapters.utils.spec_manager import SpecManager, Specs
+from src.common.domain import Command
 from src.common.interfaces.persistence import AbstractUow
 
 from .enums import RoleEnum, VisibilityEnum
-
-# Constants
-GARDEN_NAME_MIN_LENGTH = 2
-GARDEN_NAME_MAX_LENGTH = 50
-GARDEN_NAME_PATTERN = r"[0-9A-Za-z ]+"
-GARDEN_NAME_PATTERN_DESCRIPTION: str = "only alphanumeric characters and spaces."
-GARDEN_NAME_FIELD_DESCRIPTION = f"Must be between {GARDEN_NAME_MIN_LENGTH} and {GARDEN_NAME_MAX_LENGTH} characters long and contain {GARDEN_NAME_PATTERN_DESCRIPTION}"
-
-GARDEN_KEY_MIN_LENGTH = 4
-GARDEN_KEY_MAX_LENGTH = 16
-GARDEN_KEY_PATTERN = r"[0-9A-Za-z-]+"
-GARDEN_KEY_PATTERN_DESCRIPTION = "only alphanumeric characters and hyphens."
-GARDEN_KEY_FIELD_DESCRIPTION = f"Must be between {GARDEN_KEY_MIN_LENGTH} and {GARDEN_KEY_MAX_LENGTH} characters long and contain {GARDEN_KEY_PATTERN_DESCRIPTION}"
-
-GARDEN_DESCRIPTION_MAX_LENGTH = 1400
-GARDEN_DESCRIPTION_FIELD_DESCRIPTION = (
-    f"Must be at most {GARDEN_DESCRIPTION_MAX_LENGTH} characters long"
-)
+from .specs import specs
 
 # Load all banned garden names and keys
 banned_fields = []
@@ -39,79 +22,43 @@ with open(settings.static_path("banned_fields.txt"), "r") as file:
         banned_fields.append(field.lower())
 
 
-def garden_name_validator(value: str) -> str:
-    """
-    Raises:
-        ValueError:
-            Raised if the garden name does not match
-                the pattern specified in the settings.
-            If the name is included
-                within the banned names list.
-    """
-    value = value.strip()
-
-    if len(value) < GARDEN_NAME_MIN_LENGTH:
-        raise ValueError(f"Must be at least {GARDEN_NAME_MIN_LENGTH} characters long")
-    if len(value) > GARDEN_NAME_MAX_LENGTH:
-        raise ValueError(f"Must be at most {GARDEN_NAME_MAX_LENGTH} characters long")
-    if not re.match(GARDEN_NAME_PATTERN, value):
-        raise ValueError(f"Must contain {GARDEN_NAME_PATTERN_DESCRIPTION}")
-    if value.lower() in banned_fields:
-        raise ValueError("Denied: matches a reserved name or is offensive")
-    return value
-
-
-def garden_key_validator(value: str) -> str:
-    """
-    Raises:
-        ValueError:
-            Raised if the garden key does not match
-                the pattern specified in the settings.
-            If the key is included
-                within the banned keys list.
-    """
-    value = value.strip().lower()
-
-    if len(value) < GARDEN_KEY_MIN_LENGTH:
-        raise ValueError(f"Must be at least {GARDEN_KEY_MIN_LENGTH} characters long")
-    if len(value) > GARDEN_KEY_MAX_LENGTH:
-        raise ValueError(f"Must be at most {GARDEN_KEY_MAX_LENGTH} characters long")
-    if not re.match(GARDEN_KEY_PATTERN, value):
-        raise ValueError(f"Must contain {GARDEN_KEY_PATTERN_DESCRIPTION}")
-    if value.lower() in banned_fields:
-        raise ValueError("Denied: matches a reserved name or is offensive")
-    return value
-
-
 GardenName = Annotated[
     str,
-    ValidatorWrapper(garden_name_validator),
+    BeforeValidator(lambda v: v.strip()),
+    AfterValidator(SpecManager.get_validation_method(specs, "garden_name")),
     # Note: Field used only for annotation, to allow custom error messages.
     Field(
-        min_length=GARDEN_NAME_MIN_LENGTH,
-        max_length=GARDEN_NAME_MAX_LENGTH,
-        description=GARDEN_NAME_FIELD_DESCRIPTION,
-        json_schema_extra={"pattern": GARDEN_NAME_PATTERN},
+        description=specs.descriptions["garden_name"]["field"],
+        json_schema_extra={
+            "min_length": specs.values["garden_name"][Specs.MIN_LENGTH],
+            "max_length": specs.values["garden_name"][Specs.MAX_LENGTH],
+            "pattern": specs.values["garden_name"][Specs.PATTERN],
+        },
     ),
 ]
 GardenKey = Annotated[
     str,
-    ValidatorWrapper(garden_key_validator),
+    BeforeValidator(lambda v: v.strip().lower()),
+    AfterValidator(SpecManager.get_validation_method(specs, "garden_key")),
     # Note: Field used only for annotation, to allow custom error messages.
     Field(
-        min_length=GARDEN_KEY_MIN_LENGTH,
-        max_length=GARDEN_KEY_MAX_LENGTH,
-        description=GARDEN_KEY_FIELD_DESCRIPTION,
-        json_schema_extra={"pattern": GARDEN_KEY_PATTERN},
+        description=specs.descriptions["garden_key"]["field"],
+        json_schema_extra={
+            "min_length": specs.values["garden_key"][Specs.MIN_LENGTH],
+            "max_length": specs.values["garden_key"][Specs.MAX_LENGTH],
+            "pattern": specs.values["garden_key"][Specs.PATTERN],
+        },
     ),
 ]
 GardenDescription = Annotated[
     str,
-    Field(
-        max_length=GARDEN_DESCRIPTION_MAX_LENGTH,
-        description=GARDEN_DESCRIPTION_FIELD_DESCRIPTION,
-    ),
     BeforeValidator(lambda v: v.strip()),
+    Field(
+        description=specs.descriptions["garden_description"]["field"],
+        json_schema_extra={
+            "max_length": specs.values["garden_description"][Specs.MAX_LENGTH],
+        },
+    ),
 ]
 
 
@@ -128,6 +75,13 @@ class GardenCreateCommand(Command):
     editor_ids: list[uuid.UUID] = []
     viewer_ids: list[uuid.UUID] = []
 
+    @field_validator("name")
+    @classmethod
+    def name_banned(cls, value: str) -> str:
+        if isinstance(value, str) and value.lower() in banned_fields:
+            raise ValueError("Denied: matches a reserved name or is offensive")
+        return value
+
     async def validate_against_uow(self, uow: AbstractUow):
         """
         Validates the command against the database.
@@ -140,7 +94,9 @@ class GardenCreateCommand(Command):
                 exist in the database.
         """
         if self.key is not None and await uow.repos.gardens.key_exists(self.key):
-            raise ValidationError("Garden key already exists")
+            raise exceptions.ValidationError(
+                field_errors=[("key", "Garden key already exists")]
+            )
 
 
 class GardenMembershipCreateCommand(Command):
@@ -163,8 +119,6 @@ class GardenMembershipCreateCommand(Command):
 class GardenMembershipAcceptCommand(Command):
     """
     Garden membership invitation acceptance command.
-
-
     """
 
     garden_key: GardenKey

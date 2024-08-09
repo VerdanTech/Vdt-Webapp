@@ -5,11 +5,10 @@ import uuid
 from svcs import Container
 
 # VerdanTech Source
-from src import settings
+from src import exceptions, settings
 from src.common.interfaces.email.client import AbstractEmailClient
 from src.common.interfaces.events import AbstractEventNode
 from src.common.interfaces.persistence import AbstractUow
-from src.common.ops.exceptions import EntityNotFound
 from src.common.ops.processors import asgi_processor, task_processor
 from src.user.domain import events
 
@@ -32,7 +31,7 @@ async def process_email_confirmation(
         # Retrieve the user
         user = await uow.get_by_email(event.email_address)
         if user is None:
-            raise EntityNotFound("User does not exist")
+            raise exceptions.NotFoundError("User does not exist")
 
         # Generate an email confirmation key
         key = uuid.uuid4()

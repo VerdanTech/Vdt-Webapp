@@ -4,7 +4,7 @@ from typing import Any
 
 # External Libraries
 from litestar.connection import ASGIConnection
-from litestar.security.jwt import JWTCookieAuth, Token
+from litestar.security.jwt import JWTAuth, Token
 from sqlalchemy import select
 
 # VerdanTech Source
@@ -49,8 +49,8 @@ async def retrieve_user_handler(
     return user
 
 
-jwt_cookie_auth = JWTCookieAuth[User](
+jwt_auth = JWTAuth[User](
     token_secret=settings.JWT_SECRET,
     retrieve_user_handler=retrieve_user_handler,
-    exclude=["/schema"],
+    exclude=["/schema", r"(\/|\\)query(\/|\\)"],
 )

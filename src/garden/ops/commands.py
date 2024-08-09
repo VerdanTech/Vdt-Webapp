@@ -5,9 +5,9 @@ from datetime import datetime
 from svcs import Container
 
 # VerdanTech Source
+from src import exceptions
 from src.common.domain.models import Ref
 from src.common.interfaces.persistence.uow import AbstractUow
-from src.common.ops.exceptions import EntityNotFound
 from src.common.ops.processors import asgi_processor
 from src.garden.domain import Garden, RoleEnum, commands, events
 from src.garden.domain.models import GardenMembership
@@ -148,7 +148,7 @@ async def accept_invite(
         # Retrieve garden
         garden = await uow.repos.gardens.get_by_key(command.garden_key)
         if garden is None:
-            raise EntityNotFound("This Garden does not exist.")
+            raise exceptions.NotFoundError(non_form_errors=[("Garden does not exist")])
 
         # Accept the invite - raises on failure
         garden.accept_membership(user=client)
@@ -181,7 +181,7 @@ async def delete_membership(
     async with uow:
         garden = await uow.repos.gardens.get_by_key(command.garden_key)
         if garden is None:
-            raise EntityNotFound("This Garden does not exist.")
+            raise exceptions.NotFoundError(non_form_errors=[("Garden does not exist")])
 
         # Remove client's membership
         garden.remove_membership(user=client)
@@ -216,12 +216,12 @@ async def revoke_membership(
         # Retrieve garden
         garden = await uow.repos.gardens.get_by_id(command.garden_id)
         if garden is None:
-            raise EntityNotFound("This Garden does not exist.")
+            raise exceptions.NotFoundError(non_form_errors=[("Garden does not exist")])
 
         # Retrieve user
         user = await uow.repos.users.get_by_id(command.user_id)
         if user is None:
-            raise EntityNotFound("This User does not exist.")
+            raise exceptions.NotFoundError(non_form_errors=[("User does not exist")])
 
         # Remove the membership
         garden.revoke_membership(client=client, subject=user)
@@ -256,12 +256,12 @@ async def change_role(
         # Retrieve garden
         garden = await uow.repos.gardens.get_by_id(command.garden_id)
         if garden is None:
-            raise EntityNotFound("This Garden does not exist.")
+            raise exceptions.NotFoundError(non_form_errors=[("Garden does not exist")])
 
         # Retrieve user
         user = await uow.repos.users.get_by_id(command.user_id)
         if user is None:
-            raise EntityNotFound("This User does not exist.")
+            raise exceptions.NotFoundError(non_form_errors=[("User does not exist")])
 
         # Change the role on the membership
         garden.change_role(

@@ -55,10 +55,6 @@ class UserAlchemyRepository(BaseAlchemyRepository[User], AbstractUserRepository)
         )
         query = await self.session.execute(statement)
         user = query.unique().scalar_one_or_none()
-
-        if user is None:
-            return None
-
         return user
 
     async def get_by_email_address(self, email_address: str) -> User | None:
@@ -79,10 +75,6 @@ class UserAlchemyRepository(BaseAlchemyRepository[User], AbstractUserRepository)
         )
         query = await self.session.execute(statement)
         user = query.unique().scalar_one_or_none()
-
-        if user is None:
-            return None
-
         return user
 
     async def get_by_email_confirmation_key(self, key: uuid.UUID) -> User | None:
@@ -103,10 +95,6 @@ class UserAlchemyRepository(BaseAlchemyRepository[User], AbstractUserRepository)
         )
         query = await self.session.execute(statement)
         user = query.unique().scalar_one_or_none()
-
-        if user is None:
-            return None
-
         return user
 
     async def get_by_password_reset_confirmation(

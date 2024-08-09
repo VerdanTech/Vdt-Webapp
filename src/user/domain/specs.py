@@ -23,7 +23,7 @@ descriptions: SpecDescriptions = {
         Specs.MIN_LENGTH: f"Must be at least {values['username'][Specs.MIN_LENGTH]} characters",
         Specs.MAX_LENGTH: f"Must be at most {values['username'][Specs.MAX_LENGTH]} characters",
         Specs.PATTERN: "Must contain only alphanumeric characters and underscores",
-        "field": f"Must be between {values['username'][Specs.MIN_LENGTH]} and {values['username'][Specs.MAX_LENGTH]} characters long and contain only alphanumeric characters and underscores. Must be unique.",
+        "field": f"Must be between {values['username'][Specs.MIN_LENGTH]} and {values['username'][Specs.MAX_LENGTH]} characters long and contain only alphanumeric characters and underscores. Must be unique",
     },
     "password": {
         Specs.MIN_LENGTH: f"Must be at least {values['password'][Specs.MIN_LENGTH]} characters",

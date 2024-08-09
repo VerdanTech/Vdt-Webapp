@@ -6,10 +6,9 @@ from datetime import datetime
 from svcs import Container
 
 # VerdanTech Source
-from src import settings
+from src import exceptions, settings
 from src.common.interfaces.persistence.uow import AbstractUow
 from src.common.interfaces.security.passwords import AbstractPasswordCrypt
-from src.common.ops.exceptions import EntityNotFound
 from src.common.ops.queries import Query, QueryResult, query_result_transform
 from src.exceptions import ApplicationException
 from src.user.domain import Email, User
@@ -117,7 +116,9 @@ async def verify_password(
     async with uow:
         user = await uow.repos.users.get_by_email_address(query.email_address)
         if user is None:
-            raise EntityNotFound("The email address does not exist.")
+            raise exceptions.NotFoundError(
+                field_errors=[("email_address", "The email does not exist")]
+            )
 
     # Prohibit logging in if the user is not verified and verification is required
     if (
@@ -163,7 +164,7 @@ async def public_profiles(
     return user_schemas
 
 
-async def client_profile(client: User) -> UserFullSchema:
+async def client_profile(client: User | None) -> UserFullSchema:
     """
     Returns the full profile of the client user.
 
@@ -174,7 +175,9 @@ async def client_profile(client: User) -> UserFullSchema:
         UserFullSchema: the full profile of the client user.
     """
     if client is None:
-        raise ApplicationException("Client is not authenticated.")
+        raise exceptions.AuthenticationError(
+            "Client set to non on an authenticated route."
+        )
     return UserFullSchema.cast(client)
 
 

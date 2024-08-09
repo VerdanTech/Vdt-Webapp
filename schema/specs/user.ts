@@ -12,7 +12,7 @@ export const userFields = {
             value: '^[a-zA-Z0-9_]*$',
             message: 'Must contain only alphanumeric characters and underscores',
         },
-        description: 'Must be between 3 and 50 characters long and contain only alphanumeric characters and underscores. Must be unique.'
+        description: 'Must be between 3 and 50 characters long and contain only alphanumeric characters and underscores. Must be unique'
     },
     password: {
         min_length: {

@@ -6,12 +6,8 @@ from svcs import Container
 
 # VerdanTech Source
 from src import settings
-from src.common.entrypoints.litestar.exceptions import litestar_exception_map
-from src.common.entrypoints.litestar.utils import url_to_route_name
 from src.common.ops.processors import asgi_processor
 from src.user.domain import commands
-
-from . import urls
 
 
 class UserCommandController(Controller):
@@ -19,12 +15,11 @@ class UserCommandController(Controller):
     User ASGI controller.
     """
 
-    path = urls.USER_COMMAND_CONTROLLER_BASE
+    path = "command"
     tags = ["users"]
 
     @post(
-        path=urls.USER_CREATE_URL,
-        name=url_to_route_name(urls.USER_ROUTER_URL_BASE, urls.USER_CREATE_URL),
+        path="create",
         opt={"exclude_from_auth": True},
         summary="User registration.",
         description=f"Registers a new user. Requires email confirmation: {settings.EMAIL_CONFIRMATION.verification_required}.",
@@ -35,7 +30,7 @@ class UserCommandController(Controller):
         data: commands.UserCreateCommand,
         state: State,
         svcs_container: Container = Dependency(skip_validation=True),
-    ) -> None:
+    ) -> str:
         """
         Calls the user creation application command.
 
@@ -45,16 +40,11 @@ class UserCommandController(Controller):
             svcs_container (Container): service locator.
         """
         svcs_container.register_local_value(State, state)
-        with litestar_exception_map():
-            await asgi_processor.handle_effect(
-                effect=data, svcs_container=svcs_container
-            )
+        await asgi_processor.handle_effect(effect=data, svcs_container=svcs_container)
+        return "User created"
 
     @post(
-        path=urls.USER_EMAIL_VERIFICATION_REQUEST_URL,
-        name=url_to_route_name(
-            urls.USER_ROUTER_URL_BASE, urls.USER_EMAIL_VERIFICATION_REQUEST_URL
-        ),
+        path="email/verification_request",
         opt={"exclude_from_auth": True},
         summary="Email confirmation request.",
         description="Requests a new email verification email be sent to the email address.",
@@ -66,7 +56,7 @@ class UserCommandController(Controller):
         data: commands.UserRequestEmailConfirmationCommand,
         state: State,
         svcs_container: Container = Dependency(skip_validation=True),
-    ) -> None:
+    ) -> str:
         """
         Calls the email confirmation request application command.
 
@@ -76,16 +66,11 @@ class UserCommandController(Controller):
             svcs_container (Container): service locator.
         """
         svcs_container.register_local_value(State, state)
-        with litestar_exception_map():
-            await asgi_processor.handle_effect(
-                effect=data, svcs_container=svcs_container
-            )
+        await asgi_processor.handle_effect(effect=data, svcs_container=svcs_container)
+        return "Email confirmation request registered"
 
     @post(
-        path=urls.USER_EMAIL_VERIFICATION_CONFIRM_URL,
-        name=url_to_route_name(
-            urls.USER_ROUTER_URL_BASE, urls.USER_EMAIL_VERIFICATION_CONFIRM_URL
-        ),
+        path="email/verification_confirm/",
         opt={"exclude_from_auth": True},
         summary="Email confirmation.",
         description="Closes an email confirmation and verifies the email address.",
@@ -97,7 +82,7 @@ class UserCommandController(Controller):
         data: commands.UserConfirmEmailConfirmationCommand,
         state: State,
         svcs_container: Container = Dependency(skip_validation=True),
-    ) -> None:
+    ) -> str:
         """
         Calls the email confirmation confirm application command.
 
@@ -107,16 +92,11 @@ class UserCommandController(Controller):
             svcs_container (Container): service locator.
         """
         svcs_container.register_local_value(State, state)
-        with litestar_exception_map():
-            await asgi_processor.handle_effect(
-                effect=data, svcs_container=svcs_container
-            )
+        await asgi_processor.handle_effect(effect=data, svcs_container=svcs_container)
+        return "Email confirmed"
 
     @post(
-        path=urls.USER_PASSWORD_RESET_REQUEST_URL,
-        name=url_to_route_name(
-            urls.USER_ROUTER_URL_BASE, urls.USER_PASSWORD_RESET_REQUEST_URL
-        ),
+        path="password/request/",
         opt={"exclude_from_auth": True},
         summary="Password reset request.",
         description="Open a new password reset request and sends confirmation email.",
@@ -128,7 +108,7 @@ class UserCommandController(Controller):
         data: commands.UserRequestPasswordResetCommand,
         state: State,
         svcs_container: Container = Dependency(skip_validation=True),
-    ) -> None:
+    ) -> str:
         """
         Calls the password reset request application command.
 
@@ -138,16 +118,11 @@ class UserCommandController(Controller):
             svcs_container (Container): service locator.
         """
         svcs_container.register_local_value(State, state)
-        with litestar_exception_map():
-            await asgi_processor.handle_effect(
-                effect=data, svcs_container=svcs_container
-            )
+        await asgi_processor.handle_effect(effect=data, svcs_container=svcs_container)
+        return "Password reset request sent"
 
     @post(
-        path=urls.USER_PASSWORD_RESET_CONFIRM_URL,
-        name=url_to_route_name(
-            urls.USER_ROUTER_URL_BASE, urls.USER_PASSWORD_RESET_CONFIRM_URL
-        ),
+        path="password/confirm/",
         opt={"exclude_from_auth": True},
         summary="Password reset confirm.",
         description="Closes a password reset request and changes the password",
@@ -159,7 +134,7 @@ class UserCommandController(Controller):
         data: commands.UserConfirmPasswordResetCommand,
         state: State,
         svcs_container: Container = Dependency(skip_validation=True),
-    ) -> None:
+    ) -> str:
         """
         Calls the password reset confirmation application command.
 
@@ -169,7 +144,5 @@ class UserCommandController(Controller):
             svcs_container (Container): service locator.
         """
         svcs_container.register_local_value(State, state)
-        with litestar_exception_map():
-            await asgi_processor.handle_effect(
-                effect=data, svcs_container=svcs_container
-            )
+        await asgi_processor.handle_effect(effect=data, svcs_container=svcs_container)
+        return "Password reset"

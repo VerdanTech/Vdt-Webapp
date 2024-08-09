@@ -9,19 +9,10 @@ from typing import Optional
 from attrs import field
 
 # VerdanTech Source
-from src.common.domain import (
-    RootEntity,
-    Value,
-    exceptions as domain_exceptions,
-    root_entity_transform,
-    value_transform,
-)
+from src import exceptions
+from src.common.domain import RootEntity, Value, root_entity_transform, value_transform
 from src.common.interfaces.security.passwords import AbstractPasswordCrypt
-from src.exceptions import ExceptionResponseEnum
 from src.user.domain import events
-
-from . import exceptions
-from .exceptions import EmailAlreadyVerifiedError, EmailConfirmationExpired
 
 
 @value_transform
@@ -148,8 +139,8 @@ class User(RootEntity):
         for email in self.emails:
             if email.primary is True:
                 return email
-        raise domain_exceptions.EntityIntegrityException(
-            "User has zero emails with primary = True"
+        raise exceptions.DomainIntegrityException(
+            f"User {self.id} has zero emails with primary = True"
         )
 
     def email_confirmation_create(self, address: str, key: uuid.UUID) -> None:
@@ -166,8 +157,8 @@ class User(RootEntity):
                 email = email.new_confirmation(key=key)
                 self.emails[index] = email
                 return
-        raise domain_exceptions.FieldNotFound(
-            "The email address provided does not exist on this User."
+        raise exceptions.NotFoundError(
+            field_errors=[("email_address", "This email does not exist")]
         )
 
     def email_confirmation_confirm(
@@ -212,12 +203,8 @@ class User(RootEntity):
                 but the function was called with overwrite=False.
         """
         if self._password_hash is not None and not overwrite:
-            raise exceptions.PasswordAlreadySetError(
-                """Password set attempt failed: 
-                called with overwrite=False 
-                but password already set.
-                """,
-                response=ExceptionResponseEnum.SERVER_ERROR,
+            raise exceptions.DomainIntegrityException(
+                "Password already set, but the overwrite flag was not set to true"
             )
         self._password_hash = await password_crypt.get_password_hash(
             plain_password=password
@@ -250,19 +237,15 @@ class User(RootEntity):
             new_password (str): the new password to set.
             password_crypt (AbstractPasswordCrypt): password crypt interface.
         """
-        if not user_id == self.id:
-            raise domain_exceptions.FieldNotFound(
-                "The provided password reset confirmation is not correct."
-            )
-
-        if self.password_reset_confirmation is None:
-            raise domain_exceptions.FieldNotFound(
-                "No password reset requests are associated with this User."
-            )
-
-        if not self.password_reset_confirmation.key == key:
-            raise domain_exceptions.FieldNotFound(
-                "The provided password reset key is not correct."
+        if (
+            not user_id == self.id
+            or self.password_reset_confirmation is None
+            or not self.password_reset_confirmation.key == key
+        ):
+            raise exceptions.NotFoundError(
+                non_form_errors=[
+                    "No password reset requests are associated with this user."
+                ]
             )
 
         await self.set_password(
@@ -340,8 +323,10 @@ class User(RootEntity):
             if email.confirmation is not None and email.confirmation.key == key:
                 email_with_key = email
         if email_with_key is None:
-            raise domain_exceptions.FieldNotFound(
-                "The email verification key does not exist"
+            raise exceptions.NotFoundError(
+                non_form_errors=[
+                    "No confirmation requests are associated with this email."
+                ]
             )
         return email_with_key
 
@@ -408,8 +393,8 @@ class Email(Value):
             Email: resultant email with new confirmation.
         """
         if self.verified:
-            raise EmailAlreadyVerifiedError(
-                "Email confirmation attempt on already verified email"
+            raise exceptions.ValidationError(
+                non_field_errors=["This email is already verified"]
             )
 
         confirmation = EmailConfirmation(key=key)
@@ -423,9 +408,8 @@ class Email(Value):
             Email: resultant email
         """
         if self.verified:
-            raise EmailAlreadyVerifiedError(
-                "Email verification attempt on already verified email",
-                response=ExceptionResponseEnum.CLIENT_ERROR,
+            raise exceptions.ValidationError(
+                non_field_errors=["This email is already verified"]
             )
         return self.transform(
             verified=True, confirmation=None, verified_at=datetime.now()
@@ -463,7 +447,6 @@ class Email(Value):
         if self.confirmation is None:
             return
         if not self.confirmation.is_valid(expiry_time_hours=expiry_time_hours):
-            raise EmailConfirmationExpired(
-                "The email confirmation key is expired",
-                response=ExceptionResponseEnum.CLIENT_ERROR,
+            raise exceptions.ValidationError(
+                non_field_errors=["This email confirmation is expired"]
             )

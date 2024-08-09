@@ -5,22 +5,17 @@ from litestar.params import Dependency
 from svcs import Container
 
 # VerdanTech Source
-from src.common.entrypoints.litestar.exceptions import litestar_exception_map
-from src.common.entrypoints.litestar.utils import url_to_route_name
 from src.garden.ops import queries
-
-from . import urls
 
 
 class GardenQueryController(Controller):
     """Garden read operations controller"""
 
-    path = urls.GARDEN_QUERY_CONTROLLER_URL_BASE
+    path = "query"
     tags = ["gardens"]
 
     @get(
-        path=urls.GARDEN_UNIQUE_KEY_URL,
-        name=url_to_route_name(urls.GARDEN_ROUTER_URL_BASE, urls.GARDEN_UNIQUE_KEY_URL),
+        path="generate_unique_key",
         summary="Generate a new, unique garden key.",
         description="Generates a unique garden key given a plant name and a random string.",
         operation_id="GardenGenerateUniqueKeyQueryOp",
@@ -43,17 +38,13 @@ class GardenQueryController(Controller):
             UniqueGardenKeyResult: the generated key.
         """
         svcs_container.register_local_value(State, state)
-        with litestar_exception_map():
-            key = await queries.generate_unique_garden_key(
-                svcs_container=svcs_container, client=request.user
-            )
+        key = await queries.generate_unique_garden_key(
+            svcs_container=svcs_container, client=request.user
+        )
         return key
 
     @get(
-        path=urls.GARDEN_ASSOCIATED_PARTIALS_URL,
-        name=url_to_route_name(
-            urls.GARDEN_ROUTER_URL_BASE, urls.GARDEN_ASSOCIATED_PARTIALS_URL
-        ),
+        path="associated_partials",
         summary="Returns a partial representation of all gardens that are associated with the client",
         description="Returns a partial representation of all gardens that are associated with the client",
         operation_id="GardenAssociatedPartialsQueryOp",
@@ -76,17 +67,13 @@ class GardenQueryController(Controller):
             AssociatedPartialsResult: the associated garden partials.
         """
         svcs_container.register_local_value(State, state)
-        with litestar_exception_map():
-            partials = await queries.get_associated_partials(
-                svcs_container=svcs_container, client=request.user
-            )
+        partials = await queries.get_associated_partials(
+            svcs_container=svcs_container, client=request.user
+        )
         return partials
 
     @get(
-        path=urls.GARDEN_MOST_RELEVANT_PARTIALS_URL,
-        name=url_to_route_name(
-            urls.GARDEN_ROUTER_URL_BASE, urls.GARDEN_MOST_RELEVANT_PARTIALS_URL
-        ),
+        path="most_relevant",
         summary="Returns a partial representation of most relevant gardens to the user.",
         description="Returns a partial representation of most relevant gardens to the user, ordered by relevance.",
         operation_id=queries.GardenMostRelevantPartialsQuery.to_operation_id(),
@@ -112,17 +99,13 @@ class GardenQueryController(Controller):
         """
         svcs_container.register_local_value(State, state)
         data = queries.GardenMostRelevantPartialsQuery(max_gardens=max_gardens)
-        with litestar_exception_map():
-            partials = await queries.get_most_relevant_partials(
-                query=data, svcs_container=svcs_container, client=request.user
-            )
+        partials = await queries.get_most_relevant_partials(
+            query=data, svcs_container=svcs_container, client=request.user
+        )
         return partials
 
     @get(
-        path=urls.GARDEN_PARTIALS_BY_KEY_URL,
-        name=url_to_route_name(
-            urls.GARDEN_ROUTER_URL_BASE, urls.GARDEN_PARTIALS_BY_KEY_URL
-        ),
+        path="partials_by_key",
         summary="Returns a partial representation of gardens given by keys.",
         description="Returns a partial representation of gardens given by keys, provided they exist and the client is authorized to use them.",
         operation_id=queries.GardenPartialsByKeysQuery.to_operation_id(),
@@ -148,17 +131,13 @@ class GardenQueryController(Controller):
         """
         svcs_container.register_local_value(State, state)
         data = queries.GardenPartialsByKeysQuery(keys=garden_keys)
-        with litestar_exception_map():
-            partials = await queries.get_partials_by_key(
-                query=data, svcs_container=svcs_container, client=request.user
-            )
+        partials = await queries.get_partials_by_key(
+            query=data, svcs_container=svcs_container, client=request.user
+        )
         return partials
 
     @get(
-        path=urls.GARDEN_FULL_BY_KEY_URL,
-        name=url_to_route_name(
-            urls.GARDEN_ROUTER_URL_BASE, urls.GARDEN_FULL_BY_KEY_URL
-        ),
+        path="full_by_key",
         summary="Returns a full representation of a garden by its key.",
         description="Returns a full representation of gardens given by a key.",
         operation_id=queries.GardenFullByKeyQuery.to_operation_id(),
@@ -184,8 +163,7 @@ class GardenQueryController(Controller):
         """
         svcs_container.register_local_value(State, state)
         data = queries.GardenFullByKeyQuery(key=garden_key)
-        with litestar_exception_map():
-            schema = await queries.get_full_by_key(
-                query=data, svcs_container=svcs_container, client=request.user
-            )
+        schema = await queries.get_full_by_key(
+            query=data, svcs_container=svcs_container, client=request.user
+        )
         return schema

@@ -2,10 +2,9 @@
 from svcs import Container
 
 # VerdanTech Source
-from src import settings
+from src import exceptions, settings
 from src.common.interfaces.persistence import AbstractUow
 from src.common.interfaces.security import AbstractPasswordCrypt
-from src.common.ops.exceptions import EntityNotFound, IncorrectPassword
 from src.common.ops.processors import asgi_processor
 from src.user.domain import User, commands, events
 
@@ -14,7 +13,7 @@ from src.user.domain import User, commands, events
 async def create_user(
     command: commands.UserCreateCommand,
     svcs_container: Container,
-    client: User | None = None,
+    client: None = None,
 ) -> None:
     """
     Main user creation operation.
@@ -73,7 +72,9 @@ async def update_user(
         svcs_container (Container): service locator.
     """
     if client is None:
-        raise EntityNotFound("Unknown client")
+        raise exceptions.AuthenticationError(
+            "Client set to non on an authenticated route."
+        )
 
     # Locate services
     uow, password_crypt = await svcs_container.aget_abstract(
@@ -88,7 +89,9 @@ async def update_user(
         if not await client.verify_password(
             password=command.password.get_secret_value(), password_crypt=password_crypt
         ):
-            raise IncorrectPassword("Provided password is incorrect.")
+            raise exceptions.AuthenticationError(
+                field_errors=[("password", "Incorrect password")]
+            )
 
         # Update the requested fields
         if command.new_username:
@@ -134,7 +137,9 @@ async def request_email_confirmation(
             email_address=command.email_address
         )
         if user is None:
-            raise EntityNotFound("The email address does not exist.")
+            raise exceptions.NotFoundError(
+                field_errors=[("email_address", "The email address does not exist.")]
+            )
 
         # Request a new email confirmation
         user.events.append(
@@ -163,7 +168,9 @@ async def confirm_email_confirmation(
         # Retrieve user from persistence
         user = await uow.repos.users.get_by_email_confirmation_key(key=command.key)
         if user is None:
-            raise EntityNotFound("The email verification key does not exist.")
+            raise exceptions.NotFoundError(
+                non_form_errors=[("This verification key does not exist.")]
+            )
 
         # Verify email
         user.email_confirmation_confirm(
@@ -198,13 +205,15 @@ async def request_password_reset(
             email_address=command.email_address
         )
         if user is None:
-            raise EntityNotFound("The email address does not exist.")
+            raise exceptions.NotFoundError(
+                field_errors=[("email_address", "The email address does not exist.")]
+            )
 
         # Validate the address provided was the user's primary email
         primary_email = user.primary_email
         if not command.email_address == primary_email.address:
-            raise EntityNotFound(
-                "The email address provided is not the user's primary email."
+            raise exceptions.NotFoundError(
+                field_errors=[("email_address", "The email address does not exist.")]
             )
 
         # Request a new password reset
@@ -241,7 +250,9 @@ async def confirm_password_reset(
             user_id=command.user_id, key=command.key
         )
         if user is None:
-            raise EntityNotFound("The password reset does not exist.")
+            raise exceptions.NotFoundError(
+                non_form_errors=["This verification key does not exist."]
+            )
 
         # Reset password
         await user.password_reset_confirm(

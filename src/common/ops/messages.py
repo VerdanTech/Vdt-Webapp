@@ -44,8 +44,6 @@ class MessageProcessor:
     handlers: HandlerContainer = HandlerContainer()
 
     def add_command(self):
-        pdb.set_trace()
-
         def decorator(func):
             # Retrieve the command type
             type_hints = get_type_hints(func)
@@ -72,7 +70,7 @@ class MessageProcessor:
                     f"Registered event handler with invalid signature: {func}"
                 )
 
-            self.handlers.events[event_type].append(func)
+            self.handlers.events.setdefault(event_type, []).append(func)
             return func
 
         return decorator
@@ -117,7 +115,6 @@ class MessageProcessor:
         Raises:
             Exception: Raises the exception of the command.
         """
-        pdb.set_trace()
         try:
             handler = self.handlers.commands[type(command)]
             if handler is None:

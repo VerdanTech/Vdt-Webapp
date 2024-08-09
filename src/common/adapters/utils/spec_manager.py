@@ -6,6 +6,9 @@ from collections import namedtuple
 from enum import Enum, auto
 from typing import Any, Callable, Generator, Literal
 
+# External Libraries
+from pydantic import SecretStr
+
 
 class Specs(Enum):
     TYPE = "type"
@@ -20,19 +23,29 @@ type SpecDescriptions = dict[Field, dict[Specs | Literal["field"], str]]
 
 SpecCollection = namedtuple("SpecCollection", ["domain", "values", "descriptions"])
 
+
+def validate_pattern[
+    Input: str | SecretStr
+](value: Input, pattern: str | re.Pattern) -> Input:
+    if isinstance(value, SecretStr):
+        return re.match(pattern, value.get_secret_value())
+    elif isinstance(value, str):
+        return re.match(pattern, value)
+
+
 # returns true if valid
 spec_validation_methods = {
     Specs.MIN_LENGTH: lambda value, min_length: len(value) >= min_length,
     Specs.MAX_LENGTH: lambda value, max_length: len(value) <= max_length,
-    Specs.PATTERN: lambda value, pattern: re.match(pattern, value),
+    Specs.PATTERN: validate_pattern,
 }
 
 
 class SpecManager:
     @staticmethod
-    def get_validation_method(
-        spec: SpecCollection, field: Field
-    ) -> Callable[[Any], Any]:
+    def get_validation_method[
+        FieldType: Any
+    ](spec: SpecCollection, field: Field) -> Callable[[FieldType], FieldType]:
         # Retrieve specs for field
         try:
             values = spec.values[field]
@@ -49,13 +62,14 @@ class SpecManager:
                     f"Description for field '{field}' spec '{key}' not found"
                 )
 
-        def validation_method(value: Any) -> Any:
+        def validation_method(value: FieldType) -> FieldType:
             for spec in values:
                 if spec not in spec_validation_methods:
                     continue
 
                 if not spec_validation_methods[spec](value, values[spec]):
                     raise ValueError(descriptions[spec])
+            return value
 
         return validation_method
 
@@ -69,13 +83,11 @@ class SpecManager:
 
         # For every field in the spec collection.
         for field in spec_collection.values:
-
             # Open the field object.
             yield f"    {field}: {{\n"
 
             # For every spec in the field.
             for spec in spec_collection.values[field]:
-
                 # Get the name of the spec
                 spec_name = str(spec.value)
 
@@ -90,8 +102,10 @@ class SpecManager:
                 try:
                     description = spec_collection.descriptions[field][spec]
                 except KeyError:
-                    raise ValueError(f"Missing description for field {field} and spec {spec}")
-                
+                    raise ValueError(
+                        f"Missing description for field {field} and spec {spec}"
+                    )
+
                 # Open the spec object
                 yield f"        {spec_name}: {{\n"
 
@@ -107,7 +121,7 @@ class SpecManager:
                 field_description = spec_collection.descriptions[field]["field"]
             except KeyError:
                 raise ValueError(f"Missing field description for field {field}")
-            
+
             yield f"        description: '{field_description}'\n"
 
             # Close the field object
@@ -117,15 +131,17 @@ class SpecManager:
         yield "}\n"
         yield f"export default {object_name}"
 
+
 if __name__ == "__main__":
     # Make sure to import all files so their specs are registered
     # VerdanTech Source
+    from src.garden.domain.specs import specs as garden_specs
     from src.user.domain.specs import specs as user_specs
 
     os.makedirs("./schema/specs", exist_ok=True)
     output_dir = "./schema/specs/"
 
-    for spec_collection in [user_specs]:
+    for spec_collection in [user_specs, garden_specs]:
         file_path = os.path.join(output_dir, f"{spec_collection.domain}.ts")
 
         with open(file_path, "w") as file:

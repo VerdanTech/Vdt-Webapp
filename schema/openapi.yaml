@@ -70,7 +70,7 @@ components:
           type: array
         description:
           default: ''
-          description: Must be at most 1400 characters long
+          description: Must be at most 1400 characters
           maxLength: 1400
           type: string
         editor_ids:
@@ -83,12 +83,14 @@ components:
           oneOf:
           - type: 'null'
           - description: Must be between 4 and 16 characters long and contain only
-              alphanumeric characters and hyphens.
+              alphanumeric characters and hyphens
+            maxLength: 16
+            minLength: 4
             pattern: '[0-9A-Za-z-]+'
             type: string
         name:
           description: Must be between 2 and 50 characters long and contain only alphanumeric
-            characters and spaces.
+            characters and spaces
           maxLength: 50
           minLength: 2
           pattern: '[0-9A-Za-z ]+'
@@ -158,7 +160,7 @@ components:
       properties:
         garden_key:
           description: Must be between 4 and 16 characters long and contain only alphanumeric
-            characters and hyphens.
+            characters and hyphens
           maxLength: 16
           minLength: 4
           pattern: '[0-9A-Za-z-]+'
@@ -198,7 +200,7 @@ components:
       properties:
         garden_key:
           description: Must be between 4 and 16 characters long and contain only alphanumeric
-            characters and hyphens.
+            characters and hyphens
           maxLength: 16
           minLength: 4
           pattern: '[0-9A-Za-z-]+'
@@ -381,7 +383,7 @@ components:
           type: string
         username:
           description: Must be between 3 and 50 characters long and contain only alphanumeric
-            characters and underscores.
+            characters and underscores. Must be unique
           maxLength: 50
           minLength: 3
           pattern: ^[a-zA-Z0-9_]*$
@@ -490,9 +492,8 @@ components:
   securitySchemes:
     BearerToken:
       bearerFormat: JWT
-      description: JWT cookie-based authentication and authorization.
-      in: cookie
-      name: token
+      description: JWT api-key authentication and authorization.
+      name: Authorization
       scheme: Bearer
       type: http
 externalDocs:
@@ -508,7 +509,7 @@ info:
   version: 0.1.0
 openapi: 3.1.0
 paths:
-  /vdtapi/gardens/commands/accept_invite:
+  /vdtapi/gardens/command/accept_invite:
     post:
       deprecated: false
       description: Accepts a Garden Membership.
@@ -532,7 +533,7 @@ paths:
       summary: Garden membership invitiation acceptance.
       tags:
       - gardens
-  /vdtapi/gardens/commands/change_role:
+  /vdtapi/gardens/command/change_role:
     post:
       deprecated: false
       description: Changes the role on another's Garden Membership.
@@ -556,7 +557,7 @@ paths:
       summary: Garden Membership role change.
       tags:
       - gardens
-  /vdtapi/gardens/commands/create:
+  /vdtapi/gardens/command/create:
     post:
       deprecated: false
       description: Creates a new Garden and invites requested users.
@@ -580,7 +581,7 @@ paths:
       summary: Garden creation.
       tags:
       - gardens
-  /vdtapi/gardens/commands/invite:
+  /vdtapi/gardens/command/invite:
     post:
       deprecated: false
       description: Creates new Garden Memberships and sends email confirmation emails.
@@ -604,7 +605,7 @@ paths:
       summary: Garden membership invitiation.
       tags:
       - gardens
-  /vdtapi/gardens/commands/leave:
+  /vdtapi/gardens/command/leave:
     post:
       deprecated: false
       description: Removes one's own Garden Membership from a garden.
@@ -628,7 +629,7 @@ paths:
       summary: Garden membership deletion.
       tags:
       - gardens
-  /vdtapi/gardens/commands/revoke:
+  /vdtapi/gardens/command/revoke:
     post:
       deprecated: false
       description: Removes another's Garden Membership from a garden.
@@ -652,7 +653,7 @@ paths:
       summary: Removes a user from a garden.
       tags:
       - gardens
-  /vdtapi/gardens/queries/associated:
+  /vdtapi/gardens/query/associated_partials:
     get:
       deprecated: false
       description: Returns a partial representation of all gardens that are associated
@@ -670,7 +671,7 @@ paths:
         with the client
       tags:
       - gardens
-  /vdtapi/gardens/queries/full_by_key:
+  /vdtapi/gardens/query/full_by_key:
     get:
       deprecated: false
       description: Returns a full representation of gardens given by a key.
@@ -701,7 +702,7 @@ paths:
       summary: Returns a full representation of a garden by its key.
       tags:
       - gardens
-  /vdtapi/gardens/queries/generate_garden_key:
+  /vdtapi/gardens/query/generate_unique_key:
     get:
       deprecated: false
       description: Generates a unique garden key given a plant name and a random string.
@@ -717,7 +718,7 @@ paths:
       summary: Generate a new, unique garden key.
       tags:
       - gardens
-  /vdtapi/gardens/queries/most_relevant:
+  /vdtapi/gardens/query/most_relevant:
     get:
       deprecated: false
       description: Returns a partial representation of most relevant gardens to the
@@ -751,7 +752,7 @@ paths:
       summary: Returns a partial representation of most relevant gardens to the user.
       tags:
       - gardens
-  /vdtapi/gardens/queries/partials_by_key:
+  /vdtapi/gardens/query/partials_by_key:
     get:
       deprecated: false
       description: Returns a partial representation of gardens given by keys, provided
@@ -787,79 +788,7 @@ paths:
       summary: Returns a partial representation of gardens given by keys.
       tags:
       - gardens
-  /vdtapi/users/commands/create:
-    post:
-      deprecated: false
-      description: 'Registers a new user. Requires email confirmation: False.'
-      operationId: UserCreateCommandOp
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/UserCreateCommand'
-        required: true
-      responses:
-        '201':
-          description: Document created, URL follows
-          headers: {}
-        '400':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ValidationException'
-          description: Bad request syntax or unsupported method
-      summary: User registration.
-      tags:
-      - users
-  /vdtapi/users/commands/email/verification_confirm:
-    post:
-      deprecated: false
-      description: Closes an email confirmation and verifies the email address.
-      operationId: UserConfirmEmailConfirmationCommandOp
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/UserConfirmEmailConfirmationCommand'
-        required: true
-      responses:
-        '201':
-          description: The email has been verified.
-          headers: {}
-        '400':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ValidationException'
-          description: Bad request syntax or unsupported method
-      summary: Email confirmation.
-      tags:
-      - users
-  /vdtapi/users/commands/email/verification_request:
-    post:
-      deprecated: false
-      description: Requests a new email verification email be sent to the email address.
-      operationId: UserRequestEmailConfirmationCommandOp
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/UserRequestEmailConfirmationCommand'
-        required: true
-      responses:
-        '201':
-          description: An email confirmation has been sent to the address.
-          headers: {}
-        '400':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ValidationException'
-          description: Bad request syntax or unsupported method
-      summary: Email confirmation request.
-      tags:
-      - users
-  /vdtapi/users/commands/login:
+  /vdtapi/users/auth/login:
     post:
       deprecated: false
       description: Authenticate the request with JWT cookie authentication.
@@ -875,7 +804,7 @@ paths:
           content:
             application/json:
               schema:
-                type: 'null'
+                type: string
           description: Document created, URL follows
           headers: {}
         '400':
@@ -887,7 +816,91 @@ paths:
       summary: User login
       tags:
       - users
-  /vdtapi/users/commands/password/confirm:
+  /vdtapi/users/command/create:
+    post:
+      deprecated: false
+      description: 'Registers a new user. Requires email confirmation: False.'
+      operationId: UserCreateCommandOp
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserCreateCommand'
+        required: true
+      responses:
+        '201':
+          content:
+            text/plain:
+              schema:
+                type: string
+          description: Document created, URL follows
+          headers: {}
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationException'
+          description: Bad request syntax or unsupported method
+      summary: User registration.
+      tags:
+      - users
+  /vdtapi/users/command/email/verification_confirm:
+    post:
+      deprecated: false
+      description: Closes an email confirmation and verifies the email address.
+      operationId: UserConfirmEmailConfirmationCommandOp
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserConfirmEmailConfirmationCommand'
+        required: true
+      responses:
+        '201':
+          content:
+            text/plain:
+              schema:
+                type: string
+          description: The email has been verified.
+          headers: {}
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationException'
+          description: Bad request syntax or unsupported method
+      summary: Email confirmation.
+      tags:
+      - users
+  /vdtapi/users/command/email/verification_request:
+    post:
+      deprecated: false
+      description: Requests a new email verification email be sent to the email address.
+      operationId: UserRequestEmailConfirmationCommandOp
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRequestEmailConfirmationCommand'
+        required: true
+      responses:
+        '201':
+          content:
+            text/plain:
+              schema:
+                type: string
+          description: An email confirmation has been sent to the address.
+          headers: {}
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationException'
+          description: Bad request syntax or unsupported method
+      summary: Email confirmation request.
+      tags:
+      - users
+  /vdtapi/users/command/password/confirm:
     post:
       deprecated: false
       description: Closes a password reset request and changes the password
@@ -900,6 +913,10 @@ paths:
         required: true
       responses:
         '201':
+          content:
+            text/plain:
+              schema:
+                type: string
           description: The password has been successfully updated.
           headers: {}
         '400':
@@ -911,7 +928,7 @@ paths:
       summary: Password reset confirm.
       tags:
       - users
-  /vdtapi/users/commands/password/request:
+  /vdtapi/users/command/password/request:
     post:
       deprecated: false
       description: Open a new password reset request and sends confirmation email.
@@ -924,6 +941,10 @@ paths:
         required: true
       responses:
         '201':
+          content:
+            text/plain:
+              schema:
+                type: string
           description: A password reset confirmation has been sent to the email address,
             if it exists.
           headers: {}
@@ -936,7 +957,7 @@ paths:
       summary: Password reset request.
       tags:
       - users
-  /vdtapi/users/queries/client_profile:
+  /vdtapi/users/query/client_profile:
     get:
       deprecated: false
       description: Returns the profile of the authenticated user.
@@ -952,7 +973,7 @@ paths:
       summary: User client profile view.
       tags:
       - users
-  /vdtapi/users/queries/public_profiles:
+  /vdtapi/users/query/public_profiles:
     get:
       deprecated: false
       description: Returns the profiles of the user ids given.
