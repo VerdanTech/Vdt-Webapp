@@ -1,5 +1,4 @@
 # Standard Library
-import json
 import os
 import re
 from collections import namedtuple
@@ -9,8 +8,14 @@ from typing import Any, Callable, Generator, Literal
 # External Libraries
 from pydantic import SecretStr
 
+"""
+Contains utilities for composing validation with custom error messages.
+"""
 
 class Specs(Enum):
+    """
+    Different types of validations / specifications.
+    """
     TYPE = "type"
     MIN_LENGTH = "min_length"
     MAX_LENGTH = "max_length"
@@ -18,22 +23,29 @@ class Specs(Enum):
 
 
 type Field = str
+"""Name of a field on an object to validate."""
 type SpecValues = dict[Field, dict[Specs, Any]]
+"""Contains the values the field is validated against."""
 type SpecDescriptions = dict[Field, dict[Specs | Literal["field"], str]]
+"""Contains the error message descriptions."""
 
 SpecCollection = namedtuple("SpecCollection", ["domain", "values", "descriptions"])
 
 
-def validate_pattern[
-    Input: str | SecretStr
-](value: Input, pattern: str | re.Pattern) -> Input:
+def validate_pattern(value: str | SecretStr, pattern: str | re.Pattern) -> bool:
+    """
+    Validate a string against a pattern.
+
+    Returns:
+        _type_: _description_
+    """
     if isinstance(value, SecretStr):
-        return re.match(pattern, value.get_secret_value())
+        return bool(re.match(pattern, value.get_secret_value()))
     elif isinstance(value, str):
-        return re.match(pattern, value)
+        return bool(re.match(pattern, value))
 
 
-# returns true if valid
+"""Validation methods. Returns true if the value is valid."""
 spec_validation_methods = {
     Specs.MIN_LENGTH: lambda value, min_length: len(value) >= min_length,
     Specs.MAX_LENGTH: lambda value, max_length: len(value) <= max_length,
@@ -42,10 +54,24 @@ spec_validation_methods = {
 
 
 class SpecManager:
+    """
+    Provides utilities for building validation functions 
+    from specs and exporting specs to JSON.
+    """
     @staticmethod
     def get_validation_method[
         FieldType: Any
     ](spec: SpecCollection, field: Field) -> Callable[[FieldType], FieldType]:
+        """
+        Composes a validation function for a field in a spec
+
+        Raises:
+            ValueError: If the field is not found in the spec
+                or it lacks descriptions.
+
+        Returns:
+            _type_: The validation function.
+        """
         # Retrieve specs for field
         try:
             values = spec.values[field]
@@ -74,7 +100,21 @@ class SpecManager:
         return validation_method
 
     @staticmethod
-    def to_json(spec_collection: SpecCollection) -> Generator[str, None, None]:
+    def to_typescript(spec_collection: SpecCollection) -> Generator[str, None, None]:
+        """
+        Yields the spec collection as typescript code.
+
+        Args:
+            spec_collection (SpecCollection): the spec
+                collection to write
+
+        Raises:
+            ValueError: Raised if a field lacks description.
+
+        Yields:
+            Generator[str, None, None]: A generator which
+                yields the lines to write.
+        """
         # Name of the exported typescript object.
         object_name = f"{spec_collection.domain}Fields"
 
@@ -133,6 +173,9 @@ class SpecManager:
 
 
 if __name__ == "__main__":
+    """
+    Exports all specs to typescript files.
+    """
     # Make sure to import all files so their specs are registered
     # VerdanTech Source
     from src.garden.domain.specs import specs as garden_specs
@@ -145,5 +188,5 @@ if __name__ == "__main__":
         file_path = os.path.join(output_dir, f"{spec_collection.domain}.ts")
 
         with open(file_path, "w") as file:
-            for output in SpecManager.to_json(spec_collection):
+            for output in SpecManager.to_typescript(spec_collection):
                 file.write(output)
