@@ -3,7 +3,7 @@
 {
 	"name": "VerdanTech Backend Devcontainer",
     "dockerComposeFile": "../docker-compose.yml",
-    "service": "verdantech-backend",
+    "service": "webapp",
     "workspaceFolder": "/workspace",
 
 	// Features to add to the dev container. More info: https://containers.dev/features.

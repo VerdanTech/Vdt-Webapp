@@ -4,13 +4,10 @@ WORKDIR /workdir
 
 COPY ./requirements ./requirements
 
-#  Update pip tooling
-RUN pip install --upgrade pip
-
-# Install package manager
-RUN pip install uv
-
-# Install dependencies
-RUN uv pip install --system -r requirements/dev.txt
+# Install backend dependencies
+COPY ./requirements ./requirements
+RUN pip install --upgrade pip && \
+    pip install uv && \
+    uv pip install --system -r ./requirements/dev.txt
 
 #CMD ["litestar", "run"]

@@ -1,19 +1,25 @@
 version: '3.9'
 
 services:
-  webapp:
+  verdantech-backend:
     init: true
     build:
-      context: ./
+      context: ./backend
       dockerfile: Dockerfile
     volumes:
-      - /app/node_modules
-      - .:/app
       - .:/workspace:cached
     command: sleep infinity
     network_mode: service:postgres
+      
+  verdantech-frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
     expose:
       - 5173
+    volumes:
+      - /app/node_modules
+      - .:/app
 
   postgres:
     image: postgres:latest
