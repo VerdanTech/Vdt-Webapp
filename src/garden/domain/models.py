@@ -7,7 +7,8 @@ from datetime import datetime
 from attrs import field
 
 # VerdanTech Source
-from src import settings
+from src import exceptions, settings
+from src.common.adapters.utils.spec_manager import Specs
 from src.common.domain import (
     Ref,
     RootEntity,
@@ -15,14 +16,13 @@ from src.common.domain import (
     root_entity_transform,
     value_transform,
 )
-from src.common.domain.exceptions import FieldNotFound
 from src.user.domain import User
 from src.utils import key_generator
 
 from .enums import OperationEnum, PermissionEnum, RoleEnum, VisibilityEnum
 from .events import MembershipAccepted, MembershipRevoked
-from .exceptions import GardenAuthorizationException, MembershipAlreadyConfirmed
 from .permission import PermissionRouter, permission_rules
+from .specs import specs
 
 # Load all plant names
 plant_names = []
@@ -37,7 +37,7 @@ with open(settings.static_path("plant_names.txt"), "r") as file:
     """
     for line in file:
         plant_name = line.strip()
-        if len(plant_name) < settings.GARDEN_KEY_MAX_LENGTH:
+        if len(plant_name) < specs.values["garden_key"][Specs.MAX_LENGTH]:
             plant_names.append(plant_name.lower().replace(" ", "-"))
 
 
@@ -63,7 +63,7 @@ def generate_garden_key(use_random_plant_name: bool) -> str:
         key = random.choice(plant_names)
         keygen_length = min(
             settings.GARDEN_KEY_KEYGEN_DEFAULT_LENGTH_PLANT_NAME,
-            settings.GARDEN_KEY_MAX_LENGTH - (len(key) + 1),
+            specs.values["garden_key"][Specs.MAX_LENGTH] - (len(key) + 1),
         )
         # Ensure generated key starts with a number
         if keygen_length > 0:
@@ -104,7 +104,6 @@ class GardenMembership(Value):
         user_ref (Ref[User]): the holder of the membership.
         inviter_ref (Ref[User] | None): the user responsible for creating the membership.
         role (RoleEnum): the persmissions of the membership.
-        accepted (bool): whether the membership invitation has been accepted.
         accepted_at (datetime | None): the time the membership was accepted.
         favorite (bool): whether the membership is marked as a favorite.
         created_at (datetime): the time the membership.
@@ -153,12 +152,10 @@ class GardenMembership(Value):
         permission = permission_rules[operation]
         role = self.role
         if not self._authorize(role=self.role, permission=permission):
-            raise GardenAuthorizationException(
-                f"""
-                The action: \"{operation}\" 
-                requires the permission: \"{permission}\", 
-                but this user has role: \"{role}\".
-                """
+            raise exceptions.AuthorizationError(
+                non_form_errors=[
+                    f'This action requires the permission "{permission}" but you have role "{role}"'
+                ]
             )
 
     def _authorize(self, role: RoleEnum, permission: PermissionEnum) -> bool:
@@ -235,6 +232,9 @@ class Garden(RootEntity):
         Returns:
             bool: whether the user is a member of the garden.
         """
+        if not user.persisted:
+            return False
+
         return any(membership.user_ref.id == user.id for membership in self.memberships)
 
     def get_membership(self, user: User) -> GardenMembership | None:
@@ -258,6 +258,16 @@ class Garden(RootEntity):
 
         return None
 
+    def get_membership_or_error(
+        self, user: User, error_message: str = ""
+    ) -> GardenMembership:
+        membership = self.get_membership(user=user)
+        if membership is None:
+            raise exceptions.NotFoundError(
+                non_form_errors=[error_message or "The membership was not found"]
+            )
+        return membership
+
     def accept_membership(self, user: User) -> GardenMembership:
         """
         Closes a membership invitation given the User it belongs to.
@@ -276,28 +286,25 @@ class Garden(RootEntity):
         Returns:
             GardenMembership: the GardenMembership after confirmation.
         """
-        for membership in self.memberships:
-            if membership.user_ref.id == user.id:
-                if membership.accepted:
-                    raise MembershipAlreadyConfirmed(
-                        "The invite to this Garden has already been accepted."
-                    )
+        membership = self.get_membership_or_error(
+            user=user, error_message="The pending invite was not found"
+        )
+        if membership.accepted:
+            raise exceptions.ValidationError(
+                non_form_errors=["The invite to this Garden has already been accepted."]
+            )
 
-                new_membership = membership.transform(
-                    accepted=True, accepted_at=datetime.now()
-                )
-                self.memberships.remove(membership)
-                self.memberships.add(new_membership)
+        new_membership = membership.transform(accepted_at=datetime.now())
+        self.memberships.remove(membership)
+        self.memberships.add(new_membership)
 
-                self.events.append(
-                    MembershipAccepted(
-                        user_ref=user.ref, garden_ref=self.ref, role=membership.role
-                    )
-                )
+        self.events.append(
+            MembershipAccepted(
+                user_ref=user.ref, garden_ref=self.ref, role=membership.role
+            )
+        )
 
-                return membership
-
-        raise FieldNotFound("The User does not have an invitation to this Garden.")
+        return membership
 
     def remove_membership(self, user: User) -> None:
         """
@@ -311,10 +318,8 @@ class Garden(RootEntity):
             FieldNotFound: raised if the User does not have an
                 existing GardenMembership.
         """
-        for membership in self.memberships:
-            if membership.user_ref.id == user.id:
-                self.memberships.remove(membership)
-        raise FieldNotFound("The User does not have a membership with this Garden.")
+        membership = self.get_membership_or_error(user=user)
+        self.memberships.remove(membership)
 
     def revoke_membership(self, client: User, subject: User) -> None:
         """
@@ -336,16 +341,13 @@ class Garden(RootEntity):
             raise ValueError("A client cannot kick themselves from a Garden.")
 
         # Raise if subject does not exist in the garden already.
-        subject_membership = self.get_membership(user=subject)
-        if subject_membership is None:
-            raise FieldNotFound("User does not have a membership with this Garden.")
+        subject_membership = self.get_membership_or_error(user=subject)
 
         # Raise if client is unauthorized.
-        client_membership = self.get_membership(user=client)
-        if client_membership is None:
-            raise GardenAuthorizationException(
-                "Not authorized to perform operations in this Garden."
-            )
+        client_membership = self.get_membership_or_error(
+            user=client,
+            error_message="Not authorized to perform operations in this garden",
+        )
         client_membership.assert_authorization(
             operation=PermissionRouter.revoke_membership(role=subject_membership.role),
         )
@@ -376,16 +378,13 @@ class Garden(RootEntity):
             raise ValueError("A client cannot change their own role.")
 
         # Raise if subject does not exist in the garden already.
-        subject_membership = self.get_membership(user=subject)
-        if subject_membership is None:
-            raise FieldNotFound("User does not have a membership with this Garden.")
+        subject_membership = self.get_membership_or_error(user=subject)
 
         # Raise if client is unauthorized.
-        client_membership = self.get_membership(user=client)
-        if client_membership is None:
-            raise GardenAuthorizationException(
-                "Not authorized to perform operations in this Garden."
-            )
+        client_membership = self.get_membership_or_error(
+            user=client,
+            error_message="Not authorized to perform operations in this garden",
+        )
         client_membership.assert_authorization(
             operation=PermissionRouter.change_role(
                 client_role=client_membership.role, new_role=new_role

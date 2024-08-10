@@ -1,4 +1,5 @@
 # Standard Library
+import uuid
 from datetime import datetime
 
 # External Libraries
@@ -56,7 +57,7 @@ class TestBaseConfirmation:
         """
         mock_datetime = mocker.patch("src.user.domain.models.datetime")
         mock_datetime.now.return_value = now
-        confirmation = BaseConfirmation(key="abc", created_at=created_at)
+        confirmation = BaseConfirmation(key=uuid.uuid4(), created_at=created_at)
 
         assert (
             confirmation.is_valid(expiry_time_hours=expiry_time_hours)

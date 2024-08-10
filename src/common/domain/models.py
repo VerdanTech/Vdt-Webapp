@@ -7,8 +7,10 @@ from typing import Self, Union, dataclass_transform
 from attr import attrib
 from attrs import define, evolve, field
 
+# VerdanTech Source
+from src import exceptions
+
 from .events import Event
-from .exceptions import EntityIntegrityException
 
 type DomainModel = Union[RootEntity, Entity, Value]
 
@@ -126,8 +128,8 @@ class Entity:
             uuid.UUID: the id of the Entity.
         """
         if self.id is None:
-            raise EntityIntegrityException(
-                "Unpersisted entity used in unexpected location."
+            raise exceptions.DomainIntegrityException(
+                f"Unpersisted entity {self} used in unexpected location."
             )
         else:
             return self.id
@@ -135,8 +137,8 @@ class Entity:
     def assert_persisted(self) -> None:
         """Raise an integrity exception if the entity is used in a location it should be persisted."""
         if not self.persisted:
-            raise EntityIntegrityException(
-                "Unpersisted entity used in unexpected location."
+            raise exceptions.DomainIntegrityException(
+                f"Unpersisted entity {self} used in unexpected location."
             )
 
 

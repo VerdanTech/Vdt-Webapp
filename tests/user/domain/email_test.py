@@ -1,4 +1,5 @@
 # Standard Library
+import uuid
 from datetime import datetime
 from typing import ContextManager
 
@@ -7,10 +8,7 @@ import pytest
 from pytest_mock import MockerFixture
 
 # VerdanTech Source
-from src.user.domain.exceptions import (
-    EmailAlreadyVerifiedError,
-    EmailConfirmationExpired,
-)
+from src import exceptions
 from src.user.domain.models import Email, EmailConfirmation
 
 pytestmark = [pytest.mark.unit]
@@ -22,14 +20,13 @@ class TestEmail:
     # ======================================
 
     @pytest.mark.parametrize(
-        ("already_verified", "key", "expected_error_context"),
-        [(False, "abc", None), (True, "abc", EmailAlreadyVerifiedError)],
+        ("already_verified", "expected_error_context"),
+        [(False, None), (True, exceptions.ValidationError)],
         indirect=["expected_error_context"],
     )
     def test_new_confirmation(
         self,
         already_verified: bool,
-        key: str,
         expected_error_context: ContextManager,
         email: Email,
     ) -> None:
@@ -39,12 +36,12 @@ class TestEmail:
 
         Args:
             already_verified (bool): whether the email is verified.
-            key (str): the key to create confirmation with.
             expected_error_context (ContextManager): An instance of nullcontext() if
                 expected_error_context = None and pytest.raises(expected_error_context)
                 otherwise See: tests/conftest.py.
             email (Email): email object to test on (pytest fixture).
         """
+        key = uuid.uuid4()
         if already_verified:
             email = email.transform(verified=True)
 
@@ -59,7 +56,7 @@ class TestEmail:
 
     @pytest.mark.parametrize(
         ("already_verified", "expected_error_context"),
-        [(False, None), (True, EmailAlreadyVerifiedError)],
+        [(False, None), (True, exceptions.ValidationError)],
         indirect=["expected_error_context"],
     )
     def test_verify(
@@ -88,7 +85,7 @@ class TestEmail:
             address="test@test.com",
             verified=already_verified,
             primary=False,
-            confirmation=EmailConfirmation(key="abc"),
+            confirmation=EmailConfirmation(key=uuid.uuid4()),
         )
 
         expected_output = Email(
@@ -137,7 +134,7 @@ class TestEmail:
             # Test case: confirmation is valid, no error raised
             (True, None),
             # Test case: confirmation is not valid, error is raised
-            (False, EmailConfirmationExpired),
+            (False, exceptions.ValidationError),
         ],
         indirect=["expected_error_context"],
     )

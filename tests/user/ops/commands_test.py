@@ -7,14 +7,12 @@ from pydantic import SecretStr
 from svcs import Container
 
 # VerdanTech Source
-from src import settings
+from src import exceptions
 from src.common.interfaces.persistence.uow import AbstractUow
 from src.common.interfaces.security.passwords import AbstractPasswordCrypt
-from src.common.ops.exceptions import EntityNotFound
 from src.user.domain import commands, events
 from src.user.domain.models import PasswordResetConfirmation, User
 from src.user.ops import commands as handlers
-from src.utils.key_generator import key_generator
 
 pytestmark = [pytest.mark.unit]
 
@@ -40,8 +38,8 @@ async def test_create_user_success(
     command = commands.UserCreateCommand(
         username="new_username",
         email_address="new_email_address@test.com",
-        password1=SecretStr("New_password12"),
-        password2=SecretStr("New_password12"),
+        password1=SecretStr("New_password12$"),
+        password2=SecretStr("New_password12$"),
     )
 
     await handlers.create_user(command=command, svcs_container=svcs_container)
@@ -75,7 +73,7 @@ async def test_request_email_confirmation_email_not_found(
 ) -> None:
     """
     Ensure that when the operation is called with an email that does
-    not match an existing user, the EntityNotFound exception is raised.
+    not match an existing user, the NotFoundError exception is raised.
 
     Args:
         svcs_container (Container): service locator with mock services.
@@ -86,7 +84,7 @@ async def test_request_email_confirmation_email_not_found(
         email_address=nonexistant_email
     )
 
-    with pytest.raises(EntityNotFound):
+    with pytest.raises(exceptions.NotFoundError):
         await handlers.request_email_confirmation(
             command=command, svcs_container=svcs_container
         )
@@ -133,14 +131,14 @@ async def test_confirm_email_confirmation_user_not_found(
 ) -> None:
     """
     Ensure that when the operation is called with a confirmation key that does
-    not match an existing user, the EntityNotFound exception is raised.
+    not match an existing user, the NotFoundError exception is raised.
 
     Args:
         svcs_container (Container): service locator with mock services.
     """
     command = commands.UserConfirmEmailConfirmationCommand(key=uuid.uuid4())
 
-    with pytest.raises(EntityNotFound):
+    with pytest.raises(exceptions.NotFoundError):
         await handlers.confirm_email_confirmation(
             command=command, svcs_container=svcs_container
         )
@@ -194,7 +192,7 @@ async def test_request_password_reset_email_not_found(
 ) -> None:
     """
     Ensure that when the operation is called with an email that does
-    not match an existing user, the EntityNotFound exception is raised.
+    not match an existing user, the NotFoundError exception is raised.
 
     Args:
         svcs_container (Container): service locator with mock services.
@@ -203,7 +201,7 @@ async def test_request_password_reset_email_not_found(
 
     command = commands.UserRequestPasswordResetCommand(email_address=nonexistant_email)
 
-    with pytest.raises(EntityNotFound):
+    with pytest.raises(exceptions.NotFoundError):
         await handlers.request_password_reset(
             command=command, svcs_container=svcs_container
         )
@@ -214,7 +212,7 @@ async def test_request_password_reset_email_found_but_unprimary(
 ) -> None:
     """
     Ensure that when the operation is called with an email that does
-    match an existing user but is not the primary email, the EntityNotFound exception is raised.
+    match an existing user but is not the primary email, the NotFoundError exception is raised.
 
     Args:
         svcs_container (Container): service locator with mock services.
@@ -238,7 +236,7 @@ async def test_request_password_reset_email_found_but_unprimary(
         email_address=existing_unprimary_email
     )
 
-    with pytest.raises(EntityNotFound):
+    with pytest.raises(exceptions.NotFoundError):
         await handlers.request_password_reset(
             command=command, svcs_container=svcs_container
         )
@@ -283,7 +281,7 @@ async def test_confirm_password_reset_key_not_found(
 ) -> None:
     """
     Ensure that when the operation is called with a key that does
-    not match an existing user, the EntityNotFound exception is raised.
+    not match an existing user, the NotFoundError exception is raised.
 
     Args:
         svcs_container (Container): service locator with mock services.
@@ -291,10 +289,10 @@ async def test_confirm_password_reset_key_not_found(
     command = commands.UserConfirmPasswordResetCommand(
         user_id=uuid.uuid4(),
         key=uuid.uuid4(),
-        new_password1=SecretStr("New_password12"),
-        new_password2=SecretStr("New_password12"),
+        new_password1=SecretStr("New_password12$"),
+        new_password2=SecretStr("New_password12$"),
     )
-    with pytest.raises(EntityNotFound):
+    with pytest.raises(exceptions.NotFoundError):
         await handlers.confirm_password_reset(
             command=command, svcs_container=svcs_container
         )
@@ -314,7 +312,7 @@ async def test_confirm_password_reset_success(
 
     existing_email = "existing_email@gmail.com"
     existing_key = uuid.uuid4()
-    new_password = "New_password1"
+    new_password = "New_password1$"
 
     # Add existing user
     user = User(username="existing_username")

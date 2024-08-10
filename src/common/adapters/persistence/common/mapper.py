@@ -1,5 +1,5 @@
 # Standard Library
-from typing import Protocol, Any
+from typing import Any, Protocol
 
 # VerdanTech Source
 from src.common.domain import RootEntity

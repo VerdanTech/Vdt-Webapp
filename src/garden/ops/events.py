@@ -2,15 +2,13 @@
 from svcs import Container
 
 # VerdanTech Source
-from src import settings
+from src import exceptions, settings
 from src.common.domain import Ref
 from src.common.interfaces.email.client import AbstractEmailClient
 from src.common.interfaces.events import AbstractEventNode
 from src.common.interfaces.persistence import AbstractUow
-from src.common.ops.exceptions import EntityNotFound
 from src.common.ops.processors import asgi_processor, task_processor
 from src.garden.domain import GardenInvite, GardenMembership, RoleEnum, events
-from src.garden.domain.exceptions import GardenAuthorizationException
 from src.garden.domain.permission import PermissionRouter
 
 
@@ -32,18 +30,18 @@ async def process_garden_invite(
         # Retrieve garden
         garden = await uow.repos.gardens.get_by_id(event.garden_ref.id)
         if garden is None:
-            raise EntityNotFound("This Garden does not exist.")
+            raise exceptions.NotFoundError(non_form_errors=[("Garden does not exist")])
 
         # Retrieve client
         client = await uow.repos.users.get_by_id(event.client_ref.id)
         if client is None:
-            raise EntityNotFound("This User does not exist.")
+            raise exceptions.NotFoundError(non_form_errors=[("User does not exist")])
 
         # Retrieve client's membership
         client_membership = garden.get_membership(user=client)
         if client_membership is None:
-            raise GardenAuthorizationException(
-                "Not authorized to perform operations in this Garden."
+            raise exceptions.AuthorizationError(
+                non_form_errors=["Not authorized to perform operations in this Garden"]
             )
 
         # For each of the admin, editor, and viewer ids
@@ -103,11 +101,9 @@ async def process_garden_invite(
         # Create the memberships
         memberships = [
             GardenMembership(
-                garden_ref=garden.ref,
                 inviter_ref=event.client_ref,
                 user_ref=invite.user_ref,
                 role=invite.role,
-                accepted=False,
             )
             for invite in invites
         ]

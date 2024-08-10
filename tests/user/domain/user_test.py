@@ -9,7 +9,7 @@ from pytest_mock import MockerFixture
 from svcs import Container
 
 # VerdanTech Source
-from src.common.domain import exceptions as domain_exceptions
+from src import exceptions
 from src.common.interfaces.security.passwords import AbstractPasswordCrypt
 from src.user.domain import (
     Email,
@@ -17,7 +17,6 @@ from src.user.domain import (
     PasswordResetConfirmation,
     User,
     events,
-    exceptions,
 )
 
 pytestmark = [pytest.mark.unit]
@@ -152,7 +151,7 @@ class TestUser:
 
         user.emails = [Email(address="abc@abc.com", primary=False)]
 
-        with pytest.raises(domain_exceptions.EntityIntegrityException):
+        with pytest.raises(exceptions.DomainIntegrityException):
             user.primary_email
 
     def test_get_primary_email_success(self, user: User) -> None:
@@ -270,7 +269,7 @@ class TestUser:
                 "ExistingPassword",
                 "TestPassword",
                 False,
-                exceptions.PasswordAlreadySetError,
+                exceptions.DomainIntegrityException,
             ),
             # Existing password but overwrite = True -> no error
             ("ExistingPassword", "TestPassword", True, None),
@@ -324,7 +323,7 @@ class TestUser:
             user (User): user factory fixture.
         """
         user.password_reset_confirmation = None
-        key = "abc"
+        key = uuid.uuid4()
 
         user.password_reset_create(key=key)
 
@@ -350,11 +349,11 @@ class TestUser:
         """
         user.id = uuid.UUID("{12345678-1234-5678-1234-567812345678}")
         user_id = uuid.UUID("{02345678-1234-5678-1234-567812345678}")
-        key = "abc"
+        key = uuid.uuid4()
         new_password = "new_password"
         mock_password_crypt = mocker.Mock(spec=AbstractPasswordCrypt)
         user.password_reset_confirmation = PasswordResetConfirmation(key=key)
-        expected_error_context = pytest.raises(domain_exceptions.FieldNotFound)
+        expected_error_context = pytest.raises(exceptions.NotFoundError)
 
         with expected_error_context:
             await user.password_reset_confirm(
@@ -377,11 +376,11 @@ class TestUser:
         """
         user.id = uuid.UUID("{12345678-1234-5678-1234-567812345678}")
         user_id = user.id
-        key = "abc"
+        key = uuid.uuid4()
         new_password = "new_password"
         mock_password_crypt = mocker.Mock(spec=AbstractPasswordCrypt)
         user.password_reset_confirmation = None
-        expected_error_context = pytest.raises(domain_exceptions.FieldNotFound)
+        expected_error_context = pytest.raises(exceptions.NotFoundError)
 
         with expected_error_context:
             await user.password_reset_confirm(
@@ -404,11 +403,11 @@ class TestUser:
         """
         user.id = uuid.UUID("{12345678-1234-5678-1234-567812345678}")
         user_id = user.id
-        key = "abc"
+        key = uuid.uuid4()
         new_password = "new_password"
         mock_password_crypt = mocker.Mock(spec=AbstractPasswordCrypt)
-        user.password_reset_confirmation = PasswordResetConfirmation(key=key + "def")
-        expected_error_context = pytest.raises(domain_exceptions.FieldNotFound)
+        user.password_reset_confirmation = PasswordResetConfirmation(key=uuid.uuid4())
+        expected_error_context = pytest.raises(exceptions.NotFoundError)
 
         with expected_error_context:
             await user.password_reset_confirm(
@@ -431,7 +430,7 @@ class TestUser:
         """
         user.id = uuid.UUID("{12345678-1234-5678-1234-567812345678}")
         user_id = user.id
-        key = "abc"
+        key = uuid.uuid4()
         new_password = "new_password"
         hashed_new_password = "new_password::hash"
         mock_password_crypt = mocker.Mock(spec=AbstractPasswordCrypt)
@@ -659,7 +658,7 @@ class TestUser:
                 ],
                 "123",
                 None,
-                domain_exceptions.FieldNotFound,
+                exceptions.NotFoundError,
             ),
         ],
         indirect=["expected_error_context"],

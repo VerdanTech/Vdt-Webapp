@@ -106,14 +106,6 @@ This section contains settings relevant to domain models.
 
 | Name | Type | Description | Default |
 | -------- | ------- | ------- | ------- |
-| USERNAME_MIN_LENGTH | int | Minimum length of a username | `3` |
-| USERNAME_MAX_LENGTH | int | Maximum length of a username. | `50` |
-| USERNAME_PATTERN | str (pattern) | Regex pattern used to validate usernames. | `[0-9A-Za-z]+` |
-| USERNAME_PATTERN_DESCRIPTION | str | Description of the username regex pattern. Returned by the API on error. | `Must contain only alphanumeric characters.` |
-| PASSWORD_MIN_LENGTH | int | Minimum length of a password. | `6` |
-| PASSWORD_MAX_LENGTH | int | Maximum length of a password. | `255` |
-| PASSWORD_PATTERN | str (pattern) | Regex pattern used to validate passwords. | `^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d~`!@#$%^&*()_\-+={[}\]|\:;"'<,>.?/]*$` |
-| PASSWORD_PATTERN_DESCRIPTION | str | Description of the password regex pattern. Returned by the API on error. | `Password must contain at least one lowercase letter, one uppercase letter, and one digit.` |
 | USER_MAX_EMAILS | int | The maximum number of emails a user can have. While only the primary email is relevant to the user, old emails are stored up to a maximum of this number. | `3` |
 
 ### Garden
@@ -123,11 +115,13 @@ This section contains settings relevant to domain models.
 | GARDEN_NAME_MIN_LENGTH | int | Minimum length of a garden name | `2` |
 | GARDEN_NAME_MAX_LENGTH | int | Maximum length of a garden name. | `50` |
 | GARDEN_NAME_PATTERN | str (pattern) | Regex pattern used to validate garden names. | `[0-9A-Za-z ]+` |
-| GARDEN_NAME_PATTERN_DESCRIPTION | str | Description of the garden name regex pattern. Returned by the API on error. | `Must contain only alphanumeric characters and spaces.` |
+| GARDEN_NAME_PATTERN_DESCRIPTION | str | Description of the garden name regex pattern. Returned by the API on error. | `only alphanumeric characters and spaces.` |
+| GARDEN_NAME_FIELD_DESCRIPTION | str | Description of the garden name field on the OpenAPI schema. | Derived from previous 3 fields. |
 | GARDEN_KEY_MIN_LENGTH | int | Minimum length of a garden key | `4` |
 | GARDEN_KEY_MAX_LENGTH | int | Maximum length of a garden key. | `16` |
 | GARDEN_KEY_PATTERN | str (pattern) | Regex pattern used to validate garden keys. | `[0-9A-Za-z-]+` |
-| GARDEN_KEY_PATTERN_DESCRIPTION | str | Description of the garden key regex pattern. Returned by the API on error. | `Must contain only alphanumeric characters and hyphens.` |
+| GARDEN_KEY_PATTERN_DESCRIPTION | str | Description of the garden key regex pattern. Returned by the API on error. | `only alphanumeric characters and hyphens.` |
+| GARDEN_KEY_FIELD_DESCRIPTION | str | Description of the garden key field on the OpenAPI schema. | Derived from previous 3 fields. |
 | GARDEN_KEY_KEYGEN_DEFAULT_LENGTH_NO_PLANT_NAME | int | Default length of the generated portion of the garden key when generated without a plant name. | `6` |
 | GARDEN_KEY_KEYGEN_DEFAULT_LENGTH_PLANT_NAME | int | Default length of the generated portion of the garden key when generated with a plant name. | `3` |
 | MAX_GARDEN_RANDOM_PLANT_KEY_GENERATION_ATTEMPTS | int | The maximum amount of times the key generator will generate an id with a random plant name before reverting to only random characters. | `4` |

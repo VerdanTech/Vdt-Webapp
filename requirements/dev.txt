@@ -160,7 +160,9 @@ mkdocstrings==0.24.0
 mkdocstrings-python==1.7.5
     # via mkdocstrings
 msgspec==0.18.4
-    # via litestar
+    # via
+    #   verdantech-api (pyproject.toml)
+    #   litestar
 multidict==6.0.4
     # via litestar
 mypy-extensions==1.0.0

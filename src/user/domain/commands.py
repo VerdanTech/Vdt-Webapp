@@ -1,7 +1,5 @@
 # Standard Library
-import re
 import uuid
-from typing import Any
 
 # External Libraries
 from pydantic import (
@@ -10,68 +8,52 @@ from pydantic import (
     EmailStr,
     Field,
     SecretStr,
-    ValidationError,
-    validator,
+    field_validator,
+    model_validator,
 )
-from typing_extensions import Annotated
+from typing_extensions import Annotated, Self
 
 # VerdanTech Source
-from src import settings
+from src import exceptions, settings
+from src.common.adapters.utils.spec_manager import SpecManager, Specs
 from src.common.domain import Command
 from src.common.interfaces.persistence import AbstractUow
 
-# Load all banned garden names and keys
+from .specs import specs
+
+# Load all banned fields
 banned_fields = []
 with open(settings.static_path("banned_fields.txt"), "r") as file:
     for line in file:
         field = line.strip()
         banned_fields.append(field.lower())
 
-
-def username_validator(username: str) -> str:
-    """
-    Raises:
-        ValueError:
-            Raised if the username does not match
-                the pattern specified in the settings.
-            If the username is included
-                within the banned usernames list.
-    """
-    if not re.match(settings.USERNAME_PATTERN, username):
-        raise ValueError(settings.USERNAME_PATTERN_DESCRIPTION)
-    if username.lower() in banned_fields:
-        raise ValueError("unsafe or offensive")
-    return username
-
-
-def password_validator(password: SecretStr) -> SecretStr:
-    """
-    Raises:
-        ValueError:
-            Raised if the password does not match
-                the pattern specified in the settings.
-    """
-    if not re.match(settings.PASSWORD_PATTERN, password.get_secret_value()):
-        raise ValueError(settings.PASSWORD_PATTERN_DESCRIPTION)
-    return password
-
-
 Username = Annotated[
     str,
-    Field(
-        min_length=settings.USERNAME_MIN_LENGTH, max_length=settings.USERNAME_MAX_LENGTH
-    ),
-    # Trim beginning and end whitespace before validation
     BeforeValidator(lambda v: v.strip()),
-    AfterValidator(username_validator),
+    AfterValidator(SpecManager.get_validation_method(specs, "username")),
+    # Note: Field used only for annotation, to allow custom error messages.
+    Field(
+        description=specs.descriptions["username"]["field"],
+        json_schema_extra={
+            "min_length": specs.values["username"][Specs.MIN_LENGTH],
+            "max_length": specs.values["username"][Specs.MAX_LENGTH],
+            "pattern": specs.values["username"][Specs.PATTERN],
+        },
+    ),
 ]
 Password = Annotated[
     SecretStr,
+    AfterValidator(SpecManager.get_validation_method(specs, "password")),
+    # Note: Field used only for annotation, to allow custom error messages.
     Field(
-        min_length=settings.PASSWORD_MIN_LENGTH, max_length=settings.PASSWORD_MAX_LENGTH
+        description=specs.descriptions["password"]["field"],
+        json_schema_extra={
+            "min_length": specs.values["password"][Specs.MIN_LENGTH],
+            "max_length": specs.values["password"][Specs.MAX_LENGTH],
+            "pattern": specs.values["password"][Specs.PATTERN],
+        },
     ),
-    # Trim beginning and end whitespace before validation
-    AfterValidator(password_validator),
 ]
 ConfirmationKey = Annotated[
     uuid.UUID,
@@ -89,14 +71,24 @@ class UserCreateCommand(Command):
     password1: Password
     password2: Password
 
-    @validator("password2")
-    def passwords_match(cls, password2, values, **kwargs):
+    @field_validator("username")
+    @classmethod
+    def username_banned(cls, value: str) -> str:
+        if isinstance(value, str) and value.lower() in banned_fields:
+            raise ValueError("Denied: matches a reserved name or is offensive")
+        return value
+
+    @model_validator(mode="after")
+    def passwords_match(self) -> Self:
         """
         Raises:
-            ValueError: Raised if the two passwords two not match.
+            AssertionError: Raised if the two passwords do not match.
         """
-        if "password1" in values and password2 != values["password1"]:
-            raise ValueError("passwords do not match")
+        if self.password1 != self.password2:
+            raise exceptions.ValidationError(
+                field_errors=[("password2", "Passwords do not match")]
+            )
+        return self
 
     async def validate_against_uow(self, uow: AbstractUow):
         """
@@ -106,13 +98,17 @@ class UserCreateCommand(Command):
             uow (AbstractUow): Unit of work providing database access.
 
         Raises:
-            ValueError: if the username or email address already
+            AssertionError: if the username or email address already
                 exist in the database.
         """
         if await uow.repos.users.username_exists(username=self.username):
-            raise ValidationError("Username already exists")
+            raise exceptions.ValidationError(
+                field_errors=[("username", "Username already exists")]
+            )
         if await uow.repos.users.email_exists(email_address=self.email_address):
-            raise ValidationError("Email already exists")
+            raise exceptions.ValidationError(
+                field_errors=[("email_address", "Email already exists")]
+            )
 
 
 class UserUpdateCommand(Command):
@@ -126,16 +122,24 @@ class UserUpdateCommand(Command):
     new_password1: Password | None = None
     new_password2: Password | None = None
 
-    @validator("new_password2")
-    def passwords_match(cls, password2, values, **kwargs):
+    @field_validator("new_username")
+    @classmethod
+    def username_banned(cls, value: str) -> str:
+        if value.lower() in banned_fields:
+            raise ValueError("Denied: matches a reserved name or is offensive")
+        return value
+
+    @model_validator(mode="after")
+    def passwords_match(self) -> Self:
         """
         Raises:
-            ValueError: Raised if the two passwords two not match.
+            ValidationError: Raised if the two passwords do not match.
         """
-        if "password1" not in values and password2 is None:
-            return
-        elif "password1" in values and password2 != values["password1"]:
-            raise ValueError("passwords do not match")
+        if self.new_password1 != self.new_password2:
+            raise exceptions.ValidationError(
+                field_errors=[("password2", "Passwords do not match")]
+            )
+        return self
 
     async def validate_against_uow(self, uow: AbstractUow):
         """
@@ -145,17 +149,21 @@ class UserUpdateCommand(Command):
             uow (AbstractUow): Unit of work providing database access.
 
         Raises:
-            ValueError: if the username or email address already
+            ValidationError: if the username or email address already
                 exist in the database.
         """
         if self.new_username is not None and await uow.repos.users.username_exists(
             username=self.new_username
         ):
-            raise ValidationError("Username already exists")
+            raise exceptions.ValidationError(
+                field_errors=[("new_username", "Username already exists")]
+            )
         if self.new_email_address is not None and await uow.repos.users.email_exists(
             email_address=self.new_email_address
         ):
-            raise ValidationError("Email already exists")
+            raise exceptions.ValidationError(
+                field_errors=[("new_email_address", "Email already exists")]
+            )
 
 
 class UserRequestEmailConfirmationCommand(Command):
@@ -194,13 +202,14 @@ class UserConfirmPasswordResetCommand(Command):
     new_password1: Password
     new_password2: Password
 
-    @validator("new_password2")
-    def passwords_match(cls, new_password2, values, **kwargs):
+    @model_validator(mode="after")
+    def passwords_match(self) -> Self:
         """
         Raises:
-            ValueError: Raised if the two passwords do not match.
+            ValidationError: Raised if the two passwords do not match.
         """
-        if "new_password1" not in values and new_password2 is None:
-            return
-        elif "new_password1" in values and new_password2 != values["new_password1"]:
-            raise ValueError("passwords do not match")
+        if self.new_password1 != self.new_password2:
+            raise exceptions.ValidationError(
+                field_errors=[("password2", "Passwords do not match")]
+            )
+        return self

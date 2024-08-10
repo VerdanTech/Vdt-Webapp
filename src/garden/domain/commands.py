@@ -1,17 +1,18 @@
 # Standard Library
-import re
 import uuid
 
 # External Libraries
-from pydantic import AfterValidator, BeforeValidator, Field, ValidationError
+from pydantic import AfterValidator, BeforeValidator, Field, field_validator
 from typing_extensions import Annotated
 
 # VerdanTech Source
-from src import settings
+from src import exceptions, settings
+from src.common.adapters.utils.spec_manager import SpecManager, Specs
 from src.common.domain import Command
 from src.common.interfaces.persistence import AbstractUow
 
 from .enums import RoleEnum, VisibilityEnum
+from .specs import specs
 
 # Load all banned garden names and keys
 banned_fields = []
@@ -21,57 +22,43 @@ with open(settings.static_path("banned_fields.txt"), "r") as file:
         banned_fields.append(field.lower())
 
 
-def garden_name_validator(garden_name: str) -> str:
-    """
-    Raises:
-        ValueError:
-            Raised if the garden name does not match
-                the pattern specified in the settings.
-            If the name is included
-                within the banned names list.
-    """
-    if not re.match(settings.GARDEN_NAME_PATTERN, garden_name):
-        raise ValueError(settings.GARDEN_NAME_PATTERN_DESCRIPTION)
-    if garden_name.lower() in banned_fields:
-        raise ValueError("unsafe or offensive")
-    return garden_name
-
-
-def garden_key_validator(garden_key: str) -> str:
-    """
-    Raises:
-        ValueError:
-            Raised if the garden key does not match
-                the pattern specified in the settings.
-            If the key is included
-                within the banned keys list.
-    """
-    if not re.match(settings.GARDEN_KEY_PATTERN, garden_key):
-        raise ValueError(settings.GARDEN_KEY_PATTERN_DESCRIPTION)
-    if garden_key.lower() in banned_fields:
-        raise ValueError("unsafe or offensive")
-    return garden_key
-
-
 GardenName = Annotated[
     str,
-    Field(
-        min_length=settings.GARDEN_NAME_MIN_LENGTH,
-        max_length=settings.GARDEN_NAME_MAX_LENGTH,
-    ),
-    # Trim beginning and end whitespace before validation
     BeforeValidator(lambda v: v.strip()),
-    AfterValidator(garden_name_validator),
+    AfterValidator(SpecManager.get_validation_method(specs, "garden_name")),
+    # Note: Field used only for annotation, to allow custom error messages.
+    Field(
+        description=specs.descriptions["garden_name"]["field"],
+        json_schema_extra={
+            "min_length": specs.values["garden_name"][Specs.MIN_LENGTH],
+            "max_length": specs.values["garden_name"][Specs.MAX_LENGTH],
+            "pattern": specs.values["garden_name"][Specs.PATTERN],
+        },
+    ),
 ]
 GardenKey = Annotated[
     str,
-    Field(
-        min_length=settings.GARDEN_KEY_MIN_LENGTH,
-        max_length=settings.GARDEN_KEY_MAX_LENGTH,
-    ),
-    # Trim beginning and end whitespace and apply lowercase before validation
     BeforeValidator(lambda v: v.strip().lower()),
-    AfterValidator(garden_key_validator),
+    AfterValidator(SpecManager.get_validation_method(specs, "garden_key")),
+    # Note: Field used only for annotation, to allow custom error messages.
+    Field(
+        description=specs.descriptions["garden_key"]["field"],
+        json_schema_extra={
+            "min_length": specs.values["garden_key"][Specs.MIN_LENGTH],
+            "max_length": specs.values["garden_key"][Specs.MAX_LENGTH],
+            "pattern": specs.values["garden_key"][Specs.PATTERN],
+        },
+    ),
+]
+GardenDescription = Annotated[
+    str,
+    BeforeValidator(lambda v: v.strip()),
+    Field(
+        description=specs.descriptions["garden_description"]["field"],
+        json_schema_extra={
+            "max_length": specs.values["garden_description"][Specs.MAX_LENGTH],
+        },
+    ),
 ]
 
 
@@ -82,11 +69,18 @@ class GardenCreateCommand(Command):
 
     name: GardenName
     key: GardenKey | None
-    description: str = ""
+    description: GardenDescription = ""
     visibility: VisibilityEnum = VisibilityEnum.PRIVATE
     admin_ids: list[uuid.UUID] = []
     editor_ids: list[uuid.UUID] = []
     viewer_ids: list[uuid.UUID] = []
+
+    @field_validator("name")
+    @classmethod
+    def name_banned(cls, value: str) -> str:
+        if isinstance(value, str) and value.lower() in banned_fields:
+            raise ValueError("Denied: matches a reserved name or is offensive")
+        return value
 
     async def validate_against_uow(self, uow: AbstractUow):
         """
@@ -100,7 +94,9 @@ class GardenCreateCommand(Command):
                 exist in the database.
         """
         if self.key is not None and await uow.repos.gardens.key_exists(self.key):
-            raise ValidationError("Garden key already exists")
+            raise exceptions.ValidationError(
+                field_errors=[("key", "Garden key already exists")]
+            )
 
 
 class GardenMembershipCreateCommand(Command):
@@ -123,8 +119,6 @@ class GardenMembershipCreateCommand(Command):
 class GardenMembershipAcceptCommand(Command):
     """
     Garden membership invitation acceptance command.
-
-
     """
 
     garden_key: GardenKey

@@ -8,10 +8,9 @@ from pytest_mock import MockerFixture
 from svcs import Container
 
 # VerdanTech Source
-from src import settings
+from src import exceptions, settings
 from src.common.interfaces.persistence.uow import AbstractUow
 from src.common.interfaces.security.passwords import AbstractPasswordCrypt
-from src.common.ops.exceptions import EntityNotFound
 from src.exceptions import ApplicationException
 from src.user.domain.models import User
 from src.user.ops import queries
@@ -32,10 +31,10 @@ async def test_verify_password_user_not_found(svcs_container: Container) -> None
     nonexistant_email = "nonexistant_email@gmail.com"
 
     query = queries.UserPasswordVerificationQuery(
-        email_address=nonexistant_email, password=SecretStr("Test_password1")
+        email_address=nonexistant_email, password=SecretStr("Test_password1$")
     )
 
-    with pytest.raises(EntityNotFound):
+    with pytest.raises(exceptions.NotFoundError):
         await queries.verify_password(query=query, svcs_container=svcs_container)
 
 
@@ -68,7 +67,7 @@ async def test_verify_password_email_confirmation_required(
         await uow.commit()
 
     query = queries.UserPasswordVerificationQuery(
-        email_address=existing_email, password=SecretStr("Test_password1")
+        email_address=existing_email, password=SecretStr("Test_password1$")
     )
 
     result = await queries.verify_password(query=query, svcs_container=svcs_container)
@@ -92,7 +91,7 @@ async def test_verify_password_success_incorrect_password(
     )
 
     existing_email = "existing_email@gmail.com"
-    existing_password = "Existing_password1"
+    existing_password = "Existing_password1$"
 
     # Add existing user
     user = User(username="existing_username")
@@ -129,7 +128,7 @@ async def test_verify_password_success_correct_password(
     )
 
     existing_email = "existing_email@gmail.com"
-    existing_password = "Existing_password1"
+    existing_password = "Existing_password1$"
 
     # Add existing user
     user = User(username="existing_username")
