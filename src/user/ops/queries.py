@@ -10,7 +10,6 @@ from src import exceptions, settings
 from src.common.interfaces.persistence.uow import AbstractUow
 from src.common.interfaces.security.passwords import AbstractPasswordCrypt
 from src.common.ops.queries import Query, QueryResult, query_result_transform
-from src.exceptions import ApplicationException
 from src.user.domain import Email, User
 from src.user.domain.commands import EmailStr, Password, Username
 

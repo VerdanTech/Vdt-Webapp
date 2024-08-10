@@ -12,10 +12,12 @@ from pydantic import SecretStr
 Contains utilities for composing validation with custom error messages.
 """
 
+
 class Specs(Enum):
     """
     Different types of validations / specifications.
     """
+
     TYPE = "type"
     MIN_LENGTH = "min_length"
     MAX_LENGTH = "max_length"
@@ -55,9 +57,10 @@ spec_validation_methods = {
 
 class SpecManager:
     """
-    Provides utilities for building validation functions 
+    Provides utilities for building validation functions
     from specs and exporting specs to JSON.
     """
+
     @staticmethod
     def get_validation_method[
         FieldType: Any

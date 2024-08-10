@@ -1,7 +1,19 @@
 # Standard Library
 from typing import Literal
 
-# Types passed into exceptions when used
+"""
+The goal of the backend exceptions are to provide 
+easy access to user friendly error messages to the frontend.
+
+Field errors refer to errors associated with a form field 
+and are rendered under the field in the frontend.
+
+Non-field errors refer to erorrs associated with a form
+but not necessarily a field. These are rendered under the form.
+
+Non-form errors refer to errors that are not associated with a form,
+and are rendered as toasts or other popups on the frontend.
+"""
 
 # Errors shown to the user under form fields. Each error is a tuple of the field name and the error message.
 type FieldErrors = list[tuple[str, str]]
@@ -108,7 +120,23 @@ class NotFoundError(ApplicationException):
     default_message = "This resource does not exist"
 
 
-class ServerError(ApplicationException):
+class LoggedApplicationException(ApplicationException):
+    """
+    Exception that should be logged.
+    """
+
+    def __init__(
+        self,
+        message: str = "",
+        field_errors: FieldErrors = [],
+        non_field_errors: NonFieldErrors = [],
+        non_form_errors: NonFormErrors = [],
+    ) -> None:
+        super().__init__(message, field_errors, non_field_errors, non_form_errors)
+        # TODO: Add proper logging here
+
+
+class ServerError(LoggedApplicationException):
     status_code = 500
     default_message = "Something unexpected happened on the server"
 
@@ -118,7 +146,6 @@ class ServiceUnavailableError(ApplicationException):
     default_message = "This service is not yet functional"
 
 
-# Attach logging to this one
 class DomainIntegrityException(ServerError):
     """
     Indicates a failure in the application logic.

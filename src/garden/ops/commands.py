@@ -73,8 +73,9 @@ async def create_garden(
         garden = await uow.repos.gardens.add(garden)
         await uow.commit()
 
+        # TODO: I'm not sure if the id will be updated upon commit(). If not, add query here. If yes, remove this.
         if not garden.persisted:
-            ValueError("add a query here to get id")
+            raise exceptions.DomainIntegrityException("Add a query here to get id.")
 
         # Create all invitations
         garden.events.append(

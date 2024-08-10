@@ -104,7 +104,6 @@ class GardenMembership(Value):
         user_ref (Ref[User]): the holder of the membership.
         inviter_ref (Ref[User] | None): the user responsible for creating the membership.
         role (RoleEnum): the persmissions of the membership.
-        accepted (bool): whether the membership invitation has been accepted.
         accepted_at (datetime | None): the time the membership was accepted.
         favorite (bool): whether the membership is marked as a favorite.
         created_at (datetime): the time the membership.
@@ -233,6 +232,9 @@ class Garden(RootEntity):
         Returns:
             bool: whether the user is a member of the garden.
         """
+        if not user.persisted:
+            return False
+
         return any(membership.user_ref.id == user.id for membership in self.memberships)
 
     def get_membership(self, user: User) -> GardenMembership | None:
@@ -256,6 +258,16 @@ class Garden(RootEntity):
 
         return None
 
+    def get_membership_or_error(
+        self, user: User, error_message: str = ""
+    ) -> GardenMembership:
+        membership = self.get_membership(user=user)
+        if membership is None:
+            raise exceptions.NotFoundError(
+                non_form_errors=[error_message or "The membership was not found"]
+            )
+        return membership
+
     def accept_membership(self, user: User) -> GardenMembership:
         """
         Closes a membership invitation given the User it belongs to.
@@ -274,32 +286,25 @@ class Garden(RootEntity):
         Returns:
             GardenMembership: the GardenMembership after confirmation.
         """
-        for membership in self.memberships:
-            if membership.user_ref.id == user.id:
-                if membership.accepted:
-                    raise exceptions.ValidationError(
-                        non_form_errors=[
-                            "The invite to this Garden has already been accepted."
-                        ]
-                    )
-
-                new_membership = membership.transform(
-                    accepted=True, accepted_at=datetime.now()
-                )
-                self.memberships.remove(membership)
-                self.memberships.add(new_membership)
-
-                self.events.append(
-                    MembershipAccepted(
-                        user_ref=user.ref, garden_ref=self.ref, role=membership.role
-                    )
-                )
-
-                return membership
-
-        raise exceptions.NotFoundError(
-            non_form_errors=["The pending membership was not found"]
+        membership = self.get_membership_or_error(
+            user=user, error_message="The pending invite was not found"
         )
+        if membership.accepted:
+            raise exceptions.ValidationError(
+                non_form_errors=["The invite to this Garden has already been accepted."]
+            )
+
+        new_membership = membership.transform(accepted_at=datetime.now())
+        self.memberships.remove(membership)
+        self.memberships.add(new_membership)
+
+        self.events.append(
+            MembershipAccepted(
+                user_ref=user.ref, garden_ref=self.ref, role=membership.role
+            )
+        )
+
+        return membership
 
     def remove_membership(self, user: User) -> None:
         """
@@ -313,10 +318,8 @@ class Garden(RootEntity):
             FieldNotFound: raised if the User does not have an
                 existing GardenMembership.
         """
-        for membership in self.memberships:
-            if membership.user_ref.id == user.id:
-                self.memberships.remove(membership)
-        raise exceptions.NotFoundError(non_form_errors=["The membership was not found"])
+        membership = self.get_membership_or_error(user=user)
+        self.memberships.remove(membership)
 
     def revoke_membership(self, client: User, subject: User) -> None:
         """
@@ -338,18 +341,13 @@ class Garden(RootEntity):
             raise ValueError("A client cannot kick themselves from a Garden.")
 
         # Raise if subject does not exist in the garden already.
-        subject_membership = self.get_membership(user=subject)
-        if subject_membership is None:
-            raise exceptions.NotFoundError(
-                non_form_errors=["The membership was not found"]
-            )
+        subject_membership = self.get_membership_or_error(user=subject)
 
         # Raise if client is unauthorized.
-        client_membership = self.get_membership(user=client)
-        if client_membership is None:
-            raise exceptions.AuthorizationError(
-                non_form_errors=["Not authorized to perform operations in this Garden"]
-            )
+        client_membership = self.get_membership_or_error(
+            user=client,
+            error_message="Not authorized to perform operations in this garden",
+        )
         client_membership.assert_authorization(
             operation=PermissionRouter.revoke_membership(role=subject_membership.role),
         )
@@ -380,18 +378,13 @@ class Garden(RootEntity):
             raise ValueError("A client cannot change their own role.")
 
         # Raise if subject does not exist in the garden already.
-        subject_membership = self.get_membership(user=subject)
-        if subject_membership is None:
-            raise exceptions.NotFoundError(
-                non_form_errors=["The membership was not found"]
-            )
+        subject_membership = self.get_membership_or_error(user=subject)
 
         # Raise if client is unauthorized.
-        client_membership = self.get_membership(user=client)
-        if client_membership is None:
-            raise exceptions.AuthorizationError(
-                non_form_errors=["Not authorized to perform operations in this Garden"]
-            )
+        client_membership = self.get_membership_or_error(
+            user=client,
+            error_message="Not authorized to perform operations in this garden",
+        )
         client_membership.assert_authorization(
             operation=PermissionRouter.change_role(
                 client_role=client_membership.role, new_role=new_role

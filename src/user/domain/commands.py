@@ -101,8 +101,7 @@ class UserCreateCommand(Command):
             AssertionError: if the username or email address already
                 exist in the database.
         """
-        if True:
-            # if await uow.repos.users.username_exists(username=self.username):
+        if await uow.repos.users.username_exists(username=self.username):
             raise exceptions.ValidationError(
                 field_errors=[("username", "Username already exists")]
             )
