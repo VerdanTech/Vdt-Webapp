@@ -4,8 +4,8 @@ services:
   webapp:
     init: true
     build:
-      context: ./
-      dockerfile: Dockerfile
+      context: ../
+      dockerfile: ./.devcontainer/Dockerfile
     volumes:
       - /app/node_modules
       - .:/app
