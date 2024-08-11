@@ -1,0 +1,40 @@
+site_name: VerdanTech-API 
+
+nav:
+  - Home: 'index.md'
+  - Architecture: 'architecture.md'
+  - Changelog: 'changelog.md'
+  - Makefile: 'makefile.md'
+  - Environment Variables: 'environment_vars.md'
+  - Settings: 'settings.md'
+  - Resources: 'resources.md'
+  - 'Codebase':
+    - 'Overview': './codebase/index.md'
+    - 'Common':
+      - 'Domain': './codebase/common/domain.md'
+      - 'Operations': './codebase/common/ops.md'
+      - 'Interfaces': './codebase/common/interfaces.md'
+      - 'Adapters': './codebase/common/adapters.md'
+      - 'Entrypoints': './codebase/common/entrypoints.md'
+    - 'User':
+      - 'Domain': './codebase/user/domain.md'
+      - 'Operations': './codebase/user/ops.md'
+      - 'Interfaces': './codebase/user/interfaces.md'
+
+theme:
+  name: material
+  palette:
+    scheme: slate
+
+plugins:
+- search
+- mkdocstrings:
+    default_handler: python
+
+
+markdown_extensions:
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format

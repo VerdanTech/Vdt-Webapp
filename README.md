@@ -16,7 +16,7 @@
     <img src="https://github.com/VerdanTech/.github/blob/main/profile/graphics/logo.png" alt="Logo" width="200" height="200">
   </a>
 
-<h3 align="center">VerdanTech - Backend</h3>
+<h3 align="center">VerdanTech - Web Application</h3>
 
   <p align="center">
     A garden productivity tool, agro-ecology model, and IoT platform
@@ -40,9 +40,13 @@
 
 See the [main project readme](https://github.com/VerdanTech) for background on this repository.
 
-The backend for the VerdanTech web application is an async Python HTTP and (eventually) websocket API implemented with a domain-driven architecture. From a technical perspective, the main goal of the backend is to be transparent and extensible to the end of adequately capturing the field of agro-ecology within digital models usable for contextualized application.
+This repository contains the backend server and frontend application of the VerdanTech web application.
 
-The key dependencies of this application are:
+The backend is an async Python HTTP and (eventually) websocket API implemented with a domain-driven architecture. From a technical perspective, the main goal of the backend is to be transparent and extensible to the end of adequately capturing the field of agro-ecology within digital models usable for contextualized application. Python is chosen for its ease of use and wide ecosystem.
+
+The frontend is a statically built SvelteKit application. 
+
+The key dependencies of the backend are:
 - [Litestar](https://litestar.dev/) as an ASGI framework
 - [Taskiq](https://taskiq-python.github.io/) as a task backend
 - [Sqlalchemy](https://www.sqlalchemy.org/) + [Alembic](https://alembic.sqlalchemy.org/en/latest/) + [Postgres](https://www.postgresql.org/) for persistence
@@ -51,9 +55,18 @@ The key dependencies of this application are:
 - [Attrs](https://www.attrs.org/en/stable/), [Cattrs](https://catt.rs/en/stable/), and [Pydantic](https://docs.pydantic.dev/latest/) for object modelling
 - [Passlib](https://pypi.org/project/passlib/) for encryption
 
+The key dependencies of the frontend are:
+- [SvelteKit](https://kit.svelte.dev/) as a javascript framework.
+- [Svelte Query](https://sveltequery.vercel.app/) as an async state manager.
+- [Orval](https://orval.dev/) for client SDK generation.
+- [Tailwind](https://tailwindcss.com/) for styling.
+- [Shadcn-svelete](https://www.shadcn-svelte.com/) along with related libraries for components.
+- [Konva](https://konvajs.org/) for canvas related features.
+- [Radix Colors](https://www.radix-ui.com/colors) for optimized color palettes.
+
 # Contributing
 
-See the [documentation](./docs/index.md) for contributing instructions. The [setup](./docs/setup.md) contains instructions for setting up the development environment.
+See the [contributing](./contributing.md) for instructions on contributing and setting up the development environment. The [backend README](./backend/README.md) and [frontend README](./frontend/README.md) contain instructions for how to view each project's documentation.
 
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->

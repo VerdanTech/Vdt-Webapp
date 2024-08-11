@@ -2,8 +2,8 @@
 // README at: https://github.com/devcontainers/templates/tree/main/src/docker-existing-dockerfile
 {
 	"name": "VerdanTech Backend Devcontainer",
-    "dockerComposeFile": "../docker-compose.yml",
-    "service": "verdantech-backend",
+    "dockerComposeFile": "./docker-compose.yml",
+    "service": "webapp",
     "workspaceFolder": "/workspace",
 
 	// Features to add to the dev container. More info: https://containers.dev/features.
@@ -36,11 +36,11 @@
 		// Make git trust the root user.
 		"enable_git_root_user": "git config --global --add safe.directory /workspaces/VerdanTech-Backend",
 		
-		// Copy the default environment variables into the actual environment file
-		"copy_default_env" : "cp .env-default .env",
+		// Copy the default backend environment variables into the actual environment file
+		"copy_default_env" : "cd backend; cp .env-default .env",
 
 		// Migrate the sql database
-		"alembic_migrate": "make migrate"
+		"alembic_migrate": "cd backend; make migrate"
 	},
 	
 

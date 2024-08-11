@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en" class="font-mono">
+	<head>
+		<meta charset="utf-8" />
+		<link rel="icon" href="%sveltekit.assets%/favicon.png" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		%sveltekit.head%
+	</head>
+	<script lang="ts">
+		/**
+		 * This script is responsible for setting the theme based on the user's preference.
+		 * It will default to the system theme if the user has not set a preference.
+		 */
+		let defaultTheme = 'light'
+		if (
+			window.matchMedia &&
+			window.matchMedia('(prefers-color-scheme: dark)').matches
+		) {
+			defaultTheme = 'dark'
+		}
+
+		/* Add selected theme from local storage. */
+		const theme = localStorage.getItem('theme') || defaultTheme
+
+		/* Add theme class. */
+		document.documentElement.classList.add(theme)
+
+		/* Update the theme in local storage when the browser changes it. */
+		window
+			.matchMedia('(prefers-color-scheme: dark)')
+			.addEventListener('change', (event) => {
+				const newColorScheme = event.matches ? 'dark' : 'light'
+				localStorage.setItem('theme', newColorScheme)
+			})
+	</script>
+	<body data-sveltekit-preload-data="hover">
+		<div style="display: contents">%sveltekit.body%</div>
+	</body>
+</html>
