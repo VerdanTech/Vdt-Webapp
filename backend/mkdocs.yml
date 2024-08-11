@@ -3,7 +3,6 @@ site_name: VerdanTech-API
 nav:
   - Home: 'index.md'
   - Architecture: 'architecture.md'
-  - Setup: 'setup.md'
   - Changelog: 'changelog.md'
   - Makefile: 'makefile.md'
   - Environment Variables: 'environment_vars.md'

@@ -1,0 +1,1018 @@
+components:
+  schemas:
+    AssociatedPartialsResult:
+      properties:
+        admin_memberships:
+          items:
+            format: uuid
+            type: string
+          type: array
+        edit_memberships:
+          items:
+            format: uuid
+            type: string
+          type: array
+        favorites:
+          items:
+            format: uuid
+            type: string
+          type: array
+        gardens:
+          items:
+            $ref: '#/components/schemas/GardenPartialSchema'
+          type: array
+        pending_memberships:
+          items:
+            format: uuid
+            type: string
+          type: array
+        recently_viewed:
+          items:
+            format: uuid
+            type: string
+          type: array
+        view_memberships:
+          items:
+            format: uuid
+            type: string
+          type: array
+      required:
+      - admin_memberships
+      - edit_memberships
+      - favorites
+      - gardens
+      - pending_memberships
+      - recently_viewed
+      - view_memberships
+      title: AssociatedPartialsResult
+      type: object
+    EmailSchema:
+      properties:
+        address:
+          type: string
+        primary:
+          type: boolean
+        verified:
+          type: boolean
+      required:
+      - address
+      - primary
+      - verified
+      title: EmailSchema
+      type: object
+    GardenCreateCommand:
+      properties:
+        admin_ids:
+          default: []
+          items:
+            format: uuid
+            type: string
+          type: array
+        description:
+          default: ''
+          description: Must be at most 1400 characters
+          maxLength: 1400
+          type: string
+        editor_ids:
+          default: []
+          items:
+            format: uuid
+            type: string
+          type: array
+        key:
+          oneOf:
+          - type: 'null'
+          - description: Must be between 4 and 16 characters long and contain only
+              alphanumeric characters and hyphens
+            maxLength: 16
+            minLength: 4
+            pattern: '[0-9A-Za-z-]+'
+            type: string
+        name:
+          description: Must be between 2 and 50 characters long and contain only alphanumeric
+            characters and spaces
+          maxLength: 50
+          minLength: 2
+          pattern: '[0-9A-Za-z ]+'
+          type: string
+        viewer_ids:
+          default: []
+          items:
+            format: uuid
+            type: string
+          type: array
+        visibility:
+          default: private
+          enum:
+          - private
+          - unlisted
+          - public
+          type: string
+      required:
+      - name
+      title: GardenCreateCommand
+      type: object
+    GardenFullSchema:
+      properties:
+        creator_ref:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/RefSchema'
+        description:
+          type: string
+        environment_ref:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/RefSchema'
+        expired:
+          type: boolean
+        id:
+          format: uuid
+          type: string
+        key:
+          type: string
+        memberships:
+          items:
+            $ref: '#/components/schemas/GardenMembershipFullSchema'
+          type: array
+        name:
+          type: string
+        num_memberships:
+          type: integer
+        visibility:
+          enum:
+          - private
+          - unlisted
+          - public
+          type: string
+      required:
+      - description
+      - expired
+      - id
+      - key
+      - memberships
+      - name
+      - num_memberships
+      - visibility
+      title: GardenFullSchema
+      type: object
+    GardenMembershipAcceptCommand:
+      properties:
+        garden_key:
+          description: Must be between 4 and 16 characters long and contain only alphanumeric
+            characters and hyphens
+          maxLength: 16
+          minLength: 4
+          pattern: '[0-9A-Za-z-]+'
+          type: string
+      required:
+      - garden_key
+      title: GardenMembershipAcceptCommand
+      type: object
+    GardenMembershipCreateCommand:
+      properties:
+        admin_ids:
+          default: []
+          items:
+            format: uuid
+            type: string
+          type: array
+        editor_ids:
+          default: []
+          items:
+            format: uuid
+            type: string
+          type: array
+        garden_id:
+          format: uuid
+          type: string
+        viewer_ids:
+          default: []
+          items:
+            format: uuid
+            type: string
+          type: array
+      required:
+      - garden_id
+      title: GardenMembershipCreateCommand
+      type: object
+    GardenMembershipDeleteCommand:
+      properties:
+        garden_key:
+          description: Must be between 4 and 16 characters long and contain only alphanumeric
+            characters and hyphens
+          maxLength: 16
+          minLength: 4
+          pattern: '[0-9A-Za-z-]+'
+          type: string
+      required:
+      - garden_key
+      title: GardenMembershipDeleteCommand
+      type: object
+    GardenMembershipFullSchema:
+      properties:
+        accepted:
+          type: boolean
+        created_at:
+          format: date-time
+          type: string
+        favorite:
+          type: boolean
+        garden_ref:
+          $ref: '#/components/schemas/RefSchema'
+        inviter_ref:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/RefSchema'
+        role:
+          enum:
+          - admin
+          - editor
+          - viewer
+          type: string
+        user_ref:
+          $ref: '#/components/schemas/RefSchema'
+      required:
+      - accepted
+      - created_at
+      - favorite
+      - garden_ref
+      - role
+      - user_ref
+      title: GardenMembershipFullSchema
+      type: object
+    GardenMembershipRevokeCommand:
+      properties:
+        garden_id:
+          format: uuid
+          type: string
+        user_id:
+          format: uuid
+          type: string
+      required:
+      - garden_id
+      - user_id
+      title: GardenMembershipRevokeCommand
+      type: object
+    GardenMembershipRoleChangeCommand:
+      properties:
+        garden_id:
+          format: uuid
+          type: string
+        role:
+          enum:
+          - admin
+          - editor
+          - viewer
+          type: string
+        user_id:
+          format: uuid
+          type: string
+      required:
+      - garden_id
+      - role
+      - user_id
+      title: GardenMembershipRoleChangeCommand
+      type: object
+    GardenPartialSchema:
+      properties:
+        creator_ref:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/RefSchema'
+        id:
+          format: uuid
+          type: string
+        key:
+          type: string
+        name:
+          type: string
+        num_memberships:
+          type: integer
+        visibility:
+          enum:
+          - private
+          - unlisted
+          - public
+          type: string
+      required:
+      - id
+      - key
+      - name
+      - num_memberships
+      - visibility
+      title: GardenPartialSchema
+      type: object
+    RefSchema:
+      properties:
+        id:
+          format: uuid
+          type: string
+      required:
+      - id
+      title: RefSchema
+      type: object
+    UniqueGardenKeyResult:
+      properties:
+        key:
+          type: string
+      required:
+      - key
+      title: UniqueGardenKeyResult
+      type: object
+    UserConfirmEmailConfirmationCommand:
+      properties:
+        key:
+          format: uuid
+          type: string
+      required:
+      - key
+      title: UserConfirmEmailConfirmationCommand
+      type: object
+    UserConfirmPasswordResetCommand:
+      properties:
+        key:
+          format: uuid
+          type: string
+        new_password1:
+          description: Must be between 6 and 255 characters long and contain at least
+            one lowercase letter, one uppercase letter, one digit, and one special
+            character
+          maxLength: 255
+          minLength: 6
+          pattern: ^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*\W).*$
+          type: string
+        new_password2:
+          description: Must be between 6 and 255 characters long and contain at least
+            one lowercase letter, one uppercase letter, one digit, and one special
+            character
+          maxLength: 255
+          minLength: 6
+          pattern: ^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*\W).*$
+          type: string
+        user_id:
+          format: uuid
+          type: string
+      required:
+      - key
+      - new_password1
+      - new_password2
+      - user_id
+      title: UserConfirmPasswordResetCommand
+      type: object
+    UserCreateCommand:
+      properties:
+        email_address:
+          format: email
+          type: string
+        password1:
+          description: Must be between 6 and 255 characters long and contain at least
+            one lowercase letter, one uppercase letter, one digit, and one special
+            character
+          maxLength: 255
+          minLength: 6
+          pattern: ^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*\W).*$
+          type: string
+        password2:
+          description: Must be between 6 and 255 characters long and contain at least
+            one lowercase letter, one uppercase letter, one digit, and one special
+            character
+          maxLength: 255
+          minLength: 6
+          pattern: ^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*\W).*$
+          type: string
+        username:
+          description: Must be between 3 and 50 characters long and contain only alphanumeric
+            characters and underscores. Must be unique
+          maxLength: 50
+          minLength: 3
+          pattern: ^[a-zA-Z0-9_]*$
+          type: string
+      required:
+      - email_address
+      - password1
+      - password2
+      - username
+      title: UserCreateCommand
+      type: object
+    UserFullSchema:
+      properties:
+        created_at:
+          format: date-time
+          type: string
+        emails:
+          items:
+            $ref: '#/components/schemas/EmailSchema'
+          type: array
+        id:
+          format: uuid
+          type: string
+        is_superuser:
+          type: boolean
+        username:
+          type: string
+      required:
+      - created_at
+      - emails
+      - id
+      - is_superuser
+      - username
+      title: UserFullSchema
+      type: object
+    UserPasswordVerificationQuery:
+      properties:
+        email_address:
+          format: email
+          type: string
+        password:
+          description: Must be between 6 and 255 characters long and contain at least
+            one lowercase letter, one uppercase letter, one digit, and one special
+            character
+          maxLength: 255
+          minLength: 6
+          pattern: ^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*\W).*$
+          type: string
+      required:
+      - email_address
+      - password
+      title: UserPasswordVerificationQuery
+      type: object
+    UserPublicSchema:
+      properties:
+        id:
+          format: uuid
+          type: string
+        username:
+          type: string
+      required:
+      - id
+      - username
+      title: UserPublicSchema
+      type: object
+    UserRequestEmailConfirmationCommand:
+      properties:
+        email_address:
+          format: email
+          type: string
+      required:
+      - email_address
+      title: UserRequestEmailConfirmationCommand
+      type: object
+    UserRequestPasswordResetCommand:
+      properties:
+        email_address:
+          format: email
+          type: string
+      required:
+      - email_address
+      title: UserRequestPasswordResetCommand
+      type: object
+    ValidationException:
+      description: Validation Exception
+      examples:
+      - detail: Bad Request
+        extra: {}
+        status_code: 400
+      properties:
+        detail:
+          type: string
+        extra:
+          anyOf:
+          - additionalProperties: {}
+            type: object
+          - items: {}
+            type: array
+          - type: 'null'
+        status_code:
+          type: integer
+      required:
+      - detail
+      - status_code
+      type: object
+  securitySchemes:
+    BearerToken:
+      bearerFormat: JWT
+      description: JWT api-key authentication and authorization.
+      name: Authorization
+      scheme: Bearer
+      type: http
+externalDocs:
+  description: Github Repository
+  url: https://github.com/VerdanTech/VerdanTech-Backend
+info:
+  contact:
+    name: Nathaniel King
+  description: Backend API of the VerdanTech software project.
+  license:
+    name: GNU GPL v3.0
+  title: VerdanTech-Backend
+  version: 0.1.0
+openapi: 3.1.0
+paths:
+  /gardens/command/accept_invite:
+    post:
+      deprecated: false
+      description: Accepts a Garden Membership.
+      operationId: GardenMembershipAcceptCommandOp
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GardenMembershipAcceptCommand'
+        required: true
+      responses:
+        '201':
+          description: Document created, URL follows
+          headers: {}
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationException'
+          description: Bad request syntax or unsupported method
+      summary: Garden membership invitiation acceptance.
+      tags:
+      - gardens
+  /gardens/command/change_role:
+    post:
+      deprecated: false
+      description: Changes the role on another's Garden Membership.
+      operationId: GardenMembershipRoleChangeCommandOp
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GardenMembershipRoleChangeCommand'
+        required: true
+      responses:
+        '201':
+          description: Document created, URL follows
+          headers: {}
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationException'
+          description: Bad request syntax or unsupported method
+      summary: Garden Membership role change.
+      tags:
+      - gardens
+  /gardens/command/create:
+    post:
+      deprecated: false
+      description: Creates a new Garden and invites requested users.
+      operationId: GardenCreateCommandOp
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GardenCreateCommand'
+        required: true
+      responses:
+        '201':
+          description: Document created, URL follows
+          headers: {}
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationException'
+          description: Bad request syntax or unsupported method
+      summary: Garden creation.
+      tags:
+      - gardens
+  /gardens/command/invite:
+    post:
+      deprecated: false
+      description: Creates new Garden Memberships and sends email confirmation emails.
+      operationId: GardenMembershipCreateCommandOp
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GardenMembershipCreateCommand'
+        required: true
+      responses:
+        '201':
+          description: Document created, URL follows
+          headers: {}
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationException'
+          description: Bad request syntax or unsupported method
+      summary: Garden membership invitiation.
+      tags:
+      - gardens
+  /gardens/command/leave:
+    post:
+      deprecated: false
+      description: Removes one's own Garden Membership from a garden.
+      operationId: GardenMembershipDeleteCommandOp
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GardenMembershipDeleteCommand'
+        required: true
+      responses:
+        '201':
+          description: Document created, URL follows
+          headers: {}
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationException'
+          description: Bad request syntax or unsupported method
+      summary: Garden membership deletion.
+      tags:
+      - gardens
+  /gardens/command/revoke:
+    post:
+      deprecated: false
+      description: Removes another's Garden Membership from a garden.
+      operationId: GardenMembershipRevokeCommandOp
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GardenMembershipRevokeCommand'
+        required: true
+      responses:
+        '201':
+          description: Document created, URL follows
+          headers: {}
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationException'
+          description: Bad request syntax or unsupported method
+      summary: Removes a user from a garden.
+      tags:
+      - gardens
+  /gardens/query/associated_partials:
+    get:
+      deprecated: false
+      description: Returns a partial representation of all gardens that are associated
+        with the client
+      operationId: GardenAssociatedPartialsQueryOp
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AssociatedPartialsResult'
+          description: Request fulfilled, document follows
+          headers: {}
+      summary: Returns a partial representation of all gardens that are associated
+        with the client
+      tags:
+      - gardens
+  /gardens/query/full_by_key:
+    get:
+      deprecated: false
+      description: Returns a full representation of gardens given by a key.
+      operationId: GardenFullByKeyQueryOp
+      parameters:
+      - allowEmptyValue: false
+        allowReserved: false
+        deprecated: false
+        in: query
+        name: garden_key
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GardenFullSchema'
+          description: Request fulfilled, document follows
+          headers: {}
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationException'
+          description: Bad request syntax or unsupported method
+      summary: Returns a full representation of a garden by its key.
+      tags:
+      - gardens
+  /gardens/query/generate_unique_key:
+    get:
+      deprecated: false
+      description: Generates a unique garden key given a plant name and a random string.
+      operationId: GardenGenerateUniqueKeyQueryOp
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UniqueGardenKeyResult'
+          description: Request fulfilled, document follows
+          headers: {}
+      summary: Generate a new, unique garden key.
+      tags:
+      - gardens
+  /gardens/query/most_relevant:
+    get:
+      deprecated: false
+      description: Returns a partial representation of most relevant gardens to the
+        user, ordered by relevance.
+      operationId: GardenMostRelevantPartialsQueryOp
+      parameters:
+      - allowEmptyValue: false
+        allowReserved: false
+        deprecated: false
+        in: query
+        name: max_gardens
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/GardenPartialSchema'
+                type: array
+          description: Request fulfilled, document follows
+          headers: {}
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationException'
+          description: Bad request syntax or unsupported method
+      summary: Returns a partial representation of most relevant gardens to the user.
+      tags:
+      - gardens
+  /gardens/query/partials_by_key:
+    get:
+      deprecated: false
+      description: Returns a partial representation of gardens given by keys, provided
+        they exist and the client is authorized to use them.
+      operationId: GardenPartialsByKeysQueryOp
+      parameters:
+      - allowEmptyValue: false
+        allowReserved: false
+        deprecated: false
+        in: query
+        name: garden_keys
+        required: true
+        schema:
+          items:
+            type: string
+          type: array
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/GardenPartialSchema'
+                type: array
+          description: Request fulfilled, document follows
+          headers: {}
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationException'
+          description: Bad request syntax or unsupported method
+      summary: Returns a partial representation of gardens given by keys.
+      tags:
+      - gardens
+  /users/auth/login:
+    post:
+      deprecated: false
+      description: Authenticate the request with JWT cookie authentication.
+      operationId: UserLoginCommandOp
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserPasswordVerificationQuery'
+        required: true
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                type: string
+          description: Document created, URL follows
+          headers: {}
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationException'
+          description: Bad request syntax or unsupported method
+      summary: User login
+      tags:
+      - users
+  /users/command/create:
+    post:
+      deprecated: false
+      description: 'Registers a new user. Requires email confirmation: False.'
+      operationId: UserCreateCommandOp
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserCreateCommand'
+        required: true
+      responses:
+        '201':
+          content:
+            text/plain:
+              schema:
+                type: string
+          description: Document created, URL follows
+          headers: {}
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationException'
+          description: Bad request syntax or unsupported method
+      summary: User registration.
+      tags:
+      - users
+  /users/command/email/verification_confirm:
+    post:
+      deprecated: false
+      description: Closes an email confirmation and verifies the email address.
+      operationId: UserConfirmEmailConfirmationCommandOp
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserConfirmEmailConfirmationCommand'
+        required: true
+      responses:
+        '201':
+          content:
+            text/plain:
+              schema:
+                type: string
+          description: The email has been verified.
+          headers: {}
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationException'
+          description: Bad request syntax or unsupported method
+      summary: Email confirmation.
+      tags:
+      - users
+  /users/command/email/verification_request:
+    post:
+      deprecated: false
+      description: Requests a new email verification email be sent to the email address.
+      operationId: UserRequestEmailConfirmationCommandOp
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRequestEmailConfirmationCommand'
+        required: true
+      responses:
+        '201':
+          content:
+            text/plain:
+              schema:
+                type: string
+          description: An email confirmation has been sent to the address.
+          headers: {}
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationException'
+          description: Bad request syntax or unsupported method
+      summary: Email confirmation request.
+      tags:
+      - users
+  /users/command/password/confirm:
+    post:
+      deprecated: false
+      description: Closes a password reset request and changes the password
+      operationId: UserConfirmPasswordResetCommandOp
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserConfirmPasswordResetCommand'
+        required: true
+      responses:
+        '201':
+          content:
+            text/plain:
+              schema:
+                type: string
+          description: The password has been successfully updated.
+          headers: {}
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationException'
+          description: Bad request syntax or unsupported method
+      summary: Password reset confirm.
+      tags:
+      - users
+  /users/command/password/request:
+    post:
+      deprecated: false
+      description: Open a new password reset request and sends confirmation email.
+      operationId: UserRequestPasswordResetCommandOp
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRequestPasswordResetCommand'
+        required: true
+      responses:
+        '201':
+          content:
+            text/plain:
+              schema:
+                type: string
+          description: A password reset confirmation has been sent to the email address,
+            if it exists.
+          headers: {}
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationException'
+          description: Bad request syntax or unsupported method
+      summary: Password reset request.
+      tags:
+      - users
+  /users/query/client_profile:
+    get:
+      deprecated: false
+      description: Returns the profile of the authenticated user.
+      operationId: UserClientProfileQueryOp
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserFullSchema'
+          description: The profile of the authenticated user.
+          headers: {}
+      summary: User client profile view.
+      tags:
+      - users
+  /users/query/public_profiles:
+    get:
+      deprecated: false
+      description: Returns the profiles of the user ids given.
+      operationId: UserPublicProfilesQueryOp
+      parameters:
+      - allowEmptyValue: false
+        allowReserved: false
+        deprecated: false
+        in: query
+        name: user_ids
+        required: true
+        schema:
+          items:
+            format: uuid
+            type: string
+          type: array
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/UserPublicSchema'
+                type: array
+          description: The list of users requested.
+          headers: {}
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationException'
+          description: Bad request syntax or unsupported method
+      summary: User public profiles view.
+      tags:
+      - users
+security:
+- BearerToken: []
+servers:
+- url: /
+tags:
+- name: users
+- name: gardens

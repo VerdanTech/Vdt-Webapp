@@ -184,8 +184,8 @@ if __name__ == "__main__":
     from src.garden.domain.specs import specs as garden_specs
     from src.user.domain.specs import specs as user_specs
 
-    os.makedirs("./schema/specs", exist_ok=True)
     output_dir = "./schema/specs/"
+    os.makedirs(output_dir, exist_ok=True)
 
     for spec_collection in [user_specs, garden_specs]:
         file_path = os.path.join(output_dir, f"{spec_collection.domain}.ts")

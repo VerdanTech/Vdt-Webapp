@@ -11,7 +11,6 @@
 		"lint": "eslint . --fix",
 		"format": "prettier --write .",
 		"codegen": "rm -r ./src/lib/codegen/; orval --config ./orval_client.config.ts; orval --config ./orval_zod.config.ts",
-		"codegenKubbZodSchema": "rm -r ./src/lib/codegen/; kubb --config kubb.config.ts; orval --config ./orval_client.config.ts"
 	},
 	"msw": {
 		"workerDirectory": [

@@ -86,6 +86,8 @@ schema:
 	python3.12 ./src/common/entrypoints/litestar/patch_openapi.py
 	export PYTHONPATH=$(shell pwd); \
 	python src/common/adapters/utils/spec_manager.py
+	rm -rf ../frontend/src/lib/backendSchema
+	cp -r ./schema ../frontend/src/lib/backendSchema
 
 #
 # Run the backend server with uvicorn.
