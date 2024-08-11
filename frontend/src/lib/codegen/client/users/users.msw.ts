@@ -9,6 +9,22 @@ import { faker } from '@faker-js/faker'
 import { HttpResponse, delay, http } from 'msw'
 import type { UserFullSchema, UserPublicSchema } from '../../types'
 
+export const getUserLoginCommandOpResponseMock = (): string => faker.word.sample()
+
+export const getUserCreateCommandOpResponseMock = (): string => faker.word.sample()
+
+export const getUserConfirmEmailConfirmationCommandOpResponseMock = (): string =>
+	faker.word.sample()
+
+export const getUserRequestEmailConfirmationCommandOpResponseMock = (): string =>
+	faker.word.sample()
+
+export const getUserConfirmPasswordResetCommandOpResponseMock = (): string =>
+	faker.word.sample()
+
+export const getUserRequestPasswordResetCommandOpResponseMock = (): string =>
+	faker.word.sample()
+
 export const getUserClientProfileQueryOpResponseMock = (
 	overrideResponse: Partial<UserFullSchema> = {}
 ): UserFullSchema => ({
@@ -32,73 +48,88 @@ export const getUserPublicProfilesQueryOpResponseMock = (): UserPublicSchema[] =
 		() => ({ id: faker.string.uuid(), username: faker.word.sample() })
 	)
 
-export const getUserCreateCommandOpMockHandler = () => {
-	return http.post('*/vdtapi/users/commands/create', async () => {
+export const getUserLoginCommandOpMockHandler = (
+	overrideResponse?:
+		| string
+		| ((
+				info: Parameters<Parameters<typeof http.post>[1]>[0]
+		  ) => Promise<string> | string)
+) => {
+	return http.post('*/users/auth/login', async (info) => {
 		await delay(1000)
-		return new HttpResponse(null, {
+		return new HttpResponse(
+			JSON.stringify(
+				overrideResponse !== undefined
+					? typeof overrideResponse === 'function'
+						? await overrideResponse(info)
+						: overrideResponse
+					: getUserLoginCommandOpResponseMock()
+			),
+			{
+				status: 201,
+				headers: {
+					'Content-Type': 'application/json'
+				}
+			}
+		)
+	})
+}
+
+export const getUserCreateCommandOpMockHandler = () => {
+	return http.post('*/users/command/create', async () => {
+		await delay(1000)
+		return new HttpResponse(getUserCreateCommandOpResponseMock(), {
 			status: 201,
 			headers: {
-				'Content-Type': 'application/json'
+				'Content-Type': 'text/plain'
 			}
 		})
 	})
 }
 
 export const getUserConfirmEmailConfirmationCommandOpMockHandler = () => {
-	return http.post('*/vdtapi/users/commands/email/verification_confirm', async () => {
+	return http.post('*/users/command/email/verification_confirm', async () => {
 		await delay(1000)
-		return new HttpResponse(null, {
+		return new HttpResponse(getUserConfirmEmailConfirmationCommandOpResponseMock(), {
 			status: 201,
 			headers: {
-				'Content-Type': 'application/json'
+				'Content-Type': 'text/plain'
 			}
 		})
 	})
 }
 
 export const getUserRequestEmailConfirmationCommandOpMockHandler = () => {
-	return http.post('*/vdtapi/users/commands/email/verification_request', async () => {
+	return http.post('*/users/command/email/verification_request', async () => {
 		await delay(1000)
-		return new HttpResponse(null, {
+		return new HttpResponse(getUserRequestEmailConfirmationCommandOpResponseMock(), {
 			status: 201,
 			headers: {
-				'Content-Type': 'application/json'
-			}
-		})
-	})
-}
-
-export const getUserLoginCommandOpMockHandler = () => {
-	return http.post('*/vdtapi/users/commands/login', async () => {
-		await delay(1000)
-		return new HttpResponse(null, {
-			status: 201,
-			headers: {
-				'Content-Type': 'application/json'
+				'Content-Type': 'text/plain'
 			}
 		})
 	})
 }
 
 export const getUserConfirmPasswordResetCommandOpMockHandler = () => {
-	return http.post('*/vdtapi/users/commands/password/confirm', async () => {
+	return http.post('*/users/command/password/confirm', async () => {
 		await delay(1000)
-		return new HttpResponse(null, {
+		return new HttpResponse(getUserConfirmPasswordResetCommandOpResponseMock(), {
 			status: 201,
 			headers: {
-				'Content-Type': 'application/json'
+				'Content-Type': 'text/plain'
 			}
 		})
 	})
 }
 
 export const getUserRequestPasswordResetCommandOpMockHandler = () => {
-	return http.post('*/vdtapi/users/commands/password/request', async () => {
+	return http.post('*/users/command/password/request', async () => {
 		await delay(1000)
-		return new HttpResponse(null, {
+		return new HttpResponse(getUserRequestPasswordResetCommandOpResponseMock(), {
 			status: 201,
 			headers: {
-				'Content-Type': 'application/json'
+				'Content-Type': 'text/plain'
 			}
 		})
 	})
@@ -111,7 +142,7 @@ export const getUserClientProfileQueryOpMockHandler = (
 				info: Parameters<Parameters<typeof http.get>[1]>[0]
 		  ) => Promise<UserFullSchema> | UserFullSchema)
 ) => {
-	return http.get('*/vdtapi/users/queries/client_profile', async (info) => {
+	return http.get('*/users/query/client_profile', async (info) => {
 		await delay(1000)
 		return new HttpResponse(
 			JSON.stringify(
@@ -138,7 +169,7 @@ export const getUserPublicProfilesQueryOpMockHandler = (
 				info: Parameters<Parameters<typeof http.get>[1]>[0]
 		  ) => Promise<UserPublicSchema[]> | UserPublicSchema[])
 ) => {
-	return http.get('*/vdtapi/users/queries/public_profiles', async (info) => {
+	return http.get('*/users/query/public_profiles', async (info) => {
 		await delay(1000)
 		return new HttpResponse(
 			JSON.stringify(
@@ -158,10 +189,10 @@ export const getUserPublicProfilesQueryOpMockHandler = (
 	})
 }
 export const getUsersMock = () => [
+	getUserLoginCommandOpMockHandler(),
 	getUserCreateCommandOpMockHandler(),
 	getUserConfirmEmailConfirmationCommandOpMockHandler(),
 	getUserRequestEmailConfirmationCommandOpMockHandler(),
-	getUserLoginCommandOpMockHandler(),
 	getUserConfirmPasswordResetCommandOpMockHandler(),
 	getUserRequestPasswordResetCommandOpMockHandler(),
 	getUserClientProfileQueryOpMockHandler(),

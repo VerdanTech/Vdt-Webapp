@@ -11,6 +11,7 @@ from .dependencies import svcs_plugin
 from .exceptions import application_exception_handler
 from .openapi import openapi_config
 from .router import create_base_router
+from .middleware import cors_config
 
 
 def create_app(alchemy_uri=settings.POSTGRES_URI) -> "Litestar":
@@ -34,5 +35,6 @@ def create_app(alchemy_uri=settings.POSTGRES_URI) -> "Litestar":
         exception_handlers={
             exceptions.ApplicationException: application_exception_handler
         },
+        cors_config=cors_config,
         debug=True,
     )

@@ -11,7 +11,7 @@ RUN pip install --upgrade pip && \
     uv pip install --system -r backend/requirements/dev.txt
 
 # Install frontend dependencies
-COPY ./frontend/package.json ./frontend/pnpm-lock.yaml .
+COPY ./frontend/package.json ./frontend/pnpm-lock.yaml ./
 RUN npm install -g pnpm
 RUN pnpm install
 

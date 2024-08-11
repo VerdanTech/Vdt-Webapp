@@ -8,6 +8,27 @@
 import { z as zod } from 'zod'
 
 /**
+ * Authenticate the request with JWT cookie authentication.
+ * @summary User login
+ */
+export const userLoginCommandOpBodyPasswordMin = 6
+
+export const userLoginCommandOpBodyPasswordMax = 255
+
+export const userLoginCommandOpBodyPasswordRegExp = new RegExp(
+	'^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*\\W).*$'
+)
+
+export const userLoginCommandOpBody = zod.object({
+	email_address: zod.string().email(),
+	password: zod
+		.string()
+		.min(userLoginCommandOpBodyPasswordMin)
+		.max(userLoginCommandOpBodyPasswordMax)
+		.regex(userLoginCommandOpBodyPasswordRegExp)
+})
+
+/**
  * Registers a new user. Requires email confirmation: False.
  * @summary User registration.
  */
@@ -64,27 +85,6 @@ export const userConfirmEmailConfirmationCommandOpBody = zod.object({
  */
 export const userRequestEmailConfirmationCommandOpBody = zod.object({
 	email_address: zod.string().email()
-})
-
-/**
- * Authenticate the request with JWT cookie authentication.
- * @summary User login
- */
-export const userLoginCommandOpBodyPasswordMin = 6
-
-export const userLoginCommandOpBodyPasswordMax = 255
-
-export const userLoginCommandOpBodyPasswordRegExp = new RegExp(
-	'^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*\\W).*$'
-)
-
-export const userLoginCommandOpBody = zod.object({
-	email_address: zod.string().email(),
-	password: zod
-		.string()
-		.min(userLoginCommandOpBodyPasswordMin)
-		.max(userLoginCommandOpBodyPasswordMax)
-		.regex(userLoginCommandOpBodyPasswordRegExp)
 })
 
 /**

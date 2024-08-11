@@ -19,12 +19,26 @@ import type {
 import { axiosClient } from '../../../data/customAxios'
 
 /**
+ * Authenticate the request with JWT cookie authentication.
+ * @summary User login
+ */
+export const userLoginCommandOp = (
+	userPasswordVerificationQuery: UserPasswordVerificationQuery
+) => {
+	return axiosClient<string>({
+		url: `/users/auth/login`,
+		method: 'POST',
+		headers: { 'Content-Type': 'application/json' },
+		data: userPasswordVerificationQuery
+	})
+}
+/**
  * Registers a new user. Requires email confirmation: False.
  * @summary User registration.
  */
 export const userCreateCommandOp = (userCreateCommand: UserCreateCommand) => {
-	return axiosClient<void>({
-		url: `/vdtapi/users/commands/create`,
+	return axiosClient<string>({
+		url: `/users/command/create`,
 		method: 'POST',
 		headers: { 'Content-Type': 'application/json' },
 		data: userCreateCommand
@@ -37,8 +51,8 @@ export const userCreateCommandOp = (userCreateCommand: UserCreateCommand) => {
 export const userConfirmEmailConfirmationCommandOp = (
 	userConfirmEmailConfirmationCommand: UserConfirmEmailConfirmationCommand
 ) => {
-	return axiosClient<void>({
-		url: `/vdtapi/users/commands/email/verification_confirm`,
+	return axiosClient<string>({
+		url: `/users/command/email/verification_confirm`,
 		method: 'POST',
 		headers: { 'Content-Type': 'application/json' },
 		data: userConfirmEmailConfirmationCommand
@@ -51,25 +65,11 @@ export const userConfirmEmailConfirmationCommandOp = (
 export const userRequestEmailConfirmationCommandOp = (
 	userRequestEmailConfirmationCommand: UserRequestEmailConfirmationCommand
 ) => {
-	return axiosClient<void>({
-		url: `/vdtapi/users/commands/email/verification_request`,
+	return axiosClient<string>({
+		url: `/users/command/email/verification_request`,
 		method: 'POST',
 		headers: { 'Content-Type': 'application/json' },
 		data: userRequestEmailConfirmationCommand
-	})
-}
-/**
- * Authenticate the request with JWT cookie authentication.
- * @summary User login
- */
-export const userLoginCommandOp = (
-	userPasswordVerificationQuery: UserPasswordVerificationQuery
-) => {
-	return axiosClient<null>({
-		url: `/vdtapi/users/commands/login`,
-		method: 'POST',
-		headers: { 'Content-Type': 'application/json' },
-		data: userPasswordVerificationQuery
 	})
 }
 /**
@@ -79,8 +79,8 @@ export const userLoginCommandOp = (
 export const userConfirmPasswordResetCommandOp = (
 	userConfirmPasswordResetCommand: UserConfirmPasswordResetCommand
 ) => {
-	return axiosClient<void>({
-		url: `/vdtapi/users/commands/password/confirm`,
+	return axiosClient<string>({
+		url: `/users/command/password/confirm`,
 		method: 'POST',
 		headers: { 'Content-Type': 'application/json' },
 		data: userConfirmPasswordResetCommand
@@ -93,8 +93,8 @@ export const userConfirmPasswordResetCommandOp = (
 export const userRequestPasswordResetCommandOp = (
 	userRequestPasswordResetCommand: UserRequestPasswordResetCommand
 ) => {
-	return axiosClient<void>({
-		url: `/vdtapi/users/commands/password/request`,
+	return axiosClient<string>({
+		url: `/users/command/password/request`,
 		method: 'POST',
 		headers: { 'Content-Type': 'application/json' },
 		data: userRequestPasswordResetCommand
@@ -106,7 +106,7 @@ export const userRequestPasswordResetCommandOp = (
  */
 export const userClientProfileQueryOp = () => {
 	return axiosClient<UserFullSchema>({
-		url: `/vdtapi/users/queries/client_profile`,
+		url: `/users/query/client_profile`,
 		method: 'GET'
 	})
 }
@@ -116,11 +116,14 @@ export const userClientProfileQueryOp = () => {
  */
 export const userPublicProfilesQueryOp = (params: UserPublicProfilesQueryOpParams) => {
 	return axiosClient<UserPublicSchema[]>({
-		url: `/vdtapi/users/queries/public_profiles`,
+		url: `/users/query/public_profiles`,
 		method: 'GET',
 		params
 	})
 }
+export type UserLoginCommandOpResult = NonNullable<
+	Awaited<ReturnType<typeof userLoginCommandOp>>
+>
 export type UserCreateCommandOpResult = NonNullable<
 	Awaited<ReturnType<typeof userCreateCommandOp>>
 >
@@ -129,9 +132,6 @@ export type UserConfirmEmailConfirmationCommandOpResult = NonNullable<
 >
 export type UserRequestEmailConfirmationCommandOpResult = NonNullable<
 	Awaited<ReturnType<typeof userRequestEmailConfirmationCommandOp>>
->
-export type UserLoginCommandOpResult = NonNullable<
-	Awaited<ReturnType<typeof userLoginCommandOp>>
 >
 export type UserConfirmPasswordResetCommandOpResult = NonNullable<
 	Awaited<ReturnType<typeof userConfirmPasswordResetCommandOp>>

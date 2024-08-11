@@ -8,10 +8,11 @@
 import type { GardenPartialSchema } from './gardenPartialSchema'
 
 export interface AssociatedPartialsResult {
-	admin_memberships: GardenPartialSchema[]
-	edit_memberships: GardenPartialSchema[]
-	favorites: GardenPartialSchema[]
-	pending_memberships: GardenPartialSchema[]
-	recently_viewed: GardenPartialSchema[]
-	view_memberships: GardenPartialSchema[]
+	admin_memberships: string[]
+	edit_memberships: string[]
+	favorites: string[]
+	gardens: GardenPartialSchema[]
+	pending_memberships: string[]
+	recently_viewed: string[]
+	view_memberships: string[]
 }

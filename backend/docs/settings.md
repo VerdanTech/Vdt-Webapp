@@ -11,7 +11,7 @@ This section contains settings relevant to the Litestar application and other AP
 | Name | Type | Description | Default |
 | -------- | ------- | ------- | ------- |
 | USING_HTTPS | bool | Identical to the environment variable. |False |
-| API_URL_BASE | str | Base of the API URL. | `/vdtapi` |
+| API_URL_BASE | str | Base of the API URL. | "" |
 
 ### Client
 

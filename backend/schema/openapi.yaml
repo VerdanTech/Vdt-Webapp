@@ -509,7 +509,7 @@ info:
   version: 0.1.0
 openapi: 3.1.0
 paths:
-  /vdtapi/gardens/command/accept_invite:
+  /gardens/command/accept_invite:
     post:
       deprecated: false
       description: Accepts a Garden Membership.
@@ -533,7 +533,7 @@ paths:
       summary: Garden membership invitiation acceptance.
       tags:
       - gardens
-  /vdtapi/gardens/command/change_role:
+  /gardens/command/change_role:
     post:
       deprecated: false
       description: Changes the role on another's Garden Membership.
@@ -557,7 +557,7 @@ paths:
       summary: Garden Membership role change.
       tags:
       - gardens
-  /vdtapi/gardens/command/create:
+  /gardens/command/create:
     post:
       deprecated: false
       description: Creates a new Garden and invites requested users.
@@ -581,7 +581,7 @@ paths:
       summary: Garden creation.
       tags:
       - gardens
-  /vdtapi/gardens/command/invite:
+  /gardens/command/invite:
     post:
       deprecated: false
       description: Creates new Garden Memberships and sends email confirmation emails.
@@ -605,7 +605,7 @@ paths:
       summary: Garden membership invitiation.
       tags:
       - gardens
-  /vdtapi/gardens/command/leave:
+  /gardens/command/leave:
     post:
       deprecated: false
       description: Removes one's own Garden Membership from a garden.
@@ -629,7 +629,7 @@ paths:
       summary: Garden membership deletion.
       tags:
       - gardens
-  /vdtapi/gardens/command/revoke:
+  /gardens/command/revoke:
     post:
       deprecated: false
       description: Removes another's Garden Membership from a garden.
@@ -653,7 +653,7 @@ paths:
       summary: Removes a user from a garden.
       tags:
       - gardens
-  /vdtapi/gardens/query/associated_partials:
+  /gardens/query/associated_partials:
     get:
       deprecated: false
       description: Returns a partial representation of all gardens that are associated
@@ -671,7 +671,7 @@ paths:
         with the client
       tags:
       - gardens
-  /vdtapi/gardens/query/full_by_key:
+  /gardens/query/full_by_key:
     get:
       deprecated: false
       description: Returns a full representation of gardens given by a key.
@@ -702,7 +702,7 @@ paths:
       summary: Returns a full representation of a garden by its key.
       tags:
       - gardens
-  /vdtapi/gardens/query/generate_unique_key:
+  /gardens/query/generate_unique_key:
     get:
       deprecated: false
       description: Generates a unique garden key given a plant name and a random string.
@@ -718,7 +718,7 @@ paths:
       summary: Generate a new, unique garden key.
       tags:
       - gardens
-  /vdtapi/gardens/query/most_relevant:
+  /gardens/query/most_relevant:
     get:
       deprecated: false
       description: Returns a partial representation of most relevant gardens to the
@@ -752,7 +752,7 @@ paths:
       summary: Returns a partial representation of most relevant gardens to the user.
       tags:
       - gardens
-  /vdtapi/gardens/query/partials_by_key:
+  /gardens/query/partials_by_key:
     get:
       deprecated: false
       description: Returns a partial representation of gardens given by keys, provided
@@ -788,7 +788,7 @@ paths:
       summary: Returns a partial representation of gardens given by keys.
       tags:
       - gardens
-  /vdtapi/users/auth/login:
+  /users/auth/login:
     post:
       deprecated: false
       description: Authenticate the request with JWT cookie authentication.
@@ -816,7 +816,7 @@ paths:
       summary: User login
       tags:
       - users
-  /vdtapi/users/command/create:
+  /users/command/create:
     post:
       deprecated: false
       description: 'Registers a new user. Requires email confirmation: False.'
@@ -844,7 +844,7 @@ paths:
       summary: User registration.
       tags:
       - users
-  /vdtapi/users/command/email/verification_confirm:
+  /users/command/email/verification_confirm:
     post:
       deprecated: false
       description: Closes an email confirmation and verifies the email address.
@@ -872,7 +872,7 @@ paths:
       summary: Email confirmation.
       tags:
       - users
-  /vdtapi/users/command/email/verification_request:
+  /users/command/email/verification_request:
     post:
       deprecated: false
       description: Requests a new email verification email be sent to the email address.
@@ -900,7 +900,7 @@ paths:
       summary: Email confirmation request.
       tags:
       - users
-  /vdtapi/users/command/password/confirm:
+  /users/command/password/confirm:
     post:
       deprecated: false
       description: Closes a password reset request and changes the password
@@ -928,7 +928,7 @@ paths:
       summary: Password reset confirm.
       tags:
       - users
-  /vdtapi/users/command/password/request:
+  /users/command/password/request:
     post:
       deprecated: false
       description: Open a new password reset request and sends confirmation email.
@@ -957,7 +957,7 @@ paths:
       summary: Password reset request.
       tags:
       - users
-  /vdtapi/users/query/client_profile:
+  /users/query/client_profile:
     get:
       deprecated: false
       description: Returns the profile of the authenticated user.
@@ -973,7 +973,7 @@ paths:
       summary: User client profile view.
       tags:
       - users
-  /vdtapi/users/query/public_profiles:
+  /users/query/public_profiles:
     get:
       deprecated: false
       description: Returns the profiles of the user ids given.

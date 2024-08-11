@@ -16,7 +16,7 @@ from decouple import Csv, config
 # ======================================
 
 USING_HTTPS = config("USING_HTTPS", cast=bool, default=False)
-API_URL_BASE: str = "/vdtapi"
+API_URL_BASE: str = ""
 
 # ======================================
 # CLIENT RELATED SETTINGS

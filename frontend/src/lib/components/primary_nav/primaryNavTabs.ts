@@ -37,7 +37,6 @@ export type PrimaryTabItemSpec = {
 export const getGardensTab = (
 	gardenPartials: GardenPartialSchema[] = []
 ): PrimaryTabSpec => {
-	console.log(gardenPartials)
 	return {
 		id: 'gardens',
 		label: 'Gardens',

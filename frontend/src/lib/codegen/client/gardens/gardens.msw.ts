@@ -25,38 +25,16 @@ export const getGardenAssociatedPartialsQueryOpResponseMock = (
 	admin_memberships: Array.from(
 		{ length: faker.number.int({ min: 1, max: 10 }) },
 		(_, i) => i + 1
-	).map(() => ({
-		creator_ref: faker.helpers.arrayElement([
-			faker.helpers.arrayElement([
-				null,
-				{ ...getGardenAssociatedPartialsQueryOpResponseRefSchemaMock() }
-			]),
-			undefined
-		]),
-		id: faker.string.uuid(),
-		key: faker.word.sample(),
-		name: faker.word.sample(),
-		num_memberships: faker.number.int({ min: undefined, max: undefined }),
-		visibility: faker.helpers.arrayElement(['private', 'unlisted', 'public'] as const)
-	})),
+	).map(() => faker.string.uuid()),
 	edit_memberships: Array.from(
 		{ length: faker.number.int({ min: 1, max: 10 }) },
 		(_, i) => i + 1
-	).map(() => ({
-		creator_ref: faker.helpers.arrayElement([
-			faker.helpers.arrayElement([
-				null,
-				{ ...getGardenAssociatedPartialsQueryOpResponseRefSchemaMock() }
-			]),
-			undefined
-		]),
-		id: faker.string.uuid(),
-		key: faker.word.sample(),
-		name: faker.word.sample(),
-		num_memberships: faker.number.int({ min: undefined, max: undefined }),
-		visibility: faker.helpers.arrayElement(['private', 'unlisted', 'public'] as const)
-	})),
+	).map(() => faker.string.uuid()),
 	favorites: Array.from(
+		{ length: faker.number.int({ min: 1, max: 10 }) },
+		(_, i) => i + 1
+	).map(() => faker.string.uuid()),
+	gardens: Array.from(
 		{ length: faker.number.int({ min: 1, max: 10 }) },
 		(_, i) => i + 1
 	).map(() => ({
@@ -76,54 +54,15 @@ export const getGardenAssociatedPartialsQueryOpResponseMock = (
 	pending_memberships: Array.from(
 		{ length: faker.number.int({ min: 1, max: 10 }) },
 		(_, i) => i + 1
-	).map(() => ({
-		creator_ref: faker.helpers.arrayElement([
-			faker.helpers.arrayElement([
-				null,
-				{ ...getGardenAssociatedPartialsQueryOpResponseRefSchemaMock() }
-			]),
-			undefined
-		]),
-		id: faker.string.uuid(),
-		key: faker.word.sample(),
-		name: faker.word.sample(),
-		num_memberships: faker.number.int({ min: undefined, max: undefined }),
-		visibility: faker.helpers.arrayElement(['private', 'unlisted', 'public'] as const)
-	})),
+	).map(() => faker.string.uuid()),
 	recently_viewed: Array.from(
 		{ length: faker.number.int({ min: 1, max: 10 }) },
 		(_, i) => i + 1
-	).map(() => ({
-		creator_ref: faker.helpers.arrayElement([
-			faker.helpers.arrayElement([
-				null,
-				{ ...getGardenAssociatedPartialsQueryOpResponseRefSchemaMock() }
-			]),
-			undefined
-		]),
-		id: faker.string.uuid(),
-		key: faker.word.sample(),
-		name: faker.word.sample(),
-		num_memberships: faker.number.int({ min: undefined, max: undefined }),
-		visibility: faker.helpers.arrayElement(['private', 'unlisted', 'public'] as const)
-	})),
+	).map(() => faker.string.uuid()),
 	view_memberships: Array.from(
 		{ length: faker.number.int({ min: 1, max: 10 }) },
 		(_, i) => i + 1
-	).map(() => ({
-		creator_ref: faker.helpers.arrayElement([
-			faker.helpers.arrayElement([
-				null,
-				{ ...getGardenAssociatedPartialsQueryOpResponseRefSchemaMock() }
-			]),
-			undefined
-		]),
-		id: faker.string.uuid(),
-		key: faker.word.sample(),
-		name: faker.word.sample(),
-		num_memberships: faker.number.int({ min: undefined, max: undefined }),
-		visibility: faker.helpers.arrayElement(['private', 'unlisted', 'public'] as const)
-	})),
+	).map(() => faker.string.uuid()),
 	...overrideResponse
 })
 
@@ -230,7 +169,7 @@ export const getGardenPartialsByKeysQueryOpResponseMock = (): GardenPartialSchem
 	)
 
 export const getGardenMembershipAcceptCommandOpMockHandler = () => {
-	return http.post('*/vdtapi/gardens/commands/accept_invite', async () => {
+	return http.post('*/gardens/command/accept_invite', async () => {
 		await delay(1000)
 		return new HttpResponse(null, {
 			status: 201,
@@ -242,7 +181,7 @@ export const getGardenMembershipAcceptCommandOpMockHandler = () => {
 }
 
 export const getGardenMembershipRoleChangeCommandOpMockHandler = () => {
-	return http.post('*/vdtapi/gardens/commands/change_role', async () => {
+	return http.post('*/gardens/command/change_role', async () => {
 		await delay(1000)
 		return new HttpResponse(null, {
 			status: 201,
@@ -254,7 +193,7 @@ export const getGardenMembershipRoleChangeCommandOpMockHandler = () => {
 }
 
 export const getGardenCreateCommandOpMockHandler = () => {
-	return http.post('*/vdtapi/gardens/commands/create', async () => {
+	return http.post('*/gardens/command/create', async () => {
 		await delay(1000)
 		return new HttpResponse(null, {
 			status: 201,
@@ -266,7 +205,7 @@ export const getGardenCreateCommandOpMockHandler = () => {
 }
 
 export const getGardenMembershipCreateCommandOpMockHandler = () => {
-	return http.post('*/vdtapi/gardens/commands/invite', async () => {
+	return http.post('*/gardens/command/invite', async () => {
 		await delay(1000)
 		return new HttpResponse(null, {
 			status: 201,
@@ -278,7 +217,7 @@ export const getGardenMembershipCreateCommandOpMockHandler = () => {
 }
 
 export const getGardenMembershipDeleteCommandOpMockHandler = () => {
-	return http.post('*/vdtapi/gardens/commands/leave', async () => {
+	return http.post('*/gardens/command/leave', async () => {
 		await delay(1000)
 		return new HttpResponse(null, {
 			status: 201,
@@ -290,7 +229,7 @@ export const getGardenMembershipDeleteCommandOpMockHandler = () => {
 }
 
 export const getGardenMembershipRevokeCommandOpMockHandler = () => {
-	return http.post('*/vdtapi/gardens/commands/revoke', async () => {
+	return http.post('*/gardens/command/revoke', async () => {
 		await delay(1000)
 		return new HttpResponse(null, {
 			status: 201,
@@ -308,7 +247,7 @@ export const getGardenAssociatedPartialsQueryOpMockHandler = (
 				info: Parameters<Parameters<typeof http.get>[1]>[0]
 		  ) => Promise<AssociatedPartialsResult> | AssociatedPartialsResult)
 ) => {
-	return http.get('*/vdtapi/gardens/queries/associated', async (info) => {
+	return http.get('*/gardens/query/associated_partials', async (info) => {
 		await delay(1000)
 		return new HttpResponse(
 			JSON.stringify(
@@ -335,7 +274,7 @@ export const getGardenFullByKeyQueryOpMockHandler = (
 				info: Parameters<Parameters<typeof http.get>[1]>[0]
 		  ) => Promise<GardenFullSchema> | GardenFullSchema)
 ) => {
-	return http.get('*/vdtapi/gardens/queries/full_by_key', async (info) => {
+	return http.get('*/gardens/query/full_by_key', async (info) => {
 		await delay(1000)
 		return new HttpResponse(
 			JSON.stringify(
@@ -362,7 +301,7 @@ export const getGardenGenerateUniqueKeyQueryOpMockHandler = (
 				info: Parameters<Parameters<typeof http.get>[1]>[0]
 		  ) => Promise<UniqueGardenKeyResult> | UniqueGardenKeyResult)
 ) => {
-	return http.get('*/vdtapi/gardens/queries/generate_garden_key', async (info) => {
+	return http.get('*/gardens/query/generate_unique_key', async (info) => {
 		await delay(1000)
 		return new HttpResponse(
 			JSON.stringify(
@@ -389,7 +328,7 @@ export const getGardenMostRelevantPartialsQueryOpMockHandler = (
 				info: Parameters<Parameters<typeof http.get>[1]>[0]
 		  ) => Promise<GardenPartialSchema[]> | GardenPartialSchema[])
 ) => {
-	return http.get('*/vdtapi/gardens/queries/most_relevant', async (info) => {
+	return http.get('*/gardens/query/most_relevant', async (info) => {
 		await delay(1000)
 		return new HttpResponse(
 			JSON.stringify(
@@ -416,7 +355,7 @@ export const getGardenPartialsByKeysQueryOpMockHandler = (
 				info: Parameters<Parameters<typeof http.get>[1]>[0]
 		  ) => Promise<GardenPartialSchema[]> | GardenPartialSchema[])
 ) => {
-	return http.get('*/vdtapi/gardens/queries/partials_by_key', async (info) => {
+	return http.get('*/gardens/query/partials_by_key', async (info) => {
 		await delay(1000)
 		return new HttpResponse(
 			JSON.stringify(

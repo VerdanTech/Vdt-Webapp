@@ -8,7 +8,7 @@
 
 export interface GardenMembershipDeleteCommand {
 	/**
-	 * Must be between 4 and 16 characters long and contain only alphanumeric characters and hyphens.
+	 * Must be between 4 and 16 characters long and contain only alphanumeric characters and hyphens
 	 * @minLength 4
 	 * @maxLength 16
 	 * @pattern [0-9A-Za-z-]+

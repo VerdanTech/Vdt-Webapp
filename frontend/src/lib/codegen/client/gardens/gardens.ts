@@ -30,7 +30,7 @@ export const gardenMembershipAcceptCommandOp = (
 	gardenMembershipAcceptCommand: GardenMembershipAcceptCommand
 ) => {
 	return axiosClient<void>({
-		url: `/vdtapi/gardens/commands/accept_invite`,
+		url: `/gardens/command/accept_invite`,
 		method: 'POST',
 		headers: { 'Content-Type': 'application/json' },
 		data: gardenMembershipAcceptCommand
@@ -44,7 +44,7 @@ export const gardenMembershipRoleChangeCommandOp = (
 	gardenMembershipRoleChangeCommand: GardenMembershipRoleChangeCommand
 ) => {
 	return axiosClient<void>({
-		url: `/vdtapi/gardens/commands/change_role`,
+		url: `/gardens/command/change_role`,
 		method: 'POST',
 		headers: { 'Content-Type': 'application/json' },
 		data: gardenMembershipRoleChangeCommand
@@ -56,7 +56,7 @@ export const gardenMembershipRoleChangeCommandOp = (
  */
 export const gardenCreateCommandOp = (gardenCreateCommand: GardenCreateCommand) => {
 	return axiosClient<void>({
-		url: `/vdtapi/gardens/commands/create`,
+		url: `/gardens/command/create`,
 		method: 'POST',
 		headers: { 'Content-Type': 'application/json' },
 		data: gardenCreateCommand
@@ -70,7 +70,7 @@ export const gardenMembershipCreateCommandOp = (
 	gardenMembershipCreateCommand: GardenMembershipCreateCommand
 ) => {
 	return axiosClient<void>({
-		url: `/vdtapi/gardens/commands/invite`,
+		url: `/gardens/command/invite`,
 		method: 'POST',
 		headers: { 'Content-Type': 'application/json' },
 		data: gardenMembershipCreateCommand
@@ -84,7 +84,7 @@ export const gardenMembershipDeleteCommandOp = (
 	gardenMembershipDeleteCommand: GardenMembershipDeleteCommand
 ) => {
 	return axiosClient<void>({
-		url: `/vdtapi/gardens/commands/leave`,
+		url: `/gardens/command/leave`,
 		method: 'POST',
 		headers: { 'Content-Type': 'application/json' },
 		data: gardenMembershipDeleteCommand
@@ -98,7 +98,7 @@ export const gardenMembershipRevokeCommandOp = (
 	gardenMembershipRevokeCommand: GardenMembershipRevokeCommand
 ) => {
 	return axiosClient<void>({
-		url: `/vdtapi/gardens/commands/revoke`,
+		url: `/gardens/command/revoke`,
 		method: 'POST',
 		headers: { 'Content-Type': 'application/json' },
 		data: gardenMembershipRevokeCommand
@@ -110,7 +110,7 @@ export const gardenMembershipRevokeCommandOp = (
  */
 export const gardenAssociatedPartialsQueryOp = () => {
 	return axiosClient<AssociatedPartialsResult>({
-		url: `/vdtapi/gardens/queries/associated`,
+		url: `/gardens/query/associated_partials`,
 		method: 'GET'
 	})
 }
@@ -120,7 +120,7 @@ export const gardenAssociatedPartialsQueryOp = () => {
  */
 export const gardenFullByKeyQueryOp = (params: GardenFullByKeyQueryOpParams) => {
 	return axiosClient<GardenFullSchema>({
-		url: `/vdtapi/gardens/queries/full_by_key`,
+		url: `/gardens/query/full_by_key`,
 		method: 'GET',
 		params
 	})
@@ -131,7 +131,7 @@ export const gardenFullByKeyQueryOp = (params: GardenFullByKeyQueryOpParams) => 
  */
 export const gardenGenerateUniqueKeyQueryOp = () => {
 	return axiosClient<UniqueGardenKeyResult>({
-		url: `/vdtapi/gardens/queries/generate_garden_key`,
+		url: `/gardens/query/generate_unique_key`,
 		method: 'GET'
 	})
 }
@@ -143,7 +143,7 @@ export const gardenMostRelevantPartialsQueryOp = (
 	params: GardenMostRelevantPartialsQueryOpParams
 ) => {
 	return axiosClient<GardenPartialSchema[]>({
-		url: `/vdtapi/gardens/queries/most_relevant`,
+		url: `/gardens/query/most_relevant`,
 		method: 'GET',
 		params
 	})
@@ -156,7 +156,7 @@ export const gardenPartialsByKeysQueryOp = (
 	params: GardenPartialsByKeysQueryOpParams
 ) => {
 	return axiosClient<GardenPartialSchema[]>({
-		url: `/vdtapi/gardens/queries/partials_by_key`,
+		url: `/gardens/query/partials_by_key`,
 		method: 'GET',
 		params
 	})

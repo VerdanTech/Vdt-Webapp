@@ -11,14 +11,14 @@ import type { GardenCreateCommandVisibility } from './gardenCreateCommandVisibil
 export interface GardenCreateCommand {
 	admin_ids?: string[]
 	/**
-	 * Must be at most 1400 characters long
+	 * Must be at most 1400 characters
 	 * @maxLength 1400
 	 */
 	description?: string
 	editor_ids?: string[]
 	key?: GardenCreateCommandKey
 	/**
-	 * Must be between 2 and 50 characters long and contain only alphanumeric characters and spaces.
+	 * Must be between 2 and 50 characters long and contain only alphanumeric characters and spaces
 	 * @minLength 2
 	 * @maxLength 50
 	 * @pattern [0-9A-Za-z ]+

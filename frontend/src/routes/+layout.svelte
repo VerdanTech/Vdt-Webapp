@@ -12,9 +12,7 @@
 	let { children } = $props()
 
 	onMount(() => {
-		enableMocking().then(() => {
-			console.log('Mocking enabled')
-		})
+		enableMocking().then(() => {})
 	})
 </script>
 

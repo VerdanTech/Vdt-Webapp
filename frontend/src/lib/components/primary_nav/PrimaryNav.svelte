@@ -42,12 +42,10 @@
 	/* Retrieve the gardens tab if the associated partials query is complete. */
 	function updateGardensTab() {
 		if ($mostRelevantPartialGardens.data) {
-			console.log($mostRelevantPartialGardens.data.gardens)
 			gardensTab = getGardensTab(
 				/* TODO: change store access when svelte-query is updated to Svelte 5. */
 				$mostRelevantPartialGardens.data.gardens
 			)
-			console.log(gardensTab)
 		}
 	}
 	updateGardensTab()
@@ -56,7 +54,6 @@
 	if (activeGardenKey.value !== null) {
 		gardenTabs = getGardenSpecifcTabs(activeGardenKey.value)
 	}
-	console.log(gardensTab)
 </script>
 
 <!--

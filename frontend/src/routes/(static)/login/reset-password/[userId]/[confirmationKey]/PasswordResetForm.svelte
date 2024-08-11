@@ -45,7 +45,6 @@
 			)
 		),
 		onUpdate({ form }) {
-			console.log(form)
 			if (form.valid) {
 				$mutation.mutate(form.data, {
 					onSuccess: () => {

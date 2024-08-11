@@ -11,7 +11,7 @@ services:
       - .:/app
       - .:/workspace:cached
     command: sleep infinity
-    network_mode: service:postgres
+    # network_mode: service:postgres
     expose:
       - 5173
 

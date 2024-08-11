@@ -4,8 +4,8 @@ import axios from 'axios'
 
 //Static configuration in the AXIOS_INSTANCE
 export const AXIOS_INSTANCE = axios.create({
-	baseURL: '',
-	withCredentials: true
+	baseURL: 'http://localhost:8000',
+	withCredentials: false
 })
 
 //Dynamic configuration in request/response interceptors
@@ -16,9 +16,22 @@ AXIOS_INSTANCE.interceptors.request.use((config) => {
 
 AXIOS_INSTANCE.interceptors.response.use(
 	(response) => {
+		if (process.env.NODE_ENV === 'development') {
+			//console.log(`Received response from request with config ${response.config}`)
+			//console.log(response.)
+		}
 		return response
 	},
 	(error) => {
+		if (process.env.NODE_ENV === 'development') {
+			console.log(error)
+			//console.log(`Received error response from request with config ${error.config}`)
+		}
+
+		if (!error.response) {
+			return
+		}
+
 		if (error.response.status == 500) {
 			//Server side error toast
 			/*

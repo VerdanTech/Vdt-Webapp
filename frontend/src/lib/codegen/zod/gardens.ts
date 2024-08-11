@@ -48,6 +48,29 @@ export const gardenCreateCommandOpBodyNameMax = 50
 
 export const gardenCreateCommandOpBodyNameRegExp = new RegExp('[0-9A-Za-z ]+')
 
+export const gardenCreateCommandOpBody = zod.object({
+	admin_ids: zod.array(zod.string().uuid()).optional(),
+	description: zod.string().max(gardenCreateCommandOpBodyDescriptionMax).optional(),
+	editor_ids: zod.array(zod.string().uuid()).optional(),
+	key: zod
+		.null()
+		.or(
+			zod
+				.string()
+				.min(gardenCreateCommandOpBodyKeyMinTwo)
+				.max(gardenCreateCommandOpBodyKeyMaxTwo)
+				.regex(gardenCreateCommandOpBodyKeyRegExpTwo)
+		)
+		.optional(),
+	name: zod
+		.string()
+		.min(gardenCreateCommandOpBodyNameMin)
+		.max(gardenCreateCommandOpBodyNameMax)
+		.regex(gardenCreateCommandOpBodyNameRegExp),
+	viewer_ids: zod.array(zod.string().uuid()).optional(),
+	visibility: zod.enum(['private', 'unlisted', 'public']).optional()
+})
+
 /**
  * Creates new Garden Memberships and sends email confirmation emails.
  * @summary Garden membership invitiation.
@@ -69,4 +92,169 @@ export const gardenMembershipDeleteCommandOpBodyGardenKeyMax = 16
 
 export const gardenMembershipDeleteCommandOpBodyGardenKeyRegExp = new RegExp(
 	'[0-9A-Za-z-]+'
+)
+
+export const gardenMembershipDeleteCommandOpBody = zod.object({
+	garden_key: zod
+		.string()
+		.min(gardenMembershipDeleteCommandOpBodyGardenKeyMin)
+		.max(gardenMembershipDeleteCommandOpBodyGardenKeyMax)
+		.regex(gardenMembershipDeleteCommandOpBodyGardenKeyRegExp)
+})
+
+/**
+ * Removes another's Garden Membership from a garden.
+ * @summary Removes a user from a garden.
+ */
+export const gardenMembershipRevokeCommandOpBody = zod.object({
+	garden_id: zod.string().uuid(),
+	user_id: zod.string().uuid()
+})
+
+/**
+ * Returns a partial representation of all gardens that are associated with the client
+ * @summary Returns a partial representation of all gardens that are associated with the client
+ */
+export const gardenAssociatedPartialsQueryOpResponse = zod.object({
+	admin_memberships: zod.array(zod.string().uuid()),
+	edit_memberships: zod.array(zod.string().uuid()),
+	favorites: zod.array(zod.string().uuid()),
+	gardens: zod.array(
+		zod.object({
+			creator_ref: zod
+				.null()
+				.or(
+					zod.object({
+						id: zod.string().uuid()
+					})
+				)
+				.optional(),
+			id: zod.string().uuid(),
+			key: zod.string(),
+			name: zod.string(),
+			num_memberships: zod.number(),
+			visibility: zod.enum(['private', 'unlisted', 'public'])
+		})
+	),
+	pending_memberships: zod.array(zod.string().uuid()),
+	recently_viewed: zod.array(zod.string().uuid()),
+	view_memberships: zod.array(zod.string().uuid())
+})
+
+/**
+ * Returns a full representation of gardens given by a key.
+ * @summary Returns a full representation of a garden by its key.
+ */
+export const gardenFullByKeyQueryOpQueryParams = zod.object({
+	garden_key: zod.string()
+})
+
+export const gardenFullByKeyQueryOpResponse = zod.object({
+	creator_ref: zod
+		.null()
+		.or(
+			zod.object({
+				id: zod.string().uuid()
+			})
+		)
+		.optional(),
+	description: zod.string(),
+	environment_ref: zod
+		.null()
+		.or(
+			zod.object({
+				id: zod.string().uuid()
+			})
+		)
+		.optional(),
+	expired: zod.boolean(),
+	id: zod.string().uuid(),
+	key: zod.string(),
+	memberships: zod.array(
+		zod.object({
+			accepted: zod.boolean(),
+			created_at: zod.string().datetime(),
+			favorite: zod.boolean(),
+			garden_ref: zod.object({
+				id: zod.string().uuid()
+			}),
+			inviter_ref: zod
+				.null()
+				.or(
+					zod.object({
+						id: zod.string().uuid()
+					})
+				)
+				.optional(),
+			role: zod.enum(['admin', 'editor', 'viewer']),
+			user_ref: zod.object({
+				id: zod.string().uuid()
+			})
+		})
+	),
+	name: zod.string(),
+	num_memberships: zod.number(),
+	visibility: zod.enum(['private', 'unlisted', 'public'])
+})
+
+/**
+ * Generates a unique garden key given a plant name and a random string.
+ * @summary Generate a new, unique garden key.
+ */
+export const gardenGenerateUniqueKeyQueryOpResponse = zod.object({
+	key: zod.string()
+})
+
+/**
+ * Returns a partial representation of most relevant gardens to the user, ordered by relevance.
+ * @summary Returns a partial representation of most relevant gardens to the user.
+ */
+export const gardenMostRelevantPartialsQueryOpQueryParams = zod.object({
+	max_gardens: zod.number()
+})
+
+export const gardenMostRelevantPartialsQueryOpResponseItem = zod.object({
+	creator_ref: zod
+		.null()
+		.or(
+			zod.object({
+				id: zod.string().uuid()
+			})
+		)
+		.optional(),
+	id: zod.string().uuid(),
+	key: zod.string(),
+	name: zod.string(),
+	num_memberships: zod.number(),
+	visibility: zod.enum(['private', 'unlisted', 'public'])
+})
+export const gardenMostRelevantPartialsQueryOpResponse = zod.array(
+	gardenMostRelevantPartialsQueryOpResponseItem
+)
+
+/**
+ * Returns a partial representation of gardens given by keys, provided they exist and the client is authorized to use them.
+ * @summary Returns a partial representation of gardens given by keys.
+ */
+export const gardenPartialsByKeysQueryOpQueryParams = zod.object({
+	garden_keys: zod.array(zod.string())
+})
+
+export const gardenPartialsByKeysQueryOpResponseItem = zod.object({
+	creator_ref: zod
+		.null()
+		.or(
+			zod.object({
+				id: zod.string().uuid()
+			})
+		)
+		.optional(),
+	id: zod.string().uuid(),
+	key: zod.string(),
+	name: zod.string(),
+	num_memberships: zod.number(),
+	visibility: zod.enum(['private', 'unlisted', 'public'])
+})
+export const gardenPartialsByKeysQueryOpResponse = zod.array(
+	gardenPartialsByKeysQueryOpResponseItem
 )

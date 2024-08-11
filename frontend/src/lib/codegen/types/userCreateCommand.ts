@@ -23,7 +23,7 @@ export interface UserCreateCommand {
 	 */
 	password2: string
 	/**
-	 * Must be between 3 and 50 characters long and contain only alphanumeric characters and underscores.
+	 * Must be between 3 and 50 characters long and contain only alphanumeric characters and underscores. Must be unique
 	 * @minLength 3
 	 * @maxLength 50
 	 * @pattern ^[a-zA-Z0-9_]*$
