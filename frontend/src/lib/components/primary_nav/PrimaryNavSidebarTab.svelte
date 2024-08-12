@@ -24,11 +24,11 @@ Single tab for navigating between feature domains on the main sideba	r.
 			use:builder.action
 			{...builder}
 			href={spec.url}
-			class="ring-offset-background focus-visible:ring-primary-6 inline-flex
-			h-16 w-full items-center justify-center whitespace-nowrap rounded-none
-			bg-neutral-3 transition-colors
-			hover:bg-primary-4 hover:text-primary-12
-			focus-visible:ring-2 focus-visible:ring-offset-2"
+			class="ring-offset-background inline-flex h-16
+			w-full items-center justify-center whitespace-nowrap rounded-none bg-neutral-3
+			transition-colors hover:bg-primary-4
+			hover:text-primary-12 focus-visible:ring-2
+			focus-visible:ring-primary-6 focus-visible:ring-offset-2"
 		>
 			<Icon icon={spec.iconId} width="3rem" />
 		</a>

@@ -15,6 +15,7 @@
 	import iconIds from '$lib/assets/icons'
 	import { GardenCreateCommandVisibility } from '$codegen/types'
 	import { gardenGenerateUniqueKeyQuery } from '$data/garden/queries'
+	import GardenCreateFormUserTagsInput from './GardenCreateFormUserTagsInput.svelte'
 
 	const queryClient = useQueryClient()
 
@@ -28,11 +29,17 @@
 	let keyGenerationLoading = $state(true)
 	const gardenGenerateUniqueKey = gardenGenerateUniqueKeyQuery({
 		onSuccess: (response) => {
+			if (!response) {
+				return
+			}
 			keyGenerationLoading = false
 			// @ts-ignore
 			$formData.key = response.data.key
 		},
 		onError: (error) => {
+			if (!error) {
+				return
+			}
 			keyGenerationLoading = false
 			// @ts-ignore
 			serverErrors.setErrors(error)
@@ -217,7 +224,10 @@
 			<Form.Label description={gardenCreate.schema.shape.editor_ids.description}
 				>Editor Invites</Form.Label
 			>
-			<Input {...attrs} placeholder="" bind:value={$formData.editor_ids} />
+			<GardenCreateFormUserTagsInput
+				bind:tagsInput={$formData.editor_ids}
+				formAttrs={attrs}
+			/>
 		</Form.Control>
 		<Form.Description
 			>Editors have limited write access but cannot change garden configuration.</Form.Description

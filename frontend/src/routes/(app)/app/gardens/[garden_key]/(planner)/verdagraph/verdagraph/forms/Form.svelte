@@ -4,6 +4,7 @@
 	import { Button } from '$lib/components/ui/button'
 
 	import forms from '../state/forms.svelte'
+	import iconIds from '$lib/assets/icons'
 </script>
 
 <Tabs.Root bind:value={forms.lastActivatedId} class="h-full bg-neutral-1">
@@ -24,7 +25,7 @@
 					class="h-auto rounded-md p-1 hover:bg-accent-5"
 					on:click={() => forms.deactivateForm(form.id)}
 				>
-					<Icon icon={'mdi:close'} width="1rem" />
+					<Icon icon={iconIds.defaultClose} width="1rem" />
 				</Button>
 			</Tabs.Trigger>
 		{/each}

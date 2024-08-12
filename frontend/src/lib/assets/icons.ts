@@ -9,6 +9,7 @@ const iconIds = {
 	formFieldDescriptionIcon: 'material-symbols:info-outline-rounded',
 	defaultSpinnerIcon: 'humbleicons:spinner-earring',
 	defaultRefreshIcon: 'material-symbols:refresh-rounded',
+	defaultClose: 'mdi:close',
 	caretLeftIcon: '',
 	caretRightIcon: '',
 
