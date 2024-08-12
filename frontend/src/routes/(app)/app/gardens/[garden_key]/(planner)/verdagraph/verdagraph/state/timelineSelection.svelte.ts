@@ -26,7 +26,7 @@ export type TimelineSelection = {
 	endSliderDisplayedDays: DateValue
 }
 
-type SliderTickType = "currentDay" | "firstOfWeek" | "firstOfMonth" | "firstOfYear"
+type SliderTickType = 'currentDay' | 'firstOfWeek' | 'firstOfMonth' | 'firstOfYear'
 
 /** State. */
 const focusedDay = defaultFocusedDay()
@@ -40,7 +40,9 @@ let _rune = $state<TimelineSelection>({
 	endSliderDisplayedDays: focusedDay.add(selectionOffset).add(sliderDisplayOffset)
 })
 /** The difference in days between the first and last slider displayed dates. */
-let _numSliderDisplayedDays: number = $derived(calculateDeltaDays(_rune.endSliderDisplayedDays, _rune.beginSliderDisplayedDays))
+let _numSliderDisplayedDays: number = $derived(
+	calculateDeltaDays(_rune.endSliderDisplayedDays, _rune.beginSliderDisplayedDays)
+)
 //let _sliderDisplayedTickTypes: SliderTickType[] = $derived()
 
 export const timelineSelection = {
@@ -83,20 +85,22 @@ export const timelineSelection = {
 		_rune.beginSliderDisplayedDays =
 			_rune.beginSliderDisplayedDays.subtract(translation)
 		_rune.endSliderDisplayedDays = _rune.endSliderDisplayedDays.subtract(translation)
-	},
+	}
 }
 export default timelineSelection
 
 export function calculateDeltaDays(current: DateValue, prev: DateValue): number {
 	const currentTimeMs = current.toDate(getLocalTimeZone())
 	const prevTimeMs = prev.toDate(getLocalTimeZone())
-	return Math.round((currentTimeMs.getTime() - prevTimeMs.getTime()) / (1000 * 3600 * 24))
+	return Math.round(
+		(currentTimeMs.getTime() - prevTimeMs.getTime()) / (1000 * 3600 * 24)
+	)
 }
 
 export function dateToSliderDisplayIndex(date: DateValue): number {
-	return calculateDeltaDays(date, timelineSelection.value.beginSliderDisplayedDays);
+	return calculateDeltaDays(date, timelineSelection.value.beginSliderDisplayedDays)
 }
 
 export function sliderDisplayIndexToDate(index: number): DateValue {
-	return timelineSelection.value.beginSliderDisplayedDays.add({ days: index });
+	return timelineSelection.value.beginSliderDisplayedDays.add({ days: index })
 }

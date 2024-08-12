@@ -12,7 +12,7 @@ export const gardenCreate = {
 		name: gardenFieldSchemas.name,
 		key: gardenFieldSchemas.key,
 		visibility: gardenFieldSchemas.visibility,
-		description: gardenFieldSchemas.description,
+		description: gardenFieldSchemas.description.optional(),
 		admin_ids: zod.array(zod.string().uuid()).optional(),
 		editor_ids: zod.array(zod.string().uuid()).optional(),
 		viewer_ids: zod.array(zod.string().uuid()).optional()

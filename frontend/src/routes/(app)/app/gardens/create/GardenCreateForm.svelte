@@ -1,7 +1,10 @@
 <script lang="ts">
 	import { goto } from '$app/navigation'
+	import { useQueryClient } from '@sveltestack/svelte-query'
+	import type { AxiosResponse, AxiosError } from 'axios'
 	import Icon from '@iconify/svelte'
 	import * as Form from '$lib/components/ui/form'
+	import * as Select from '$lib/components/ui/select'
 	import { Button } from '$lib/components/ui/button'
 	import { Input } from '$lib/components/ui/input'
 	import { Textarea } from '$lib/components/ui/textarea'
@@ -10,11 +13,54 @@
 	import { gardenCreate } from '$lib/data/garden/commands'
 	import { createServerErrors } from '$state/formServerErrors.svelte'
 	import iconIds from '$lib/assets/icons'
+	import { GardenCreateCommandVisibility } from '$codegen/types'
 	import { gardenGenerateUniqueKeyQuery } from '$data/garden/queries'
+
+	const queryClient = useQueryClient()
+
 	/* Form mutation. */
 	const mutation = gardenCreate.mutation()
 	/* Server error state. */
 	const serverErrors = createServerErrors()
+
+	/** Key generation query.*/
+	/** Manage the loading state ourselves as for some reason the svelte-query one doesn't work correctly with the form. */
+	let keyGenerationLoading = $state(true)
+	const gardenGenerateUniqueKey = gardenGenerateUniqueKeyQuery({
+		onSuccess: (response) => {
+			keyGenerationLoading = false
+			// @ts-ignore
+			$formData.key = response.data.key
+		},
+		onError: (error) => {
+			keyGenerationLoading = false
+			// @ts-ignore
+			serverErrors.setErrors(error)
+		},
+		/** Don't re-request keys. */
+		staleTime: Infinity
+	})
+	$gardenGenerateUniqueKey
+
+	/* Defines the labels for the visibility enum options. */
+	const visibilityOptions = [
+		{ value: GardenCreateCommandVisibility.private, label: 'Private' },
+		{ value: GardenCreateCommandVisibility.unlisted, label: 'Unlisted' },
+		{ value: GardenCreateCommandVisibility.public, label: 'Public' }
+	]
+	const defaultVisibility = visibilityOptions[0]
+
+	/**
+	 * Used to update the visibility on the superforms when it changes on the form.
+	 * Required as the value of the superform data can't be bound to the form value type.
+	 */
+	function onVisibilitySelectedChange(
+		value: { value: GardenCreateCommandVisibility; label?: string } | undefined
+	) {
+		if (value) {
+			$formData.visibility = value.value
+		}
+	}
 
 	/**
 	 * Standard form configuration:
@@ -76,6 +122,8 @@
 				>Key</Form.Label
 			>
 			<span class="flex">
+				<!--
+				-->
 				<Input
 					{...attrs}
 					type="text"
@@ -85,9 +133,17 @@
 				/>
 				<Button
 					variant="outline"
-					class="flex items-center rounded-l-none border-l-0 border-neutral-12"
+					on:click={() => {
+						queryClient.invalidateQueries('uniqueGardenKey')
+						keyGenerationLoading = true
+					}}
+					class="flex items-center rounded-l-none border-l-0 bg-neutral-1 hover:bg-neutral-2 dark:border-neutral-12"
 				>
-					<Icon icon={iconIds.defaultRefreshIcon} width="1.5rem" />
+					<Icon
+						icon={iconIds.defaultRefreshIcon}
+						width="1.5rem"
+						class={keyGenerationLoading ? 'animate-spin' : ''}
+					/>
 				</Button>
 			</span>
 		</Form.Control>
@@ -101,7 +157,29 @@
 			<Form.Label description={gardenCreate.schema.shape.visibility.description}
 				>Visibility</Form.Label
 			>
-			<Input {...attrs} placeholder="Private" bind:value={$formData.visibility} />
+			<Select.Root
+				portal={null}
+				loop={true}
+				onSelectedChange={onVisibilitySelectedChange}
+				required={true}
+				items={visibilityOptions}
+				selected={defaultVisibility}
+			>
+				<Select.Trigger>
+					<Select.Value {...attrs} placeholder="Private" />
+				</Select.Trigger>
+				<Select.Content>
+					<Select.Group>
+						<Select.Label>Garden Visibility</Select.Label>
+						{#each visibilityOptions as visibilityOption}
+							<Select.Item value={visibilityOption.value} label={visibilityOption.label}
+								>{visibilityOption.label}</Select.Item
+							>
+						{/each}
+					</Select.Group>
+				</Select.Content>
+				<Select.Input {...attrs} name="gardenVisibility" />
+			</Select.Root>
 		</Form.Control>
 		<Form.Description
 			>Private gardens can only be viewed by members. Unlisted gardens can be viewed by

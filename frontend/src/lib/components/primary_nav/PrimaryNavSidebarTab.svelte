@@ -24,7 +24,7 @@ Single tab for navigating between feature domains on the main sideba	r.
 			use:builder.action
 			{...builder}
 			href={spec.url}
-			class="ring-offset-background focus-visible:ring-ring inline-flex
+			class="ring-offset-background focus-visible:ring-primary-6 inline-flex
 			h-16 w-full items-center justify-center whitespace-nowrap rounded-none
 			bg-neutral-3 transition-colors
 			hover:bg-primary-4 hover:text-primary-12

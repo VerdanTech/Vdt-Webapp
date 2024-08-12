@@ -1,27 +1,34 @@
 import { useQuery } from '@sveltestack/svelte-query'
 import type { UseQueryStoreResult, UseQueryOptions } from '@sveltestack/svelte-query'
+import type { AxiosResponse, AxiosError } from 'axios'
 import {
 	gardenGenerateUniqueKeyQueryOp,
 	gardenAssociatedPartialsQueryOp,
 	gardenMostRelevantPartialsQueryOp,
 	gardenPartialsByKeysQueryOp,
-	gardenFullByKeyQueryOp
+	gardenFullByKeyQueryOp,
+	GardenGenerateUniqueKeyQueryOpResult
 } from '$codegen'
-import {
+import type {
 	GardenMostRelevantPartialsQueryOpParams,
 	GardenPartialSchema,
 	GardenFullSchema,
 	GardenPartialsByKeysQueryOpParams,
-	GardenFullByKeyQueryOpParams
+	GardenFullByKeyQueryOpParams,
+	UniqueGardenKeyResult
 } from '$codegen/types'
 
 /**
  * Retrieves a unique garden key.
  */
-export const gardenGenerateUniqueKeyQuery = () => {
-	return useQuery('uniqueGardenKey', gardenGenerateUniqueKeyQueryOp, {
-		staleTime: Infinity
-	})
+export const gardenGenerateUniqueKeyQuery = (
+	options?: UseQueryOptions<UniqueGardenKeyResult>
+) => {
+	return useQuery<UniqueGardenKeyResult>(
+		'uniqueGardenKey',
+		gardenGenerateUniqueKeyQueryOp,
+		options
+	)
 }
 
 /**

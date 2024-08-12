@@ -15,7 +15,7 @@
 	on:click
 	class={cn(
 		buttonVariants({ variant: 'outline' }),
-		'h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100 outline-neutral-12',
+		'h-7 w-7 bg-transparent p-0 opacity-50 outline-neutral-12 hover:opacity-100',
 		className
 	)}
 	{...$$restProps}

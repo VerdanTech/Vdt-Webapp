@@ -6,10 +6,7 @@ import { preprocessMeltUI, sequence } from '@melt-ui/pp'
 const config = {
 	// Consult https://kit.svelte.dev/docs/integrations#preprocessors
 	// for more information about preprocessors
-	preprocess: sequence([
-		vitePreprocess(),
-		preprocessMeltUI()
-	  ]),
+	preprocess: sequence([vitePreprocess(), preprocessMeltUI()]),
 
 	kit: {
 		// adapter-auto only supports some environments, see https://kit.svelte.dev/docs/adapter-auto for a list.

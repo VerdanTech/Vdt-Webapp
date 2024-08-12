@@ -22,7 +22,7 @@
 <Label
 	{...$labelAttrs}
 	class={cn(
-		'flex items-center decoration-destructive-8 underline-offset-4 data-[fs-error]:underline',
+		'flex items-center decoration-destructive-8 underline-offset-4 data-[fs-error]:underline data-[fs-error]:decoration-wavy',
 		className
 	)}
 	{...$$restProps}
