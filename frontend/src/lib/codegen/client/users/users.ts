@@ -14,7 +14,8 @@ import type {
 	UserPublicProfilesQueryOpParams,
 	UserPublicSchema,
 	UserRequestEmailConfirmationCommand,
-	UserRequestPasswordResetCommand
+	UserRequestPasswordResetCommand,
+	UsernameExistsQueryOpParams
 } from '../../types'
 import { axiosClient } from '../../../data/customAxios'
 
@@ -121,6 +122,17 @@ export const userPublicProfilesQueryOp = (params: UserPublicProfilesQueryOpParam
 		params
 	})
 }
+/**
+ * Returns true if the given username exists.
+ * @summary Checks whether a username exists.
+ */
+export const usernameExistsQueryOp = (params: UsernameExistsQueryOpParams) => {
+	return axiosClient<boolean>({
+		url: `/users/query/username_exists`,
+		method: 'GET',
+		params
+	})
+}
 export type UserLoginCommandOpResult = NonNullable<
 	Awaited<ReturnType<typeof userLoginCommandOp>>
 >
@@ -144,4 +156,7 @@ export type UserClientProfileQueryOpResult = NonNullable<
 >
 export type UserPublicProfilesQueryOpResult = NonNullable<
 	Awaited<ReturnType<typeof userPublicProfilesQueryOp>>
+>
+export type UsernameExistsQueryOpResult = NonNullable<
+	Awaited<ReturnType<typeof usernameExistsQueryOp>>
 >

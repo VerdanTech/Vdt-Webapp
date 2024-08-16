@@ -133,7 +133,7 @@ class MockUserRepository(MockBaseRepository[User], AbstractUserRepository):
         return False
 
     # ======================================
-    # Query-only methods
+    # Query-focused methods
     # ======================================
 
     async def get_by_ids(self, ids: list[uuid.UUID]) -> list[User]:
@@ -147,3 +147,16 @@ class MockUserRepository(MockBaseRepository[User], AbstractUserRepository):
             list[User]: the found users.
         """
         return [user for user in self.collection if user.id in ids]
+
+    async def get_by_usernames(self, usernames: list[str]) -> list[User]:
+        """
+        Given a list of usernames return the users to whom they belong.
+
+        Args:
+            usernames (list[str]): the usernames to search for.
+
+        Returns:
+            list[User]: the found users.
+        """
+        usernames_lower = [username.lower() for username in usernames]
+        return [user for user in self.collection if user.id in usernames_lower] 

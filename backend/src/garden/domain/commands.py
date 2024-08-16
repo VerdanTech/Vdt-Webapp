@@ -10,6 +10,7 @@ from src import exceptions, settings
 from src.common.adapters.utils.spec_manager import SpecManager, Specs
 from src.common.domain import Command
 from src.common.interfaces.persistence import AbstractUow
+from src.user.domain.commands import Username
 
 from .enums import RoleEnum, VisibilityEnum
 from .specs import specs
@@ -53,6 +54,8 @@ GardenKey = Annotated[
 GardenDescription = Annotated[
     str,
     BeforeValidator(lambda v: v.strip()),
+    AfterValidator(SpecManager.get_validation_method(specs, "garden_description")),
+    # Note: Field used only for annotation, to allow custom error messages.
     Field(
         description=specs.descriptions["garden_description"]["field"],
         json_schema_extra={
@@ -60,6 +63,12 @@ GardenDescription = Annotated[
         },
     ),
 ]
+UserInviteList = Annotated[list[Username], AfterValidator(SpecManager.get_validation_method(specs, "user_invites_list")),     Field(
+        description=specs.descriptions["user_invites_list"]["field"],
+        json_schema_extra={
+            "max_length": specs.values["user_invites_list"][Specs.MAX_LENGTH],
+        },
+    ),]
 
 
 class GardenCreateCommand(Command):
@@ -71,9 +80,9 @@ class GardenCreateCommand(Command):
     key: GardenKey | None
     description: GardenDescription = ""
     visibility: VisibilityEnum = VisibilityEnum.PRIVATE
-    admin_ids: list[uuid.UUID] = []
-    editor_ids: list[uuid.UUID] = []
-    viewer_ids: list[uuid.UUID] = []
+    admin_usernames: UserInviteList = []
+    editor_usernames: UserInviteList = []
+    viewer_usernames: UserInviteList = []
 
     @field_validator("name")
     @classmethod
@@ -105,15 +114,15 @@ class GardenMembershipCreateCommand(Command):
 
     Fields:
         garden_key (str): the key id of the garden to create the membership invitation to.
-        admin_ids (str): the key ids of the users to invite as admins.
-        editor_ids (str): the key ids of the users to invite as editors.
-        viewer_ids (str): the key ids of the users to invite as viewers.
+        admin_usernames (Username): the usernames of the users to invite as admins.
+        editor_usernames (Username): the usernames of the users to invite as editors.
+        viewer_usernames (Username): the usernames of the users to invite as viewers.
     """
 
     garden_id: uuid.UUID
-    admin_ids: list[uuid.UUID] = []
-    editor_ids: list[uuid.UUID] = []
-    viewer_ids: list[uuid.UUID] = []
+    admin_usernames: UserInviteList = []
+    editor_usernames: UserInviteList = []
+    viewer_usernames: UserInviteList = []
 
 
 class GardenMembershipAcceptCommand(Command):

@@ -207,46 +207,52 @@
 	</Form.Field>
 
 	<!-- Admins to invite -->
-	<Form.Field {form} name="admin_ids">
+	<Form.Field {form} name="admin_usernames">
 		<Form.Control let:attrs>
-			<Form.Label description={gardenCreate.schema.shape.admin_ids.description}
+			<Form.Label description={gardenCreate.schema.shape.admin_usernames.description}
 				>Admin Invites</Form.Label
 			>
-			<Input {...attrs} placeholder="" bind:value={$formData.admin_ids} />
+			<GardenCreateFormUserTagsInput
+				bind:tagsInput={$formData.admin_usernames}
+				formAttrs={attrs}
+			/>
 		</Form.Control>
 		<Form.Description>Admins have full control over the garden.</Form.Description>
-		<Form.FieldErrors serverErrors={serverErrors.errors['admin_ids']} />
+		<Form.FieldErrors serverErrors={serverErrors.errors['admin_usernames']} />
 	</Form.Field>
 
 	<!-- Editors to invite -->
-	<Form.Field {form} name="editor_ids">
+	<Form.Field {form} name="editor_usernames">
 		<Form.Control let:attrs>
-			<Form.Label description={gardenCreate.schema.shape.editor_ids.description}
+			<Form.Label description={gardenCreate.schema.shape.editor_usernames.description}
 				>Editor Invites</Form.Label
 			>
 			<GardenCreateFormUserTagsInput
-				bind:tagsInput={$formData.editor_ids}
+				bind:tagsInput={$formData.editor_usernames}
 				formAttrs={attrs}
 			/>
 		</Form.Control>
 		<Form.Description
 			>Editors have limited write access but cannot change garden configuration.</Form.Description
 		>
-		<Form.FieldErrors serverErrors={serverErrors.errors['editor_ids']} />
+		<Form.FieldErrors serverErrors={serverErrors.errors['editor_usernames']} />
 	</Form.Field>
 
 	<!-- Viewers to invite -->
-	<Form.Field {form} name="viewer_ids">
+	<Form.Field {form} name="viewer_usernames">
 		<Form.Control let:attrs>
-			<Form.Label description={gardenCreate.schema.shape.viewer_ids.description}
+			<Form.Label description={gardenCreate.schema.shape.viewer_usernames.description}
 				>Viewer Invites</Form.Label
 			>
-			<Input {...attrs} placeholder="" bind:value={$formData.viewer_ids} />
+			<GardenCreateFormUserTagsInput
+				bind:tagsInput={$formData.viewer_usernames}
+				formAttrs={attrs}
+			/>
 		</Form.Control>
 		<Form.Description
 			>Viewers can make no changes but can view everything.</Form.Description
 		>
-		<Form.FieldErrors serverErrors={serverErrors.errors['viewer_ids']} />
+		<Form.FieldErrors serverErrors={serverErrors.errors['viewer_usernames']} />
 	</Form.Field>
 
 	<!-- Submit button -->

@@ -82,9 +82,9 @@ async def create_garden(
             events.PendingInvites(
                 garden_ref=garden.ref,
                 client_ref=client.ref,
-                admin_ids=command.admin_ids,
-                editor_ids=command.editor_ids,
-                viewer_ids=command.viewer_ids,
+                admin_usernames=command.admin_usernames,
+                editor_usernames=command.editor_usernames,
+                viewer_usernames=command.viewer_usernames,
             )
         )
 
@@ -115,9 +115,9 @@ async def create_invites(
         events.PendingInvites(
             garden_ref=Ref(id=command.garden_id),
             client_ref=client.ref,
-            admin_ids=command.admin_ids,
-            editor_ids=command.editor_ids,
-            viewer_ids=command.viewer_ids,
+                admin_usernames=command.admin_usernames,
+                editor_usernames=command.editor_usernames,
+                viewer_usernames=command.viewer_usernames,
         )
     )
 

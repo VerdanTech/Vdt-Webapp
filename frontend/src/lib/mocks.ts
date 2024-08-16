@@ -14,6 +14,7 @@ export async function enableMocking() {
 	if (process.env.NODE_ENV !== 'development') {
 		return
 	}
+	return
 
 	const { worker } = await import('./mocks')
 

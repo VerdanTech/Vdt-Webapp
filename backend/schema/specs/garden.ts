@@ -9,7 +9,7 @@ export const gardenFields = {
             message: 'Must be at most 50 characters',
         },
         pattern: {
-            value: '[0-9A-Za-z ]+',
+            value: /[0-9A-Za-z ]+/,
             message: 'Must contain only alphanumeric characters and spaces',
         },
         description: 'Must be between 2 and 50 characters long and contain only alphanumeric characters and spaces'
@@ -24,7 +24,7 @@ export const gardenFields = {
             message: 'Must be at most 16 characters',
         },
         pattern: {
-            value: '[0-9A-Za-z-]+',
+            value: /[0-9A-Za-z-]+/,
             message: 'Must contain only alphanumeric characters and hyphens',
         },
         description: 'Must be between 4 and 16 characters long and contain only alphanumeric characters and hyphens'
@@ -35,6 +35,13 @@ export const gardenFields = {
             message: 'Must be at most 1400 characters',
         },
         description: 'Must be at most 1400 characters'
+    },
+    user_invites_list: {
+        max_length: {
+            value: 1400,
+            message: 'A maximum of 1400 users can be invited at once',
+        },
+        description: 'A maximum of 1400 users can be invited at once'
     },
 }
 export default gardenFields

@@ -62,22 +62,34 @@ components:
       type: object
     GardenCreateCommand:
       properties:
-        admin_ids:
+        admin_usernames:
           default: []
+          description: A maximum of 1400 users can be invited at once
           items:
-            format: uuid
+            description: Must be between 3 and 50 characters long and contain only
+              alphanumeric characters and underscores. Must be unique
+            maxLength: 50
+            minLength: 3
+            pattern: ^[a-zA-Z0-9_]*$
             type: string
+          maxLength: 1400
           type: array
         description:
           default: ''
           description: Must be at most 1400 characters
           maxLength: 1400
           type: string
-        editor_ids:
+        editor_usernames:
           default: []
+          description: A maximum of 1400 users can be invited at once
           items:
-            format: uuid
+            description: Must be between 3 and 50 characters long and contain only
+              alphanumeric characters and underscores. Must be unique
+            maxLength: 50
+            minLength: 3
+            pattern: ^[a-zA-Z0-9_]*$
             type: string
+          maxLength: 1400
           type: array
         key:
           oneOf:
@@ -95,11 +107,17 @@ components:
           minLength: 2
           pattern: '[0-9A-Za-z ]+'
           type: string
-        viewer_ids:
+        viewer_usernames:
           default: []
+          description: A maximum of 1400 users can be invited at once
           items:
-            format: uuid
+            description: Must be between 3 and 50 characters long and contain only
+              alphanumeric characters and underscores. Must be unique
+            maxLength: 50
+            minLength: 3
+            pattern: ^[a-zA-Z0-9_]*$
             type: string
+          maxLength: 1400
           type: array
         visibility:
           default: private
@@ -171,26 +189,44 @@ components:
       type: object
     GardenMembershipCreateCommand:
       properties:
-        admin_ids:
+        admin_usernames:
           default: []
+          description: A maximum of 1400 users can be invited at once
           items:
-            format: uuid
+            description: Must be between 3 and 50 characters long and contain only
+              alphanumeric characters and underscores. Must be unique
+            maxLength: 50
+            minLength: 3
+            pattern: ^[a-zA-Z0-9_]*$
             type: string
+          maxLength: 1400
           type: array
-        editor_ids:
+        editor_usernames:
           default: []
+          description: A maximum of 1400 users can be invited at once
           items:
-            format: uuid
+            description: Must be between 3 and 50 characters long and contain only
+              alphanumeric characters and underscores. Must be unique
+            maxLength: 50
+            minLength: 3
+            pattern: ^[a-zA-Z0-9_]*$
             type: string
+          maxLength: 1400
           type: array
         garden_id:
           format: uuid
           type: string
-        viewer_ids:
+        viewer_usernames:
           default: []
+          description: A maximum of 1400 users can be invited at once
           items:
-            format: uuid
+            description: Must be between 3 and 50 characters long and contain only
+              alphanumeric characters and underscores. Must be unique
+            maxLength: 50
+            minLength: 3
+            pattern: ^[a-zA-Z0-9_]*$
             type: string
+          maxLength: 1400
           type: array
       required:
       - garden_id
@@ -1007,6 +1043,37 @@ paths:
                 $ref: '#/components/schemas/ValidationException'
           description: Bad request syntax or unsupported method
       summary: User public profiles view.
+      tags:
+      - users
+  /users/query/username_exists:
+    get:
+      deprecated: false
+      description: Returns true if the given username exists.
+      operationId: UsernameExistsQueryOp
+      parameters:
+      - allowEmptyValue: false
+        allowReserved: false
+        deprecated: false
+        in: query
+        name: username
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: boolean
+          description: True if the given username exists.
+          headers: {}
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationException'
+          description: Bad request syntax or unsupported method
+      summary: Checks whether a username exists.
       tags:
       - users
 security:

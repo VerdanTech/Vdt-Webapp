@@ -11,11 +11,11 @@ export const gardenCreate = {
 	schema: zod.object({
 		name: gardenFieldSchemas.name,
 		key: gardenFieldSchemas.key,
-		visibility: gardenFieldSchemas.visibility,
+		visibility: gardenFieldSchemas.visibility.optional(),
 		description: gardenFieldSchemas.description.optional(),
-		admin_ids: zod.array(zod.string().uuid()).optional(),
-		editor_ids: zod.array(zod.string().uuid()).optional(),
-		viewer_ids: zod.array(zod.string().uuid()).optional()
+		admin_usernames: gardenFieldSchemas.user_invites_list.optional(),
+		editor_usernames: gardenFieldSchemas.user_invites_list.optional(),
+		viewer_usernames: gardenFieldSchemas.user_invites_list.optional()
 	}),
 	mutation: () => {
 		return useMutation(function (data: GardenCreateCommand) {

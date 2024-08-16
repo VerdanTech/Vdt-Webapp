@@ -48,6 +48,9 @@ export const getUserPublicProfilesQueryOpResponseMock = (): UserPublicSchema[] =
 		() => ({ id: faker.string.uuid(), username: faker.word.sample() })
 	)
 
+export const getUsernameExistsQueryOpResponseMock = (): boolean =>
+	faker.datatype.boolean()
+
 export const getUserLoginCommandOpMockHandler = (
 	overrideResponse?:
 		| string
@@ -188,6 +191,33 @@ export const getUserPublicProfilesQueryOpMockHandler = (
 		)
 	})
 }
+
+export const getUsernameExistsQueryOpMockHandler = (
+	overrideResponse?:
+		| boolean
+		| ((
+				info: Parameters<Parameters<typeof http.get>[1]>[0]
+		  ) => Promise<boolean> | boolean)
+) => {
+	return http.get('*/users/query/username_exists', async (info) => {
+		await delay(1000)
+		return new HttpResponse(
+			JSON.stringify(
+				overrideResponse !== undefined
+					? typeof overrideResponse === 'function'
+						? await overrideResponse(info)
+						: overrideResponse
+					: getUsernameExistsQueryOpResponseMock()
+			),
+			{
+				status: 200,
+				headers: {
+					'Content-Type': 'application/json'
+				}
+			}
+		)
+	})
+}
 export const getUsersMock = () => [
 	getUserLoginCommandOpMockHandler(),
 	getUserCreateCommandOpMockHandler(),
@@ -196,5 +226,6 @@ export const getUsersMock = () => [
 	getUserConfirmPasswordResetCommandOpMockHandler(),
 	getUserRequestPasswordResetCommandOpMockHandler(),
 	getUserClientProfileQueryOpMockHandler(),
-	getUserPublicProfilesQueryOpMockHandler()
+	getUserPublicProfilesQueryOpMockHandler(),
+	getUsernameExistsQueryOpMockHandler()
 ]

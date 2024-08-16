@@ -111,7 +111,7 @@ class AbstractUserRepository(AbstractRepository[User], Protocol):
         ...
 
     # ======================================
-    # Query-only methods
+    # Query-focused methods
     # ======================================
 
     async def get_by_ids(self, ids: list[uuid.UUID]) -> list[User]:
@@ -120,6 +120,18 @@ class AbstractUserRepository(AbstractRepository[User], Protocol):
 
         Args:
             ids (list[uuid.UUID]): the ids to search for.
+
+        Returns:
+            list[User]: the found users.
+        """
+        ...
+
+    async def get_by_usernames(self, usernames: list[str]) -> list[User]:
+        """
+        Given a list of usernames return the users to whom they belong.
+
+        Args:
+            usernames (list[str]): the usernames to search for.
 
         Returns:
             list[User]: the found users.

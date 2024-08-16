@@ -23,7 +23,6 @@ class GardenQueryController(Controller):
     async def generate_unique_garden_key(
         self,
         state: State,
-        request: Request,
         svcs_container: Container = Dependency(skip_validation=True),
     ) -> queries.UniqueGardenKeyResult:
         """
@@ -39,7 +38,7 @@ class GardenQueryController(Controller):
         """
         svcs_container.register_local_value(State, state)
         key = await queries.generate_unique_garden_key(
-            svcs_container=svcs_container, client=request.user
+            svcs_container=svcs_container
         )
         return key
 

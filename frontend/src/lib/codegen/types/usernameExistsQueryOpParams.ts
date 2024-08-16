@@ -6,9 +6,6 @@
  * OpenAPI spec version: 0.1.0
  */
 
-export interface GardenMembershipCreateCommand {
-	admin_usernames?: string[]
-	editor_usernames?: string[]
-	garden_id: string
-	viewer_usernames?: string[]
+export type UsernameExistsQueryOpParams = {
+	username: string
 }

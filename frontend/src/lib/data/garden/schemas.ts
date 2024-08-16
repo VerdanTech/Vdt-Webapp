@@ -45,5 +45,6 @@ export const gardenFieldSchemas = {
 			gardenFields.garden_description.max_length.message
 		)
 		.describe(gardenFields.garden_description.description),
-	visibility: zod.nativeEnum(GardenCreateCommandVisibility).optional()
+	visibility: zod.nativeEnum(GardenCreateCommandVisibility),
+	user_invites_list: zod.array(zod.string()).max(gardenFields.user_invites_list.max_length.value, gardenFields.user_invites_list.max_length.message).describe(gardenFields.user_invites_list.description)
 }

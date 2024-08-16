@@ -137,9 +137,9 @@ class SpecManager:
                 # Get the value for the spec
                 value = spec_collection.values[field][spec]
 
-                # Apply strings to pattern
+                # Apply slashes to pattern
                 if spec.value == Specs.PATTERN.value:
-                    value = f"'{value}'"
+                    value = f"/{value}/"
 
                 # Get the descripton for the spec.
                 try:

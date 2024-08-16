@@ -142,7 +142,7 @@ class GardenFullByKeyQuery(Query):
 
 
 async def generate_unique_garden_key(
-    svcs_container: Container, client: User
+    svcs_container: Container
 ) -> UniqueGardenKeyResult:
     """
     Generate a unique garden key for the client.
