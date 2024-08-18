@@ -3,7 +3,7 @@
     import GardenThumbnail from "./GardenThumbnail.svelte";
 </script>
 
-<ScrollArea orientation="horizontal" class="h-64 w-full">
+<ScrollArea type="auto" orientation="horizontal" class="h-64 w-full">
     <div class="flex flex-row ">
         <GardenThumbnail />
         <GardenThumbnail />

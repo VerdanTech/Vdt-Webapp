@@ -9,5 +9,11 @@
 </script>
 
 <Button variant="outline" class="w-64 h-48 bg-neutral-2 hover:bg-neutral-3 text-xl line-clamp-2">
+    <p>
         Garden Name my name is the garden name totally Garden Name my name is the garden name totally Garden Name my name is the garden name totally Garden Name my name is the garden name totally
+    </p>
+
+    <span>
+        keeykey
+    </span>
 </Button>
