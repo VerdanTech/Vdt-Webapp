@@ -22,25 +22,33 @@
 		addOnPaste: true,
 		trim: true,
 		maxTags: gardenFields.user_invites_list.max_length.value,
-		placeholder: "Enter a username",
+		placeholder: 'Enter a username',
 		/** Sync the bindable input prop and Melt's writable store. */
 		add(tag: string) {
 			tagsInput?.push(tag)
-			return {id: tag, value: tag}
+			return { id: tag, value: tag }
 		},
 		/** The ID of the tag is the previous ID, the value is the newly set value. */
 		update(tag: Tag.Tag) {
-			tagsInput = tagsInput?.filter(username => {return username!==tag.id})
-			return {id: tag.value, value: tag.value}
+			tagsInput = tagsInput?.filter((username) => {
+				return username !== tag.id
+			})
+			return { id: tag.value, value: tag.value }
 		},
 		remove(tag: Tag.Tag) {
-			tagsInput = tagsInput?.filter(username => {return username!==tag.id})
+			tagsInput = tagsInput?.filter((username) => {
+				return username !== tag.id
+			})
 			return true
 		}
 	})
-	
+
 	/** TODO: Indicate in the input whether the username exists. */
-	const usernameQueries = usernamesExistQueries(tags.get().map(tag => {return tag.value}))
+	const usernameQueries = usernamesExistQueries(
+		tags.get().map((tag) => {
+			return tag.value
+		})
+	)
 	// #if usernameQueries.some(usernameQuery => usernameQuery.queryKey)
 </script>
 

@@ -8,11 +8,11 @@
 import { faker } from '@faker-js/faker'
 import { HttpResponse, delay, http } from 'msw'
 import type {
-	AssociatedPartialsResult,
+	GardenAssociatedPartialsResult,
 	GardenFullSchema,
 	GardenPartialSchema,
-	RefSchema,
-	UniqueGardenKeyResult
+	GardenUniqueKeyResult,
+	RefSchema
 } from '../../types'
 
 export const getGardenAssociatedPartialsQueryOpResponseRefSchemaMock = (
@@ -20,8 +20,8 @@ export const getGardenAssociatedPartialsQueryOpResponseRefSchemaMock = (
 ): RefSchema => ({ ...{ id: faker.string.uuid() }, ...overrideResponse })
 
 export const getGardenAssociatedPartialsQueryOpResponseMock = (
-	overrideResponse: Partial<AssociatedPartialsResult> = {}
-): AssociatedPartialsResult => ({
+	overrideResponse: Partial<GardenAssociatedPartialsResult> = {}
+): GardenAssociatedPartialsResult => ({
 	admin_memberships: Array.from(
 		{ length: faker.number.int({ min: 1, max: 10 }) },
 		(_, i) => i + 1
@@ -52,10 +52,6 @@ export const getGardenAssociatedPartialsQueryOpResponseMock = (
 		visibility: faker.helpers.arrayElement(['private', 'unlisted', 'public'] as const)
 	})),
 	pending_memberships: Array.from(
-		{ length: faker.number.int({ min: 1, max: 10 }) },
-		(_, i) => i + 1
-	).map(() => faker.string.uuid()),
-	recently_viewed: Array.from(
 		{ length: faker.number.int({ min: 1, max: 10 }) },
 		(_, i) => i + 1
 	).map(() => faker.string.uuid()),
@@ -116,8 +112,8 @@ export const getGardenFullByKeyQueryOpResponseMock = (
 })
 
 export const getGardenGenerateUniqueKeyQueryOpResponseMock = (
-	overrideResponse: Partial<UniqueGardenKeyResult> = {}
-): UniqueGardenKeyResult => ({ key: faker.word.sample(), ...overrideResponse })
+	overrideResponse: Partial<GardenUniqueKeyResult> = {}
+): GardenUniqueKeyResult => ({ key: faker.word.sample(), ...overrideResponse })
 
 export const getGardenMostRelevantPartialsQueryOpResponseRefSchemaMock = (
 	overrideResponse: Partial<RefSchema> = {}
@@ -242,10 +238,10 @@ export const getGardenMembershipRevokeCommandOpMockHandler = () => {
 
 export const getGardenAssociatedPartialsQueryOpMockHandler = (
 	overrideResponse?:
-		| AssociatedPartialsResult
+		| GardenAssociatedPartialsResult
 		| ((
 				info: Parameters<Parameters<typeof http.get>[1]>[0]
-		  ) => Promise<AssociatedPartialsResult> | AssociatedPartialsResult)
+		  ) => Promise<GardenAssociatedPartialsResult> | GardenAssociatedPartialsResult)
 ) => {
 	return http.get('*/gardens/query/associated_partials', async (info) => {
 		await delay(1000)
@@ -296,10 +292,10 @@ export const getGardenFullByKeyQueryOpMockHandler = (
 
 export const getGardenGenerateUniqueKeyQueryOpMockHandler = (
 	overrideResponse?:
-		| UniqueGardenKeyResult
+		| GardenUniqueKeyResult
 		| ((
 				info: Parameters<Parameters<typeof http.get>[1]>[0]
-		  ) => Promise<UniqueGardenKeyResult> | UniqueGardenKeyResult)
+		  ) => Promise<GardenUniqueKeyResult> | GardenUniqueKeyResult)
 ) => {
 	return http.get('*/gardens/query/generate_unique_key', async (info) => {
 		await delay(1000)

@@ -3,7 +3,7 @@
 	import { Separator, Toolbar } from 'bits-ui'
 	import { Combobox } from 'bits-ui'
 	import { Input } from '$lib/components/generic/ui/input/index.js'
-	import { cn, flyAndScale } from '$lib/utils'
+	import { cn, flyAndScale } from '$lib/utils/shadcn'
 	import CaretLeftIcon from 'virtual:icons/material-symbols/arrow-back-ios-rounded'
 	import CaretRightIcon from 'virtual:icons/material-symbols/arrow-forward-ios-rounded'
 	import CalendarBlankIcon from 'virtual:icons/material-symbols/calendar-today-outline'

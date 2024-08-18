@@ -9,12 +9,20 @@ import type { GardenCreateCommandKey } from './gardenCreateCommandKey'
 import type { GardenCreateCommandVisibility } from './gardenCreateCommandVisibility'
 
 export interface GardenCreateCommand {
+	/**
+	 * A maximum of 10 users can be invited at once
+	 * @maxLength 10
+	 */
 	admin_usernames?: string[]
 	/**
 	 * Must be at most 1400 characters
 	 * @maxLength 1400
 	 */
 	description?: string
+	/**
+	 * A maximum of 10 users can be invited at once
+	 * @maxLength 10
+	 */
 	editor_usernames?: string[]
 	key?: GardenCreateCommandKey
 	/**
@@ -24,6 +32,10 @@ export interface GardenCreateCommand {
 	 * @pattern [0-9A-Za-z ]+
 	 */
 	name: string
+	/**
+	 * A maximum of 10 users can be invited at once
+	 * @maxLength 10
+	 */
 	viewer_usernames?: string[]
 	visibility?: GardenCreateCommandVisibility
 }

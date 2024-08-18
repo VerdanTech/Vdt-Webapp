@@ -1,13 +1,11 @@
 import { useQuery } from '@sveltestack/svelte-query'
-import type { UseQueryStoreResult, UseQueryOptions } from '@sveltestack/svelte-query'
-import type { AxiosResponse, AxiosError } from 'axios'
+import type { UseQueryOptions } from '@sveltestack/svelte-query'
 import {
 	gardenGenerateUniqueKeyQueryOp,
 	gardenAssociatedPartialsQueryOp,
 	gardenMostRelevantPartialsQueryOp,
 	gardenPartialsByKeysQueryOp,
-	gardenFullByKeyQueryOp,
-	GardenGenerateUniqueKeyQueryOpResult
+	gardenFullByKeyQueryOp
 } from '$codegen'
 import type {
 	GardenMostRelevantPartialsQueryOpParams,
@@ -15,16 +13,18 @@ import type {
 	GardenFullSchema,
 	GardenPartialsByKeysQueryOpParams,
 	GardenFullByKeyQueryOpParams,
-	UniqueGardenKeyResult
+	GardenUniqueKeyResult,
+	GardenAssociatedPartialsResult
 } from '$codegen/types'
+import { AxiosResponse } from 'axios'
 
 /**
  * Retrieves a unique garden key.
  */
 export const gardenGenerateUniqueKeyQuery = (
-	options?: UseQueryOptions<UniqueGardenKeyResult>
+	options?: UseQueryOptions<GardenUniqueKeyResult>
 ) => {
-	return useQuery<UniqueGardenKeyResult>(
+	return useQuery<GardenUniqueKeyResult>(
 		'uniqueGardenKey',
 		gardenGenerateUniqueKeyQueryOp,
 		options
@@ -35,8 +35,14 @@ export const gardenGenerateUniqueKeyQuery = (
  * Returns a partial representation of all gardens
  * that are associated withthe client.
  */
-export const gardenAssociatedPartialsQuery = (options?: UseQueryOptions) => {
-	return useQuery('userVisibleGardens', gardenAssociatedPartialsQueryOp, options)
+export const gardenAssociatedPartialsQuery = (
+	options?: UseQueryOptions<AxiosResponse<GardenAssociatedPartialsResult>>
+) => {
+	return useQuery<AxiosResponse<GardenAssociatedPartialsResult>>(
+		'userVisibleGardens',
+		gardenAssociatedPartialsQueryOp,
+		options
+	)
 }
 
 /**

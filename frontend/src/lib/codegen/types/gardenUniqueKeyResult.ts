@@ -6,8 +6,6 @@
  * OpenAPI spec version: 0.1.0
  */
 
-export interface EmailSchema {
-	address: string
-	primary: boolean
-	verified: boolean
+export interface GardenUniqueKeyResult {
+	key: string
 }

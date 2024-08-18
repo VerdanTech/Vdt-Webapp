@@ -6,8 +6,7 @@
  * OpenAPI spec version: 0.1.0
  */
 
-export * from './associatedPartialsResult'
-export * from './emailSchema'
+export * from './gardenAssociatedPartialsResult'
 export * from './gardenCreateCommand'
 export * from './gardenCreateCommandKey'
 export * from './gardenCreateCommandVisibility'
@@ -30,11 +29,12 @@ export * from './gardenPartialSchema'
 export * from './gardenPartialSchemaCreatorRef'
 export * from './gardenPartialSchemaVisibility'
 export * from './gardenPartialsByKeysQueryOpParams'
+export * from './gardenUniqueKeyResult'
 export * from './refSchema'
-export * from './uniqueGardenKeyResult'
 export * from './userConfirmEmailConfirmationCommand'
 export * from './userConfirmPasswordResetCommand'
 export * from './userCreateCommand'
+export * from './userEmailSchema'
 export * from './userFullSchema'
 export * from './userPasswordVerificationQuery'
 export * from './userPublicProfilesQueryOpParams'

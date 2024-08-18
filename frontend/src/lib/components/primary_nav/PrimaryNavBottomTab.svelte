@@ -3,7 +3,7 @@
 	import { Button } from '$lib/components/ui/button'
 	import { Separator } from '$lib/components/ui/separator/index.js'
 	import { Popover } from 'bits-ui'
-	import { flyAndScale } from '$lib/utils'
+	import { flyAndScale } from '$lib/utils/shadcn'
 	import type { PrimaryTabSpec } from './primaryNavTabs'
 
 	type Props = {

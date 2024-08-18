@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { Calendar as CalendarPrimitive } from 'bits-ui'
 	import * as Calendar from './index.js'
-	import { cn } from '$lib/utils.js'
+	import { cn } from '$lib/utils/shadcn.js'
 
 	type $$Props = CalendarPrimitive.Props
 

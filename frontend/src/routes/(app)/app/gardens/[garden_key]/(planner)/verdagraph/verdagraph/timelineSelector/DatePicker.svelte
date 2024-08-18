@@ -4,7 +4,7 @@
 		DateFormatter,
 		getLocalTimeZone
 	} from '@internationalized/date'
-	import { cn } from '$lib/utils.js'
+	import { cn } from '$lib/utils/shadcn.js'
 	import { Calendar } from '$lib/components/ui/calendar'
 	import * as Popover from '$lib/components/ui/popover/index.js'
 	import { Button } from 'bits-ui'

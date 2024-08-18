@@ -47,6 +47,7 @@
 		/** Don't re-request keys. */
 		staleTime: Infinity
 	})
+	/* Request the query. */
 	$gardenGenerateUniqueKey
 
 	/* Defines the labels for the visibility enum options. */
