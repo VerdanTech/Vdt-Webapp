@@ -28,13 +28,13 @@
 	/** Manage the loading state ourselves as for some reason the svelte-query one doesn't work correctly with the form. */
 	let keyGenerationLoading = $state(true)
 	const gardenGenerateUniqueKey = gardenGenerateUniqueKeyQuery({
-		onSuccess: (response) => {
-			if (!response) {
+		onSuccess: (data) => {
+			if (!data) {
 				return
 			}
 			keyGenerationLoading = false
 			// @ts-ignore
-			$formData.key = response.data.key
+			$formData.key = data.key
 		},
 		onError: (error) => {
 			if (!error) {

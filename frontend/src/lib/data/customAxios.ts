@@ -20,7 +20,7 @@ AXIOS_INSTANCE.interceptors.response.use(
 			//console.log(`Received response from request with config ${response.config}`)
 			//console.log(response.)
 		}
-		return response
+		return response.data
 	},
 	(error) => {
 		if (process.env.NODE_ENV === 'development') {

@@ -11,7 +11,7 @@
 
 <Button
 	variant="outline"
-	class="flex h-48 w-64 flex-col justify-around bg-neutral-2 text-xl hover:bg-neutral-3 mx-4"
+	class="mx-4 flex h-48 w-64 flex-col justify-around bg-neutral-2 text-xl hover:bg-neutral-3"
 >
 	<p class="h-auto max-h-32 w-full max-w-full overflow-hidden text-wrap">
 		{gardenName}

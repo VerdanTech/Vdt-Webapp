@@ -23,7 +23,7 @@
 	<slot />
 	<ScrollAreaPrimitive.Thumb
 		class={cn(
-			'bg-border relative rounded-full',
+			'bg-neutral-6 relative rounded-full',
 			orientation === 'vertical' && 'flex-1'
 		)}
 	/>

@@ -5,16 +5,6 @@
  * Backend API of the VerdanTech software project.
  * OpenAPI spec version: 0.1.0
  */
-import { useMutation, useQuery } from '@sveltestack/svelte-query'
-import type {
-	CreateMutationResult,
-	MutationFunction,
-	QueryFunction,
-	QueryKey,
-	UseMutationOptions,
-	UseQueryOptions,
-	UseQueryStoreResult
-} from '@sveltestack/svelte-query'
 import type {
 	UserConfirmEmailConfirmationCommand,
 	UserConfirmPasswordResetCommand,
@@ -25,8 +15,7 @@ import type {
 	UserPublicSchema,
 	UserRequestEmailConfirmationCommand,
 	UserRequestPasswordResetCommand,
-	UsernameExistsQueryOpParams,
-	ValidationException
+	UsernameExistsQueryOpParams
 } from '../../types'
 import { axiosClient } from '../../../data/customAxios'
 
@@ -44,66 +33,6 @@ export const userLoginCommandOp = (
 		data: userPasswordVerificationQuery
 	})
 }
-
-export const getUserLoginCommandOpMutationOptions = <
-	TError = ValidationException,
-	TContext = unknown
->(options?: {
-	mutation?: UseMutationOptions<
-		Awaited<ReturnType<typeof userLoginCommandOp>>,
-		TError,
-		{ data: UserPasswordVerificationQuery },
-		TContext
-	>
-}): UseMutationOptions<
-	Awaited<ReturnType<typeof userLoginCommandOp>>,
-	TError,
-	{ data: UserPasswordVerificationQuery },
-	TContext
-> => {
-	const { mutation: mutationOptions } = options ?? {}
-
-	const mutationFn: MutationFunction<
-		Awaited<ReturnType<typeof userLoginCommandOp>>,
-		{ data: UserPasswordVerificationQuery }
-	> = (props) => {
-		const { data } = props ?? {}
-
-		return userLoginCommandOp(data)
-	}
-
-	return { mutationFn, ...mutationOptions }
-}
-
-export type UserLoginCommandOpMutationResult = NonNullable<
-	Awaited<ReturnType<typeof userLoginCommandOp>>
->
-export type UserLoginCommandOpMutationBody = UserPasswordVerificationQuery
-export type UserLoginCommandOpMutationError = ValidationException
-
-/**
- * @summary User login
- */
-export const useUserLoginCommandOp = <
-	TError = ValidationException,
-	TContext = unknown
->(options?: {
-	mutation?: UseMutationOptions<
-		Awaited<ReturnType<typeof userLoginCommandOp>>,
-		TError,
-		{ data: UserPasswordVerificationQuery },
-		TContext
-	>
-}): CreateMutationResult<
-	Awaited<ReturnType<typeof userLoginCommandOp>>,
-	TError,
-	{ data: UserPasswordVerificationQuery },
-	TContext
-> => {
-	const mutationOptions = getUserLoginCommandOpMutationOptions(options)
-
-	return useMutation(mutationOptions)
-}
 /**
  * Registers a new user. Requires email confirmation: False.
  * @summary User registration.
@@ -115,66 +44,6 @@ export const userCreateCommandOp = (userCreateCommand: UserCreateCommand) => {
 		headers: { 'Content-Type': 'application/json' },
 		data: userCreateCommand
 	})
-}
-
-export const getUserCreateCommandOpMutationOptions = <
-	TError = ValidationException,
-	TContext = unknown
->(options?: {
-	mutation?: UseMutationOptions<
-		Awaited<ReturnType<typeof userCreateCommandOp>>,
-		TError,
-		{ data: UserCreateCommand },
-		TContext
-	>
-}): UseMutationOptions<
-	Awaited<ReturnType<typeof userCreateCommandOp>>,
-	TError,
-	{ data: UserCreateCommand },
-	TContext
-> => {
-	const { mutation: mutationOptions } = options ?? {}
-
-	const mutationFn: MutationFunction<
-		Awaited<ReturnType<typeof userCreateCommandOp>>,
-		{ data: UserCreateCommand }
-	> = (props) => {
-		const { data } = props ?? {}
-
-		return userCreateCommandOp(data)
-	}
-
-	return { mutationFn, ...mutationOptions }
-}
-
-export type UserCreateCommandOpMutationResult = NonNullable<
-	Awaited<ReturnType<typeof userCreateCommandOp>>
->
-export type UserCreateCommandOpMutationBody = UserCreateCommand
-export type UserCreateCommandOpMutationError = ValidationException
-
-/**
- * @summary User registration.
- */
-export const useUserCreateCommandOp = <
-	TError = ValidationException,
-	TContext = unknown
->(options?: {
-	mutation?: UseMutationOptions<
-		Awaited<ReturnType<typeof userCreateCommandOp>>,
-		TError,
-		{ data: UserCreateCommand },
-		TContext
-	>
-}): CreateMutationResult<
-	Awaited<ReturnType<typeof userCreateCommandOp>>,
-	TError,
-	{ data: UserCreateCommand },
-	TContext
-> => {
-	const mutationOptions = getUserCreateCommandOpMutationOptions(options)
-
-	return useMutation(mutationOptions)
 }
 /**
  * Closes an email confirmation and verifies the email address.
@@ -190,68 +59,6 @@ export const userConfirmEmailConfirmationCommandOp = (
 		data: userConfirmEmailConfirmationCommand
 	})
 }
-
-export const getUserConfirmEmailConfirmationCommandOpMutationOptions = <
-	TError = ValidationException,
-	TContext = unknown
->(options?: {
-	mutation?: UseMutationOptions<
-		Awaited<ReturnType<typeof userConfirmEmailConfirmationCommandOp>>,
-		TError,
-		{ data: UserConfirmEmailConfirmationCommand },
-		TContext
-	>
-}): UseMutationOptions<
-	Awaited<ReturnType<typeof userConfirmEmailConfirmationCommandOp>>,
-	TError,
-	{ data: UserConfirmEmailConfirmationCommand },
-	TContext
-> => {
-	const { mutation: mutationOptions } = options ?? {}
-
-	const mutationFn: MutationFunction<
-		Awaited<ReturnType<typeof userConfirmEmailConfirmationCommandOp>>,
-		{ data: UserConfirmEmailConfirmationCommand }
-	> = (props) => {
-		const { data } = props ?? {}
-
-		return userConfirmEmailConfirmationCommandOp(data)
-	}
-
-	return { mutationFn, ...mutationOptions }
-}
-
-export type UserConfirmEmailConfirmationCommandOpMutationResult = NonNullable<
-	Awaited<ReturnType<typeof userConfirmEmailConfirmationCommandOp>>
->
-export type UserConfirmEmailConfirmationCommandOpMutationBody =
-	UserConfirmEmailConfirmationCommand
-export type UserConfirmEmailConfirmationCommandOpMutationError = ValidationException
-
-/**
- * @summary Email confirmation.
- */
-export const useUserConfirmEmailConfirmationCommandOp = <
-	TError = ValidationException,
-	TContext = unknown
->(options?: {
-	mutation?: UseMutationOptions<
-		Awaited<ReturnType<typeof userConfirmEmailConfirmationCommandOp>>,
-		TError,
-		{ data: UserConfirmEmailConfirmationCommand },
-		TContext
-	>
-}): CreateMutationResult<
-	Awaited<ReturnType<typeof userConfirmEmailConfirmationCommandOp>>,
-	TError,
-	{ data: UserConfirmEmailConfirmationCommand },
-	TContext
-> => {
-	const mutationOptions =
-		getUserConfirmEmailConfirmationCommandOpMutationOptions(options)
-
-	return useMutation(mutationOptions)
-}
 /**
  * Requests a new email verification email be sent to the email address.
  * @summary Email confirmation request.
@@ -265,68 +72,6 @@ export const userRequestEmailConfirmationCommandOp = (
 		headers: { 'Content-Type': 'application/json' },
 		data: userRequestEmailConfirmationCommand
 	})
-}
-
-export const getUserRequestEmailConfirmationCommandOpMutationOptions = <
-	TError = ValidationException,
-	TContext = unknown
->(options?: {
-	mutation?: UseMutationOptions<
-		Awaited<ReturnType<typeof userRequestEmailConfirmationCommandOp>>,
-		TError,
-		{ data: UserRequestEmailConfirmationCommand },
-		TContext
-	>
-}): UseMutationOptions<
-	Awaited<ReturnType<typeof userRequestEmailConfirmationCommandOp>>,
-	TError,
-	{ data: UserRequestEmailConfirmationCommand },
-	TContext
-> => {
-	const { mutation: mutationOptions } = options ?? {}
-
-	const mutationFn: MutationFunction<
-		Awaited<ReturnType<typeof userRequestEmailConfirmationCommandOp>>,
-		{ data: UserRequestEmailConfirmationCommand }
-	> = (props) => {
-		const { data } = props ?? {}
-
-		return userRequestEmailConfirmationCommandOp(data)
-	}
-
-	return { mutationFn, ...mutationOptions }
-}
-
-export type UserRequestEmailConfirmationCommandOpMutationResult = NonNullable<
-	Awaited<ReturnType<typeof userRequestEmailConfirmationCommandOp>>
->
-export type UserRequestEmailConfirmationCommandOpMutationBody =
-	UserRequestEmailConfirmationCommand
-export type UserRequestEmailConfirmationCommandOpMutationError = ValidationException
-
-/**
- * @summary Email confirmation request.
- */
-export const useUserRequestEmailConfirmationCommandOp = <
-	TError = ValidationException,
-	TContext = unknown
->(options?: {
-	mutation?: UseMutationOptions<
-		Awaited<ReturnType<typeof userRequestEmailConfirmationCommandOp>>,
-		TError,
-		{ data: UserRequestEmailConfirmationCommand },
-		TContext
-	>
-}): CreateMutationResult<
-	Awaited<ReturnType<typeof userRequestEmailConfirmationCommandOp>>,
-	TError,
-	{ data: UserRequestEmailConfirmationCommand },
-	TContext
-> => {
-	const mutationOptions =
-		getUserRequestEmailConfirmationCommandOpMutationOptions(options)
-
-	return useMutation(mutationOptions)
 }
 /**
  * Closes a password reset request and changes the password
@@ -342,67 +87,6 @@ export const userConfirmPasswordResetCommandOp = (
 		data: userConfirmPasswordResetCommand
 	})
 }
-
-export const getUserConfirmPasswordResetCommandOpMutationOptions = <
-	TError = ValidationException,
-	TContext = unknown
->(options?: {
-	mutation?: UseMutationOptions<
-		Awaited<ReturnType<typeof userConfirmPasswordResetCommandOp>>,
-		TError,
-		{ data: UserConfirmPasswordResetCommand },
-		TContext
-	>
-}): UseMutationOptions<
-	Awaited<ReturnType<typeof userConfirmPasswordResetCommandOp>>,
-	TError,
-	{ data: UserConfirmPasswordResetCommand },
-	TContext
-> => {
-	const { mutation: mutationOptions } = options ?? {}
-
-	const mutationFn: MutationFunction<
-		Awaited<ReturnType<typeof userConfirmPasswordResetCommandOp>>,
-		{ data: UserConfirmPasswordResetCommand }
-	> = (props) => {
-		const { data } = props ?? {}
-
-		return userConfirmPasswordResetCommandOp(data)
-	}
-
-	return { mutationFn, ...mutationOptions }
-}
-
-export type UserConfirmPasswordResetCommandOpMutationResult = NonNullable<
-	Awaited<ReturnType<typeof userConfirmPasswordResetCommandOp>>
->
-export type UserConfirmPasswordResetCommandOpMutationBody =
-	UserConfirmPasswordResetCommand
-export type UserConfirmPasswordResetCommandOpMutationError = ValidationException
-
-/**
- * @summary Password reset confirm.
- */
-export const useUserConfirmPasswordResetCommandOp = <
-	TError = ValidationException,
-	TContext = unknown
->(options?: {
-	mutation?: UseMutationOptions<
-		Awaited<ReturnType<typeof userConfirmPasswordResetCommandOp>>,
-		TError,
-		{ data: UserConfirmPasswordResetCommand },
-		TContext
-	>
-}): CreateMutationResult<
-	Awaited<ReturnType<typeof userConfirmPasswordResetCommandOp>>,
-	TError,
-	{ data: UserConfirmPasswordResetCommand },
-	TContext
-> => {
-	const mutationOptions = getUserConfirmPasswordResetCommandOpMutationOptions(options)
-
-	return useMutation(mutationOptions)
-}
 /**
  * Open a new password reset request and sends confirmation email.
  * @summary Password reset request.
@@ -417,322 +101,62 @@ export const userRequestPasswordResetCommandOp = (
 		data: userRequestPasswordResetCommand
 	})
 }
-
-export const getUserRequestPasswordResetCommandOpMutationOptions = <
-	TError = ValidationException,
-	TContext = unknown
->(options?: {
-	mutation?: UseMutationOptions<
-		Awaited<ReturnType<typeof userRequestPasswordResetCommandOp>>,
-		TError,
-		{ data: UserRequestPasswordResetCommand },
-		TContext
-	>
-}): UseMutationOptions<
-	Awaited<ReturnType<typeof userRequestPasswordResetCommandOp>>,
-	TError,
-	{ data: UserRequestPasswordResetCommand },
-	TContext
-> => {
-	const { mutation: mutationOptions } = options ?? {}
-
-	const mutationFn: MutationFunction<
-		Awaited<ReturnType<typeof userRequestPasswordResetCommandOp>>,
-		{ data: UserRequestPasswordResetCommand }
-	> = (props) => {
-		const { data } = props ?? {}
-
-		return userRequestPasswordResetCommandOp(data)
-	}
-
-	return { mutationFn, ...mutationOptions }
-}
-
-export type UserRequestPasswordResetCommandOpMutationResult = NonNullable<
-	Awaited<ReturnType<typeof userRequestPasswordResetCommandOp>>
->
-export type UserRequestPasswordResetCommandOpMutationBody =
-	UserRequestPasswordResetCommand
-export type UserRequestPasswordResetCommandOpMutationError = ValidationException
-
-/**
- * @summary Password reset request.
- */
-export const useUserRequestPasswordResetCommandOp = <
-	TError = ValidationException,
-	TContext = unknown
->(options?: {
-	mutation?: UseMutationOptions<
-		Awaited<ReturnType<typeof userRequestPasswordResetCommandOp>>,
-		TError,
-		{ data: UserRequestPasswordResetCommand },
-		TContext
-	>
-}): CreateMutationResult<
-	Awaited<ReturnType<typeof userRequestPasswordResetCommandOp>>,
-	TError,
-	{ data: UserRequestPasswordResetCommand },
-	TContext
-> => {
-	const mutationOptions = getUserRequestPasswordResetCommandOpMutationOptions(options)
-
-	return useMutation(mutationOptions)
-}
 /**
  * Returns the profile of the authenticated user.
  * @summary User client profile view.
  */
-export const userClientProfileQueryOp = (signal?: AbortSignal) => {
+export const userClientProfileQueryOp = () => {
 	return axiosClient<UserFullSchema>({
 		url: `/users/query/client_profile`,
-		method: 'GET',
-		signal
+		method: 'GET'
 	})
 }
-
-export const getUserClientProfileQueryOpQueryKey = () => {
-	return [`/users/query/client_profile`] as const
-}
-
-export const getUserClientProfileQueryOpQueryOptions = <
-	TData = Awaited<ReturnType<typeof userClientProfileQueryOp>>,
-	TError = unknown
->(options?: {
-	query?: UseQueryOptions<
-		Awaited<ReturnType<typeof userClientProfileQueryOp>>,
-		TError,
-		TData
-	>
-}) => {
-	const { query: queryOptions } = options ?? {}
-
-	const queryKey = queryOptions?.queryKey ?? getUserClientProfileQueryOpQueryKey()
-
-	const queryFn: QueryFunction<
-		Awaited<ReturnType<typeof userClientProfileQueryOp>>
-	> = ({ signal }) => userClientProfileQueryOp(signal)
-
-	return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
-		Awaited<ReturnType<typeof userClientProfileQueryOp>>,
-		TError,
-		TData
-	> & { queryKey: QueryKey }
-}
-
-export type UserClientProfileQueryOpQueryResult = NonNullable<
-	Awaited<ReturnType<typeof userClientProfileQueryOp>>
->
-export type UserClientProfileQueryOpQueryError = unknown
-
-/**
- * @summary User client profile view.
- */
-export const useUserClientProfileQueryOp = <
-	TData = Awaited<ReturnType<typeof userClientProfileQueryOp>>,
-	TError = unknown
->(options?: {
-	query?: UseQueryOptions<
-		Awaited<ReturnType<typeof userClientProfileQueryOp>>,
-		TError,
-		TData
-	>
-}): UseQueryStoreResult<
-	Awaited<ReturnType<typeof userClientProfileQueryOp>>,
-	TError,
-	TData,
-	QueryKey
-> & { queryKey: QueryKey } => {
-	const queryOptions = getUserClientProfileQueryOpQueryOptions(options)
-
-	const query = useQuery(queryOptions) as UseQueryStoreResult<
-		Awaited<ReturnType<typeof userClientProfileQueryOp>>,
-		TError,
-		TData,
-		QueryKey
-	> & { queryKey: QueryKey }
-
-	query.queryKey = queryOptions.queryKey
-
-	return query
-}
-
 /**
  * Returns the profiles of the user ids given.
  * @summary User public profiles view.
  */
-export const userPublicProfilesQueryOp = (
-	params: UserPublicProfilesQueryOpParams,
-	signal?: AbortSignal
-) => {
+export const userPublicProfilesQueryOp = (params: UserPublicProfilesQueryOpParams) => {
 	return axiosClient<UserPublicSchema[]>({
 		url: `/users/query/public_profiles`,
 		method: 'GET',
-		params,
-		signal
+		params
 	})
 }
-
-export const getUserPublicProfilesQueryOpQueryKey = (
-	params: UserPublicProfilesQueryOpParams
-) => {
-	return [`/users/query/public_profiles`, ...(params ? [params] : [])] as const
-}
-
-export const getUserPublicProfilesQueryOpQueryOptions = <
-	TData = Awaited<ReturnType<typeof userPublicProfilesQueryOp>>,
-	TError = ValidationException
->(
-	params: UserPublicProfilesQueryOpParams,
-	options?: {
-		query?: UseQueryOptions<
-			Awaited<ReturnType<typeof userPublicProfilesQueryOp>>,
-			TError,
-			TData
-		>
-	}
-) => {
-	const { query: queryOptions } = options ?? {}
-
-	const queryKey =
-		queryOptions?.queryKey ?? getUserPublicProfilesQueryOpQueryKey(params)
-
-	const queryFn: QueryFunction<
-		Awaited<ReturnType<typeof userPublicProfilesQueryOp>>
-	> = ({ signal }) => userPublicProfilesQueryOp(params, signal)
-
-	return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
-		Awaited<ReturnType<typeof userPublicProfilesQueryOp>>,
-		TError,
-		TData
-	> & { queryKey: QueryKey }
-}
-
-export type UserPublicProfilesQueryOpQueryResult = NonNullable<
-	Awaited<ReturnType<typeof userPublicProfilesQueryOp>>
->
-export type UserPublicProfilesQueryOpQueryError = ValidationException
-
-/**
- * @summary User public profiles view.
- */
-export const useUserPublicProfilesQueryOp = <
-	TData = Awaited<ReturnType<typeof userPublicProfilesQueryOp>>,
-	TError = ValidationException
->(
-	params: UserPublicProfilesQueryOpParams,
-	options?: {
-		query?: UseQueryOptions<
-			Awaited<ReturnType<typeof userPublicProfilesQueryOp>>,
-			TError,
-			TData
-		>
-	}
-): UseQueryStoreResult<
-	Awaited<ReturnType<typeof userPublicProfilesQueryOp>>,
-	TError,
-	TData,
-	QueryKey
-> & { queryKey: QueryKey } => {
-	const queryOptions = getUserPublicProfilesQueryOpQueryOptions(params, options)
-
-	const query = useQuery(queryOptions) as UseQueryStoreResult<
-		Awaited<ReturnType<typeof userPublicProfilesQueryOp>>,
-		TError,
-		TData,
-		QueryKey
-	> & { queryKey: QueryKey }
-
-	query.queryKey = queryOptions.queryKey
-
-	return query
-}
-
 /**
  * Returns true if the given username exists.
  * @summary Checks whether a username exists.
  */
-export const usernameExistsQueryOp = (
-	params: UsernameExistsQueryOpParams,
-	signal?: AbortSignal
-) => {
+export const usernameExistsQueryOp = (params: UsernameExistsQueryOpParams) => {
 	return axiosClient<boolean>({
 		url: `/users/query/username_exists`,
 		method: 'GET',
-		params,
-		signal
+		params
 	})
 }
-
-export const getUsernameExistsQueryOpQueryKey = (
-	params: UsernameExistsQueryOpParams
-) => {
-	return [`/users/query/username_exists`, ...(params ? [params] : [])] as const
-}
-
-export const getUsernameExistsQueryOpQueryOptions = <
-	TData = Awaited<ReturnType<typeof usernameExistsQueryOp>>,
-	TError = ValidationException
->(
-	params: UsernameExistsQueryOpParams,
-	options?: {
-		query?: UseQueryOptions<
-			Awaited<ReturnType<typeof usernameExistsQueryOp>>,
-			TError,
-			TData
-		>
-	}
-) => {
-	const { query: queryOptions } = options ?? {}
-
-	const queryKey = queryOptions?.queryKey ?? getUsernameExistsQueryOpQueryKey(params)
-
-	const queryFn: QueryFunction<Awaited<ReturnType<typeof usernameExistsQueryOp>>> = ({
-		signal
-	}) => usernameExistsQueryOp(params, signal)
-
-	return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
-		Awaited<ReturnType<typeof usernameExistsQueryOp>>,
-		TError,
-		TData
-	> & { queryKey: QueryKey }
-}
-
-export type UsernameExistsQueryOpQueryResult = NonNullable<
+export type UserLoginCommandOpResult = NonNullable<
+	Awaited<ReturnType<typeof userLoginCommandOp>>
+>
+export type UserCreateCommandOpResult = NonNullable<
+	Awaited<ReturnType<typeof userCreateCommandOp>>
+>
+export type UserConfirmEmailConfirmationCommandOpResult = NonNullable<
+	Awaited<ReturnType<typeof userConfirmEmailConfirmationCommandOp>>
+>
+export type UserRequestEmailConfirmationCommandOpResult = NonNullable<
+	Awaited<ReturnType<typeof userRequestEmailConfirmationCommandOp>>
+>
+export type UserConfirmPasswordResetCommandOpResult = NonNullable<
+	Awaited<ReturnType<typeof userConfirmPasswordResetCommandOp>>
+>
+export type UserRequestPasswordResetCommandOpResult = NonNullable<
+	Awaited<ReturnType<typeof userRequestPasswordResetCommandOp>>
+>
+export type UserClientProfileQueryOpResult = NonNullable<
+	Awaited<ReturnType<typeof userClientProfileQueryOp>>
+>
+export type UserPublicProfilesQueryOpResult = NonNullable<
+	Awaited<ReturnType<typeof userPublicProfilesQueryOp>>
+>
+export type UsernameExistsQueryOpResult = NonNullable<
 	Awaited<ReturnType<typeof usernameExistsQueryOp>>
 >
-export type UsernameExistsQueryOpQueryError = ValidationException
-
-/**
- * @summary Checks whether a username exists.
- */
-export const useUsernameExistsQueryOp = <
-	TData = Awaited<ReturnType<typeof usernameExistsQueryOp>>,
-	TError = ValidationException
->(
-	params: UsernameExistsQueryOpParams,
-	options?: {
-		query?: UseQueryOptions<
-			Awaited<ReturnType<typeof usernameExistsQueryOp>>,
-			TError,
-			TData
-		>
-	}
-): UseQueryStoreResult<
-	Awaited<ReturnType<typeof usernameExistsQueryOp>>,
-	TError,
-	TData,
-	QueryKey
-> & { queryKey: QueryKey } => {
-	const queryOptions = getUsernameExistsQueryOpQueryOptions(params, options)
-
-	const query = useQuery(queryOptions) as UseQueryStoreResult<
-		Awaited<ReturnType<typeof usernameExistsQueryOp>>,
-		TError,
-		TData,
-		QueryKey
-	> & { queryKey: QueryKey }
-
-	query.queryKey = queryOptions.queryKey
-
-	return query
-}

@@ -6,11 +6,9 @@
  * OpenAPI spec version: 0.1.0
  */
 import type { GardenPartialSchema } from './gardenPartialSchema'
+import type { GardenMembershipFullSchema } from './gardenMembershipFullSchema'
 
-export interface GardenAssociatedPartialsResult {
-	admin_memberships: string[]
-	edit_memberships: string[]
-	favorites: string[]
-	gardens: GardenPartialSchema[]
-	view_memberships: string[]
+export interface GardenPendingInviteSchema {
+	garden: GardenPartialSchema
+	invite: GardenMembershipFullSchema
 }

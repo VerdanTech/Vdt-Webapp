@@ -11,6 +11,7 @@ import type {
 	GardenAssociatedPartialsResult,
 	GardenFullSchema,
 	GardenPartialSchema,
+	GardenPendingInvitesResult,
 	GardenUniqueKeyResult,
 	RefSchema
 } from '../../types'
@@ -51,10 +52,6 @@ export const getGardenAssociatedPartialsQueryOpResponseMock = (
 		num_memberships: faker.number.int({ min: undefined, max: undefined }),
 		visibility: faker.helpers.arrayElement(['private', 'unlisted', 'public'] as const)
 	})),
-	pending_memberships: Array.from(
-		{ length: faker.number.int({ min: 1, max: 10 }) },
-		(_, i) => i + 1
-	).map(() => faker.string.uuid()),
 	view_memberships: Array.from(
 		{ length: faker.number.int({ min: 1, max: 10 }) },
 		(_, i) => i + 1
@@ -94,7 +91,6 @@ export const getGardenFullByKeyQueryOpResponseMock = (
 		accepted: faker.datatype.boolean(),
 		created_at: `${faker.date.past().toISOString().split('.')[0]}Z`,
 		favorite: faker.datatype.boolean(),
-		garden_ref: { id: faker.string.uuid() },
 		inviter_ref: faker.helpers.arrayElement([
 			faker.helpers.arrayElement([
 				null,
@@ -163,6 +159,49 @@ export const getGardenPartialsByKeysQueryOpResponseMock = (): GardenPartialSchem
 			visibility: faker.helpers.arrayElement(['private', 'unlisted', 'public'] as const)
 		})
 	)
+
+export const getGardenPendingInvitesQueryOpResponseRefSchemaMock = (
+	overrideResponse: Partial<RefSchema> = {}
+): RefSchema => ({ ...{ id: faker.string.uuid() }, ...overrideResponse })
+
+export const getGardenPendingInvitesQueryOpResponseMock = (
+	overrideResponse: Partial<GardenPendingInvitesResult> = {}
+): GardenPendingInvitesResult => ({
+	pending_invites: Array.from(
+		{ length: faker.number.int({ min: 1, max: 10 }) },
+		(_, i) => i + 1
+	).map(() => ({
+		garden: {
+			creator_ref: faker.helpers.arrayElement([
+				faker.helpers.arrayElement([
+					null,
+					{ ...getGardenPendingInvitesQueryOpResponseRefSchemaMock() }
+				]),
+				undefined
+			]),
+			id: faker.string.uuid(),
+			key: faker.word.sample(),
+			name: faker.word.sample(),
+			num_memberships: faker.number.int({ min: undefined, max: undefined }),
+			visibility: faker.helpers.arrayElement(['private', 'unlisted', 'public'] as const)
+		},
+		invite: {
+			accepted: faker.datatype.boolean(),
+			created_at: `${faker.date.past().toISOString().split('.')[0]}Z`,
+			favorite: faker.datatype.boolean(),
+			inviter_ref: faker.helpers.arrayElement([
+				faker.helpers.arrayElement([
+					null,
+					{ ...getGardenPendingInvitesQueryOpResponseRefSchemaMock() }
+				]),
+				undefined
+			]),
+			role: faker.helpers.arrayElement(['admin', 'editor', 'viewer'] as const),
+			user_ref: { id: faker.string.uuid() }
+		}
+	})),
+	...overrideResponse
+})
 
 export const getGardenMembershipAcceptCommandOpMockHandler = () => {
 	return http.post('*/gardens/command/accept_invite', async () => {
@@ -370,6 +409,33 @@ export const getGardenPartialsByKeysQueryOpMockHandler = (
 		)
 	})
 }
+
+export const getGardenPendingInvitesQueryOpMockHandler = (
+	overrideResponse?:
+		| GardenPendingInvitesResult
+		| ((
+				info: Parameters<Parameters<typeof http.get>[1]>[0]
+		  ) => Promise<GardenPendingInvitesResult> | GardenPendingInvitesResult)
+) => {
+	return http.get('*/gardens/query/pending_invites', async (info) => {
+		await delay(1000)
+		return new HttpResponse(
+			JSON.stringify(
+				overrideResponse !== undefined
+					? typeof overrideResponse === 'function'
+						? await overrideResponse(info)
+						: overrideResponse
+					: getGardenPendingInvitesQueryOpResponseMock()
+			),
+			{
+				status: 200,
+				headers: {
+					'Content-Type': 'application/json'
+				}
+			}
+		)
+	})
+}
 export const getGardensMock = () => [
 	getGardenMembershipAcceptCommandOpMockHandler(),
 	getGardenMembershipRoleChangeCommandOpMockHandler(),
@@ -381,5 +447,6 @@ export const getGardensMock = () => [
 	getGardenFullByKeyQueryOpMockHandler(),
 	getGardenGenerateUniqueKeyQueryOpMockHandler(),
 	getGardenMostRelevantPartialsQueryOpMockHandler(),
-	getGardenPartialsByKeysQueryOpMockHandler()
+	getGardenPartialsByKeysQueryOpMockHandler(),
+	getGardenPendingInvitesQueryOpMockHandler()
 ]

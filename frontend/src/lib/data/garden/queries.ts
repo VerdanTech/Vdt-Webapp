@@ -5,7 +5,8 @@ import {
 	gardenAssociatedPartialsQueryOp,
 	gardenMostRelevantPartialsQueryOp,
 	gardenPartialsByKeysQueryOp,
-	gardenFullByKeyQueryOp
+	gardenFullByKeyQueryOp,
+	gardenPendingInvitesQueryOp
 } from '$codegen'
 import type {
 	GardenMostRelevantPartialsQueryOpParams,
@@ -14,7 +15,7 @@ import type {
 	GardenPartialsByKeysQueryOpParams,
 	GardenFullByKeyQueryOpParams,
 	GardenUniqueKeyResult,
-	GardenAssociatedPartialsResult
+	GardenAssociatedPartialsResult,GardenPendingInvitesResult
 } from '$codegen/types'
 import { AxiosResponse } from 'axios'
 
@@ -36,9 +37,9 @@ export const gardenGenerateUniqueKeyQuery = (
  * that are associated withthe client.
  */
 export const gardenAssociatedPartialsQuery = (
-	options?: UseQueryOptions<AxiosResponse<GardenAssociatedPartialsResult>>
+	options?: UseQueryOptions<GardenAssociatedPartialsResult>
 ) => {
-	return useQuery<AxiosResponse<GardenAssociatedPartialsResult>>(
+	return useQuery<GardenAssociatedPartialsResult>(
 		'userVisibleGardens',
 		gardenAssociatedPartialsQueryOp,
 		options
@@ -83,4 +84,17 @@ export const gardenFullQuery = (data: GardenFullByKeyQueryOpParams) => {
 	return useQuery<GardenFullSchema>(['fullByKey', data.garden_key], () => {
 		return gardenFullByKeyQueryOp(data)
 	})
+}
+
+/**
+ * Returns a set of garden and associated pending garden memberships.
+ */
+export const gardenPendingInvitesQuery = (
+	options?: UseQueryOptions<GardenPendingInvitesResult>
+) => {
+	return useQuery<GardenPendingInvitesResult>(
+		'pendingInvites',
+		gardenPendingInvitesQueryOp,
+		options
+	)
 }

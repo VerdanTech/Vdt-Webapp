@@ -5,16 +5,6 @@
  * Backend API of the VerdanTech software project.
  * OpenAPI spec version: 0.1.0
  */
-import { useMutation, useQuery } from '@sveltestack/svelte-query'
-import type {
-	CreateMutationResult,
-	MutationFunction,
-	QueryFunction,
-	QueryKey,
-	UseMutationOptions,
-	UseQueryOptions,
-	UseQueryStoreResult
-} from '@sveltestack/svelte-query'
 import type {
 	GardenAssociatedPartialsResult,
 	GardenCreateCommand,
@@ -28,8 +18,8 @@ import type {
 	GardenMostRelevantPartialsQueryOpParams,
 	GardenPartialSchema,
 	GardenPartialsByKeysQueryOpParams,
-	GardenUniqueKeyResult,
-	ValidationException
+	GardenPendingInvitesResult,
+	GardenUniqueKeyResult
 } from '../../types'
 import { axiosClient } from '../../../data/customAxios'
 
@@ -47,66 +37,6 @@ export const gardenMembershipAcceptCommandOp = (
 		data: gardenMembershipAcceptCommand
 	})
 }
-
-export const getGardenMembershipAcceptCommandOpMutationOptions = <
-	TError = ValidationException,
-	TContext = unknown
->(options?: {
-	mutation?: UseMutationOptions<
-		Awaited<ReturnType<typeof gardenMembershipAcceptCommandOp>>,
-		TError,
-		{ data: GardenMembershipAcceptCommand },
-		TContext
-	>
-}): UseMutationOptions<
-	Awaited<ReturnType<typeof gardenMembershipAcceptCommandOp>>,
-	TError,
-	{ data: GardenMembershipAcceptCommand },
-	TContext
-> => {
-	const { mutation: mutationOptions } = options ?? {}
-
-	const mutationFn: MutationFunction<
-		Awaited<ReturnType<typeof gardenMembershipAcceptCommandOp>>,
-		{ data: GardenMembershipAcceptCommand }
-	> = (props) => {
-		const { data } = props ?? {}
-
-		return gardenMembershipAcceptCommandOp(data)
-	}
-
-	return { mutationFn, ...mutationOptions }
-}
-
-export type GardenMembershipAcceptCommandOpMutationResult = NonNullable<
-	Awaited<ReturnType<typeof gardenMembershipAcceptCommandOp>>
->
-export type GardenMembershipAcceptCommandOpMutationBody = GardenMembershipAcceptCommand
-export type GardenMembershipAcceptCommandOpMutationError = ValidationException
-
-/**
- * @summary Garden membership invitiation acceptance.
- */
-export const useGardenMembershipAcceptCommandOp = <
-	TError = ValidationException,
-	TContext = unknown
->(options?: {
-	mutation?: UseMutationOptions<
-		Awaited<ReturnType<typeof gardenMembershipAcceptCommandOp>>,
-		TError,
-		{ data: GardenMembershipAcceptCommand },
-		TContext
-	>
-}): CreateMutationResult<
-	Awaited<ReturnType<typeof gardenMembershipAcceptCommandOp>>,
-	TError,
-	{ data: GardenMembershipAcceptCommand },
-	TContext
-> => {
-	const mutationOptions = getGardenMembershipAcceptCommandOpMutationOptions(options)
-
-	return useMutation(mutationOptions)
-}
 /**
  * Changes the role on another's Garden Membership.
  * @summary Garden Membership role change.
@@ -121,67 +51,6 @@ export const gardenMembershipRoleChangeCommandOp = (
 		data: gardenMembershipRoleChangeCommand
 	})
 }
-
-export const getGardenMembershipRoleChangeCommandOpMutationOptions = <
-	TError = ValidationException,
-	TContext = unknown
->(options?: {
-	mutation?: UseMutationOptions<
-		Awaited<ReturnType<typeof gardenMembershipRoleChangeCommandOp>>,
-		TError,
-		{ data: GardenMembershipRoleChangeCommand },
-		TContext
-	>
-}): UseMutationOptions<
-	Awaited<ReturnType<typeof gardenMembershipRoleChangeCommandOp>>,
-	TError,
-	{ data: GardenMembershipRoleChangeCommand },
-	TContext
-> => {
-	const { mutation: mutationOptions } = options ?? {}
-
-	const mutationFn: MutationFunction<
-		Awaited<ReturnType<typeof gardenMembershipRoleChangeCommandOp>>,
-		{ data: GardenMembershipRoleChangeCommand }
-	> = (props) => {
-		const { data } = props ?? {}
-
-		return gardenMembershipRoleChangeCommandOp(data)
-	}
-
-	return { mutationFn, ...mutationOptions }
-}
-
-export type GardenMembershipRoleChangeCommandOpMutationResult = NonNullable<
-	Awaited<ReturnType<typeof gardenMembershipRoleChangeCommandOp>>
->
-export type GardenMembershipRoleChangeCommandOpMutationBody =
-	GardenMembershipRoleChangeCommand
-export type GardenMembershipRoleChangeCommandOpMutationError = ValidationException
-
-/**
- * @summary Garden Membership role change.
- */
-export const useGardenMembershipRoleChangeCommandOp = <
-	TError = ValidationException,
-	TContext = unknown
->(options?: {
-	mutation?: UseMutationOptions<
-		Awaited<ReturnType<typeof gardenMembershipRoleChangeCommandOp>>,
-		TError,
-		{ data: GardenMembershipRoleChangeCommand },
-		TContext
-	>
-}): CreateMutationResult<
-	Awaited<ReturnType<typeof gardenMembershipRoleChangeCommandOp>>,
-	TError,
-	{ data: GardenMembershipRoleChangeCommand },
-	TContext
-> => {
-	const mutationOptions = getGardenMembershipRoleChangeCommandOpMutationOptions(options)
-
-	return useMutation(mutationOptions)
-}
 /**
  * Creates a new Garden and invites requested users.
  * @summary Garden creation.
@@ -193,66 +62,6 @@ export const gardenCreateCommandOp = (gardenCreateCommand: GardenCreateCommand) 
 		headers: { 'Content-Type': 'application/json' },
 		data: gardenCreateCommand
 	})
-}
-
-export const getGardenCreateCommandOpMutationOptions = <
-	TError = ValidationException,
-	TContext = unknown
->(options?: {
-	mutation?: UseMutationOptions<
-		Awaited<ReturnType<typeof gardenCreateCommandOp>>,
-		TError,
-		{ data: GardenCreateCommand },
-		TContext
-	>
-}): UseMutationOptions<
-	Awaited<ReturnType<typeof gardenCreateCommandOp>>,
-	TError,
-	{ data: GardenCreateCommand },
-	TContext
-> => {
-	const { mutation: mutationOptions } = options ?? {}
-
-	const mutationFn: MutationFunction<
-		Awaited<ReturnType<typeof gardenCreateCommandOp>>,
-		{ data: GardenCreateCommand }
-	> = (props) => {
-		const { data } = props ?? {}
-
-		return gardenCreateCommandOp(data)
-	}
-
-	return { mutationFn, ...mutationOptions }
-}
-
-export type GardenCreateCommandOpMutationResult = NonNullable<
-	Awaited<ReturnType<typeof gardenCreateCommandOp>>
->
-export type GardenCreateCommandOpMutationBody = GardenCreateCommand
-export type GardenCreateCommandOpMutationError = ValidationException
-
-/**
- * @summary Garden creation.
- */
-export const useGardenCreateCommandOp = <
-	TError = ValidationException,
-	TContext = unknown
->(options?: {
-	mutation?: UseMutationOptions<
-		Awaited<ReturnType<typeof gardenCreateCommandOp>>,
-		TError,
-		{ data: GardenCreateCommand },
-		TContext
-	>
-}): CreateMutationResult<
-	Awaited<ReturnType<typeof gardenCreateCommandOp>>,
-	TError,
-	{ data: GardenCreateCommand },
-	TContext
-> => {
-	const mutationOptions = getGardenCreateCommandOpMutationOptions(options)
-
-	return useMutation(mutationOptions)
 }
 /**
  * Creates new Garden Memberships and sends email confirmation emails.
@@ -268,66 +77,6 @@ export const gardenMembershipCreateCommandOp = (
 		data: gardenMembershipCreateCommand
 	})
 }
-
-export const getGardenMembershipCreateCommandOpMutationOptions = <
-	TError = ValidationException,
-	TContext = unknown
->(options?: {
-	mutation?: UseMutationOptions<
-		Awaited<ReturnType<typeof gardenMembershipCreateCommandOp>>,
-		TError,
-		{ data: GardenMembershipCreateCommand },
-		TContext
-	>
-}): UseMutationOptions<
-	Awaited<ReturnType<typeof gardenMembershipCreateCommandOp>>,
-	TError,
-	{ data: GardenMembershipCreateCommand },
-	TContext
-> => {
-	const { mutation: mutationOptions } = options ?? {}
-
-	const mutationFn: MutationFunction<
-		Awaited<ReturnType<typeof gardenMembershipCreateCommandOp>>,
-		{ data: GardenMembershipCreateCommand }
-	> = (props) => {
-		const { data } = props ?? {}
-
-		return gardenMembershipCreateCommandOp(data)
-	}
-
-	return { mutationFn, ...mutationOptions }
-}
-
-export type GardenMembershipCreateCommandOpMutationResult = NonNullable<
-	Awaited<ReturnType<typeof gardenMembershipCreateCommandOp>>
->
-export type GardenMembershipCreateCommandOpMutationBody = GardenMembershipCreateCommand
-export type GardenMembershipCreateCommandOpMutationError = ValidationException
-
-/**
- * @summary Garden membership invitiation.
- */
-export const useGardenMembershipCreateCommandOp = <
-	TError = ValidationException,
-	TContext = unknown
->(options?: {
-	mutation?: UseMutationOptions<
-		Awaited<ReturnType<typeof gardenMembershipCreateCommandOp>>,
-		TError,
-		{ data: GardenMembershipCreateCommand },
-		TContext
-	>
-}): CreateMutationResult<
-	Awaited<ReturnType<typeof gardenMembershipCreateCommandOp>>,
-	TError,
-	{ data: GardenMembershipCreateCommand },
-	TContext
-> => {
-	const mutationOptions = getGardenMembershipCreateCommandOpMutationOptions(options)
-
-	return useMutation(mutationOptions)
-}
 /**
  * Removes one's own Garden Membership from a garden.
  * @summary Garden membership deletion.
@@ -341,66 +90,6 @@ export const gardenMembershipDeleteCommandOp = (
 		headers: { 'Content-Type': 'application/json' },
 		data: gardenMembershipDeleteCommand
 	})
-}
-
-export const getGardenMembershipDeleteCommandOpMutationOptions = <
-	TError = ValidationException,
-	TContext = unknown
->(options?: {
-	mutation?: UseMutationOptions<
-		Awaited<ReturnType<typeof gardenMembershipDeleteCommandOp>>,
-		TError,
-		{ data: GardenMembershipDeleteCommand },
-		TContext
-	>
-}): UseMutationOptions<
-	Awaited<ReturnType<typeof gardenMembershipDeleteCommandOp>>,
-	TError,
-	{ data: GardenMembershipDeleteCommand },
-	TContext
-> => {
-	const { mutation: mutationOptions } = options ?? {}
-
-	const mutationFn: MutationFunction<
-		Awaited<ReturnType<typeof gardenMembershipDeleteCommandOp>>,
-		{ data: GardenMembershipDeleteCommand }
-	> = (props) => {
-		const { data } = props ?? {}
-
-		return gardenMembershipDeleteCommandOp(data)
-	}
-
-	return { mutationFn, ...mutationOptions }
-}
-
-export type GardenMembershipDeleteCommandOpMutationResult = NonNullable<
-	Awaited<ReturnType<typeof gardenMembershipDeleteCommandOp>>
->
-export type GardenMembershipDeleteCommandOpMutationBody = GardenMembershipDeleteCommand
-export type GardenMembershipDeleteCommandOpMutationError = ValidationException
-
-/**
- * @summary Garden membership deletion.
- */
-export const useGardenMembershipDeleteCommandOp = <
-	TError = ValidationException,
-	TContext = unknown
->(options?: {
-	mutation?: UseMutationOptions<
-		Awaited<ReturnType<typeof gardenMembershipDeleteCommandOp>>,
-		TError,
-		{ data: GardenMembershipDeleteCommand },
-		TContext
-	>
-}): CreateMutationResult<
-	Awaited<ReturnType<typeof gardenMembershipDeleteCommandOp>>,
-	TError,
-	{ data: GardenMembershipDeleteCommand },
-	TContext
-> => {
-	const mutationOptions = getGardenMembershipDeleteCommandOpMutationOptions(options)
-
-	return useMutation(mutationOptions)
 }
 /**
  * Removes another's Garden Membership from a garden.
@@ -416,491 +105,106 @@ export const gardenMembershipRevokeCommandOp = (
 		data: gardenMembershipRevokeCommand
 	})
 }
-
-export const getGardenMembershipRevokeCommandOpMutationOptions = <
-	TError = ValidationException,
-	TContext = unknown
->(options?: {
-	mutation?: UseMutationOptions<
-		Awaited<ReturnType<typeof gardenMembershipRevokeCommandOp>>,
-		TError,
-		{ data: GardenMembershipRevokeCommand },
-		TContext
-	>
-}): UseMutationOptions<
-	Awaited<ReturnType<typeof gardenMembershipRevokeCommandOp>>,
-	TError,
-	{ data: GardenMembershipRevokeCommand },
-	TContext
-> => {
-	const { mutation: mutationOptions } = options ?? {}
-
-	const mutationFn: MutationFunction<
-		Awaited<ReturnType<typeof gardenMembershipRevokeCommandOp>>,
-		{ data: GardenMembershipRevokeCommand }
-	> = (props) => {
-		const { data } = props ?? {}
-
-		return gardenMembershipRevokeCommandOp(data)
-	}
-
-	return { mutationFn, ...mutationOptions }
-}
-
-export type GardenMembershipRevokeCommandOpMutationResult = NonNullable<
-	Awaited<ReturnType<typeof gardenMembershipRevokeCommandOp>>
->
-export type GardenMembershipRevokeCommandOpMutationBody = GardenMembershipRevokeCommand
-export type GardenMembershipRevokeCommandOpMutationError = ValidationException
-
-/**
- * @summary Removes a user from a garden.
- */
-export const useGardenMembershipRevokeCommandOp = <
-	TError = ValidationException,
-	TContext = unknown
->(options?: {
-	mutation?: UseMutationOptions<
-		Awaited<ReturnType<typeof gardenMembershipRevokeCommandOp>>,
-		TError,
-		{ data: GardenMembershipRevokeCommand },
-		TContext
-	>
-}): CreateMutationResult<
-	Awaited<ReturnType<typeof gardenMembershipRevokeCommandOp>>,
-	TError,
-	{ data: GardenMembershipRevokeCommand },
-	TContext
-> => {
-	const mutationOptions = getGardenMembershipRevokeCommandOpMutationOptions(options)
-
-	return useMutation(mutationOptions)
-}
 /**
  * Returns a partial representation of all gardens that are associated with the client
  * @summary Returns a partial representation of all gardens that are associated with the client
  */
-export const gardenAssociatedPartialsQueryOp = (signal?: AbortSignal) => {
+export const gardenAssociatedPartialsQueryOp = () => {
 	return axiosClient<GardenAssociatedPartialsResult>({
 		url: `/gardens/query/associated_partials`,
-		method: 'GET',
-		signal
+		method: 'GET'
 	})
 }
-
-export const getGardenAssociatedPartialsQueryOpQueryKey = () => {
-	return [`/gardens/query/associated_partials`] as const
-}
-
-export const getGardenAssociatedPartialsQueryOpQueryOptions = <
-	TData = Awaited<ReturnType<typeof gardenAssociatedPartialsQueryOp>>,
-	TError = unknown
->(options?: {
-	query?: UseQueryOptions<
-		Awaited<ReturnType<typeof gardenAssociatedPartialsQueryOp>>,
-		TError,
-		TData
-	>
-}) => {
-	const { query: queryOptions } = options ?? {}
-
-	const queryKey =
-		queryOptions?.queryKey ?? getGardenAssociatedPartialsQueryOpQueryKey()
-
-	const queryFn: QueryFunction<
-		Awaited<ReturnType<typeof gardenAssociatedPartialsQueryOp>>
-	> = ({ signal }) => gardenAssociatedPartialsQueryOp(signal)
-
-	return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
-		Awaited<ReturnType<typeof gardenAssociatedPartialsQueryOp>>,
-		TError,
-		TData
-	> & { queryKey: QueryKey }
-}
-
-export type GardenAssociatedPartialsQueryOpQueryResult = NonNullable<
-	Awaited<ReturnType<typeof gardenAssociatedPartialsQueryOp>>
->
-export type GardenAssociatedPartialsQueryOpQueryError = unknown
-
-/**
- * @summary Returns a partial representation of all gardens that are associated with the client
- */
-export const useGardenAssociatedPartialsQueryOp = <
-	TData = Awaited<ReturnType<typeof gardenAssociatedPartialsQueryOp>>,
-	TError = unknown
->(options?: {
-	query?: UseQueryOptions<
-		Awaited<ReturnType<typeof gardenAssociatedPartialsQueryOp>>,
-		TError,
-		TData
-	>
-}): UseQueryStoreResult<
-	Awaited<ReturnType<typeof gardenAssociatedPartialsQueryOp>>,
-	TError,
-	TData,
-	QueryKey
-> & { queryKey: QueryKey } => {
-	const queryOptions = getGardenAssociatedPartialsQueryOpQueryOptions(options)
-
-	const query = useQuery(queryOptions) as UseQueryStoreResult<
-		Awaited<ReturnType<typeof gardenAssociatedPartialsQueryOp>>,
-		TError,
-		TData,
-		QueryKey
-	> & { queryKey: QueryKey }
-
-	query.queryKey = queryOptions.queryKey
-
-	return query
-}
-
 /**
  * Returns a full representation of gardens given by a key.
  * @summary Returns a full representation of a garden by its key.
  */
-export const gardenFullByKeyQueryOp = (
-	params: GardenFullByKeyQueryOpParams,
-	signal?: AbortSignal
-) => {
+export const gardenFullByKeyQueryOp = (params: GardenFullByKeyQueryOpParams) => {
 	return axiosClient<GardenFullSchema>({
 		url: `/gardens/query/full_by_key`,
 		method: 'GET',
-		params,
-		signal
+		params
 	})
 }
-
-export const getGardenFullByKeyQueryOpQueryKey = (
-	params: GardenFullByKeyQueryOpParams
-) => {
-	return [`/gardens/query/full_by_key`, ...(params ? [params] : [])] as const
-}
-
-export const getGardenFullByKeyQueryOpQueryOptions = <
-	TData = Awaited<ReturnType<typeof gardenFullByKeyQueryOp>>,
-	TError = ValidationException
->(
-	params: GardenFullByKeyQueryOpParams,
-	options?: {
-		query?: UseQueryOptions<
-			Awaited<ReturnType<typeof gardenFullByKeyQueryOp>>,
-			TError,
-			TData
-		>
-	}
-) => {
-	const { query: queryOptions } = options ?? {}
-
-	const queryKey = queryOptions?.queryKey ?? getGardenFullByKeyQueryOpQueryKey(params)
-
-	const queryFn: QueryFunction<Awaited<ReturnType<typeof gardenFullByKeyQueryOp>>> = ({
-		signal
-	}) => gardenFullByKeyQueryOp(params, signal)
-
-	return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
-		Awaited<ReturnType<typeof gardenFullByKeyQueryOp>>,
-		TError,
-		TData
-	> & { queryKey: QueryKey }
-}
-
-export type GardenFullByKeyQueryOpQueryResult = NonNullable<
-	Awaited<ReturnType<typeof gardenFullByKeyQueryOp>>
->
-export type GardenFullByKeyQueryOpQueryError = ValidationException
-
-/**
- * @summary Returns a full representation of a garden by its key.
- */
-export const useGardenFullByKeyQueryOp = <
-	TData = Awaited<ReturnType<typeof gardenFullByKeyQueryOp>>,
-	TError = ValidationException
->(
-	params: GardenFullByKeyQueryOpParams,
-	options?: {
-		query?: UseQueryOptions<
-			Awaited<ReturnType<typeof gardenFullByKeyQueryOp>>,
-			TError,
-			TData
-		>
-	}
-): UseQueryStoreResult<
-	Awaited<ReturnType<typeof gardenFullByKeyQueryOp>>,
-	TError,
-	TData,
-	QueryKey
-> & { queryKey: QueryKey } => {
-	const queryOptions = getGardenFullByKeyQueryOpQueryOptions(params, options)
-
-	const query = useQuery(queryOptions) as UseQueryStoreResult<
-		Awaited<ReturnType<typeof gardenFullByKeyQueryOp>>,
-		TError,
-		TData,
-		QueryKey
-	> & { queryKey: QueryKey }
-
-	query.queryKey = queryOptions.queryKey
-
-	return query
-}
-
 /**
  * Generates a unique garden key given a plant name and a random string.
  * @summary Generate a new, unique garden key.
  */
-export const gardenGenerateUniqueKeyQueryOp = (signal?: AbortSignal) => {
+export const gardenGenerateUniqueKeyQueryOp = () => {
 	return axiosClient<GardenUniqueKeyResult>({
 		url: `/gardens/query/generate_unique_key`,
-		method: 'GET',
-		signal
+		method: 'GET'
 	})
 }
-
-export const getGardenGenerateUniqueKeyQueryOpQueryKey = () => {
-	return [`/gardens/query/generate_unique_key`] as const
-}
-
-export const getGardenGenerateUniqueKeyQueryOpQueryOptions = <
-	TData = Awaited<ReturnType<typeof gardenGenerateUniqueKeyQueryOp>>,
-	TError = unknown
->(options?: {
-	query?: UseQueryOptions<
-		Awaited<ReturnType<typeof gardenGenerateUniqueKeyQueryOp>>,
-		TError,
-		TData
-	>
-}) => {
-	const { query: queryOptions } = options ?? {}
-
-	const queryKey = queryOptions?.queryKey ?? getGardenGenerateUniqueKeyQueryOpQueryKey()
-
-	const queryFn: QueryFunction<
-		Awaited<ReturnType<typeof gardenGenerateUniqueKeyQueryOp>>
-	> = ({ signal }) => gardenGenerateUniqueKeyQueryOp(signal)
-
-	return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
-		Awaited<ReturnType<typeof gardenGenerateUniqueKeyQueryOp>>,
-		TError,
-		TData
-	> & { queryKey: QueryKey }
-}
-
-export type GardenGenerateUniqueKeyQueryOpQueryResult = NonNullable<
-	Awaited<ReturnType<typeof gardenGenerateUniqueKeyQueryOp>>
->
-export type GardenGenerateUniqueKeyQueryOpQueryError = unknown
-
-/**
- * @summary Generate a new, unique garden key.
- */
-export const useGardenGenerateUniqueKeyQueryOp = <
-	TData = Awaited<ReturnType<typeof gardenGenerateUniqueKeyQueryOp>>,
-	TError = unknown
->(options?: {
-	query?: UseQueryOptions<
-		Awaited<ReturnType<typeof gardenGenerateUniqueKeyQueryOp>>,
-		TError,
-		TData
-	>
-}): UseQueryStoreResult<
-	Awaited<ReturnType<typeof gardenGenerateUniqueKeyQueryOp>>,
-	TError,
-	TData,
-	QueryKey
-> & { queryKey: QueryKey } => {
-	const queryOptions = getGardenGenerateUniqueKeyQueryOpQueryOptions(options)
-
-	const query = useQuery(queryOptions) as UseQueryStoreResult<
-		Awaited<ReturnType<typeof gardenGenerateUniqueKeyQueryOp>>,
-		TError,
-		TData,
-		QueryKey
-	> & { queryKey: QueryKey }
-
-	query.queryKey = queryOptions.queryKey
-
-	return query
-}
-
 /**
  * Returns a partial representation of most relevant gardens to the user, ordered by relevance.
  * @summary Returns a partial representation of most relevant gardens to the user.
  */
 export const gardenMostRelevantPartialsQueryOp = (
-	params: GardenMostRelevantPartialsQueryOpParams,
-	signal?: AbortSignal
+	params: GardenMostRelevantPartialsQueryOpParams
 ) => {
 	return axiosClient<GardenPartialSchema[]>({
 		url: `/gardens/query/most_relevant`,
 		method: 'GET',
-		params,
-		signal
+		params
 	})
 }
-
-export const getGardenMostRelevantPartialsQueryOpQueryKey = (
-	params: GardenMostRelevantPartialsQueryOpParams
-) => {
-	return [`/gardens/query/most_relevant`, ...(params ? [params] : [])] as const
-}
-
-export const getGardenMostRelevantPartialsQueryOpQueryOptions = <
-	TData = Awaited<ReturnType<typeof gardenMostRelevantPartialsQueryOp>>,
-	TError = ValidationException
->(
-	params: GardenMostRelevantPartialsQueryOpParams,
-	options?: {
-		query?: UseQueryOptions<
-			Awaited<ReturnType<typeof gardenMostRelevantPartialsQueryOp>>,
-			TError,
-			TData
-		>
-	}
-) => {
-	const { query: queryOptions } = options ?? {}
-
-	const queryKey =
-		queryOptions?.queryKey ?? getGardenMostRelevantPartialsQueryOpQueryKey(params)
-
-	const queryFn: QueryFunction<
-		Awaited<ReturnType<typeof gardenMostRelevantPartialsQueryOp>>
-	> = ({ signal }) => gardenMostRelevantPartialsQueryOp(params, signal)
-
-	return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
-		Awaited<ReturnType<typeof gardenMostRelevantPartialsQueryOp>>,
-		TError,
-		TData
-	> & { queryKey: QueryKey }
-}
-
-export type GardenMostRelevantPartialsQueryOpQueryResult = NonNullable<
-	Awaited<ReturnType<typeof gardenMostRelevantPartialsQueryOp>>
->
-export type GardenMostRelevantPartialsQueryOpQueryError = ValidationException
-
-/**
- * @summary Returns a partial representation of most relevant gardens to the user.
- */
-export const useGardenMostRelevantPartialsQueryOp = <
-	TData = Awaited<ReturnType<typeof gardenMostRelevantPartialsQueryOp>>,
-	TError = ValidationException
->(
-	params: GardenMostRelevantPartialsQueryOpParams,
-	options?: {
-		query?: UseQueryOptions<
-			Awaited<ReturnType<typeof gardenMostRelevantPartialsQueryOp>>,
-			TError,
-			TData
-		>
-	}
-): UseQueryStoreResult<
-	Awaited<ReturnType<typeof gardenMostRelevantPartialsQueryOp>>,
-	TError,
-	TData,
-	QueryKey
-> & { queryKey: QueryKey } => {
-	const queryOptions = getGardenMostRelevantPartialsQueryOpQueryOptions(params, options)
-
-	const query = useQuery(queryOptions) as UseQueryStoreResult<
-		Awaited<ReturnType<typeof gardenMostRelevantPartialsQueryOp>>,
-		TError,
-		TData,
-		QueryKey
-	> & { queryKey: QueryKey }
-
-	query.queryKey = queryOptions.queryKey
-
-	return query
-}
-
 /**
  * Returns a partial representation of gardens given by keys, provided they exist and the client is authorized to use them.
  * @summary Returns a partial representation of gardens given by keys.
  */
 export const gardenPartialsByKeysQueryOp = (
-	params: GardenPartialsByKeysQueryOpParams,
-	signal?: AbortSignal
+	params: GardenPartialsByKeysQueryOpParams
 ) => {
 	return axiosClient<GardenPartialSchema[]>({
 		url: `/gardens/query/partials_by_key`,
 		method: 'GET',
-		params,
-		signal
+		params
 	})
 }
-
-export const getGardenPartialsByKeysQueryOpQueryKey = (
-	params: GardenPartialsByKeysQueryOpParams
-) => {
-	return [`/gardens/query/partials_by_key`, ...(params ? [params] : [])] as const
+/**
+ * Returns a set of tuples of gardens and associated pending garden memberships
+ * @summary Returns a set of pending garden invites
+ */
+export const gardenPendingInvitesQueryOp = () => {
+	return axiosClient<GardenPendingInvitesResult>({
+		url: `/gardens/query/pending_invites`,
+		method: 'GET'
+	})
 }
-
-export const getGardenPartialsByKeysQueryOpQueryOptions = <
-	TData = Awaited<ReturnType<typeof gardenPartialsByKeysQueryOp>>,
-	TError = ValidationException
->(
-	params: GardenPartialsByKeysQueryOpParams,
-	options?: {
-		query?: UseQueryOptions<
-			Awaited<ReturnType<typeof gardenPartialsByKeysQueryOp>>,
-			TError,
-			TData
-		>
-	}
-) => {
-	const { query: queryOptions } = options ?? {}
-
-	const queryKey =
-		queryOptions?.queryKey ?? getGardenPartialsByKeysQueryOpQueryKey(params)
-
-	const queryFn: QueryFunction<
-		Awaited<ReturnType<typeof gardenPartialsByKeysQueryOp>>
-	> = ({ signal }) => gardenPartialsByKeysQueryOp(params, signal)
-
-	return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
-		Awaited<ReturnType<typeof gardenPartialsByKeysQueryOp>>,
-		TError,
-		TData
-	> & { queryKey: QueryKey }
-}
-
-export type GardenPartialsByKeysQueryOpQueryResult = NonNullable<
+export type GardenMembershipAcceptCommandOpResult = NonNullable<
+	Awaited<ReturnType<typeof gardenMembershipAcceptCommandOp>>
+>
+export type GardenMembershipRoleChangeCommandOpResult = NonNullable<
+	Awaited<ReturnType<typeof gardenMembershipRoleChangeCommandOp>>
+>
+export type GardenCreateCommandOpResult = NonNullable<
+	Awaited<ReturnType<typeof gardenCreateCommandOp>>
+>
+export type GardenMembershipCreateCommandOpResult = NonNullable<
+	Awaited<ReturnType<typeof gardenMembershipCreateCommandOp>>
+>
+export type GardenMembershipDeleteCommandOpResult = NonNullable<
+	Awaited<ReturnType<typeof gardenMembershipDeleteCommandOp>>
+>
+export type GardenMembershipRevokeCommandOpResult = NonNullable<
+	Awaited<ReturnType<typeof gardenMembershipRevokeCommandOp>>
+>
+export type GardenAssociatedPartialsQueryOpResult = NonNullable<
+	Awaited<ReturnType<typeof gardenAssociatedPartialsQueryOp>>
+>
+export type GardenFullByKeyQueryOpResult = NonNullable<
+	Awaited<ReturnType<typeof gardenFullByKeyQueryOp>>
+>
+export type GardenGenerateUniqueKeyQueryOpResult = NonNullable<
+	Awaited<ReturnType<typeof gardenGenerateUniqueKeyQueryOp>>
+>
+export type GardenMostRelevantPartialsQueryOpResult = NonNullable<
+	Awaited<ReturnType<typeof gardenMostRelevantPartialsQueryOp>>
+>
+export type GardenPartialsByKeysQueryOpResult = NonNullable<
 	Awaited<ReturnType<typeof gardenPartialsByKeysQueryOp>>
 >
-export type GardenPartialsByKeysQueryOpQueryError = ValidationException
-
-/**
- * @summary Returns a partial representation of gardens given by keys.
- */
-export const useGardenPartialsByKeysQueryOp = <
-	TData = Awaited<ReturnType<typeof gardenPartialsByKeysQueryOp>>,
-	TError = ValidationException
->(
-	params: GardenPartialsByKeysQueryOpParams,
-	options?: {
-		query?: UseQueryOptions<
-			Awaited<ReturnType<typeof gardenPartialsByKeysQueryOp>>,
-			TError,
-			TData
-		>
-	}
-): UseQueryStoreResult<
-	Awaited<ReturnType<typeof gardenPartialsByKeysQueryOp>>,
-	TError,
-	TData,
-	QueryKey
-> & { queryKey: QueryKey } => {
-	const queryOptions = getGardenPartialsByKeysQueryOpQueryOptions(params, options)
-
-	const query = useQuery(queryOptions) as UseQueryStoreResult<
-		Awaited<ReturnType<typeof gardenPartialsByKeysQueryOp>>,
-		TError,
-		TData,
-		QueryKey
-	> & { queryKey: QueryKey }
-
-	query.queryKey = queryOptions.queryKey
-
-	return query
-}
+export type GardenPendingInvitesQueryOpResult = NonNullable<
+	Awaited<ReturnType<typeof gardenPendingInvitesQueryOp>>
+>

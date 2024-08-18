@@ -5,12 +5,16 @@
 	import iconIds from '$lib/assets/icons'
 	import { Button } from '$lib/components/ui/button'
 	import { Separator } from '$lib/components/ui/separator'
+	import * as Popover from '$components/ui/popover'
 	import isAuthenticated from '$state/authenticated.svelte'
 	import type { GardenPartialSchema } from '$codegen/types'
 	import GardenThumbnailScrollable from './GardenThumbnailScrollable.svelte'
-	import { gardenAssociatedPartialsQuery } from '$data/garden/queries'
+	import { gardenAssociatedPartialsQuery, gardenPendingInvitesQuery } from '$data/garden/queries'
+	import type {GardenMembershipFullSchemaRole} from '$codegen/types'
 
+	/** Queries */
 	const associatedPartials = gardenAssociatedPartialsQuery()
+	const pendingInvites = gardenPendingInvitesQuery() 
 
 	/**
 	 * If a non-authenticated user access this page,
@@ -21,8 +25,6 @@
 			goto('gardens/discover')
 		}
 	})
-
-	$associatedPartials.data?.gardens.filter(garden => {return $associatedPartials.data?.favorites.includes(garden.id)})
 </script>
 
 <svelte:head>
@@ -31,21 +33,52 @@
 
 <!-- Top bar -->
 <div
-	class="flex h-10 w-full flex-row items-center justify-between border-b border-neutral-5 bg-neutral-1"
+	class="flex h-10 w-full flex-row items-center justify-between border-b border-neutral-5 bg-neutral-1 sticky top-0 z-50 overflow-hidden"
 >
 	<span class="ml-8"> Gardens </span>
 	<ul class="flex h-full flex-row items-center">
+
+		<!-- Discovery page link. -->
 		<li class="h-full">
 			<Button variant="ghost" href="gardens/discover" class="rounded-none">
 				<Icon icon={iconIds.gardensDiscoverIcon} width="1.5rem" class="mx-2" />
 				<span class="mx-2"> Discovery </span>
 			</Button>
 		</li>
+		<!-- Pending invites list. -->
+		{#snippet pendingInvite(gardenName: string, gardenKey: string, inviterUsername: string | undefined, role: GardenMembershipFullSchemaRole)}
+			{gardenName}
+		{/snippet}
 		<li class="h-full">
-			<Button variant="ghost" href="gardens/discover" class="rounded-none">
-				<Icon icon={iconIds.gardensInviteIcon} width="1.5rem" class="mx-2" />
-				<span class="mx-2"> Invites </span>
-			</Button>
+			<Popover.Root>
+				<Popover.Trigger>
+					<Button variant="ghost" class="rounded-none">
+						<Icon icon={iconIds.gardensInviteIcon} width="1.5rem" class="mx-2" />
+						<span class="mx-2"> Invites </span>
+						<div class="h-6 w-6 rounded-2xl border border-neutral-9">
+							{#if $pendingInvites.status === 'loading'}
+								?
+							{:else if $pendingInvites.status === 'success'}
+								{$pendingInvites.data.pending_invites.length}
+							{/if}
+						</div>
+					</Button>
+				</Popover.Trigger>
+				<Popover.Content>
+					{#if $pendingInvites.status === 'loading'}
+						<Icon icon={iconIds.defaultSpinnerIcon} width="1.5rem" class="animate-spin" />
+					{:else if $pendingInvites.status === 'success'}	
+						<ul>
+							{#each $pendingInvites.data.pending_invites as invite}
+								<li>
+									{@render pendingInvite(invite.garden.name, invite.garden.key, "placeholder_username", invite.invite.role)}
+								</li>	
+							{/each}
+						</ul>
+					{/if}
+
+				</Popover.Content>
+			</Popover.Root>
 		</li>
 		<li class="h-full">
 			<Button variant="default" href="gardens/create" class="rounded-none">
@@ -68,21 +101,49 @@
 {/snippet}
 
 {#if $associatedPartials.status === 'loading'}
-	loading
-{:else if $associatedPartials.status === 'error'}
-	error
+
+<!-- TODO: Add skeleton loading -->
+<div class="m-auto my-8">
+	Loading...
+</div>
 {:else if $associatedPartials.status === 'success'}
 	<!-- Content -->
 	<div class="h-full w-full bg-neutral-1 p-8">
-		{@render gardenCategory('Favorites', $associatedPartials.data.data.gardens)}
-		{#if $associatedPartials.data.admin_memberships?.length > 0}
-		{@render gardenCategory('Editors', $associatedPartials.data.gardens)}
+		{#if $associatedPartials.data.favorites.length > 0}
+			{@render gardenCategory(
+				'Favorites',
+				$associatedPartials.data.gardens.filter((garden) => {
+					return true
+					return $associatedPartials.data.favorites.includes(garden.id)
+				})
+			)}
 		{/if}
-		{#if $associatedPartials.data.edit_memberships?.length > 0}
-			{@render gardenCategory('Editors', $associatedPartials.data.gardens)}
+		{#if $associatedPartials.data.admin_memberships.length > 0}
+			{@render gardenCategory(
+				'Admins',
+				$associatedPartials.data.gardens.filter((garden) => {
+					return true
+					return $associatedPartials.data.admin_memberships.includes(garden.id)
+				})
+			)}
 		{/if}
-		{#if $associatedPartials.data.view_memberships?.length > 0}
-			{@render gardenCategory('Viewers', $associatedPartials.data.gardens)}
+		{#if $associatedPartials.data.edit_memberships.length > 0}
+			{@render gardenCategory(
+				'Editable',
+				$associatedPartials.data.gardens.filter((garden) => {
+					return true
+					return $associatedPartials.data.edit_memberships.includes(garden.id)
+				})
+			)}
+		{/if}
+		{#if $associatedPartials.data.view_memberships.length > 0}
+			{@render gardenCategory(
+				'Viewable',
+				$associatedPartials.data.gardens.filter((garden) => {
+					return true
+					return $associatedPartials.data.view_memberships.includes(garden.id)
+				})
+			)}
 		{/if}
 	</div>
 {/if}
