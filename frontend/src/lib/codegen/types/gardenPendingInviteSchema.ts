@@ -11,4 +11,5 @@ import type { GardenMembershipFullSchema } from './gardenMembershipFullSchema'
 export interface GardenPendingInviteSchema {
 	garden: GardenPartialSchema
 	invite: GardenMembershipFullSchema
+	expiry_countdown_hours: number
 }

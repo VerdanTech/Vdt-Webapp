@@ -13,6 +13,6 @@ RUN pip install --upgrade pip && \
 # Install frontend dependencies
 COPY ./frontend/package.json ./frontend/pnpm-lock.yaml ./
 RUN npm install -g pnpm
-RUN pnpm i
+RUN pnpm install
 
 COPY . .

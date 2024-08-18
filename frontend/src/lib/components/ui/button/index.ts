@@ -7,7 +7,7 @@ const buttonVariants = tv({
 	variants: {
 		variant: {
 			default: 'bg-primary-7 text-primary-12 hover:opacity-90',
-			destructive: 'bg-destructive-5 text-destructive-12 hover:opacity-90',
+			destructive: 'bg-destructive-6 text-destructive-12 hover:opacity-90',
 			outline: 'border border-neutral-6 hover:bg-accent-5-5 hover:text-accent-12',
 			secondary: 'bg-secondary-5 text-secondary-12 hover:opacity-90',
 			ghost: 'hover:bg-accent-5 hover:text-accent-12',

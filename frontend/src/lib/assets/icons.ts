@@ -45,6 +45,8 @@ const iconIds = {
 	gardenPlannerVerdagraphIcon: 'material-symbols:leaf-spark-outline-rounded',
 	gardenConfigIcon: 'material-symbols:settings-outline',
 	//gardenConnectionsIconId: 'material-symbols:network-node',
+	gardenInviteAcceptIcon: 'material-symbols:check-rounded',
+	gardenInviteRejectIcon: 'material-symbols:delete-forever-outline-rounded',
 
 	gardensCreateIcon: 'mdi:plus-circle-outline',
 	gardensDiscoverIcon: 'ic:round-travel-explore',
