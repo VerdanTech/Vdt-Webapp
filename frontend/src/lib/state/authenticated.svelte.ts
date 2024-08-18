@@ -2,7 +2,7 @@
  * Stores whether the user is authenticated.
  */
 
-let _rune: boolean = $state(false)
+let _rune: boolean = $state(true)
 
 /* Exported state methods. */
 export const isAuthenticated = {

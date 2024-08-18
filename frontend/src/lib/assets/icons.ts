@@ -46,6 +46,10 @@ const iconIds = {
 	gardenConfigIcon: 'material-symbols:settings-outline',
 	//gardenConnectionsIconId: 'material-symbols:network-node',
 
+	gardensCreateIcon: 'mdi:plus-circle-outline',
+	gardensDiscoverIcon: 'ic:round-travel-explore',
+	gardensInviteIcon: 'material-symbols:mail-outline',
+
 	/* Verdagraph */
 	verdagraphPointerSelectIcon: 'mdi:cursor-default-outline',
 	verdagraphGroupSelectIcon: 'mdi:selection',

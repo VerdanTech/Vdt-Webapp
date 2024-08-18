@@ -6,7 +6,7 @@ from svcs import Container
 
 # VerdanTech Source
 from src import exceptions
-from src.common.entrypoints.litestar.auth import jwt_auth
+from src.common.entrypoints.litestar.auth.token import encode_jwt_token
 from src.user.ops import queries
 
 
@@ -47,7 +47,10 @@ class UserAuthController(Controller):
         verification_result = await queries.verify_password(
             query=data, svcs_container=svcs_container
         )
-        if verification_result.verified is True:
+        if verification_result.verified is True and verification_result.user_id:
+            token = encode_jwt_token(verification_result.user_id)
+
+
             return jwt_auth.login(
                 identifier=str(verification_result.user_id),
                 response_body="Authentication successful",

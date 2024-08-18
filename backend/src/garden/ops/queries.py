@@ -68,11 +68,10 @@ class AssociatedPartialsResult(QueryResult[None]):
 
     gardens: set[GardenPartialSchema]
     favorites: set[uuid.UUID]
-    pending_memberships: set[uuid.UUID]
     admin_memberships: set[uuid.UUID]
     edit_memberships: set[uuid.UUID]
     view_memberships: set[uuid.UUID]
-    recently_viewed: set[uuid.UUID]
+    pending_memberships: set[uuid.UUID]
 
 
 @query_result_transform
