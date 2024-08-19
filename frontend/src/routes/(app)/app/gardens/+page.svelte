@@ -114,7 +114,6 @@
 			{@render gardenCategory(
 				'Favorites',
 				$associatedPartials.data.gardens.filter((garden) => {
-					return true
 					return $associatedPartials.data.favorites.includes(garden.id)
 				})
 			)}
@@ -123,7 +122,6 @@
 			{@render gardenCategory(
 				'Admins',
 				$associatedPartials.data.gardens.filter((garden) => {
-					return true
 					return $associatedPartials.data.admin_memberships.includes(garden.id)
 				})
 			)}
@@ -132,7 +130,6 @@
 			{@render gardenCategory(
 				'Editable',
 				$associatedPartials.data.gardens.filter((garden) => {
-					return true
 					return $associatedPartials.data.edit_memberships.includes(garden.id)
 				})
 			)}
@@ -141,7 +138,6 @@
 			{@render gardenCategory(
 				'Viewable',
 				$associatedPartials.data.gardens.filter((garden) => {
-					return true
 					return $associatedPartials.data.view_memberships.includes(garden.id)
 				})
 			)}

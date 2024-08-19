@@ -50,10 +50,7 @@ class UserAuthController(Controller):
         if verification_result.verified is True and verification_result.user_id:
             token = encode_jwt_token(verification_result.user_id)
 
+            return Response(content="Authentication successful")
 
-            return jwt_auth.login(
-                identifier=str(verification_result.user_id),
-                response_body="Authentication successful",
-            )
         else:
             raise exceptions.AuthenticationError()

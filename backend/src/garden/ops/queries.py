@@ -99,6 +99,7 @@ class GardenPendingInviteSchema(QueryResult[None]):
     """
     garden: GardenPartialSchema
     invite: GardenMembershipFullSchema
+    expiry_countdown_hours: int
 
 @query_result_transform
 class GardenPendingInvitesResult(QueryResult[None]):

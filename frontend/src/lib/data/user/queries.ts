@@ -20,7 +20,7 @@ export const userClientQuery = () => {
  * Retrieves the requested user profiles.
  */
 export const userProfilesQuery = (data: UserPublicProfilesQueryOpParams) => {
-	return useQuery(data.user_ids, () => {
+	return useQuery(['publicProfiles', data.user_ids], () => {
 		return userPublicProfilesQueryOp(data)
 	})
 }
