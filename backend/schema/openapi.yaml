@@ -1,6 +1,6 @@
 components:
   schemas:
-    AssociatedPartialsResult:
+    GardenAssociatedPartialsResult:
       properties:
         admin_memberships:
           items:
@@ -21,16 +21,6 @@ components:
           items:
             $ref: '#/components/schemas/GardenPartialSchema'
           type: array
-        pending_memberships:
-          items:
-            format: uuid
-            type: string
-          type: array
-        recently_viewed:
-          items:
-            format: uuid
-            type: string
-          type: array
         view_memberships:
           items:
             format: uuid
@@ -41,30 +31,14 @@ components:
       - edit_memberships
       - favorites
       - gardens
-      - pending_memberships
-      - recently_viewed
       - view_memberships
-      title: AssociatedPartialsResult
-      type: object
-    EmailSchema:
-      properties:
-        address:
-          type: string
-        primary:
-          type: boolean
-        verified:
-          type: boolean
-      required:
-      - address
-      - primary
-      - verified
-      title: EmailSchema
+      title: GardenAssociatedPartialsResult
       type: object
     GardenCreateCommand:
       properties:
         admin_usernames:
           default: []
-          description: A maximum of 1400 users can be invited at once
+          description: A maximum of 10 users can be invited at once
           items:
             description: Must be between 3 and 50 characters long and contain only
               alphanumeric characters and underscores. Must be unique
@@ -72,7 +46,7 @@ components:
             minLength: 3
             pattern: ^[a-zA-Z0-9_]*$
             type: string
-          maxLength: 1400
+          maxLength: 10
           type: array
         description:
           default: ''
@@ -81,7 +55,7 @@ components:
           type: string
         editor_usernames:
           default: []
-          description: A maximum of 1400 users can be invited at once
+          description: A maximum of 10 users can be invited at once
           items:
             description: Must be between 3 and 50 characters long and contain only
               alphanumeric characters and underscores. Must be unique
@@ -89,7 +63,7 @@ components:
             minLength: 3
             pattern: ^[a-zA-Z0-9_]*$
             type: string
-          maxLength: 1400
+          maxLength: 10
           type: array
         key:
           oneOf:
@@ -109,7 +83,7 @@ components:
           type: string
         viewer_usernames:
           default: []
-          description: A maximum of 1400 users can be invited at once
+          description: A maximum of 10 users can be invited at once
           items:
             description: Must be between 3 and 50 characters long and contain only
               alphanumeric characters and underscores. Must be unique
@@ -117,7 +91,7 @@ components:
             minLength: 3
             pattern: ^[a-zA-Z0-9_]*$
             type: string
-          maxLength: 1400
+          maxLength: 10
           type: array
         visibility:
           default: private
@@ -191,7 +165,7 @@ components:
       properties:
         admin_usernames:
           default: []
-          description: A maximum of 1400 users can be invited at once
+          description: A maximum of 10 users can be invited at once
           items:
             description: Must be between 3 and 50 characters long and contain only
               alphanumeric characters and underscores. Must be unique
@@ -199,11 +173,11 @@ components:
             minLength: 3
             pattern: ^[a-zA-Z0-9_]*$
             type: string
-          maxLength: 1400
+          maxLength: 10
           type: array
         editor_usernames:
           default: []
-          description: A maximum of 1400 users can be invited at once
+          description: A maximum of 10 users can be invited at once
           items:
             description: Must be between 3 and 50 characters long and contain only
               alphanumeric characters and underscores. Must be unique
@@ -211,14 +185,14 @@ components:
             minLength: 3
             pattern: ^[a-zA-Z0-9_]*$
             type: string
-          maxLength: 1400
+          maxLength: 10
           type: array
         garden_id:
           format: uuid
           type: string
         viewer_usernames:
           default: []
-          description: A maximum of 1400 users can be invited at once
+          description: A maximum of 10 users can be invited at once
           items:
             description: Must be between 3 and 50 characters long and contain only
               alphanumeric characters and underscores. Must be unique
@@ -226,7 +200,7 @@ components:
             minLength: 3
             pattern: ^[a-zA-Z0-9_]*$
             type: string
-          maxLength: 1400
+          maxLength: 10
           type: array
       required:
       - garden_id
@@ -254,8 +228,6 @@ components:
           type: string
         favorite:
           type: boolean
-        garden_ref:
-          $ref: '#/components/schemas/RefSchema'
         inviter_ref:
           oneOf:
           - type: 'null'
@@ -272,7 +244,6 @@ components:
       - accepted
       - created_at
       - favorite
-      - garden_ref
       - role
       - user_ref
       title: GardenMembershipFullSchema
@@ -339,6 +310,35 @@ components:
       - visibility
       title: GardenPartialSchema
       type: object
+    GardenPendingInviteSchema:
+      properties:
+        garden:
+          $ref: '#/components/schemas/GardenPartialSchema'
+        invite:
+          $ref: '#/components/schemas/GardenMembershipFullSchema'
+      required:
+      - garden
+      - invite
+      title: GardenPendingInviteSchema
+      type: object
+    GardenPendingInvitesResult:
+      properties:
+        pending_invites:
+          items:
+            $ref: '#/components/schemas/GardenPendingInviteSchema'
+          type: array
+      required:
+      - pending_invites
+      title: GardenPendingInvitesResult
+      type: object
+    GardenUniqueKeyResult:
+      properties:
+        key:
+          type: string
+      required:
+      - key
+      title: GardenUniqueKeyResult
+      type: object
     RefSchema:
       properties:
         id:
@@ -347,14 +347,6 @@ components:
       required:
       - id
       title: RefSchema
-      type: object
-    UniqueGardenKeyResult:
-      properties:
-        key:
-          type: string
-      required:
-      - key
-      title: UniqueGardenKeyResult
       type: object
     UserConfirmEmailConfirmationCommand:
       properties:
@@ -431,6 +423,20 @@ components:
       - username
       title: UserCreateCommand
       type: object
+    UserEmailSchema:
+      properties:
+        address:
+          type: string
+        primary:
+          type: boolean
+        verified:
+          type: boolean
+      required:
+      - address
+      - primary
+      - verified
+      title: UserEmailSchema
+      type: object
     UserFullSchema:
       properties:
         created_at:
@@ -438,7 +444,7 @@ components:
           type: string
         emails:
           items:
-            $ref: '#/components/schemas/EmailSchema'
+            $ref: '#/components/schemas/UserEmailSchema'
           type: array
         id:
           format: uuid
@@ -525,13 +531,6 @@ components:
       - detail
       - status_code
       type: object
-  securitySchemes:
-    BearerToken:
-      bearerFormat: JWT
-      description: JWT api-key authentication and authorization.
-      name: Authorization
-      scheme: Bearer
-      type: http
 externalDocs:
   description: Github Repository
   url: https://github.com/VerdanTech/VerdanTech-Backend
@@ -700,7 +699,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AssociatedPartialsResult'
+                $ref: '#/components/schemas/GardenAssociatedPartialsResult'
           description: Request fulfilled, document follows
           headers: {}
       summary: Returns a partial representation of all gardens that are associated
@@ -748,7 +747,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UniqueGardenKeyResult'
+                $ref: '#/components/schemas/GardenUniqueKeyResult'
           description: Request fulfilled, document follows
           headers: {}
       summary: Generate a new, unique garden key.
@@ -822,6 +821,23 @@ paths:
                 $ref: '#/components/schemas/ValidationException'
           description: Bad request syntax or unsupported method
       summary: Returns a partial representation of gardens given by keys.
+      tags:
+      - gardens
+  /gardens/query/pending_invites:
+    get:
+      deprecated: false
+      description: Returns a set of tuples of gardens and associated pending garden
+        memberships
+      operationId: GardenPendingInvitesQueryOp
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GardenPendingInvitesResult'
+          description: Request fulfilled, document follows
+          headers: {}
+      summary: Returns a set of pending garden invites
       tags:
       - gardens
   /users/auth/login:
@@ -1076,8 +1092,6 @@ paths:
       summary: Checks whether a username exists.
       tags:
       - users
-security:
-- BearerToken: []
 servers:
 - url: /
 tags:

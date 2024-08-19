@@ -24,7 +24,7 @@ class GardenQueryController(Controller):
         self,
         state: State,
         svcs_container: Container = Dependency(skip_validation=True),
-    ) -> queries.UniqueGardenKeyResult:
+    ) -> queries.GardenUniqueKeyResult:
         """
         Calls the unique garden key generation query.
 
@@ -34,7 +34,7 @@ class GardenQueryController(Controller):
             svcs_container (Container): service locator.
 
         Returns:
-            UniqueGardenKeyResult: the generated key.
+            GardenUniqueKeyResult: the generated key.
         """
         svcs_container.register_local_value(State, state)
         key = await queries.generate_unique_garden_key(
@@ -53,7 +53,7 @@ class GardenQueryController(Controller):
         state: State,
         request: Request,
         svcs_container: Container = Dependency(skip_validation=True),
-    ) -> queries.AssociatedPartialsResult:
+    ) -> queries.GardenAssociatedPartialsResult:
         """
         Calls the associated garden partials query.
 
@@ -63,7 +63,7 @@ class GardenQueryController(Controller):
             svcs_container (Container): service locator.
 
         Returns:
-            AssociatedPartialsResult: the associated garden partials.
+            GardenAssociatedPartialsResult: the associated garden partials.
         """
         svcs_container.register_local_value(State, state)
         partials = await queries.get_associated_partials(
@@ -166,3 +166,32 @@ class GardenQueryController(Controller):
             query=data, svcs_container=svcs_container, client=request.user
         )
         return schema
+
+    @get(
+        path="pending_invites",
+        summary="Returns a set of pending garden invites",
+        description="Returns a set of tuples of gardens and associated pending garden memberships",
+        operation_id="GardenPendingInvitesQueryOp",
+    )
+    async def pending_invites(
+        self,
+        state: State,
+        request: Request,
+        svcs_container: Container = Dependency(skip_validation=True),
+    ) -> queries.GardenPendingInvitesResult:
+        """
+        Calls the pending invites query.
+
+        Args:
+            state (State): Litestar global app state.
+            request (Request): Litestar http request object.
+            svcs_container (Container): service locator.
+
+        Returns:
+            GardenPendingInvitesResult: the pending invites.
+        """
+        svcs_container.register_local_value(State, state)
+        invites = await queries.get_pending_invites(
+            svcs_container=svcs_container, client=request.user
+        )
+        return invites

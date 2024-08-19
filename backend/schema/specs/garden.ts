@@ -38,10 +38,10 @@ export const gardenFields = {
     },
     user_invites_list: {
         max_length: {
-            value: 1400,
-            message: 'A maximum of 1400 users can be invited at once',
+            value: 10,
+            message: 'A maximum of 10 users can be invited at once',
         },
-        description: 'A maximum of 1400 users can be invited at once'
+        description: 'A maximum of 10 users can be invited at once'
     },
 }
 export default gardenFields

@@ -19,7 +19,7 @@ from src.user.domain.commands import EmailStr, Password, Username
 
 
 @query_result_transform
-class EmailSchema(QueryResult[Email]):
+class UserEmailSchema(QueryResult[Email]):
     """Schema for returning a detailed representation of an Email."""
 
     address: str
@@ -36,7 +36,7 @@ class UserFullSchema(QueryResult[User]):
 
     id: uuid.UUID
     username: str
-    emails: list[EmailSchema]
+    emails: list[UserEmailSchema]
     is_superuser: bool
     created_at: datetime
 
@@ -53,7 +53,7 @@ class UserPublicSchema(QueryResult[User]):
 
 
 @query_result_transform
-class PasswordVerificationResult(QueryResult[None]):
+class UserPasswordVerificationResult(QueryResult[None]):
     """Schema for returning the result of a password verification query."""
 
     verified: bool
@@ -103,7 +103,7 @@ class UserSearchQuery(Query):
 
 async def verify_password(
     query: UserPasswordVerificationQuery, svcs_container: Container
-) -> PasswordVerificationResult:
+) -> UserPasswordVerificationResult:
     """
     Verifies the password of a user.
 
@@ -111,7 +111,7 @@ async def verify_password(
         query (UserPasswordVerificationQuery): the query object.
 
     Returns:
-        PasswordVerificationResult: indicates verified as true if the user can be authenticated,
+        UserPasswordVerificationResult: indicates verified as true if the user can be authenticated,
             and if not, indicates whether an email confirmation is required.
     """
     uow, password_crypt = await svcs_container.aget_abstract(
@@ -130,7 +130,7 @@ async def verify_password(
         and settings.EMAIL_CONFIRMATION
         == settings.EmailConfirmationOptions.REQUIRED_FOR_LOGIN
     ):
-        return PasswordVerificationResult(
+        return UserPasswordVerificationResult(
             verified=False, email_verification_required=True
         )
 
@@ -139,9 +139,9 @@ async def verify_password(
     )
 
     if password_verified:
-        return PasswordVerificationResult(verified=True, user_id=user.id_or_error())
+        return UserPasswordVerificationResult(verified=True, user_id=user.id_or_error())
     else:
-        return PasswordVerificationResult(verified=False)
+        return UserPasswordVerificationResult(verified=False)
 
 
 async def public_profiles(
