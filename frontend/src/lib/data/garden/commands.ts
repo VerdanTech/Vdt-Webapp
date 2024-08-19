@@ -1,11 +1,19 @@
 import { z as zod } from 'zod'
 import { useMutation } from '@sveltestack/svelte-query'
-import type { GardenCreateCommand } from '$codegen/types'
-import { gardenCreateCommandOp } from '$codegen'
+import type {
+	GardenCreateCommand,
+	GardenMembershipAcceptCommand,
+	GardenMembershipDeleteCommand
+} from '$codegen/types'
+import {
+	gardenCreateCommandOp,
+	gardenMembershipAcceptCommandOp,
+	gardenMembershipDeleteCommandOp
+} from '$codegen'
 import { gardenFieldSchemas } from './schemas'
 
 /**
- * Sends an garden creation request to the backend.
+ * Sends a garden creation request to the backend.
  */
 export const gardenCreate = {
 	schema: zod.object({
@@ -20,6 +28,34 @@ export const gardenCreate = {
 	mutation: () => {
 		return useMutation(function (data: GardenCreateCommand) {
 			return gardenCreateCommandOp(data)
+		})
+	}
+}
+
+/**
+ * Sends a garden membership acceptance request to the backend.
+ */
+export const gardenMembershipAccept = {
+	schema: zod.object({
+		key: gardenFieldSchemas.key
+	}),
+	mutation: () => {
+		return useMutation(function (data: GardenMembershipAcceptCommand) {
+			return gardenMembershipAcceptCommandOp(data)
+		})
+	}
+}
+
+/**
+ * Sends a garden membership deletion request to the backend.
+ */
+export const gardenMembershipDelete = {
+	schema: zod.object({
+		key: gardenFieldSchemas.key
+	}),
+	mutation: () => {
+		return useMutation(function (data: GardenMembershipDeleteCommand) {
+			return gardenMembershipDeleteCommandOp(data)
 		})
 	}
 }

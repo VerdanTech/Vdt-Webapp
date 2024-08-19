@@ -71,8 +71,10 @@
 				"mtxr.sqltools-driver-pg",
 
 				// Frontend
-				"svelte.svelte-vscode",
-				"pmneo.tsimporter"
+				"1YiB.svelte-bundle",
+				"pmneo.tsimporter",
+				"sidthesloth.html5-boilerplate",
+				"bradlc.vscode-tailwindcss"
             ]
         }
 	},

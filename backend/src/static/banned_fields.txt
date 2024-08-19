@@ -534,6 +534,7 @@ twitter
 ul
 ukrainian
 unfollow
+unknown
 unsubscribe
 update
 upload

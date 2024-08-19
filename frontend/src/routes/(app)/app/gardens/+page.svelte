@@ -6,15 +6,19 @@
 	import { Button } from '$lib/components/ui/button'
 	import { Separator } from '$lib/components/ui/separator'
 	import * as Popover from '$components/ui/popover'
+	import { flyAndScale } from '$lib/utils/shadcn'
 	import isAuthenticated from '$state/authenticated.svelte'
 	import type { GardenPartialSchema } from '$codegen/types'
 	import GardenThumbnailScrollable from './GardenThumbnailScrollable.svelte'
-	import { gardenAssociatedPartialsQuery, gardenPendingInvitesQuery } from '$data/garden/queries'
-	import type {GardenMembershipFullSchemaRole} from '$codegen/types'
+	import GardenInviteScrollable from './GardenInviteScrollable.svelte'
+	import {
+		gardenAssociatedPartialsQuery,
+		gardenPendingInvitesQuery
+	} from '$data/garden/queries'
 
 	/** Queries */
 	const associatedPartials = gardenAssociatedPartialsQuery()
-	const pendingInvites = gardenPendingInvitesQuery() 
+	const pendingInvites = gardenPendingInvitesQuery()
 
 	/**
 	 * If a non-authenticated user access this page,
@@ -33,28 +37,23 @@
 
 <!-- Top bar -->
 <div
-	class="flex h-10 w-full flex-row items-center justify-between border-b border-neutral-5 bg-neutral-1 sticky top-0 z-50 overflow-hidden"
+	class="sticky top-0 z-50 flex h-10 w-full flex-row items-center justify-between overflow-hidden border-b border-neutral-5 bg-neutral-1"
 >
-	<span class="ml-8"> Gardens </span>
+	<span class="ml-8">Gardens</span>
 	<ul class="flex h-full flex-row items-center">
-
 		<!-- Discovery page link. -->
 		<li class="h-full">
 			<Button variant="ghost" href="gardens/discover" class="rounded-none">
 				<Icon icon={iconIds.gardensDiscoverIcon} width="1.5rem" class="mx-2" />
-				<span class="mx-2"> Discovery </span>
+				<span class="mx-2 hidden sm:block">Discovery</span>
 			</Button>
 		</li>
-		<!-- Pending invites list. -->
-		{#snippet pendingInvite(gardenName: string, gardenKey: string, inviterUsername: string | undefined, role: GardenMembershipFullSchemaRole)}
-			{gardenName}
-		{/snippet}
 		<li class="h-full">
 			<Popover.Root>
 				<Popover.Trigger>
 					<Button variant="ghost" class="rounded-none">
 						<Icon icon={iconIds.gardensInviteIcon} width="1.5rem" class="mx-2" />
-						<span class="mx-2"> Invites </span>
+						<span class="mx-2 hidden sm:block">Invites</span>
 						<div class="h-6 w-6 rounded-2xl border border-neutral-9">
 							{#if $pendingInvites.status === 'loading'}
 								?
@@ -64,26 +63,31 @@
 						</div>
 					</Button>
 				</Popover.Trigger>
-				<Popover.Content>
+				<Popover.Content
+					transition={flyAndScale}
+					transitionConfig={{
+						duration: 150,
+						y: 10,
+						start: 1
+					}}
+					class="translate-y-2"
+				>
 					{#if $pendingInvites.status === 'loading'}
-						<Icon icon={iconIds.defaultSpinnerIcon} width="1.5rem" class="animate-spin" />
-					{:else if $pendingInvites.status === 'success'}	
-						<ul>
-							{#each $pendingInvites.data.pending_invites as invite}
-								<li>
-									{@render pendingInvite(invite.garden.name, invite.garden.key, "placeholder_username", invite.invite.role)}
-								</li>	
-							{/each}
-						</ul>
+						<Icon
+							icon={iconIds.defaultSpinnerIcon}
+							width="1.5rem"
+							class="animate-spin"
+						/>
+					{:else if $pendingInvites.status === 'success'}
+						<GardenInviteScrollable invites={$pendingInvites.data.pending_invites} />
 					{/if}
-
 				</Popover.Content>
 			</Popover.Root>
 		</li>
 		<li class="h-full">
 			<Button variant="default" href="gardens/create" class="rounded-none">
 				<Icon icon={iconIds.gardensCreateIcon} width="1.5rem" class="mx-2" />
-				<span class="mx-2"> Create </span>
+				<span class="mx-2 hidden sm:block">Create</span>
 			</Button>
 		</li>
 	</ul>
@@ -101,11 +105,8 @@
 {/snippet}
 
 {#if $associatedPartials.status === 'loading'}
-
-<!-- TODO: Add skeleton loading -->
-<div class="m-auto my-8">
-	Loading...
-</div>
+	<!-- TODO: Add skeleton loading -->
+	<div class="m-auto my-8">Loading...</div>
 {:else if $associatedPartials.status === 'success'}
 	<!-- Content -->
 	<div class="h-full w-full bg-neutral-1 p-8">

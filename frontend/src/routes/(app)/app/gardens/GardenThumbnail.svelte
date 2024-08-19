@@ -17,7 +17,7 @@
 		{gardenName}
 	</p>
 	<span
-		class="max-w-full truncate rounded-md bg-primary-3 p-1 text-sm text-neutral-10 text-primary-11"
+		class="max-w-full truncate rounded-md bg-primary-3 p-1 text-sm italic text-primary-11"
 	>
 		{gardenKey}
 	</span>
