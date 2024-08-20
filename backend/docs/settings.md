@@ -44,7 +44,8 @@ This section contains settings relevant to the Litestar application and other AP
 
 | Name | Type | Description | Default |
 | -------- | ------- | ------- | ------- |
-| JWT_SECRET | str | Identical to environment the variable. | `developmentsecret123` |
+| ACCESS_JWT_SECRET | str | Identical to the environment variable. | `developmentsecret123` |
+| REFRESH_JWT_SECRET | str | Identical to the environment variable. | `developmentsecret456` |
 
 ## Application
 

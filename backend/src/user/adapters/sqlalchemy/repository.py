@@ -187,7 +187,9 @@ class UserAlchemyRepository(BaseAlchemyRepository[User], AbstractUserRepository)
             list[User]: the found users.
         """
         usernames_lower = [username.lower() for username in usernames]
-        statement = select(User).filter(func.lower(user_table.c.username).in_(usernames_lower))
+        statement = select(User).filter(
+            func.lower(user_table.c.username).in_(usernames_lower)
+        )
         query = await self.session.execute(statement)
         users = query.scalars().all()
 

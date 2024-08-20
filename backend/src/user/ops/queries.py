@@ -82,11 +82,14 @@ class UserPublicProfilesQuery(Query):
 
     user_ids: list[uuid.UUID]
 
+
 class UsernameExistsQuery(Query):
     """
     Returns whether a username exists.
     """
+
     username: str
+
 
 class UserSearchQuery(Query):
     """
@@ -183,6 +186,7 @@ async def client_profile(client: User | None) -> UserFullSchema:
             "Client set to non on an authenticated route."
         )
     return UserFullSchema.cast(client)
+
 
 async def username_exists(
     query: UsernameExistsQuery, svcs_container: Container

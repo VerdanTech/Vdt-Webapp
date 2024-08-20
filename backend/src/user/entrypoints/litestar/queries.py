@@ -77,7 +77,18 @@ class UserQueryController(Controller):
         svcs_container.register_local_value(State, state)
         user_schema = await queries.client_profile(client=request.user)
         return user_schema
-    
-    @get(path="username_exists", summary="Checks whether a username exists.", description="Returns true if the given username exists.", response_description="True if the given username exists.", operation_id=queries.UsernameExistsQuery.to_operation_id())
-    async def username_exists(self, username: str, state: State, svcs_container: Container = Dependency(skip_validation=True)) -> bool:
+
+    @get(
+        path="username_exists",
+        summary="Checks whether a username exists.",
+        description="Returns true if the given username exists.",
+        response_description="True if the given username exists.",
+        operation_id=queries.UsernameExistsQuery.to_operation_id(),
+    )
+    async def username_exists(
+        self,
+        username: str,
+        state: State,
+        svcs_container: Container = Dependency(skip_validation=True),
+    ) -> bool:
         ...

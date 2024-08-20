@@ -9,9 +9,9 @@ from src.common.adapters.persistence.sqlalchemy import litestar_alchemy_client_l
 from .auth import default_auth_mw
 from .dependencies import svcs_plugin
 from .exceptions import application_exception_handler
+from .middleware import cors_config
 from .openapi import openapi_config
 from .router import create_base_router
-from .middleware import cors_config
 
 
 def create_app(alchemy_uri=settings.POSTGRES_URI) -> "Litestar":

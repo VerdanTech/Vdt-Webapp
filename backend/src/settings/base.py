@@ -1,8 +1,7 @@
 # Standard Library
-import re
+from datetime import timedelta
 from enum import Enum
 from pathlib import Path
-from typing import Pattern
 
 # External Libraries
 from decouple import Csv, config
@@ -51,7 +50,16 @@ ALLOW_ORIGINS = config("ALLOWED_ORIGINS", cast=Csv(), default="")
 # AUTH SETTINGS
 # ======================================
 
-JWT_SECRET = str(config("JWT_SECRET", cast=str, default="developmentsecret123"))
+ACCESS_JWT_SECRET = str(
+    config("ACCESS_JWT_SECRET", cast=str, default="developmentsecret123")
+)
+ACCESS_JWT_EXPIRY_TIMEDELTA = timedelta(minutes=15)
+ACCESS_JWT_ALGORITHM = "HS256"
+REFRESH_JWT_SECRET = str(
+    config("REFRESH_JWT_SECRET", cast=str, default="developmentsecret456")
+)
+REFRESH_JWT_EXPIRY_TIMEDELTA = timedelta(days=7)
+REFRESH_JWT_ALGORITHM = "HS256"
 
 # ============================================================================
 # APPLICATION SETTINGS

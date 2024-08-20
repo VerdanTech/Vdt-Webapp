@@ -37,9 +37,7 @@ class GardenQueryController(Controller):
             GardenUniqueKeyResult: the generated key.
         """
         svcs_container.register_local_value(State, state)
-        key = await queries.generate_unique_garden_key(
-            svcs_container=svcs_container
-        )
+        key = await queries.generate_unique_garden_key(svcs_container=svcs_container)
         return key
 
     @get(

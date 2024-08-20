@@ -115,9 +115,9 @@ async def create_invites(
         events.PendingInvites(
             garden_ref=Ref(id=command.garden_id),
             client_ref=client.ref,
-                admin_usernames=command.admin_usernames,
-                editor_usernames=command.editor_usernames,
-                viewer_usernames=command.viewer_usernames,
+            admin_usernames=command.admin_usernames,
+            editor_usernames=command.editor_usernames,
+            viewer_usernames=command.viewer_usernames,
         )
     )
 

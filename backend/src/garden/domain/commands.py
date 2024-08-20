@@ -63,12 +63,16 @@ GardenDescription = Annotated[
         },
     ),
 ]
-UserInviteList = Annotated[list[Username], AfterValidator(SpecManager.get_validation_method(specs, "user_invites_list")),     Field(
+UserInviteList = Annotated[
+    list[Username],
+    AfterValidator(SpecManager.get_validation_method(specs, "user_invites_list")),
+    Field(
         description=specs.descriptions["user_invites_list"]["field"],
         json_schema_extra={
             "max_length": specs.values["user_invites_list"][Specs.MAX_LENGTH],
         },
-    ),]
+    ),
+]
 
 
 class GardenCreateCommand(Command):

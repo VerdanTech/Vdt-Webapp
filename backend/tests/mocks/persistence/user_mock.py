@@ -159,4 +159,4 @@ class MockUserRepository(MockBaseRepository[User], AbstractUserRepository):
             list[User]: the found users.
         """
         usernames_lower = [username.lower() for username in usernames]
-        return [user for user in self.collection if user.id in usernames_lower] 
+        return [user for user in self.collection if user.id in usernames_lower]

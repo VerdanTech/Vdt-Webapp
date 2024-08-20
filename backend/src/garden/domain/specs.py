@@ -22,7 +22,7 @@ values: SpecValues = {
     },
     "user_invites_list": {
         Specs.MAX_LENGTH: 10,
-    }
+    },
 }
 descriptions: SpecDescriptions = {
     "garden_name": {
@@ -44,6 +44,6 @@ descriptions: SpecDescriptions = {
     "user_invites_list": {
         Specs.MAX_LENGTH: f"A maximum of {values['user_invites_list'][Specs.MAX_LENGTH]} users can be invited at once",
         "field": f"A maximum of {values['user_invites_list'][Specs.MAX_LENGTH]} users can be invited at once",
-    }
+    },
 }
 specs = SpecCollection("garden", values, descriptions)

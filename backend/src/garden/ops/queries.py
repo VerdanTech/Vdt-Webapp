@@ -79,6 +79,7 @@ class GardenUniqueKeyResult(QueryResult[None]):
 
     key: str
 
+
 @query_result_transform
 class GardenAssociatedPartialsResult(QueryResult[None]):
     """
@@ -92,20 +93,24 @@ class GardenAssociatedPartialsResult(QueryResult[None]):
     edit_memberships: set[uuid.UUID]
     view_memberships: set[uuid.UUID]
 
+
 @query_result_transform
 class GardenPendingInviteSchema(QueryResult[None]):
     """
     Schema returning the pending invites to a garden
     """
+
     garden: GardenPartialSchema
     invite: GardenMembershipFullSchema
     expiry_countdown_hours: int
+
 
 @query_result_transform
 class GardenPendingInvitesResult(QueryResult[None]):
     """
     Schema returning the pending invites to multiple gardens.
     """
+
     pending_invites: set[GardenPendingInviteSchema]
 
 
@@ -153,7 +158,7 @@ class GardenFullByKeyQuery(Query):
 
 
 async def generate_unique_garden_key(
-    svcs_container: Container
+    svcs_container: Container,
 ) -> GardenUniqueKeyResult:
     """
     Generate a unique garden key for the client.
@@ -235,6 +240,7 @@ async def get_full_by_key(
         client (User): the client user.
     """
     ...
+
 
 async def get_pending_invites(
     svcs_container: Container, client: User
