@@ -20,7 +20,6 @@ AXIOS_INSTANCE.interceptors.request.use((config) => {
 AXIOS_INSTANCE.interceptors.response.use(
 	(response) => {
 		/** On success, return the data directly.*/
-		toast.error("success")
 		return response.data
 	},
 	(error) => {
@@ -55,7 +54,7 @@ AXIOS_INSTANCE.interceptors.response.use(
 			if (error.response.data.extra?.non_form_errors) {
 				for (error in error.response.data.extra.non_form_errors) {
 					/** Toast */
-					toast(error)
+					toast.error(error)
 				}
 			}
 		}
