@@ -18,7 +18,7 @@
 		</div>
 	</Menubar.Item>
 {/snippet}
-<Menubar.Root class="justify-center md:justify-start">
+<Menubar.Root class="justify-center md:justify-start border-0 border-b border-neutral-8">
 	<!-- Select Menu -->
 	<Menubar.Menu>
 		<Menubar.Trigger>Select</Menubar.Trigger>
