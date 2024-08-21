@@ -1,5 +1,13 @@
 components:
   schemas:
+    AccessInfoResult:
+      properties:
+        expiry_time_seconds:
+          type: number
+      required:
+      - expiry_time_seconds
+      title: AccessInfoResult
+      type: object
     GardenAssociatedPartialsResult:
       properties:
         admin_memberships:
@@ -312,11 +320,14 @@ components:
       type: object
     GardenPendingInviteSchema:
       properties:
+        expiry_countdown_hours:
+          type: integer
         garden:
           $ref: '#/components/schemas/GardenPartialSchema'
         invite:
           $ref: '#/components/schemas/GardenMembershipFullSchema'
       required:
+      - expiry_countdown_hours
       - garden
       - invite
       title: GardenPendingInviteSchema
@@ -856,7 +867,7 @@ paths:
           content:
             application/json:
               schema:
-                type: string
+                $ref: '#/components/schemas/AccessInfoResult'
           description: Document created, URL follows
           headers: {}
         '400':
@@ -866,6 +877,22 @@ paths:
                 $ref: '#/components/schemas/ValidationException'
           description: Bad request syntax or unsupported method
       summary: User login
+      tags:
+      - users
+  /users/auth/refresh:
+    post:
+      deprecated: false
+      description: Refresh the authentication process for security..
+      operationId: UserRefreshCommandOp
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccessInfoResult'
+          description: Document created, URL follows
+          headers: {}
+      summary: User authentication refresh
       tags:
       - users
   /users/command/create:

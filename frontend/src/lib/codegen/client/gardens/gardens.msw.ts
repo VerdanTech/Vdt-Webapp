@@ -171,6 +171,7 @@ export const getGardenPendingInvitesQueryOpResponseMock = (
 		{ length: faker.number.int({ min: 1, max: 10 }) },
 		(_, i) => i + 1
 	).map(() => ({
+		expiry_countdown_hours: faker.number.int({ min: undefined, max: undefined }),
 		garden: {
 			creator_ref: faker.helpers.arrayElement([
 				faker.helpers.arrayElement([

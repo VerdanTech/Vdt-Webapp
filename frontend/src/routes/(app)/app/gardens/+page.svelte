@@ -7,7 +7,7 @@
 	import { Separator } from '$lib/components/ui/separator'
 	import * as Popover from '$components/ui/popover'
 	import { flyAndScale } from '$lib/utils/shadcn'
-	import isAuthenticated from '$state/authenticated.svelte'
+	import authentication from '$state/auth.svelte'
 	import type { GardenPartialSchema } from '$codegen/types'
 	import GardenThumbnailScrollable from './GardenThumbnailScrollable.svelte'
 	import GardenInviteScrollable from './GardenInviteScrollable.svelte'
@@ -25,7 +25,7 @@
 	 * redirect to public discovery page.
 	 */
 	onMount(() => {
-		if (!isAuthenticated.value) {
+		if (!authentication.value.isAuthenticated) {
 			goto('gardens/discover')
 		}
 	})

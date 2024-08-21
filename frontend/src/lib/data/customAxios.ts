@@ -1,11 +1,14 @@
 import type { AxiosRequestConfig, AxiosResponse } from 'axios'
 import axios from 'axios'
+import { goto } from '$app/navigation'
+import { toast } from 'svelte-sonner'
+import authentication from '$state/authentication.svelte'
 //import { csrftoken } from '$lib/stores';
 
 //Static configuration in the AXIOS_INSTANCE
 export const AXIOS_INSTANCE = axios.create({
 	baseURL: 'http://localhost:8000',
-	withCredentials: false
+	withCredentials: true
 })
 
 //Dynamic configuration in request/response interceptors
@@ -16,37 +19,29 @@ AXIOS_INSTANCE.interceptors.request.use((config) => {
 
 AXIOS_INSTANCE.interceptors.response.use(
 	(response) => {
-		if (process.env.NODE_ENV === 'development') {
-			//console.log(`Received response from request with config ${response.config}`)
-			//console.log(response.)
-		}
 		return response.data
 	},
 	(error) => {
-		if (process.env.NODE_ENV === 'development') {
-			console.log(error)
-			//console.log(`Received error response from request with config ${error.config}`)
-		}
-
 		if (!error.response) {
 			return
 		}
 
-		if (error.response.status == 500) {
-			//Server side error toast
-			/*
-			const toast: ToastSettings = {
-				message: 'Error: Server failed (HTTP 500)',
-				type: ToastType.Error,
-				dismissable: true,
-				autohide: true,
-				timeout: 5000
-			};
-			toastStore.trigger(toast);
-		}
-		*/
-		} else if (error.response.status == 401) {
-			// Unauthenticated toast. Redirect to login page.
+		if (error.response.status === 401) {
+			authentication.removeAccess()
+
+			if (authentication.value.retriedRefreshFlag) {
+				goto('login')
+			} else {
+				authentication.value.retriedRefreshFlag = true
+				authentication.requestAccessRefresh()
+			}
+		} else {
+			if (error.response.data.non_form_errors) {
+				for (error in error.response.data.non_form_errors) {
+					/** Toast */
+					toast(error)
+				}
+			}
 		}
 
 		throw error

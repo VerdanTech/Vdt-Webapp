@@ -7,9 +7,21 @@
  */
 import { faker } from '@faker-js/faker'
 import { HttpResponse, delay, http } from 'msw'
-import type { UserFullSchema, UserPublicSchema } from '../../types'
+import type { AccessInfoResult, UserFullSchema, UserPublicSchema } from '../../types'
 
-export const getUserLoginCommandOpResponseMock = (): string => faker.word.sample()
+export const getUserLoginCommandOpResponseMock = (
+	overrideResponse: Partial<AccessInfoResult> = {}
+): AccessInfoResult => ({
+	expiry_time_seconds: faker.number.int({ min: undefined, max: undefined }),
+	...overrideResponse
+})
+
+export const getUserRefreshCommandOpResponseMock = (
+	overrideResponse: Partial<AccessInfoResult> = {}
+): AccessInfoResult => ({
+	expiry_time_seconds: faker.number.int({ min: undefined, max: undefined }),
+	...overrideResponse
+})
 
 export const getUserCreateCommandOpResponseMock = (): string => faker.word.sample()
 
@@ -53,10 +65,10 @@ export const getUsernameExistsQueryOpResponseMock = (): boolean =>
 
 export const getUserLoginCommandOpMockHandler = (
 	overrideResponse?:
-		| string
+		| AccessInfoResult
 		| ((
 				info: Parameters<Parameters<typeof http.post>[1]>[0]
-		  ) => Promise<string> | string)
+		  ) => Promise<AccessInfoResult> | AccessInfoResult)
 ) => {
 	return http.post('*/users/auth/login', async (info) => {
 		await delay(1000)
@@ -67,6 +79,33 @@ export const getUserLoginCommandOpMockHandler = (
 						? await overrideResponse(info)
 						: overrideResponse
 					: getUserLoginCommandOpResponseMock()
+			),
+			{
+				status: 201,
+				headers: {
+					'Content-Type': 'application/json'
+				}
+			}
+		)
+	})
+}
+
+export const getUserRefreshCommandOpMockHandler = (
+	overrideResponse?:
+		| AccessInfoResult
+		| ((
+				info: Parameters<Parameters<typeof http.post>[1]>[0]
+		  ) => Promise<AccessInfoResult> | AccessInfoResult)
+) => {
+	return http.post('*/users/auth/refresh', async (info) => {
+		await delay(1000)
+		return new HttpResponse(
+			JSON.stringify(
+				overrideResponse !== undefined
+					? typeof overrideResponse === 'function'
+						? await overrideResponse(info)
+						: overrideResponse
+					: getUserRefreshCommandOpResponseMock()
 			),
 			{
 				status: 201,
@@ -220,6 +259,7 @@ export const getUsernameExistsQueryOpMockHandler = (
 }
 export const getUsersMock = () => [
 	getUserLoginCommandOpMockHandler(),
+	getUserRefreshCommandOpMockHandler(),
 	getUserCreateCommandOpMockHandler(),
 	getUserConfirmEmailConfirmationCommandOpMockHandler(),
 	getUserRequestEmailConfirmationCommandOpMockHandler(),

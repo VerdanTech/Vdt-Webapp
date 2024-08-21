@@ -2,19 +2,9 @@
 from litestar.connection import ASGIConnection
 from litestar.middleware import AbstractAuthenticationMiddleware, AuthenticationResult
 from litestar.middleware.base import DefineMiddleware
-from sqlalchemy import select
 
-# VerdanTech Source
-from src.common.adapters.persistence.common.uow import (
-    sessionmaker as alchemy_sessionmaker,
-)
-from src.common.adapters.persistence.sqlalchemy import get_alchemy_client
-from src.user.adapters.sqlalchemy.mapper import user_email_table, user_table
-from src.user.domain import User
-
-from .token import decode_jwt_token
-
-API_KEY_HEADER = "X-API-KEY"
+from .query import get_user_by_token
+from .token import TokenTypeEnum, decode_access_token
 
 
 class DefaultJwtAuthenticationMiddleware(AbstractAuthenticationMiddleware):
@@ -31,26 +21,19 @@ class DefaultJwtAuthenticationMiddleware(AbstractAuthenticationMiddleware):
         content when authenticated users access it.
         """
 
-        # retrieve the auth header
-        auth_header = connection.headers.get(API_KEY_HEADER)
-        if not auth_header:
+        # Retrieve the access token from the cookies
+        encoded_access_token = connection.cookies[str(TokenTypeEnum.ACCESS)]
+        if encoded_access_token is None:
             return AuthenticationResult(None, None)
 
-        # decode the token, the result is a ``Token`` model instance
-        token = decode_jwt_token(encoded_token=auth_header)
+        # Decode the token, the result is a Token model instance
+        access_token = decode_access_token(encoded_token=encoded_access_token)
 
-        alchemy_client = await get_alchemy_client(state=connection.state)
-        alchemy_session = alchemy_sessionmaker(bind=alchemy_client.engine)
-
-        async with alchemy_session.begin():
-            statement = (
-                select(User).join(user_email_table).filter(user_table.c.id == token.sub)
-            )
-            query = await alchemy_session.execute(statement)
-            user = query.unique().scalar_one_or_none()
+        # Retrieve the user the token represents.
+        user = await get_user_by_token(token=access_token, state=connection.state)
 
         if user:
-            return AuthenticationResult(user=user, auth=token)
+            return AuthenticationResult(user=user, auth=access_token)
         else:
             return AuthenticationResult(None, None)
 

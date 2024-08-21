@@ -6,6 +6,7 @@
  * OpenAPI spec version: 0.1.0
  */
 import type {
+	AccessInfoResult,
 	UserConfirmEmailConfirmationCommand,
 	UserConfirmPasswordResetCommand,
 	UserCreateCommand,
@@ -26,12 +27,19 @@ import { axiosClient } from '../../../data/customAxios'
 export const userLoginCommandOp = (
 	userPasswordVerificationQuery: UserPasswordVerificationQuery
 ) => {
-	return axiosClient<string>({
+	return axiosClient<AccessInfoResult>({
 		url: `/users/auth/login`,
 		method: 'POST',
 		headers: { 'Content-Type': 'application/json' },
 		data: userPasswordVerificationQuery
 	})
+}
+/**
+ * Refresh the authentication process for security..
+ * @summary User authentication refresh
+ */
+export const userRefreshCommandOp = () => {
+	return axiosClient<AccessInfoResult>({ url: `/users/auth/refresh`, method: 'POST' })
 }
 /**
  * Registers a new user. Requires email confirmation: False.
@@ -135,6 +143,9 @@ export const usernameExistsQueryOp = (params: UsernameExistsQueryOpParams) => {
 }
 export type UserLoginCommandOpResult = NonNullable<
 	Awaited<ReturnType<typeof userLoginCommandOp>>
+>
+export type UserRefreshCommandOpResult = NonNullable<
+	Awaited<ReturnType<typeof userRefreshCommandOp>>
 >
 export type UserCreateCommandOpResult = NonNullable<
 	Awaited<ReturnType<typeof userCreateCommandOp>>

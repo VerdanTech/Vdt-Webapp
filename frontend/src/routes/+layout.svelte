@@ -1,5 +1,6 @@
 <script lang="ts">
 	import 'tailwindcss/tailwind.css'
+	import { Toaster } from '$lib/components/ui/sonner'
 	import { QueryClientProvider } from '@sveltestack/svelte-query'
 	import { QueryClient } from '@sveltestack/svelte-query'
 	import '../app.pcss'
@@ -26,6 +27,9 @@
 {#if isReady}
 	<!-- QueryClient from Svelte Query provides an async state manager. -->
 	<QueryClientProvider client={queryClient}>
+		<!-- Sonner toaster from Shadcn-svelte -->
+		<Toaster />
+
 		<div class="bg-neutral-1 text-neutral-12">
 			{@render children()}
 		</div>

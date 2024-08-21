@@ -6,6 +6,7 @@
  * OpenAPI spec version: 0.1.0
  */
 
+export * from './accessInfoResult'
 export * from './gardenAssociatedPartialsResult'
 export * from './gardenCreateCommand'
 export * from './gardenCreateCommandKey'

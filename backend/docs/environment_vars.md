@@ -9,6 +9,7 @@ The Python package [decouple](https://pypi.org/project/python-decouple/) is used
 | -------- | ------- | ------- | ------- |
 | ENVIRONMENT | str (enum) | Controls whether the application is run with its development, test, or production settings. Must be one of `"DEV"`, `"TEST"`, or `"PROD"`. | `"DEV"` |
 | USING_HTTPS | bool | Tracks whether HTTPS is in use | `False` |
+| CLIENT_SAMESITE | bool | If true, all clients connecting to the API must be on the same domain. | `False` |
 | CLIENT_DOMAIN | str | Domain name of the frontend. Used to construct links for emails.  | `verdantech.io` |
 | ALLOWED_HOSTS | str or list[str] | Allowed hosts of the Litestar application.  | `.localhost` |
 | ALLOWED_ORIGINS | str or list[str] | Allowed origins (CORS) of the Litestar application.  | `""` |

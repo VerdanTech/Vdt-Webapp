@@ -21,6 +21,7 @@ API_URL_BASE: str = ""
 # CLIENT RELATED SETTINGS
 # ======================================
 
+CLIENT_SAMESITE: bool = config("CLIENT_SAMESITE", cast=bool, default=False)
 CLIENT_DOMAIN: str = config("CLIENT_DOMAIN", cast=str, default="verdantech.io")  # type: ignore
 if USING_HTTPS:
     CLIENT_BASE_URL: str = "https://" + CLIENT_DOMAIN + "/"

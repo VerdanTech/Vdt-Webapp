@@ -7,7 +7,7 @@
 	import { zod } from 'sveltekit-superforms/adapters'
 	import { userLogin } from '$lib/data/user/auth'
 	import { createServerErrors } from '$state/formServerErrors.svelte'
-	import isAuthenticated from '$state/authenticated.svelte'
+	import authentication from '$state/authentication.svelte'
 	/* Form mutation. */
 	const queryClient = useQueryClient()
 	const mutation = userLogin.mutation(queryClient)
@@ -28,13 +28,13 @@
 		onUpdate({ form }) {
 			if (form.valid) {
 				$mutation.mutate(form.data, {
-					onSuccess: () => {
+					onSuccess: (data) => {
 						/**
 						 * TODO: Move this state update to the data layer.
 						 * It is here because having both onSuccess callbacks
 						 * caused only the first to be run.
 						 */
-						isAuthenticated.value = true
+						authentication.login(data.expiry_time_seconds)
 						goto('/app')
 					},
 					onError: (error) => {
