@@ -1,37 +1,32 @@
 # Standard Library
-from enum import Enum
+from typing import Any
 
 # VerdanTech Source
-from src.common.domain import DomainModel, Value
+from src.common.domain import Value
 
 
-class AttributeProfile[Parent: DomainModel](Value):
+class Attribute[ValueT: Any](Value):
+    label: str
+    description: str
+    value: ValueT
+
+
+class AttributeProfile(Value):
     """
     Represents a generic group of attributes.
 
-    Characterized by a type of domain model "Parent"
-    which is the type of model the information is attached to.
+    Attributes:
+        label (str): the user-facing string label.
+        description (str): the user facing description.
     """
 
-    id: Enum
-    """A value of an Enum which contains all possible subtypes of a subtype of AttributeCluster."""
-
-    def sanitize(self) -> None:
-        """
-        Validates and normalizes attributes.
-
-        Raises:
-            SpecError: if the attributes fail validation.
-        """
-        return
+    label: str
+    description: str
 
 
-class AttributeCluster[Profile: AttributeProfile](Value):
+class AttributeProfileSet[ProfileT: AttributeProfile](Value):
     """
     Acts as a container for a set of attribute profiles.
-
-    Attribute profiles are declared as optional class members.
-    The names of these members must be the same as the id attribute on the profile.
     """
 
     pass

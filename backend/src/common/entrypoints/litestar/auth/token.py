@@ -109,7 +109,7 @@ def _token_to_cookie(token: str, token_type: TokenTypeEnum) -> Cookie:
         httponly=True,
         secure=settings.USING_HTTPS,
         samesite=cookie_samesite,
-        expires=token_settings[token_type]["expiry_timedelta"].total_seconds()
+        expires=token_settings[token_type]["expiry_timedelta"].total_seconds(),
     )
 
 

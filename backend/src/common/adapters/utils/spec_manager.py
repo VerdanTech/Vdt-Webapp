@@ -19,6 +19,8 @@ class Specs(Enum):
     """
 
     TYPE = "type"
+    MIN = "min"
+    MAX = "max"
     MIN_LENGTH = "min_length"
     MAX_LENGTH = "max_length"
     PATTERN = "pattern"
@@ -49,6 +51,8 @@ def validate_pattern(value: str | SecretStr, pattern: str | re.Pattern) -> bool:
 
 """Validation methods. Returns true if the value is valid."""
 spec_validation_methods = {
+    Specs.MIN: lambda value, min: value >= min,
+    Specs.MAX: lambda value, max: value <= max,
     Specs.MIN_LENGTH: lambda value, min_length: len(value) >= min_length,
     Specs.MAX_LENGTH: lambda value, max_length: len(value) <= max_length,
     Specs.PATTERN: validate_pattern,
@@ -164,8 +168,21 @@ class SpecManager:
                 field_description = spec_collection.descriptions[field]["field"]
             except KeyError:
                 raise ValueError(f"Missing field description for field {field}")
+            yield f"        description: '{field_description},'\n"
 
-            yield f"        description: '{field_description}'\n"
+            # Add the field label - no throw
+            try:
+                field_label = spec_collection.descriptions[field]["label"]
+                yield f"        label: '{field_label}'\n"
+            except KeyError:
+                pass
+
+            # Add the field unit - no throw
+            try:
+                field_unit = spec_collection.descriptions[field]["unit"]
+                yield f"        unit: '{field_unit}'\n"
+            except KeyError:
+                pass
 
             # Close the field object
             yield "    },\n"

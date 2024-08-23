@@ -1,1 +1,1 @@
-from .models import AttributeCluster, AttributeProfile
+from .models import Attribute, AttributeProfile, AttributeProfileSet

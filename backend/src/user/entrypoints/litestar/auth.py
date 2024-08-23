@@ -5,18 +5,19 @@ from litestar.params import Dependency
 from svcs import Container
 
 # VerdanTech Source
-from src import exceptions
+from src import exceptions, settings
 from src.common.entrypoints.litestar.auth import (
     TokenTypeEnum,
     access_token_to_cookie,
     decode_refresh_token,
     encode_access_token,
     encode_refresh_token,
-    refresh_token_to_cookie, get_user_by_token
+    get_user_by_token,
+    refresh_token_to_cookie,
 )
-from src.user.ops import queries
 from src.common.ops.queries import QueryResult, query_result_transform
-from src import settings
+from src.user.ops import queries
+
 
 @query_result_transform
 class AccessInfoResult(QueryResult[None]):
@@ -28,7 +29,9 @@ class AccessInfoResult(QueryResult[None]):
         expiry_time_seconds (float): the number of seconds until
             the access expires and must be refreshed.
     """
+
     expiry_time_seconds: float
+
 
 class UserAuthController(Controller):
     """
@@ -73,7 +76,9 @@ class UserAuthController(Controller):
             encoded_refresh_token = encode_refresh_token(verification_result.user_id)
 
             return Response(
-                content=AccessInfoResult(expiry_time_seconds=settings.ACCESS_JWT_EXPIRY_TIMEDELTA.total_seconds()),
+                content=AccessInfoResult(
+                    expiry_time_seconds=settings.ACCESS_JWT_EXPIRY_TIMEDELTA.total_seconds()
+                ),
                 cookies=[
                     refresh_token_to_cookie(encoded_refresh_token),
                     access_token_to_cookie(encoded_access_token),
@@ -117,7 +122,7 @@ class UserAuthController(Controller):
         user = await get_user_by_token(token=refresh_token, state=state)
         if user is None:
             raise exceptions.AuthenticationError()
-        
+
         # Validate token
         # TODO: When a token denylist is added, check that here
         # Also add the used token to the denylist
@@ -128,7 +133,9 @@ class UserAuthController(Controller):
         encoded_refresh_token = encode_refresh_token(user.id_or_error())
 
         return Response(
-            content=AccessInfoResult(expiry_time_seconds=settings.ACCESS_JWT_EXPIRY_TIMEDELTA.total_seconds()),
+            content=AccessInfoResult(
+                expiry_time_seconds=settings.ACCESS_JWT_EXPIRY_TIMEDELTA.total_seconds()
+            ),
             cookies=[
                 refresh_token_to_cookie(encoded_refresh_token),
                 access_token_to_cookie(encoded_access_token),

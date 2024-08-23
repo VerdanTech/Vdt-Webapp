@@ -1,27 +1,32 @@
 # VerdanTech Source
-from src.common.domain import DomainModel, Ref, RootEntity, root_entity_transform
+from src.attributes.domain import Attribute, AttributeProfile, AttributeProfileSet
+from src.common.domain import (
+    Entity,
+    Ref,
+    RootEntity,
+    root_entity_transform,
+    value_transform,
+)
 from src.garden.domain import Garden
 from src.user.domain import User
 
-from .attributes import CultivarAttributeCluster
-
-type CultivarCollectionFriendType = Garden | User
-
+type CultivarCollectionParentType = Garden | User
 """CultivarCollections can be linked to either a User or a Garden."""
 
 
 @root_entity_transform
-class Cultivar(RootEntity):
+class Cultivar(Entity):
     name: str
-    abbreviation: str | None
+    abbreviation: str
     parent_name: str
     attributes: CultivarAttributeCluster = CultivarAttributeCluster()
     enabled: bool = True
 
 
 @root_entity_transform
-class CultivarCollection[Friend: DomainModel](RootEntity):
-    friend_ref: Ref[CultivarCollectionFriendType] | None
+class CultivarCollection[Parent: CultivarCollectionParentType](RootEntity):
+    parent_ref: Ref[Parent] | None
+    key: str
     name: str
     description: str | None
-    cultivar_refs: set[Ref[Cultivar]]
+    cultivar: set[Cultivar]
