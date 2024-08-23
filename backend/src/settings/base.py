@@ -130,7 +130,7 @@ class EmailConfirmationOptions(Enum):
         return self.value == self.REQUIRED_FOR_LOGIN
 
 
-EMAIL_CONFIRMATION = EmailConfirmationOptions.REQUIRED_FOR_LOGIN
+EMAIL_CONFIRMATION = EmailConfirmationOptions.REQUIRED_FOR_NONE
 EMAIL_VERIFICATON_EXPIRY_TIME_HOURS: int = 72
 
 # Email confirmation

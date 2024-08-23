@@ -22,9 +22,9 @@ class DefaultJwtAuthenticationMiddleware(AbstractAuthenticationMiddleware):
         """
 
         # Retrieve the access token from the cookies
-        encoded_access_token = connection.cookies[str(TokenTypeEnum.ACCESS)]
-        if encoded_access_token is None:
+        if str(TokenTypeEnum.ACCESS) not in connection.cookies:
             return AuthenticationResult(None, None)
+        encoded_access_token = connection.cookies[str(TokenTypeEnum.ACCESS)]
 
         # Decode the token, the result is a Token model instance
         access_token = decode_access_token(encoded_token=encoded_access_token)
