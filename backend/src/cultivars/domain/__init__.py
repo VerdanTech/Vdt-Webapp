@@ -1,2 +1,2 @@
-from .attributes import CultivarAttributeCluster
-from .models import Cultivar, CultivarCollection
+from .attributes import CultivarAttributeProfileSet
+from .models import Cultivar

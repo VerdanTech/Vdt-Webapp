@@ -5,14 +5,9 @@ from typing import Annotated
 from pydantic import AfterValidator, Field
 
 # VerdanTech Source
-from src.attributes.domain import AttributeProfile
+from .profile import CultivarAttributeProfile
 from src.common.adapters.utils.spec_manager import SpecCollection, SpecManager, Specs
 from src.common.domain import Command, value_transform
-
-type LastFrostWindowOpenType = float
-type LastFrostWindowCloseType = float
-type FirstFrostWindowOpenType = float
-type FirstFrostWindowCloseType = float
 
 values = {"last_frost_window_open": {Specs.MIN: -200, Specs.MAX: 200}}
 descriptions = {
@@ -25,33 +20,33 @@ descriptions = {
     },
     "last_frost_window_open": {
         Specs.MIN: f"Must be greater than {values['last_frost_window_open'][Specs.MIN]}",
-        Specs.MIN: f"Must be less than {values['last_frost_window_open'][Specs.MAX]}",
+        Specs.MAX: f"Must be less than {values['last_frost_window_open'][Specs.MAX]}",
         "field": (
             "The amount of days between the last frost and the beginning of the planting window. "
-            "Positive values indicate the window begins after the last frost date."
-            "For example, a value of -15 indicates the cultivar may be planted 15 days before the last frost date."
-            f"Must be between {values['last_frost_window_open'][Specs.MIN]} and {values['last_frost_window_open'][Specs.MIN]} days long."
+            "Positive values indicate the window begins after the last frost date. "
+            "For example, a value of -15 indicates the cultivar may be planted 15 days before the last frost date. "
+            f"Must be between {values['last_frost_window_open'][Specs.MIN]} and {values['last_frost_window_open'][Specs.MIN]} days."
         ),
         "label": "Last Frost Window - Open",
         "unit": "days",
     },
 }
-specs = SpecCollection("frost_date_planting_window_profile", values, descriptions)
+frost_date_planting_window_specs = SpecCollection("frost_date_planting_window_profile", values, descriptions)
 
 
 @value_transform
-class FrostDatePlantingWindowProfile(AttributeProfile):
-    last_frost_window_open: LastFrostWindowOpenType | None
-    last_frost_window_close: LastFrostWindowCloseType | None
-    first_frost_window_open: FirstFrostWindowOpenType | None
-    first_frost_window_close: FirstFrostWindowCloseType | None
+class FrostDatePlantingWindowProfile(CultivarAttributeProfile):
+    last_frost_window_open: float | None = None
+    last_frost_window_close: float | None = None
+    first_frost_window_open: float | None= None 
+    first_frost_window_close: float | None= None
 
 
 class FrostDatePlantingWindowProfileUpdateCommand(Command):
     last_frost_window_open: Annotated[
-        LastFrostWindowOpenType,
+        float,
         AfterValidator(
-            SpecManager.get_validation_method(specs, "last_frost_window_open")
+            SpecManager.get_validation_method(frost_date_planting_window_specs, "last_frost_window_open")
         ),
         # Note: Field used only for annotation, to allow custom error messages.
         Field(

@@ -2,12 +2,12 @@
 from typing import Literal
 
 # VerdanTech Source
-from src.attributes.domain import AttributeProfile
+from .profile import CultivarAttributeProfile
 from src.common.domain import value_transform
 
 
 @value_transform
-class LifecycleProfile(AttributeProfile):
+class LifecycleProfile(CultivarAttributeProfile):
     """
     Defines the expected length of time between sections of a plant's life.
 
@@ -32,10 +32,10 @@ class LifecycleProfile(AttributeProfile):
     id = "lifecycle"
     label = "Lifecycle Profile"
 
-    sow_to_germ: float | None
-    germ_to_sprout: float | None
-    germ_to_transplant: float | None
-    sprout_to_first_harvest: float | None
-    first_to_last_harvest: float | None
-    last_harvest_to_expiry: float | Literal["Season"] | None
-    years_of_life: int | None
+    sow_to_germ: float | None= None
+    germ_to_sprout: float | None= None
+    germ_to_transplant: float | None= None
+    sprout_to_first_harvest: float | None= None
+    first_to_last_harvest: float | None= None
+    last_harvest_to_expiry: float | Literal["Season"] | None= None
+    years_of_life: int | None= None

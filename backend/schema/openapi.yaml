@@ -8,6 +8,93 @@ components:
       - expiry_time_seconds
       title: AccessInfoResult
       type: object
+    Cultivar:
+      properties:
+        abbreviation:
+          type: string
+        attributes:
+          $ref: '#/components/schemas/CultivarAttributeProfileSet'
+        created_at:
+          format: date-time
+          type: string
+        enabled:
+          type: boolean
+        id:
+          oneOf:
+          - type: 'null'
+          - format: uuid
+            type: string
+        name:
+          type: string
+        parent_name:
+          type: string
+      required:
+      - abbreviation
+      - name
+      - parent_name
+      title: Cultivar
+      type: object
+    CultivarAttributeProfileSet:
+      properties:
+        frost_date_planting_windows:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/FrostDatePlantingWindowProfile'
+        lifecycle:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/LifecycleProfile'
+        origin:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/OriginProfile'
+      required: []
+      title: CultivarAttributeProfileSet
+      type: object
+    CultivarAttributeUpdateCommand:
+      properties:
+        frost_date_planting_windows:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/FrostDatePlantingWindowProfileUpdateCommand'
+      required: []
+      title: CultivarAttributeUpdateCommand
+      type: object
+    FrostDatePlantingWindowProfile:
+      properties:
+        first_frost_window_close:
+          oneOf:
+          - type: 'null'
+          - type: number
+        first_frost_window_open:
+          oneOf:
+          - type: 'null'
+          - type: number
+        last_frost_window_close:
+          oneOf:
+          - type: 'null'
+          - type: number
+        last_frost_window_open:
+          oneOf:
+          - type: 'null'
+          - type: number
+      required: []
+      title: FrostDatePlantingWindowProfile
+      type: object
+    FrostDatePlantingWindowProfileUpdateCommand:
+      properties:
+        last_frost_window_open:
+          oneOf:
+          - type: 'null'
+          - description: The amount of days between the last frost and the beginning
+              of the planting window. Positive values indicate the window begins after
+              the last frost date. For example, a value of -15 indicates the cultivar
+              may be planted 15 days before the last frost date. Must be between -200
+              and -200 days.
+            type: number
+      required: []
+      title: FrostDatePlantingWindowProfileUpdateCommand
+      type: object
     GardenAssociatedPartialsResult:
       properties:
         admin_memberships:
@@ -350,6 +437,46 @@ components:
       - key
       title: GardenUniqueKeyResult
       type: object
+    LifecycleProfile:
+      properties:
+        first_to_last_harvest:
+          oneOf:
+          - type: 'null'
+          - type: number
+        germ_to_sprout:
+          oneOf:
+          - type: 'null'
+          - type: number
+        germ_to_transplant:
+          oneOf:
+          - type: 'null'
+          - type: number
+        last_harvest_to_expiry:
+          oneOf:
+          - type: 'null'
+          - type: number
+          - const: Season
+            type: string
+        sow_to_germ:
+          oneOf:
+          - type: 'null'
+          - type: number
+        sprout_to_first_harvest:
+          oneOf:
+          - type: 'null'
+          - type: number
+        years_of_life:
+          oneOf:
+          - type: 'null'
+          - type: integer
+      required: []
+      title: LifecycleProfile
+      type: object
+    OriginProfile:
+      properties: {}
+      required: []
+      title: OriginProfile
+      type: object
     RefSchema:
       properties:
         id:
@@ -555,6 +682,34 @@ info:
   version: 0.1.0
 openapi: 3.1.0
 paths:
+  /cultivars/command/update:
+    post:
+      deprecated: false
+      description: Sets the given attributes onto the cultivar.
+      operationId: CultivarAttributeUpdateCommandOp
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CultivarAttributeUpdateCommand'
+        required: true
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cultivar'
+          description: Document created, URL follows
+          headers: {}
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationException'
+          description: Bad request syntax or unsupported method
+      summary: Cultivar update.
+      tags:
+      - cultivars
   /gardens/command/accept_invite:
     post:
       deprecated: false

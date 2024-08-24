@@ -35,6 +35,13 @@ type SpecDescriptions = dict[Field, dict[Specs | Literal["field"], str]]
 
 SpecCollection = namedtuple("SpecCollection", ["domain", "values", "descriptions"])
 
+def merge_spec_collections(domain: str, specs: list[SpecCollection]) -> SpecCollection:
+    result_values = {}
+    result_descriptions = {}
+    for spec in specs:
+        result_values = {**result_values, **spec.values}
+        result_descriptions = {**result_descriptions, **spec.descriptions}
+    return SpecCollection(domain, result_values, result_descriptions)
 
 def validate_pattern(value: str | SecretStr, pattern: str | re.Pattern) -> bool:
     """
@@ -168,19 +175,19 @@ class SpecManager:
                 field_description = spec_collection.descriptions[field]["field"]
             except KeyError:
                 raise ValueError(f"Missing field description for field {field}")
-            yield f"        description: '{field_description},'\n"
+            yield f"        description: '{field_description}',\n"
 
             # Add the field label - no throw
             try:
                 field_label = spec_collection.descriptions[field]["label"]
-                yield f"        label: '{field_label}'\n"
+                yield f"        label: '{field_label}',\n"
             except KeyError:
                 pass
 
             # Add the field unit - no throw
             try:
                 field_unit = spec_collection.descriptions[field]["unit"]
-                yield f"        unit: '{field_unit}'\n"
+                yield f"        unit: '{field_unit}',\n"
             except KeyError:
                 pass
 
@@ -200,11 +207,13 @@ if __name__ == "__main__":
     # VerdanTech Source
     from src.garden.domain.specs import specs as garden_specs
     from src.user.domain.specs import specs as user_specs
+    from src.cultivars.domain.specs import specs as cultivar_specs 
+    specs = [garden_specs, user_specs, cultivar_specs]
 
     output_dir = "./schema/specs/"
     os.makedirs(output_dir, exist_ok=True)
 
-    for spec_collection in [user_specs, garden_specs]:
+    for spec_collection in specs:
         file_path = os.path.join(output_dir, f"{spec_collection.domain}.ts")
 
         with open(file_path, "w") as file:
