@@ -27,7 +27,7 @@ const iconIds = {
 	profileSettingsIcon: 'mdi:cog-outline',
 
 	/* Non-garden specific. */
-	commonsIcon: 'tdesign:share',
+	traitsIcon: 'tdesign:share',
 	cultivarsIcon: 'tabler:plant-2',
 	cultivarIcon: 'tabler:plant-2',
 	workspacesIcon: 'tabler:tools',

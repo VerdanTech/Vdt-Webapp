@@ -8,6 +8,7 @@ from litestar.params import Dependency
 from svcs import Container
 
 # VerdanTech Source
+from src.common.entrypoints.litestar import requires_account
 from src.user.ops import queries
 
 
@@ -55,6 +56,7 @@ class UserQueryController(Controller):
         description="Returns the profile of the authenticated user.",
         response_description="The profile of the authenticated user.",
         operation_id="UserClientProfileQueryOp",
+        guards=[requires_account]
     )
     async def client_profile(
         self,

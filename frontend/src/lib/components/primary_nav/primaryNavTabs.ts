@@ -143,25 +143,25 @@ export const getGardenSpecifcTabs = (gardenKey: string): PrimaryTabSpec[] => {
 export const getNonGardenSpecificTabs = (): PrimaryTabSpec[] => {
 	return [
 		{
-			id: 'commons',
-			label: 'Commons',
-			iconId: iconIds.commonsIcon,
-			url: '/app/commons',
+			id: 'traits',
+			label: 'Traits',
+			iconId: iconIds.traitsIcon,
+			url: '/app/traits',
 			submenuItems: [
 				{
 					label: 'Cultivars',
 					iconId: iconIds.cultivarIcon,
-					url: '/app/commons/cultivars'
+					url: '/app/traits/cultivars'
 				},
 				{
 					label: 'Workspaces',
 					iconId: iconIds.workspaceIcon,
-					url: '/app/commons/workspaces'
+					url: '/app/traits/workspaces'
 				},
 				{
 					label: 'Environments',
 					iconId: iconIds.environmentIcon,
-					url: '/app/commons/environments'
+					url: '/app/traits/environments'
 				}
 			]
 		},

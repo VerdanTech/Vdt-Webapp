@@ -5,6 +5,7 @@ from litestar.params import Dependency
 from svcs import Container
 
 # VerdanTech Source
+from src.common.entrypoints.litestar.auth.guard import requires_account
 from src.common.ops.processors import asgi_processor
 from src.cultivars.domain import commands, Cultivar
 
@@ -21,7 +22,8 @@ class CultivarCommandController(Controller):
         path="update",
         summary="Cultivar update.",
         description="Sets the given attributes onto the cultivar.",
-        operation_id=commands.CultivarAttributeUpdateCommand.to_operation_id()
+        operation_id=commands.CultivarAttributeUpdateCommand.to_operation_id(),
+        guards=[requires_account]
     )
     async def cultivar_update(
         self,

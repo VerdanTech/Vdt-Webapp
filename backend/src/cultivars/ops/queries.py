@@ -6,6 +6,7 @@ from datetime import datetime
 from svcs import Container
 
 # VerdanTech Source
+from src.user.domain import User
 from src import exceptions, settings
 from src.common.domain import Ref
 from src.common.interfaces.persistence.uow import AbstractUow
@@ -24,18 +25,45 @@ class CultivarGetByGardenResult(QueryResult[None]):
     collections: set[Ref[CultivarCollection]]
     active_collection: Ref[CultivarCollection]
 
+@query_result_transform
+class CultivarGetByClientResult(QueryResult[None]):
+    collections: set[Ref[CultivarCollection]]
 
 # ======================================
 # Queries
 # ======================================
 
-class CultivarGetByGarden(Query):
+class CultivarGetByGardenQuery(Query):
     garden_key: GardenKey
-
 
 
 # ======================================
 # Query handlers
 # ======================================
 
+async def get_by_garden(query: CultivarGetByGardenQuery, svcs_container: Container, client: User | None) -> CultivarGetByGardenResult:
+    """
+    Retrieves the cultivar collections that 
+    are associated with a garden.
 
+    Args:
+        query (CultivarGetByGardenQuery): the query.
+        svcs_container (Container): service locator.
+        client (User): the client user.
+
+    Returns:
+        CultivarGetByGardenResult: references to the
+            cultivar collections associated with the garden.
+    """
+    ...
+
+async def get_by_client(svcs_container: Container, client: User |None) -> CultivarGetByClientResult:
+    """
+    Retrieves the cultivar collections that
+    are associated with the client.
+
+    Returns:
+        CultivarGetByClientResult: references to the
+            cultivar collections associated with the gardens.
+    """
+    ...

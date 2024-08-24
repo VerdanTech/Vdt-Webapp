@@ -17,8 +17,6 @@ components:
         created_at:
           format: date-time
           type: string
-        enabled:
-          type: boolean
         id:
           oneOf:
           - type: 'null'
@@ -26,12 +24,14 @@ components:
             type: string
         name:
           type: string
-        parent_name:
-          type: string
+        parent_id:
+          oneOf:
+          - type: 'null'
+          - format: uuid
+            type: string
       required:
       - abbreviation
       - name
-      - parent_name
       title: Cultivar
       type: object
     CultivarAttributeProfileSet:
