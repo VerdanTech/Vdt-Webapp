@@ -5,15 +5,15 @@
  * Backend API of the VerdanTech software project.
  * OpenAPI spec version: 0.1.0
  */
-import type { CultivarAttributeProfileSet } from './cultivarAttributeProfileSet'
+import type { CultivarAttributeSet } from './cultivarAttributeSet'
 import type { CultivarId } from './cultivarId'
 import type { CultivarParentId } from './cultivarParentId'
 
 export interface Cultivar {
-	abbreviation: string
-	attributes?: CultivarAttributeProfileSet
+	attributes?: CultivarAttributeSet
 	created_at?: string
 	id?: CultivarId
+	key: string
 	name: string
 	parent_id?: CultivarParentId
 }

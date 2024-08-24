@@ -56,7 +56,7 @@ class UserQueryController(Controller):
         description="Returns the profile of the authenticated user.",
         response_description="The profile of the authenticated user.",
         operation_id="UserClientProfileQueryOp",
-        guards=[requires_account]
+        guards=[requires_account],
     )
     async def client_profile(
         self,

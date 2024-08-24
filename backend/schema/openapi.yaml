@@ -10,10 +10,8 @@ components:
       type: object
     Cultivar:
       properties:
-        abbreviation:
-          type: string
         attributes:
-          $ref: '#/components/schemas/CultivarAttributeProfileSet'
+          $ref: '#/components/schemas/CultivarAttributeSet'
         created_at:
           format: date-time
           type: string
@@ -22,6 +20,8 @@ components:
           - type: 'null'
           - format: uuid
             type: string
+        key:
+          type: string
         name:
           type: string
         parent_id:
@@ -30,11 +30,11 @@ components:
           - format: uuid
             type: string
       required:
-      - abbreviation
+      - key
       - name
       title: Cultivar
       type: object
-    CultivarAttributeProfileSet:
+    CultivarAttributeSet:
       properties:
         frost_date_planting_windows:
           oneOf:
@@ -49,7 +49,7 @@ components:
           - type: 'null'
           - $ref: '#/components/schemas/OriginProfile'
       required: []
-      title: CultivarAttributeProfileSet
+      title: CultivarAttributeSet
       type: object
     CultivarAttributeUpdateCommand:
       properties:
@@ -59,6 +59,76 @@ components:
           - $ref: '#/components/schemas/FrostDatePlantingWindowProfileUpdateCommand'
       required: []
       title: CultivarAttributeUpdateCommand
+      type: object
+    CultivarCollectionResult:
+      properties:
+        cultivars:
+          items:
+            $ref: '#/components/schemas/CultivarResult'
+          type: array
+        description:
+          type: string
+        garden_ref:
+          $ref: '#/components/schemas/RefSchema'
+        key:
+          type: string
+        name:
+          type: string
+        parent_ref:
+          $ref: '#/components/schemas/RefSchema'
+        tags:
+          items:
+            type: string
+          type: array
+        user_ref:
+          $ref: '#/components/schemas/RefSchema'
+      required:
+      - cultivars
+      - description
+      - garden_ref
+      - key
+      - name
+      - parent_ref
+      - tags
+      - user_ref
+      title: CultivarCollectionResult
+      type: object
+    CultivarGetByClientResult:
+      properties:
+        collections:
+          items:
+            $ref: '#/components/schemas/Ref[src.cultivars.domain.models.CultivarCollection]'
+          type: array
+      required:
+      - collections
+      title: CultivarGetByClientResult
+      type: object
+    CultivarGetByGardenResult:
+      properties:
+        active_collection:
+          $ref: '#/components/schemas/Ref[src.cultivars.domain.models.CultivarCollection]'
+        collections:
+          items:
+            $ref: '#/components/schemas/Ref[src.cultivars.domain.models.CultivarCollection]'
+          type: array
+      required:
+      - active_collection
+      - collections
+      title: CultivarGetByGardenResult
+      type: object
+    CultivarResult:
+      properties:
+        attributes:
+          $ref: '#/components/schemas/CultivarAttributeSet'
+        key:
+          type: string
+        name:
+          type: string
+      required:
+      - attributes
+      - key
+      - name
+      title: CultivarResult
       type: object
     FrostDatePlantingWindowProfile:
       properties:
@@ -486,6 +556,15 @@ components:
       - id
       title: RefSchema
       type: object
+    Ref[src.cultivars.domain.models.CultivarCollection]:
+      properties:
+        id:
+          format: uuid
+          type: string
+      required:
+      - id
+      title: Ref[CultivarCollection]
+      type: object
     UserConfirmEmailConfirmationCommand:
       properties:
         key:
@@ -708,6 +787,89 @@ paths:
                 $ref: '#/components/schemas/ValidationException'
           description: Bad request syntax or unsupported method
       summary: Cultivar update.
+      tags:
+      - cultivars
+  /cultivars/query/get_by_client:
+    get:
+      deprecated: false
+      description: Retrieves the cultivar collections associated with this garden.
+      operationId: CultivarGetByClientQueryOp
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CultivarGetByClientResult'
+          description: Request fulfilled, document follows
+          headers: {}
+      summary: Get cultivar collections from a garden.
+      tags:
+      - cultivars
+  /cultivars/query/get_by_garden:
+    get:
+      deprecated: false
+      description: Retrieves the cultivar collections associated with this garden.
+      operationId: CultivarGetByGardenQueryOp
+      parameters:
+      - allowEmptyValue: false
+        allowReserved: false
+        deprecated: false
+        in: query
+        name: garden_key
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CultivarGetByGardenResult'
+          description: Request fulfilled, document follows
+          headers: {}
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationException'
+          description: Bad request syntax or unsupported method
+      summary: Get cultivar collections from a garden.
+      tags:
+      - cultivars
+  /cultivars/query/get_by_ids:
+    get:
+      deprecated: false
+      description: Retrieves the cultivar collections associated with the IDs.
+      operationId: CultivarGetByIdsQueryOp
+      parameters:
+      - allowEmptyValue: false
+        allowReserved: false
+        deprecated: false
+        in: query
+        name: ids
+        required: true
+        schema:
+          items:
+            format: uuid
+            type: string
+          type: array
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/CultivarCollectionResult'
+                type: array
+          description: Request fulfilled, document follows
+          headers: {}
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationException'
+          description: Bad request syntax or unsupported method
+      summary: Get cultivar collections from their IDs.
       tags:
       - cultivars
   /gardens/command/accept_invite:

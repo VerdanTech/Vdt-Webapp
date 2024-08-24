@@ -5,7 +5,15 @@
  * Backend API of the VerdanTech software project.
  * OpenAPI spec version: 0.1.0
  */
-import type { Cultivar, CultivarAttributeUpdateCommand } from '../../types'
+import type {
+	Cultivar,
+	CultivarAttributeUpdateCommand,
+	CultivarCollectionResult,
+	CultivarGetByClientResult,
+	CultivarGetByGardenQueryOpParams,
+	CultivarGetByGardenResult,
+	CultivarGetByIdsQueryOpParams
+} from '../../types'
 import { axiosClient } from '../../../data/customAxios'
 
 /**
@@ -22,6 +30,49 @@ export const cultivarAttributeUpdateCommandOp = (
 		data: cultivarAttributeUpdateCommand
 	})
 }
+/**
+ * Retrieves the cultivar collections associated with this garden.
+ * @summary Get cultivar collections from a garden.
+ */
+export const cultivarGetByClientQueryOp = () => {
+	return axiosClient<CultivarGetByClientResult>({
+		url: `/cultivars/query/get_by_client`,
+		method: 'GET'
+	})
+}
+/**
+ * Retrieves the cultivar collections associated with this garden.
+ * @summary Get cultivar collections from a garden.
+ */
+export const cultivarGetByGardenQueryOp = (
+	params: CultivarGetByGardenQueryOpParams
+) => {
+	return axiosClient<CultivarGetByGardenResult>({
+		url: `/cultivars/query/get_by_garden`,
+		method: 'GET',
+		params
+	})
+}
+/**
+ * Retrieves the cultivar collections associated with the IDs.
+ * @summary Get cultivar collections from their IDs.
+ */
+export const cultivarGetByIdsQueryOp = (params: CultivarGetByIdsQueryOpParams) => {
+	return axiosClient<CultivarCollectionResult[]>({
+		url: `/cultivars/query/get_by_ids`,
+		method: 'GET',
+		params
+	})
+}
 export type CultivarAttributeUpdateCommandOpResult = NonNullable<
 	Awaited<ReturnType<typeof cultivarAttributeUpdateCommandOp>>
+>
+export type CultivarGetByClientQueryOpResult = NonNullable<
+	Awaited<ReturnType<typeof cultivarGetByClientQueryOp>>
+>
+export type CultivarGetByGardenQueryOpResult = NonNullable<
+	Awaited<ReturnType<typeof cultivarGetByGardenQueryOp>>
+>
+export type CultivarGetByIdsQueryOpResult = NonNullable<
+	Awaited<ReturnType<typeof cultivarGetByIdsQueryOp>>
 >

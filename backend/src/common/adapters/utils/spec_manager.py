@@ -35,6 +35,7 @@ type SpecDescriptions = dict[Field, dict[Specs | Literal["field"], str]]
 
 SpecCollection = namedtuple("SpecCollection", ["domain", "values", "descriptions"])
 
+
 def merge_spec_collections(domain: str, specs: list[SpecCollection]) -> SpecCollection:
     result_values = {}
     result_descriptions = {}
@@ -42,6 +43,7 @@ def merge_spec_collections(domain: str, specs: list[SpecCollection]) -> SpecColl
         result_values = {**result_values, **spec.values}
         result_descriptions = {**result_descriptions, **spec.descriptions}
     return SpecCollection(domain, result_values, result_descriptions)
+
 
 def validate_pattern(value: str | SecretStr, pattern: str | re.Pattern) -> bool:
     """
@@ -205,9 +207,10 @@ if __name__ == "__main__":
     """
     # Make sure to import all files so their specs are registered
     # VerdanTech Source
+    from src.cultivars.domain.specs import specs as cultivar_specs
     from src.garden.domain.specs import specs as garden_specs
     from src.user.domain.specs import specs as user_specs
-    from src.cultivars.domain.specs import specs as cultivar_specs 
+
     specs = [garden_specs, user_specs, cultivar_specs]
 
     output_dir = "./schema/specs/"

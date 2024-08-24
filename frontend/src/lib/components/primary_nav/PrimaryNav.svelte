@@ -35,7 +35,7 @@
 	let gardenTabs: PrimaryTabSpec[] = [] /* Allows accessing all features in a Garden. */
 
 	/* Get mobile specific tabs. */
-	let commonsTab = nonGardenSpecificTabs.find((t) => t.id === 'commons')
+	let traitsTab = nonGardenSpecificTabs.find((t) => t.id === 'traits')
 	let profileTab = nonGardenSpecificTabs.find((t) => t.id === 'profile')
 	let resourcesTab = nonGardenSpecificTabs.find((t) => t.id === 'resources')
 
@@ -76,8 +76,8 @@ users in a Garden context.
 	{#if resourcesTab}
 		<PrimaryNavBottomTabDropdown spec={resourcesTab} />
 	{/if}
-	{#if commonsTab}
-		<PrimaryNavBottomTabDropdown spec={commonsTab} />
+	{#if traitsTab}
+		<PrimaryNavBottomTabDropdown spec={traitsTab} />
 	{/if}
 	<PrimaryNavBottomTabDropdown spec={gardensTab} />
 	{#if activeGardenKey.value !== null}

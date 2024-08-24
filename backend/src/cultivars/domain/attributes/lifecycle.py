@@ -2,8 +2,9 @@
 from typing import Literal
 
 # VerdanTech Source
-from .profile import CultivarAttributeProfile
 from src.common.domain import value_transform
+
+from .profile import CultivarAttributeProfile
 
 
 @value_transform
@@ -32,10 +33,10 @@ class LifecycleProfile(CultivarAttributeProfile):
     id = "lifecycle"
     label = "Lifecycle Profile"
 
-    sow_to_germ: float | None= None
-    germ_to_sprout: float | None= None
-    germ_to_transplant: float | None= None
-    sprout_to_first_harvest: float | None= None
-    first_to_last_harvest: float | None= None
-    last_harvest_to_expiry: float | Literal["Season"] | None= None
-    years_of_life: int | None= None
+    sow_to_germ: float | None = None
+    germ_to_sprout: float | None = None
+    germ_to_transplant: float | None = None
+    sprout_to_first_harvest: float | None = None
+    first_to_last_harvest: float | None = None
+    last_harvest_to_expiry: float | Literal["Season"] | None = None
+    years_of_life: int | None = None

@@ -5,14 +5,20 @@ from typing import Annotated
 from pydantic import AfterValidator, Field
 
 # VerdanTech Source
-from .profile import CultivarAttributeProfile
 from src.common.adapters.utils.spec_manager import SpecCollection, SpecManager, Specs
 from src.common.domain import Command, value_transform
+
+from .profile import CultivarAttributeProfile
 
 WINDOW_MAX_RADIUS = 200
 """Defines the maximum value of the window attributes."""
 
-values = {"last_frost_window_open": {Specs.MIN: -WINDOW_MAX_RADIUS, Specs.MAX: WINDOW_MAX_RADIUS}}
+values = {
+    "last_frost_window_open": {
+        Specs.MIN: -WINDOW_MAX_RADIUS,
+        Specs.MAX: WINDOW_MAX_RADIUS,
+    }
+}
 descriptions = {
     "frost_date_planting_window_profile": {
         "field": (
@@ -34,22 +40,26 @@ descriptions = {
         "unit": "days",
     },
 }
-frost_date_planting_window_specs = SpecCollection("frost_date_planting_window_profile", values, descriptions)
+frost_date_planting_window_specs = SpecCollection(
+    "frost_date_planting_window_profile", values, descriptions
+)
 
 
 @value_transform
 class FrostDatePlantingWindowProfile(CultivarAttributeProfile):
     last_frost_window_open: float | None = None
     last_frost_window_close: float | None = None
-    first_frost_window_open: float | None= None 
-    first_frost_window_close: float | None= None
+    first_frost_window_open: float | None = None
+    first_frost_window_close: float | None = None
 
 
 class FrostDatePlantingWindowProfileUpdateCommand(Command):
     last_frost_window_open: Annotated[
         float,
         AfterValidator(
-            SpecManager.get_validation_method(frost_date_planting_window_specs, "last_frost_window_open")
+            SpecManager.get_validation_method(
+                frost_date_planting_window_specs, "last_frost_window_open"
+            )
         ),
         # Note: Field used only for annotation, to allow custom error messages.
         Field(

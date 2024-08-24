@@ -9,6 +9,9 @@ import { faker } from '@faker-js/faker'
 import { HttpResponse, delay, http } from 'msw'
 import type {
 	Cultivar,
+	CultivarCollectionResult,
+	CultivarGetByClientResult,
+	CultivarGetByGardenResult,
 	FrostDatePlantingWindowProfile,
 	LifecycleProfile,
 	OriginProfile
@@ -116,7 +119,6 @@ export const getCultivarAttributeUpdateCommandOpResponseOriginProfileMock = (
 export const getCultivarAttributeUpdateCommandOpResponseMock = (
 	overrideResponse: Partial<Cultivar> = {}
 ): Cultivar => ({
-	abbreviation: faker.word.sample(),
 	attributes: faker.helpers.arrayElement([
 		{
 			frost_date_planting_windows: faker.helpers.arrayElement([
@@ -153,6 +155,7 @@ export const getCultivarAttributeUpdateCommandOpResponseMock = (
 		faker.helpers.arrayElement([null, faker.string.uuid()]),
 		undefined
 	]),
+	key: faker.word.sample(),
 	name: faker.word.sample(),
 	parent_id: faker.helpers.arrayElement([
 		faker.helpers.arrayElement([null, faker.string.uuid()]),
@@ -160,6 +163,173 @@ export const getCultivarAttributeUpdateCommandOpResponseMock = (
 	]),
 	...overrideResponse
 })
+
+export const getCultivarGetByClientQueryOpResponseMock = (
+	overrideResponse: Partial<CultivarGetByClientResult> = {}
+): CultivarGetByClientResult => ({
+	collections: Array.from(
+		{ length: faker.number.int({ min: 1, max: 10 }) },
+		(_, i) => i + 1
+	).map(() => ({ id: faker.string.uuid() })),
+	...overrideResponse
+})
+
+export const getCultivarGetByGardenQueryOpResponseMock = (
+	overrideResponse: Partial<CultivarGetByGardenResult> = {}
+): CultivarGetByGardenResult => ({
+	active_collection: { id: faker.string.uuid() },
+	collections: Array.from(
+		{ length: faker.number.int({ min: 1, max: 10 }) },
+		(_, i) => i + 1
+	).map(() => ({ id: faker.string.uuid() })),
+	...overrideResponse
+})
+
+export const getCultivarGetByIdsQueryOpResponseFrostDatePlantingWindowProfileMock = (
+	overrideResponse: Partial<FrostDatePlantingWindowProfile> = {}
+): FrostDatePlantingWindowProfile => ({
+	...{
+		first_frost_window_close: faker.helpers.arrayElement([
+			faker.helpers.arrayElement([
+				null,
+				faker.number.int({ min: undefined, max: undefined })
+			]),
+			undefined
+		]),
+		first_frost_window_open: faker.helpers.arrayElement([
+			faker.helpers.arrayElement([
+				null,
+				faker.number.int({ min: undefined, max: undefined })
+			]),
+			undefined
+		]),
+		last_frost_window_close: faker.helpers.arrayElement([
+			faker.helpers.arrayElement([
+				null,
+				faker.number.int({ min: undefined, max: undefined })
+			]),
+			undefined
+		]),
+		last_frost_window_open: faker.helpers.arrayElement([
+			faker.helpers.arrayElement([
+				null,
+				faker.number.int({ min: undefined, max: undefined })
+			]),
+			undefined
+		])
+	},
+	...overrideResponse
+})
+
+export const getCultivarGetByIdsQueryOpResponseLifecycleProfileMock = (
+	overrideResponse: Partial<LifecycleProfile> = {}
+): LifecycleProfile => ({
+	...{
+		first_to_last_harvest: faker.helpers.arrayElement([
+			faker.helpers.arrayElement([
+				null,
+				faker.number.int({ min: undefined, max: undefined })
+			]),
+			undefined
+		]),
+		germ_to_sprout: faker.helpers.arrayElement([
+			faker.helpers.arrayElement([
+				null,
+				faker.number.int({ min: undefined, max: undefined })
+			]),
+			undefined
+		]),
+		germ_to_transplant: faker.helpers.arrayElement([
+			faker.helpers.arrayElement([
+				null,
+				faker.number.int({ min: undefined, max: undefined })
+			]),
+			undefined
+		]),
+		last_harvest_to_expiry: faker.helpers.arrayElement([
+			faker.helpers.arrayElement([
+				null,
+				faker.number.int({ min: undefined, max: undefined }),
+				faker.word.sample()
+			]),
+			undefined
+		]),
+		sow_to_germ: faker.helpers.arrayElement([
+			faker.helpers.arrayElement([
+				null,
+				faker.number.int({ min: undefined, max: undefined })
+			]),
+			undefined
+		]),
+		sprout_to_first_harvest: faker.helpers.arrayElement([
+			faker.helpers.arrayElement([
+				null,
+				faker.number.int({ min: undefined, max: undefined })
+			]),
+			undefined
+		]),
+		years_of_life: faker.helpers.arrayElement([
+			faker.helpers.arrayElement([
+				null,
+				faker.number.int({ min: undefined, max: undefined })
+			]),
+			undefined
+		])
+	},
+	...overrideResponse
+})
+
+export const getCultivarGetByIdsQueryOpResponseOriginProfileMock = (
+	overrideResponse: Partial<OriginProfile> = {}
+): OriginProfile => ({ ...{}, ...overrideResponse })
+
+export const getCultivarGetByIdsQueryOpResponseMock = (): CultivarCollectionResult[] =>
+	Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(
+		() => ({
+			cultivars: Array.from(
+				{ length: faker.number.int({ min: 1, max: 10 }) },
+				(_, i) => i + 1
+			).map(() => ({
+				attributes: {
+					frost_date_planting_windows: faker.helpers.arrayElement([
+						faker.helpers.arrayElement([
+							null,
+							{
+								...getCultivarGetByIdsQueryOpResponseFrostDatePlantingWindowProfileMock()
+							}
+						]),
+						undefined
+					]),
+					lifecycle: faker.helpers.arrayElement([
+						faker.helpers.arrayElement([
+							null,
+							{ ...getCultivarGetByIdsQueryOpResponseLifecycleProfileMock() }
+						]),
+						undefined
+					]),
+					origin: faker.helpers.arrayElement([
+						faker.helpers.arrayElement([
+							null,
+							{ ...getCultivarGetByIdsQueryOpResponseOriginProfileMock() }
+						]),
+						undefined
+					])
+				},
+				key: faker.word.sample(),
+				name: faker.word.sample()
+			})),
+			description: faker.word.sample(),
+			garden_ref: { id: faker.string.uuid() },
+			key: faker.word.sample(),
+			name: faker.word.sample(),
+			parent_ref: { id: faker.string.uuid() },
+			tags: Array.from(
+				{ length: faker.number.int({ min: 1, max: 10 }) },
+				(_, i) => i + 1
+			).map(() => faker.word.sample()),
+			user_ref: { id: faker.string.uuid() }
+		})
+	)
 
 export const getCultivarAttributeUpdateCommandOpMockHandler = (
 	overrideResponse?:
@@ -187,4 +357,90 @@ export const getCultivarAttributeUpdateCommandOpMockHandler = (
 		)
 	})
 }
-export const getCultivarsMock = () => [getCultivarAttributeUpdateCommandOpMockHandler()]
+
+export const getCultivarGetByClientQueryOpMockHandler = (
+	overrideResponse?:
+		| CultivarGetByClientResult
+		| ((
+				info: Parameters<Parameters<typeof http.get>[1]>[0]
+		  ) => Promise<CultivarGetByClientResult> | CultivarGetByClientResult)
+) => {
+	return http.get('*/cultivars/query/get_by_client', async (info) => {
+		await delay(1000)
+		return new HttpResponse(
+			JSON.stringify(
+				overrideResponse !== undefined
+					? typeof overrideResponse === 'function'
+						? await overrideResponse(info)
+						: overrideResponse
+					: getCultivarGetByClientQueryOpResponseMock()
+			),
+			{
+				status: 200,
+				headers: {
+					'Content-Type': 'application/json'
+				}
+			}
+		)
+	})
+}
+
+export const getCultivarGetByGardenQueryOpMockHandler = (
+	overrideResponse?:
+		| CultivarGetByGardenResult
+		| ((
+				info: Parameters<Parameters<typeof http.get>[1]>[0]
+		  ) => Promise<CultivarGetByGardenResult> | CultivarGetByGardenResult)
+) => {
+	return http.get('*/cultivars/query/get_by_garden', async (info) => {
+		await delay(1000)
+		return new HttpResponse(
+			JSON.stringify(
+				overrideResponse !== undefined
+					? typeof overrideResponse === 'function'
+						? await overrideResponse(info)
+						: overrideResponse
+					: getCultivarGetByGardenQueryOpResponseMock()
+			),
+			{
+				status: 200,
+				headers: {
+					'Content-Type': 'application/json'
+				}
+			}
+		)
+	})
+}
+
+export const getCultivarGetByIdsQueryOpMockHandler = (
+	overrideResponse?:
+		| CultivarCollectionResult[]
+		| ((
+				info: Parameters<Parameters<typeof http.get>[1]>[0]
+		  ) => Promise<CultivarCollectionResult[]> | CultivarCollectionResult[])
+) => {
+	return http.get('*/cultivars/query/get_by_ids', async (info) => {
+		await delay(1000)
+		return new HttpResponse(
+			JSON.stringify(
+				overrideResponse !== undefined
+					? typeof overrideResponse === 'function'
+						? await overrideResponse(info)
+						: overrideResponse
+					: getCultivarGetByIdsQueryOpResponseMock()
+			),
+			{
+				status: 200,
+				headers: {
+					'Content-Type': 'application/json'
+				}
+			}
+		)
+	})
+}
+export const getCultivarsMock = () => [
+	getCultivarAttributeUpdateCommandOpMockHandler(),
+	getCultivarGetByClientQueryOpMockHandler(),
+	getCultivarGetByGardenQueryOpMockHandler(),
+	getCultivarGetByIdsQueryOpMockHandler()
+]

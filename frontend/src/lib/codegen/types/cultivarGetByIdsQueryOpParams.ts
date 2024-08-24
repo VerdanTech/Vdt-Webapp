@@ -5,6 +5,7 @@
  * Backend API of the VerdanTech software project.
  * OpenAPI spec version: 0.1.0
  */
-import type { LifecycleProfile } from './lifecycleProfile'
 
-export type CultivarAttributeProfileSetLifecycle = null | LifecycleProfile
+export type CultivarGetByIdsQueryOpParams = {
+	ids: string[]
+}

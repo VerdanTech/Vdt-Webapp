@@ -1,7 +1,10 @@
+# External Libraries
 from litestar.connection import ASGIConnection
 from litestar.handlers.base import BaseRouteHandler
 
+# VerdanTech Source
 from src import exceptions
+
 
 def requires_account(connection: ASGIConnection, _: BaseRouteHandler) -> None:
     """
@@ -18,4 +21,4 @@ def requires_account(connection: ASGIConnection, _: BaseRouteHandler) -> None:
             should be blocked
     """
     if not connection.user:
-       raise exceptions.AuthorizationError()
+        raise exceptions.AuthorizationError()

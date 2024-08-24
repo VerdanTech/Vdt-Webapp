@@ -8,6 +8,7 @@ from svcs import Container
 from src.common.entrypoints.litestar.auth.guard import requires_account
 from src.garden.ops import queries
 
+
 class GardenQueryController(Controller):
     """Garden read operations controller"""
 
@@ -19,7 +20,7 @@ class GardenQueryController(Controller):
         summary="Generate a new, unique garden key.",
         description="Generates a unique garden key given a plant name and a random string.",
         operation_id="GardenGenerateUniqueKeyQueryOp",
-        guards=[requires_account]
+        guards=[requires_account],
     )
     async def generate_unique_garden_key(
         self,
@@ -46,7 +47,7 @@ class GardenQueryController(Controller):
         summary="Returns a partial representation of all gardens that are associated with the client",
         description="Returns a partial representation of all gardens that are associated with the client",
         operation_id="GardenAssociatedPartialsQueryOp",
-        guards=[requires_account]
+        guards=[requires_account],
     )
     async def associated_partials(
         self,
@@ -76,7 +77,7 @@ class GardenQueryController(Controller):
         summary="Returns a partial representation of most relevant gardens to the user.",
         description="Returns a partial representation of most relevant gardens to the user, ordered by relevance.",
         operation_id=queries.GardenMostRelevantPartialsQuery.to_operation_id(),
-        guards=[requires_account]
+        guards=[requires_account],
     )
     async def most_relevant(
         self,
@@ -173,7 +174,7 @@ class GardenQueryController(Controller):
         summary="Returns a set of pending garden invites",
         description="Returns a set of tuples of gardens and associated pending garden memberships",
         operation_id="GardenPendingInvitesQueryOp",
-        guards=[requires_account]
+        guards=[requires_account],
     )
     async def pending_invites(
         self,

@@ -2,6 +2,7 @@
 from litestar import Router
 
 from .commands import CultivarCommandController
+from .queries import CultivarQueryController
 
 
 def create_cultivar_router() -> Router:
@@ -10,5 +11,5 @@ def create_cultivar_router() -> Router:
     """
     return Router(
         path="cultivars",
-        route_handlers=[CultivarCommandController],
+        route_handlers=[CultivarCommandController, CultivarQueryController],
     )

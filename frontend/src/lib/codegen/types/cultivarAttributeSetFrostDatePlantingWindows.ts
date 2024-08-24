@@ -7,5 +7,5 @@
  */
 import type { FrostDatePlantingWindowProfile } from './frostDatePlantingWindowProfile'
 
-export type CultivarAttributeProfileSetFrostDatePlantingWindows =
+export type CultivarAttributeSetFrostDatePlantingWindows =
 	null | FrostDatePlantingWindowProfile

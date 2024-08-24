@@ -1,9 +1,9 @@
 <script lang="ts">
-	import UnderConstructionPage from '$components/misc/UnderConstructionPage.svelte'
+	import CultivarCollection from '$components/cultivars/CultivarCollection.svelte';
 </script>
 
 <svelte:head>
-	<title>VerdanTech</title>
+	<title>Cultivar - VerdanTech</title>
 </svelte:head>
 
-<UnderConstructionPage />
+<CultivarCollection collectionRef={"osaenr"} />
