@@ -9,7 +9,10 @@ from .profile import CultivarAttributeProfile
 from src.common.adapters.utils.spec_manager import SpecCollection, SpecManager, Specs
 from src.common.domain import Command, value_transform
 
-values = {"last_frost_window_open": {Specs.MIN: -200, Specs.MAX: 200}}
+WINDOW_MAX_RADIUS = 200
+"""Defines the maximum value of the window attributes."""
+
+values = {"last_frost_window_open": {Specs.MIN: -WINDOW_MAX_RADIUS, Specs.MAX: WINDOW_MAX_RADIUS}}
 descriptions = {
     "frost_date_planting_window_profile": {
         "field": (

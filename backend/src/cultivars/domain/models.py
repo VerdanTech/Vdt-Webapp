@@ -1,4 +1,5 @@
 # VerdanTech Source
+import uuid
 from src.common.domain import (
     Entity,
     Ref,
@@ -8,23 +9,24 @@ from src.common.domain import (
 from src.garden.domain import Garden
 from src.user.domain import User
 from .attributes import CultivarAttributeProfileSet
-type CultivarCollectionParentType = Garden | User
-"""CultivarCollections can be linked to either a User or a Garden."""
+from attrs import field
 
 
 @entity_transform
 class Cultivar(Entity):
-    name: str
-    abbreviation: str
-    parent_name: str
+    name: str # type: ignore
+    abbreviation: str # type: ignore
     attributes: CultivarAttributeProfileSet = CultivarAttributeProfileSet()
-    enabled: bool = True
+    parent_id: uuid.UUID | None = None
 
 
 @root_entity_transform
-class CultivarCollection[Parent: CultivarCollectionParentType](RootEntity):
-    parent_ref: Ref[Parent] | None
-    key: str
-    name: str
-    description: str | None
-    cultivar: set[Cultivar]
+class CultivarCollection(RootEntity):
+    key: str # type: ignore
+    name: str # type: ignore
+    cultivars: set[Cultivar] = field(factory=set)
+    description: str | None = None
+    tags: set[str] = field(factory=set)
+    parent_ref: Ref["CultivarCollection"] | None = None
+    user_ref: Ref[User] | None = None
+    garden_ref: Ref[Garden] | None = None

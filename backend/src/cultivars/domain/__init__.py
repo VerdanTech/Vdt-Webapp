@@ -1,2 +1,2 @@
 from .attributes import CultivarAttributeProfileSet
-from .models import Cultivar
+from .models import Cultivar, CultivarCollection
