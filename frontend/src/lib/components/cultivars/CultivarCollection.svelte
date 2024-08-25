@@ -1,49 +1,31 @@
-
 <script lang="ts">
-    import { melt, type TreeView } from '@melt-ui/svelte';
-    import type {CultivarCollectionFullSchema} from '$codegen/types'
-    import Cultivar from './Cultivar.svelte'
+	import { melt, type TreeView } from '@melt-ui/svelte'
+	import type { CultivarCollectionFullSchema } from '$codegen/types'
+	import Cultivar from './Cultivar.svelte'
 
-    type Props = {
-      treeView: TreeView
-        collection: CultivarCollectionFullSchema
-    }
+	type Props = {
+		treeView: TreeView
+		collection: CultivarCollectionFullSchema
+	}
 
-    let {treeView, collection}: Props = $props()
+	let { treeView, collection }: Props = $props()
 
-    const {
-    elements: { item, group },
-    helpers: { isExpanded, isSelected },
-  } = treeView
-
+	const {
+		elements: { item, group },
+		helpers: { isExpanded, isSelected }
+	} = treeView
 </script>
 
 <ul>
+	{#each collection.cultivars as cultivar}
+		<li>
+			<button use:melt={$item({ id: cultivar.id })}>
+				<span>
+					{cultivar.name}
+				</span>
+			</button>
 
-{#each collection.cultivars as cultivar}
-
-<li>
-
-<button use:melt={$item({id: cultivar.id})}>
-   <span>
-      {cultivar.name}
-   </span>
-</button>
-
-<ul use:melt={$group({id: cultivar.id})}>
-  <li>
-    Key
-  </li>
-  <li>
-    Description
-  </li>
-  <li>
-    Parent
-  </li>
-  <Cultivar treeView={treeView} cultivar={cultivar}/>
-</ul>
-
-</li>
-
-{/each}
+			<Cultivar {treeView} {cultivar} />
+		</li>
+	{/each}
 </ul>

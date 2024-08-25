@@ -6,7 +6,6 @@
  * OpenAPI spec version: 0.1.0
  */
 import type {
-	Cultivar,
 	CultivarAttributeUpdateCommand,
 	CultivarCollectionFullSchema,
 	CultivarGetByClientResult,
@@ -23,7 +22,7 @@ import { axiosClient } from '../../../data/customAxios'
 export const cultivarAttributeUpdateCommandOp = (
 	cultivarAttributeUpdateCommand: CultivarAttributeUpdateCommand
 ) => {
-	return axiosClient<Cultivar>({
+	return axiosClient<string>({
 		url: `/cultivars/command/update`,
 		method: 'POST',
 		headers: { 'Content-Type': 'application/json' },

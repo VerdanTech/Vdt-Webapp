@@ -29,7 +29,6 @@ AXIOS_INSTANCE.interceptors.response.use(
 
 		/** Handle authentication errors. */
 		if (error.response.status === 401) {
-
 			/** Update the client to acknowledge the lack of access. */
 			authentication.removeAccess()
 
@@ -37,19 +36,18 @@ AXIOS_INSTANCE.interceptors.response.use(
 			if (authentication.value.retriedRefreshFlag) {
 				goto('login')
 
-			/** Otherwise, attempt a refresh. */
+				/** Otherwise, attempt a refresh. */
 			} else {
 				authentication.value.retriedRefreshFlag = true
 				authentication.requestAccessRefresh()
 			}
-		
-		/** Handle other errors. */
-		} else {
 
-			/** 
+			/** Handle other errors. */
+		} else {
+			/**
 			 * The backend may send errors meant to be displayed
 			 * outside of a form under the extra.non_form_errors key.
-			 * Display each of these in a toast. 
+			 * Display each of these in a toast.
 			 */
 			if (error.response.data.extra?.non_form_errors) {
 				for (error in error.response.data.extra.non_form_errors) {

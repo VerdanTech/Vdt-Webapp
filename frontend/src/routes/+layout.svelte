@@ -27,11 +27,11 @@
 
 {#if isReady}
 	<ModeWatcher />
-	 
+
 	<!-- QueryClient from Svelte Query provides an async state manager. -->
 	<QueryClientProvider client={queryClient}>
 		<!-- Sonner toaster from Shadcn-svelte -->
-		<Toaster richColors/>
+		<Toaster richColors />
 
 		<div class="bg-neutral-1 text-neutral-12">
 			{@render children()}

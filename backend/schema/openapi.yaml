@@ -8,32 +8,6 @@ components:
       - expiry_time_seconds
       title: AccessInfoResult
       type: object
-    Cultivar:
-      properties:
-        attributes:
-          $ref: '#/components/schemas/CultivarAttributeSet'
-        created_at:
-          format: date-time
-          type: string
-        id:
-          oneOf:
-          - type: 'null'
-          - format: uuid
-            type: string
-        key:
-          type: string
-        name:
-          type: string
-        parent_id:
-          oneOf:
-          - type: 'null'
-          - format: uuid
-            type: string
-      required:
-      - key
-      - name
-      title: Cultivar
-      type: object
     CultivarAttributeSet:
       properties:
         frost_date_planting_windows:
@@ -827,9 +801,9 @@ paths:
       responses:
         '201':
           content:
-            application/json:
+            text/plain:
               schema:
-                $ref: '#/components/schemas/Cultivar'
+                type: string
           description: Document created, URL follows
           headers: {}
         '400':

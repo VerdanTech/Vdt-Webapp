@@ -1,7 +1,7 @@
 <script>
-	import {page} from '$app/stores'
+	import { page } from '$app/stores'
 	import GardenContext from './GardenContext.svelte'
-	import activeGardenKey from '$state/activeGarden.svelte';
+	import activeGardenKey from '$state/activeGarden.svelte'
 
 	/** Update the active garden upon loading a new garden. */
 	if (activeGardenKey.value != $page.params.gardenKey) {

@@ -8,7 +8,6 @@
 import { faker } from '@faker-js/faker'
 import { HttpResponse, delay, http } from 'msw'
 import type {
-	Cultivar,
 	CultivarCollectionFullSchema,
 	CultivarGetByClientResult,
 	CultivarGetByGardenResult,
@@ -18,152 +17,8 @@ import type {
 	RefSchema
 } from '../../types'
 
-export const getCultivarAttributeUpdateCommandOpResponseFrostDatePlantingWindowProfileMock =
-	(
-		overrideResponse: Partial<FrostDatePlantingWindowProfile> = {}
-	): FrostDatePlantingWindowProfile => ({
-		...{
-			first_frost_window_close: faker.helpers.arrayElement([
-				faker.helpers.arrayElement([
-					null,
-					faker.number.int({ min: undefined, max: undefined })
-				]),
-				undefined
-			]),
-			first_frost_window_open: faker.helpers.arrayElement([
-				faker.helpers.arrayElement([
-					null,
-					faker.number.int({ min: undefined, max: undefined })
-				]),
-				undefined
-			]),
-			last_frost_window_close: faker.helpers.arrayElement([
-				faker.helpers.arrayElement([
-					null,
-					faker.number.int({ min: undefined, max: undefined })
-				]),
-				undefined
-			]),
-			last_frost_window_open: faker.helpers.arrayElement([
-				faker.helpers.arrayElement([
-					null,
-					faker.number.int({ min: undefined, max: undefined })
-				]),
-				undefined
-			])
-		},
-		...overrideResponse
-	})
-
-export const getCultivarAttributeUpdateCommandOpResponseLifecycleProfileMock = (
-	overrideResponse: Partial<LifecycleProfile> = {}
-): LifecycleProfile => ({
-	...{
-		first_to_last_harvest: faker.helpers.arrayElement([
-			faker.helpers.arrayElement([
-				null,
-				faker.number.int({ min: undefined, max: undefined })
-			]),
-			undefined
-		]),
-		germ_to_sprout: faker.helpers.arrayElement([
-			faker.helpers.arrayElement([
-				null,
-				faker.number.int({ min: undefined, max: undefined })
-			]),
-			undefined
-		]),
-		germ_to_transplant: faker.helpers.arrayElement([
-			faker.helpers.arrayElement([
-				null,
-				faker.number.int({ min: undefined, max: undefined })
-			]),
-			undefined
-		]),
-		last_harvest_to_expiry: faker.helpers.arrayElement([
-			faker.helpers.arrayElement([
-				null,
-				faker.number.int({ min: undefined, max: undefined }),
-				faker.word.sample()
-			]),
-			undefined
-		]),
-		sow_to_germ: faker.helpers.arrayElement([
-			faker.helpers.arrayElement([
-				null,
-				faker.number.int({ min: undefined, max: undefined })
-			]),
-			undefined
-		]),
-		sprout_to_first_harvest: faker.helpers.arrayElement([
-			faker.helpers.arrayElement([
-				null,
-				faker.number.int({ min: undefined, max: undefined })
-			]),
-			undefined
-		]),
-		years_of_life: faker.helpers.arrayElement([
-			faker.helpers.arrayElement([
-				null,
-				faker.number.int({ min: undefined, max: undefined })
-			]),
-			undefined
-		])
-	},
-	...overrideResponse
-})
-
-export const getCultivarAttributeUpdateCommandOpResponseOriginProfileMock = (
-	overrideResponse: Partial<OriginProfile> = {}
-): OriginProfile => ({ ...{}, ...overrideResponse })
-
-export const getCultivarAttributeUpdateCommandOpResponseMock = (
-	overrideResponse: Partial<Cultivar> = {}
-): Cultivar => ({
-	attributes: faker.helpers.arrayElement([
-		{
-			frost_date_planting_windows: faker.helpers.arrayElement([
-				faker.helpers.arrayElement([
-					null,
-					{
-						...getCultivarAttributeUpdateCommandOpResponseFrostDatePlantingWindowProfileMock()
-					}
-				]),
-				undefined
-			]),
-			lifecycle: faker.helpers.arrayElement([
-				faker.helpers.arrayElement([
-					null,
-					{ ...getCultivarAttributeUpdateCommandOpResponseLifecycleProfileMock() }
-				]),
-				undefined
-			]),
-			origin: faker.helpers.arrayElement([
-				faker.helpers.arrayElement([
-					null,
-					{ ...getCultivarAttributeUpdateCommandOpResponseOriginProfileMock() }
-				]),
-				undefined
-			])
-		},
-		undefined
-	]),
-	created_at: faker.helpers.arrayElement([
-		`${faker.date.past().toISOString().split('.')[0]}Z`,
-		undefined
-	]),
-	id: faker.helpers.arrayElement([
-		faker.helpers.arrayElement([null, faker.string.uuid()]),
-		undefined
-	]),
-	key: faker.word.sample(),
-	name: faker.word.sample(),
-	parent_id: faker.helpers.arrayElement([
-		faker.helpers.arrayElement([null, faker.string.uuid()]),
-		undefined
-	]),
-	...overrideResponse
-})
+export const getCultivarAttributeUpdateCommandOpResponseMock = (): string =>
+	faker.word.sample()
 
 export const getCultivarGetByClientQueryOpResponseRefSchemaMock = (
 	overrideResponse: Partial<RefSchema> = {}
@@ -432,30 +287,15 @@ export const getCultivarGetByIdsQueryOpResponseMock =
 			})
 		)
 
-export const getCultivarAttributeUpdateCommandOpMockHandler = (
-	overrideResponse?:
-		| Cultivar
-		| ((
-				info: Parameters<Parameters<typeof http.post>[1]>[0]
-		  ) => Promise<Cultivar> | Cultivar)
-) => {
-	return http.post('*/cultivars/command/update', async (info) => {
+export const getCultivarAttributeUpdateCommandOpMockHandler = () => {
+	return http.post('*/cultivars/command/update', async () => {
 		await delay(1000)
-		return new HttpResponse(
-			JSON.stringify(
-				overrideResponse !== undefined
-					? typeof overrideResponse === 'function'
-						? await overrideResponse(info)
-						: overrideResponse
-					: getCultivarAttributeUpdateCommandOpResponseMock()
-			),
-			{
-				status: 201,
-				headers: {
-					'Content-Type': 'application/json'
-				}
+		return new HttpResponse(getCultivarAttributeUpdateCommandOpResponseMock(), {
+			status: 201,
+			headers: {
+				'Content-Type': 'text/plain'
 			}
-		)
+		})
 	})
 }
 

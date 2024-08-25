@@ -120,7 +120,7 @@ export const authentication = {
 	 * Sets access and schedules the next refresh.
 	 * To be called after the login mutation is successful.
 	 * @param accessExpirySeconds the number of seconds until
- 	 * the access expries.
+	 * the access expries.
 	 */
 	login(accessExpirySeconds: number) {
 		setAccess()
