@@ -5,11 +5,11 @@
  * Backend API of the VerdanTech software project.
  * OpenAPI spec version: 0.1.0
  */
-import type { GardenPartialSchema } from './gardenPartialSchema'
-import type { GardenMembershipFullSchema } from './gardenMembershipFullSchema'
+import type { GardenPartialSchema } from './gardenPartialSchema';
+import type { GardenMembershipFullSchema } from './gardenMembershipFullSchema';
 
 export interface GardenPendingInviteSchema {
-	expiry_countdown_hours: number
-	garden: GardenPartialSchema
-	invite: GardenMembershipFullSchema
+	expiry_countdown_hours: number;
+	garden: GardenPartialSchema;
+	invite: GardenMembershipFullSchema;
 }

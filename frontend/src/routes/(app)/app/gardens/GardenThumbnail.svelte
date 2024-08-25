@@ -1,12 +1,12 @@
 <script lang="ts">
-	import { Button } from '$components/ui/button'
+	import { Button } from '$components/ui/button';
 
 	type Props = {
-		gardenKey: string
-		gardenName: string
-	}
+		gardenKey: string;
+		gardenName: string;
+	};
 
-	let { gardenKey, gardenName }: Props = $props()
+	let { gardenKey, gardenName }: Props = $props();
 </script>
 
 <Button

@@ -1,62 +1,62 @@
 <script lang="ts">
-	import { goto } from '$app/navigation'
-	import { useQueryClient } from '@sveltestack/svelte-query'
-	import type { AxiosResponse, AxiosError } from 'axios'
-	import Icon from '@iconify/svelte'
-	import * as Form from '$lib/components/ui/form'
-	import * as Select from '$lib/components/ui/select'
-	import { Button } from '$lib/components/ui/button'
-	import { Input } from '$lib/components/ui/input'
-	import { Textarea } from '$lib/components/ui/textarea'
-	import { superForm, defaults } from 'sveltekit-superforms'
-	import { zod } from 'sveltekit-superforms/adapters'
-	import { gardenCreate } from '$lib/data/garden/commands'
-	import { createServerErrors } from '$state/formServerErrors.svelte'
-	import iconIds from '$lib/assets/icons'
-	import { GardenCreateCommandVisibility } from '$codegen/types'
-	import { gardenGenerateUniqueKeyQuery } from '$data/garden/queries'
-	import GardenCreateFormUserTagsInput from './GardenCreateFormUserTagsInput.svelte'
+	import { goto } from '$app/navigation';
+	import { useQueryClient } from '@sveltestack/svelte-query';
+	import type { AxiosResponse, AxiosError } from 'axios';
+	import Icon from '@iconify/svelte';
+	import * as Form from '$lib/components/ui/form';
+	import * as Select from '$lib/components/ui/select';
+	import { Button } from '$lib/components/ui/button';
+	import { Input } from '$lib/components/ui/input';
+	import { Textarea } from '$lib/components/ui/textarea';
+	import { superForm, defaults } from 'sveltekit-superforms';
+	import { zod } from 'sveltekit-superforms/adapters';
+	import { gardenCreate } from '$lib/data/garden/commands';
+	import { createServerErrors } from '$state/formServerErrors.svelte';
+	import iconIds from '$lib/assets/icons';
+	import { GardenCreateCommandVisibility } from '$codegen/types';
+	import { gardenGenerateUniqueKeyQuery } from '$data/garden/queries';
+	import GardenCreateFormUserTagsInput from './GardenCreateFormUserTagsInput.svelte';
 
-	const queryClient = useQueryClient()
+	const queryClient = useQueryClient();
 
 	/* Form mutation. */
-	const mutation = gardenCreate.mutation()
+	const mutation = gardenCreate.mutation();
 	/* Server error state. */
-	const serverErrors = createServerErrors()
+	const serverErrors = createServerErrors();
 
 	/** Key generation query.*/
 	/** Manage the loading state ourselves as for some reason the svelte-query one doesn't work correctly with the form. */
-	let keyGenerationLoading = $state(true)
+	let keyGenerationLoading = $state(true);
 	const gardenGenerateUniqueKey = gardenGenerateUniqueKeyQuery({
 		onSuccess: (data) => {
 			if (!data) {
-				return
+				return;
 			}
-			keyGenerationLoading = false
+			keyGenerationLoading = false;
 			// @ts-ignore
-			$formData.key = data.key
+			$formData.key = data.key;
 		},
 		onError: (error) => {
 			if (!error) {
-				return
+				return;
 			}
-			keyGenerationLoading = false
+			keyGenerationLoading = false;
 			// @ts-ignore
-			serverErrors.setErrors(error)
+			serverErrors.setErrors(error);
 		},
 		/** Don't re-request keys. */
 		staleTime: Infinity
-	})
+	});
 	/* Request the query. */
-	$gardenGenerateUniqueKey
+	$gardenGenerateUniqueKey;
 
 	/* Defines the labels for the visibility enum options. */
 	const visibilityOptions = [
 		{ value: GardenCreateCommandVisibility.private, label: 'Private' },
 		{ value: GardenCreateCommandVisibility.unlisted, label: 'Unlisted' },
 		{ value: GardenCreateCommandVisibility.public, label: 'Public' }
-	]
-	const defaultVisibility = visibilityOptions[0]
+	];
+	const defaultVisibility = visibilityOptions[0];
 
 	/**
 	 * Used to update the visibility on the superforms when it changes on the form.
@@ -66,7 +66,7 @@
 		value: { value: GardenCreateCommandVisibility; label?: string } | undefined
 	) {
 		if (value) {
-			$formData.visibility = value.value
+			$formData.visibility = value.value;
 		}
 	}
 
@@ -90,20 +90,20 @@
 						 * It is here because having both onSuccess callbacks
 						 * caused only the first to be run.
 						 */
-						goto('/app/gardens/' + form.data.key)
+						goto('/app/gardens/' + form.data.key);
 					},
 					onError: (error) => {
 						// @ts-ignore
-						serverErrors.setErrors(error)
+						serverErrors.setErrors(error);
 					}
-				})
+				});
 			}
 		},
 		onChange() {
-			serverErrors.reset()
+			serverErrors.reset();
 		}
-	})
-	const { form: formData, enhance } = form
+	});
+	const { form: formData, enhance } = form;
 </script>
 
 <form method="POST" use:enhance>
@@ -142,8 +142,8 @@
 				<Button
 					variant="outline"
 					on:click={() => {
-						queryClient.invalidateQueries('uniqueGardenKey')
-						keyGenerationLoading = true
+						queryClient.invalidateQueries('uniqueGardenKey');
+						keyGenerationLoading = true;
 					}}
 					class="flex items-center rounded-l-none border-l-0 bg-neutral-1 hover:bg-neutral-2 dark:border-neutral-12"
 				>

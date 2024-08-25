@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { activeGardenKey } from '$state/activeGarden.svelte'
+	import { activeGardenKey } from '$state/activeGarden.svelte';
 </script>
 
 <!--

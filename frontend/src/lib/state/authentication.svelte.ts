@@ -3,27 +3,27 @@ Effect on expiry: when it changes, calculate
 the time for the new one. set the timeout.
 cancel the previous requests
 */
-import { userRefreshCommandOp } from '$codegen'
+import { userRefreshCommandOp } from '$codegen';
 
 /**
  * The number of seconds before the access token expires
  * to request a new access token.
  */
-const refreshExpiryWindowSeconds = 20
+const refreshExpiryWindowSeconds = 20;
 
 type AuthFlowState = {
 	/**
 	 * Stores whether the browser currently has
 	 * a valid access token.
 	 */
-	isAuthenticated: boolean
+	isAuthenticated: boolean;
 	/**
 	 * Set to true if any authentication related
 	 * mutations are underway.
 	 * Used to disable queries so they don't use
 	 * old credentials.
 	 */
-	authPriorityTaskFlag: boolean
+	authPriorityTaskFlag: boolean;
 
 	/**
 	 * On a received 401 return code, a
@@ -31,34 +31,34 @@ type AuthFlowState = {
 	 * If it fails, this flag is set to true
 	 * and a login should be required.
 	 */
-	retriedRefreshFlag: boolean
+	retriedRefreshFlag: boolean;
 
 	/**
 	 * Contains the task IDs returned from the
 	 * setTimeout() function, so that they may
 	 * be cancelled.
 	 */
-	scheduledRefreshTasks: ReturnType<typeof setTimeout>[]
-}
+	scheduledRefreshTasks: ReturnType<typeof setTimeout>[];
+};
 
 let _rune = $state<AuthFlowState>({
 	isAuthenticated: true,
 	authPriorityTaskFlag: false,
 	retriedRefreshFlag: false,
 	scheduledRefreshTasks: []
-})
+});
 
 /**
  * Sets the authentication status of the rune to true.
  */
 function setAccess() {
-	_rune.isAuthenticated = true
-	_rune.retriedRefreshFlag = false
+	_rune.isAuthenticated = true;
+	_rune.retriedRefreshFlag = false;
 }
 
 /** Sets the authentication status of the rune to false. */
 function removeAccess() {
-	_rune.isAuthenticated = false
+	_rune.isAuthenticated = false;
 }
 
 /**
@@ -69,19 +69,19 @@ function removeAccess() {
  * and a refresh task is scheduled.
  */
 function requestAccessRefresh() {
-	_rune.authPriorityTaskFlag = true
+	_rune.authPriorityTaskFlag = true;
 
 	/** Call the endpoint. */
 	userRefreshCommandOp()
 		.then((data) => {
-			setAccess()
-			scheduleRefreshTask(data.expiry_time_seconds)
+			setAccess();
+			scheduleRefreshTask(data.expiry_time_seconds);
 		})
 		.catch(() => {
-			removeAccess()
-		})
+			removeAccess();
+		});
 
-	_rune.authPriorityTaskFlag = false
+	_rune.authPriorityTaskFlag = false;
 }
 
 /**
@@ -93,27 +93,27 @@ function requestAccessRefresh() {
 function scheduleRefreshTask(accessExpirySeconds: number) {
 	/** Add a small window between refresh and expiry. */
 	if (accessExpirySeconds - refreshExpiryWindowSeconds <= 0) {
-		throw Error('Invalid access expiry time or refresh configuration.')
+		throw Error('Invalid access expiry time or refresh configuration.');
 	}
-	const taskTimeout = accessExpirySeconds - refreshExpiryWindowSeconds
+	const taskTimeout = accessExpirySeconds - refreshExpiryWindowSeconds;
 
 	/** Clear all previously scheduled refresh tasks. */
 	_rune.scheduledRefreshTasks.forEach((value) => {
-		clearTimeout(value)
-	})
+		clearTimeout(value);
+	});
 
 	/** Set the task with the timeout in miliseconds. */
 	const taskId = setTimeout(() => {
-		requestAccessRefresh()
-	}, taskTimeout * 1000)
-	_rune.scheduledRefreshTasks = [taskId]
+		requestAccessRefresh();
+	}, taskTimeout * 1000);
+	_rune.scheduledRefreshTasks = [taskId];
 }
 
 /* Exported state methods. */
 export const authentication = {
 	/* Getter. */
 	get value(): AuthFlowState {
-		return _rune
+		return _rune;
 	},
 
 	/**
@@ -123,10 +123,10 @@ export const authentication = {
 	 * the access expries.
 	 */
 	login(accessExpirySeconds: number) {
-		setAccess()
-		scheduleRefreshTask(accessExpirySeconds)
+		setAccess();
+		scheduleRefreshTask(accessExpirySeconds);
 	},
 	removeAccess,
 	requestAccessRefresh
-}
-export default authentication
+};
+export default authentication;

@@ -15,6 +15,15 @@ export const gardenFields = {
         description: 'Must be between 2 and 50 characters long and contain only alphanumeric characters and spaces',
     },
     garden_key: {
+        description: 'Must be between 4 and 16 characters long and contain only alphanumeric characters and hyphens',
+    },
+    garden_description: {
+        description: 'Must be at most 1400 characters',
+    },
+    user_invites_list: {
+        description: 'A maximum of 10 users can be invited at once',
+    },
+    garden_key: {
         min_length: {
             value: 4,
             message: 'Must be at least 4 characters',
@@ -30,11 +39,20 @@ export const gardenFields = {
         description: 'Must be between 4 and 16 characters long and contain only alphanumeric characters and hyphens',
     },
     garden_description: {
+        description: 'Must be at most 1400 characters',
+    },
+    user_invites_list: {
+        description: 'A maximum of 10 users can be invited at once',
+    },
+    garden_description: {
         max_length: {
             value: 1400,
             message: 'Must be at most 1400 characters',
         },
         description: 'Must be at most 1400 characters',
+    },
+    user_invites_list: {
+        description: 'A maximum of 10 users can be invited at once',
     },
     user_invites_list: {
         max_length: {

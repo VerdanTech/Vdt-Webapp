@@ -1,17 +1,17 @@
 <script lang="ts">
-	import Icon from '@iconify/svelte'
-	import { Button } from 'bits-ui'
-	import * as Drawer from '$lib/components/ui/drawer'
-	import iconIds from '$lib/assets/icons'
-	import { Accordion } from 'bits-ui'
-	import type { PrimaryTabSpec } from './primaryNavTabs'
+	import Icon from '@iconify/svelte';
+	import { Button } from 'bits-ui';
+	import * as Drawer from '$lib/components/ui/drawer';
+	import iconIds from '$lib/assets/icons';
+	import { Accordion } from 'bits-ui';
+	import type { PrimaryTabSpec } from './primaryNavTabs';
 
 	type Props = {
-		specs: PrimaryTabSpec[] /* Describes the content of the tab. */
-	}
-	let { specs }: Props = $props()
+		specs: PrimaryTabSpec[] /* Describes the content of the tab. */;
+	};
+	let { specs }: Props = $props();
 
-	let open = $state(false)
+	let open = $state(false);
 </script>
 
 <!--
@@ -43,7 +43,7 @@ Single tab for navigating between feature domains on the main bottom bar.
 												href={item.url}
 												class="my-4 flex items-center"
 												on:click={() => {
-													open = false
+													open = false;
 												}}
 											>
 												{#if item.iconId}

@@ -80,5 +80,5 @@ const iconIds = {
 	verdagraphDayForwardIcon: 'mdi:chevron-right',
 	verdagraphWeekForwardIcon: 'mdi:chevron-double-right',
 	verdagraphMonthForwardIcon: 'mdi:chevron-triple-right'
-}
-export default iconIds
+};
+export default iconIds;

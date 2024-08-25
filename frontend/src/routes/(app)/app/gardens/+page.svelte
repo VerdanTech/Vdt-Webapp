@@ -1,24 +1,24 @@
 <script lang="ts">
-	import { onMount } from 'svelte'
-	import { goto } from '$app/navigation'
-	import Icon from '@iconify/svelte'
-	import iconIds from '$lib/assets/icons'
-	import { Button } from '$lib/components/ui/button'
-	import { Separator } from '$lib/components/ui/separator'
-	import * as Popover from '$components/ui/popover'
-	import { flyAndScale } from '$lib/utils/shadcn'
-	import authentication from '$state/authentication.svelte'
-	import type { GardenPartialSchema } from '$codegen/types'
-	import GardenThumbnailScrollable from './GardenThumbnailScrollable.svelte'
-	import GardenInviteScrollable from './GardenInviteScrollable.svelte'
+	import { onMount } from 'svelte';
+	import { goto } from '$app/navigation';
+	import Icon from '@iconify/svelte';
+	import iconIds from '$lib/assets/icons';
+	import { Button } from '$lib/components/ui/button';
+	import { Separator } from '$lib/components/ui/separator';
+	import * as Popover from '$components/ui/popover';
+	import { flyAndScale } from '$lib/utils/shadcn';
+	import authentication from '$state/authentication.svelte';
+	import type { GardenPartialSchema } from '$codegen/types';
+	import GardenThumbnailScrollable from './GardenThumbnailScrollable.svelte';
+	import GardenInviteScrollable from './GardenInviteScrollable.svelte';
 	import {
 		gardenAssociatedPartialsQuery,
 		gardenPendingInvitesQuery
-	} from '$data/garden/queries'
+	} from '$data/garden/queries';
 
 	/** Queries */
-	const associatedPartials = gardenAssociatedPartialsQuery()
-	const pendingInvites = gardenPendingInvitesQuery()
+	const associatedPartials = gardenAssociatedPartialsQuery();
+	const pendingInvites = gardenPendingInvitesQuery();
 
 	/**
 	 * If a non-authenticated user access this page,
@@ -26,9 +26,9 @@
 	 */
 	onMount(() => {
 		if (!authentication.value.isAuthenticated) {
-			goto('gardens/discover')
+			goto('gardens/discover');
 		}
-	})
+	});
 </script>
 
 <svelte:head>
@@ -114,7 +114,7 @@
 			{@render gardenCategory(
 				'Favorites',
 				$associatedPartials.data.gardens.filter((garden) => {
-					return $associatedPartials.data.favorites.includes(garden.id)
+					return $associatedPartials.data.favorites.includes(garden.id);
 				})
 			)}
 		{/if}
@@ -122,7 +122,7 @@
 			{@render gardenCategory(
 				'Admins',
 				$associatedPartials.data.gardens.filter((garden) => {
-					return $associatedPartials.data.admin_memberships.includes(garden.id)
+					return $associatedPartials.data.admin_memberships.includes(garden.id);
 				})
 			)}
 		{/if}
@@ -130,7 +130,7 @@
 			{@render gardenCategory(
 				'Editable',
 				$associatedPartials.data.gardens.filter((garden) => {
-					return $associatedPartials.data.edit_memberships.includes(garden.id)
+					return $associatedPartials.data.edit_memberships.includes(garden.id);
 				})
 			)}
 		{/if}
@@ -138,7 +138,7 @@
 			{@render gardenCategory(
 				'Viewable',
 				$associatedPartials.data.gardens.filter((garden) => {
-					return $associatedPartials.data.view_memberships.includes(garden.id)
+					return $associatedPartials.data.view_memberships.includes(garden.id);
 				})
 			)}
 		{/if}

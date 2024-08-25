@@ -13,5 +13,5 @@ export interface GardenMembershipDeleteCommand {
 	 * @maxLength 16
 	 * @pattern [0-9A-Za-z-]+
 	 */
-	garden_key: string
+	garden_key: string;
 }

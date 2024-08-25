@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { ScrollArea } from 'bits-ui'
+	import { ScrollArea } from 'bits-ui';
 </script>
 
 <ScrollArea.Root>

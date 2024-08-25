@@ -5,12 +5,12 @@
  * Backend API of the VerdanTech software project.
  * OpenAPI spec version: 0.1.0
  */
-import type { GardenPartialSchema } from './gardenPartialSchema'
+import type { GardenPartialSchema } from './gardenPartialSchema';
 
 export interface GardenAssociatedPartialsResult {
-	admin_memberships: string[]
-	edit_memberships: string[]
-	favorites: string[]
-	gardens: GardenPartialSchema[]
-	view_memberships: string[]
+	admin_memberships: string[];
+	edit_memberships: string[];
+	favorites: string[];
+	gardens: GardenPartialSchema[];
+	view_memberships: string[];
 }

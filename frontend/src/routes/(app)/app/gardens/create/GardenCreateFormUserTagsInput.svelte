@@ -1,17 +1,17 @@
 <script lang="ts">
-	import type Tag from '@melt-ui/svelte'
-	import Icon from '@iconify/svelte'
-	import iconIds from '$lib/assets/icons'
-	import { createTagsInput, melt } from '@melt-ui/svelte'
-	import { usernamesExistQueries } from '$data/user/queries'
-	import gardenFields from '$lib/backendSchema/specs/garden'
+	import type Tag from '@melt-ui/svelte';
+	import Icon from '@iconify/svelte';
+	import iconIds from '$lib/assets/icons';
+	import { createTagsInput, melt } from '@melt-ui/svelte';
+	import { usernamesExistQueries } from '$data/user/queries';
+	import gardenFields from '$lib/backendSchema/specs/garden';
 
 	type Props = {
-		tagsInput: string[] | undefined
-		formAttrs: any
-	}
+		tagsInput: string[] | undefined;
+		formAttrs: any;
+	};
 
-	let { tagsInput = $bindable(), formAttrs }: Props = $props()
+	let { tagsInput = $bindable(), formAttrs }: Props = $props();
 
 	const {
 		elements: { root, tag, input, deleteTrigger, edit },
@@ -25,30 +25,30 @@
 		placeholder: 'Enter a username',
 		/** Sync the bindable input prop and Melt's writable store. */
 		add(tag: string) {
-			tagsInput?.push(tag)
-			return { id: tag, value: tag }
+			tagsInput?.push(tag);
+			return { id: tag, value: tag };
 		},
 		/** The ID of the tag is the previous ID, the value is the newly set value. */
 		update(tag: Tag.Tag) {
 			tagsInput = tagsInput?.filter((username) => {
-				return username !== tag.id
-			})
-			return { id: tag.value, value: tag.value }
+				return username !== tag.id;
+			});
+			return { id: tag.value, value: tag.value };
 		},
 		remove(tag: Tag.Tag) {
 			tagsInput = tagsInput?.filter((username) => {
-				return username !== tag.id
-			})
-			return true
+				return username !== tag.id;
+			});
+			return true;
 		}
-	})
+	});
 
 	/** TODO: Indicate in the input whether the username exists. */
 	const usernameQueries = usernamesExistQueries(
 		tags.get().map((tag) => {
-			return tag.value
+			return tag.value;
 		})
-	)
+	);
 	// #if usernameQueries.some(usernameQuery => usernameQuery.queryKey)
 </script>
 

@@ -7,6 +7,6 @@
  */
 
 export interface GardenMembershipRevokeCommand {
-	garden_id: string
-	user_id: string
+	garden_id: string;
+	user_id: string;
 }

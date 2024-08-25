@@ -1,16 +1,16 @@
 <script lang="ts">
-	import * as Resizable from '$lib/components/generic/ui/resizable'
-	import TreeToolbar from './TreeToolbar.svelte'
-	import TreeWindowsScrollable from './TreeWindowsScrollable.svelte'
-	import TreePlantsScrollable from './TreePlantsScrollable.svelte'
-	import TreeActionsScrollable from './TreeActionsScrollable.svelte'
+	import * as Resizable from '$lib/components/generic/ui/resizable';
+	import TreeToolbar from './TreeToolbar.svelte';
+	import TreeWindowsScrollable from './TreeWindowsScrollable.svelte';
+	import TreePlantsScrollable from './TreePlantsScrollable.svelte';
+	import TreeActionsScrollable from './TreeActionsScrollable.svelte';
 
-	let scrollable_pane_direction: Resizable.Direction = 'vertical'
+	let scrollable_pane_direction: Resizable.Direction = 'vertical';
 	let scrollable_pane_view_options: string[] | undefined = [
 		'Toggle Planting Windows',
 		'Toggle Plants',
 		'Toggle Actions'
-	]
+	];
 </script>
 
 <div class="flex h-full w-full flex-col bg-neutral-1">

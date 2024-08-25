@@ -137,8 +137,10 @@ class SpecManager:
         # Open the spec collection object.
         yield f"export const {object_name} = {{\n"
 
-        # For every field in the spec collection.
+        # For every field in the spec collection values.
+        seen_specs: list[str] = []
         for field in spec_collection.values:
+            seen_specs.append(field)
             # Open the field object.
             yield f"    {field}: {{\n"
 
@@ -195,6 +197,31 @@ class SpecManager:
 
             # Close the field object
             yield "    },\n"
+
+            # For every field in the spec collection description.
+            for field in spec_collection.descriptions:
+                if field in seen_specs:
+                    continue
+
+                # Open the field object.
+                yield f"    {field}: {{\n"
+
+                # Add the field description
+                try:
+                    field_description = spec_collection.descriptions[field]["field"]
+                except KeyError:
+                    raise ValueError(f"Missing field description for field {field}")
+                yield f"        description: '{field_description}',\n"
+
+                # Add the field label - no throw
+                try:
+                    field_label = spec_collection.descriptions[field]["label"]
+                    yield f"        label: '{field_label}',\n"
+                except KeyError:
+                    pass
+
+                # Close the field object
+                yield "    },\n"
 
         # Close the spec collection object and export default
         yield "}\n"

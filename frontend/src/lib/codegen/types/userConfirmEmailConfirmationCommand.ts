@@ -7,5 +7,5 @@
  */
 
 export interface UserConfirmEmailConfirmationCommand {
-	key: string
+	key: string;
 }

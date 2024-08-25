@@ -5,8 +5,8 @@
  * Backend API of the VerdanTech software project.
  * OpenAPI spec version: 0.1.0
  */
-import type { GardenPendingInviteSchema } from './gardenPendingInviteSchema'
+import type { GardenPendingInviteSchema } from './gardenPendingInviteSchema';
 
 export interface GardenPendingInvitesResult {
-	pending_invites: GardenPendingInviteSchema[]
+	pending_invites: GardenPendingInviteSchema[];
 }

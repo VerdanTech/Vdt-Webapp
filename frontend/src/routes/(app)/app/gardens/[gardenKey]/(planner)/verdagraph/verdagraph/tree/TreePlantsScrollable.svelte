@@ -1,7 +1,7 @@
 <script lang="ts">
-	import TreeScrollable from './TreeScrollable.svelte'
-	import { Toolbar } from 'bits-ui'
-	import { icons } from '$lib/icons'
+	import TreeScrollable from './TreeScrollable.svelte';
+	import { Toolbar } from 'bits-ui';
+	import { icons } from '$lib/icons';
 </script>
 
 <TreeScrollable>

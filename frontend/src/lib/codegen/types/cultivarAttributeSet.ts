@@ -5,12 +5,8 @@
  * Backend API of the VerdanTech software project.
  * OpenAPI spec version: 0.1.0
  */
-import type { CultivarAttributeSetFrostDatePlantingWindows } from './cultivarAttributeSetFrostDatePlantingWindows'
-import type { CultivarAttributeSetLifecycle } from './cultivarAttributeSetLifecycle'
-import type { CultivarAttributeSetOrigin } from './cultivarAttributeSetOrigin'
+import type { CultivarAttributeSetFrostDatePlantingWindowProfile } from './cultivarAttributeSetFrostDatePlantingWindowProfile';
 
 export interface CultivarAttributeSet {
-	frost_date_planting_windows?: CultivarAttributeSetFrostDatePlantingWindows
-	lifecycle?: CultivarAttributeSetLifecycle
-	origin?: CultivarAttributeSetOrigin
+	frost_date_planting_window_profile?: CultivarAttributeSetFrostDatePlantingWindowProfile;
 }

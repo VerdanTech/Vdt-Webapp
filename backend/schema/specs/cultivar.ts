@@ -12,5 +12,9 @@ export const cultivarFields = {
         label: 'Last Frost Window - Open',
         unit: 'days',
     },
+    frost_date_planting_window_profile: {
+        description: 'A planting window defines a period of time within an environment that a cultivar should be planted. These attributes define an allowed planting window of time relative to the first and last frost dates.',
+        label: 'Frost Date Planting Window Profile',
+    },
 }
 export default cultivarFields

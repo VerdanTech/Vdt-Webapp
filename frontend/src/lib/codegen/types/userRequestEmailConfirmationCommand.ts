@@ -7,5 +7,5 @@
  */
 
 export interface UserRequestEmailConfirmationCommand {
-	email_address: string
+	email_address: string;
 }

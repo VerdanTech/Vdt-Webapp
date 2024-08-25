@@ -5,6 +5,6 @@
  * Backend API of the VerdanTech software project.
  * OpenAPI spec version: 0.1.0
  */
-import type { RefSchema } from './refSchema'
+import type { RefSchema } from './refSchema';
 
-export type GardenFullSchemaCreatorRef = null | RefSchema
+export type GardenFullSchemaCreatorRef = null | RefSchema;

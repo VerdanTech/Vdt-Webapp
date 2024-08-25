@@ -7,5 +7,5 @@
  */
 
 export interface RefSchema {
-	id: string
+	id: string;
 }

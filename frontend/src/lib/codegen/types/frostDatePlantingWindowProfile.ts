@@ -5,14 +5,14 @@
  * Backend API of the VerdanTech software project.
  * OpenAPI spec version: 0.1.0
  */
-import type { FrostDatePlantingWindowProfileFirstFrostWindowClose } from './frostDatePlantingWindowProfileFirstFrostWindowClose'
-import type { FrostDatePlantingWindowProfileFirstFrostWindowOpen } from './frostDatePlantingWindowProfileFirstFrostWindowOpen'
-import type { FrostDatePlantingWindowProfileLastFrostWindowClose } from './frostDatePlantingWindowProfileLastFrostWindowClose'
-import type { FrostDatePlantingWindowProfileLastFrostWindowOpen } from './frostDatePlantingWindowProfileLastFrostWindowOpen'
+import type { FrostDatePlantingWindowProfileFirstFrostWindowClose } from './frostDatePlantingWindowProfileFirstFrostWindowClose';
+import type { FrostDatePlantingWindowProfileFirstFrostWindowOpen } from './frostDatePlantingWindowProfileFirstFrostWindowOpen';
+import type { FrostDatePlantingWindowProfileLastFrostWindowClose } from './frostDatePlantingWindowProfileLastFrostWindowClose';
+import type { FrostDatePlantingWindowProfileLastFrostWindowOpen } from './frostDatePlantingWindowProfileLastFrostWindowOpen';
 
 export interface FrostDatePlantingWindowProfile {
-	first_frost_window_close?: FrostDatePlantingWindowProfileFirstFrostWindowClose
-	first_frost_window_open?: FrostDatePlantingWindowProfileFirstFrostWindowOpen
-	last_frost_window_close?: FrostDatePlantingWindowProfileLastFrostWindowClose
-	last_frost_window_open?: FrostDatePlantingWindowProfileLastFrostWindowOpen
+	first_frost_window_close?: FrostDatePlantingWindowProfileFirstFrostWindowClose;
+	first_frost_window_open?: FrostDatePlantingWindowProfileFirstFrostWindowOpen;
+	last_frost_window_close?: FrostDatePlantingWindowProfileLastFrostWindowClose;
+	last_frost_window_open?: FrostDatePlantingWindowProfileLastFrostWindowOpen;
 }

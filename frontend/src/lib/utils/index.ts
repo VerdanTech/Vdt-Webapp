@@ -1,1 +1,1 @@
-export * from './shadcn.ts'
+export * from './shadcn.ts';

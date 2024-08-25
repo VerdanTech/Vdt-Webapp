@@ -1,40 +1,40 @@
 <script lang="ts">
-	import { writable } from 'svelte/store'
-	import { createSlider, melt, type CreateSliderProps } from '@melt-ui/svelte'
+	import { writable } from 'svelte/store';
+	import { createSlider, melt, type CreateSliderProps } from '@melt-ui/svelte';
 	import {
 		startOfYear,
 		startOfMonth,
 		startOfWeek,
 		isSameDay
-	} from '@internationalized/date'
-	import type { DateValue } from '@internationalized/date'
+	} from '@internationalized/date';
+	import type { DateValue } from '@internationalized/date';
 	import {
 		timelineSelection,
 		calculateDeltaDays,
 		dateToSliderDisplayIndex,
 		sliderDisplayIndexToDate,
 		sliderDisplayOffset
-	} from '../state/timelineSelection.svelte'
+	} from '../state/timelineSelection.svelte';
 
 	const sliderOnValueChange: CreateSliderProps['onValueChange'] = ({ curr, next }) => {
 		if (next[0] != curr[0]) {
-			timelineSelection.value.beginSelectedDays = sliderDisplayIndexToDate(next[0])
+			timelineSelection.value.beginSelectedDays = sliderDisplayIndexToDate(next[0]);
 		}
 		if (next[1] != curr[1]) {
-			timelineSelection.value.focusedDay = sliderDisplayIndexToDate(next[1])
+			timelineSelection.value.focusedDay = sliderDisplayIndexToDate(next[1]);
 		}
 		if (next[2] != curr[2]) {
-			timelineSelection.value.endSelectedDays = sliderDisplayIndexToDate(next[2])
+			timelineSelection.value.endSelectedDays = sliderDisplayIndexToDate(next[2]);
 		}
-		return next
-	}
+		return next;
+	};
 
 	/** TODO: Update to share runes with the timelineSelection state when melt-ui updated to Svelte 5.*/
 	let sliderStore = writable([
 		dateToSliderDisplayIndex(timelineSelection.value.beginSelectedDays),
 		dateToSliderDisplayIndex(timelineSelection.value.focusedDay),
 		dateToSliderDisplayIndex(timelineSelection.value.endSelectedDays)
-	])
+	]);
 
 	const {
 		elements: { root, range, thumbs, ticks },
@@ -45,7 +45,7 @@
 		max: timelineSelection.numSliderDisplayedDays,
 		step: 1,
 		onValueChange: sliderOnValueChange
-	})
+	});
 </script>
 
 <div use:melt={$root} class="overflow-none relative flex h-16 w-full">

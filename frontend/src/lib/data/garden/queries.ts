@@ -1,5 +1,5 @@
-import { useQuery } from '@sveltestack/svelte-query'
-import type { UseQueryOptions } from '@sveltestack/svelte-query'
+import { useQuery } from '@sveltestack/svelte-query';
+import type { UseQueryOptions } from '@sveltestack/svelte-query';
 import {
 	gardenGenerateUniqueKeyQueryOp,
 	gardenAssociatedPartialsQueryOp,
@@ -7,7 +7,7 @@ import {
 	gardenPartialsByKeysQueryOp,
 	gardenFullByKeyQueryOp,
 	gardenPendingInvitesQueryOp
-} from '$codegen'
+} from '$codegen';
 import type {
 	GardenMostRelevantPartialsQueryOpParams,
 	GardenPartialSchema,
@@ -17,8 +17,8 @@ import type {
 	GardenUniqueKeyResult,
 	GardenAssociatedPartialsResult,
 	GardenPendingInvitesResult
-} from '$codegen/types'
-import { AxiosResponse } from 'axios'
+} from '$codegen/types';
+import { AxiosResponse } from 'axios';
 
 /**
  * Retrieves a unique garden key.
@@ -30,8 +30,8 @@ export const gardenGenerateUniqueKeyQuery = (
 		'uniqueGardenKey',
 		gardenGenerateUniqueKeyQueryOp,
 		options
-	)
-}
+	);
+};
 
 /**
  * Returns a partial representation of all gardens
@@ -44,8 +44,8 @@ export const gardenAssociatedPartialsQuery = (
 		'userVisibleGardens',
 		gardenAssociatedPartialsQueryOp,
 		options
-	)
-}
+	);
+};
 
 /**
  * Returns a partial representation of the most relevant gardens to the client.
@@ -58,11 +58,11 @@ export const gardenMostRelevantPartialsQuery = (
 	return useQuery<GardenPartialSchema[]>(
 		['mostRelevantGardens', data.max_gardens],
 		() => {
-			return gardenMostRelevantPartialsQueryOp(data)
+			return gardenMostRelevantPartialsQueryOp(data);
 		},
 		options
-	)
-}
+	);
+};
 
 /**
  * Returns a partial representation of gardens given by keys.
@@ -72,10 +72,10 @@ export const gardenPartialsQuery = (data: GardenPartialsByKeysQueryOpParams) => 
 	return useQuery<GardenPartialSchema[]>(
 		['partialsByKeys', [...data.garden_keys]],
 		() => {
-			return gardenPartialsByKeysQueryOp(data)
+			return gardenPartialsByKeysQueryOp(data);
 		}
-	)
-}
+	);
+};
 
 /**
  * Returns a full representation of a garden by its key.
@@ -83,9 +83,9 @@ export const gardenPartialsQuery = (data: GardenPartialsByKeysQueryOpParams) => 
  */
 export const gardenFullQuery = (data: GardenFullByKeyQueryOpParams) => {
 	return useQuery<GardenFullSchema>(['fullByKey', data.garden_key], () => {
-		return gardenFullByKeyQueryOp(data)
-	})
-}
+		return gardenFullByKeyQueryOp(data);
+	});
+};
 
 /**
  * Returns a set of garden and associated pending garden memberships.
@@ -97,5 +97,5 @@ export const gardenPendingInvitesQuery = (
 		'pendingInvites',
 		gardenPendingInvitesQueryOp,
 		options
-	)
-}
+	);
+};

@@ -15,6 +15,9 @@ export const userFields = {
         description: 'Must be between 3 and 50 characters long and contain only alphanumeric characters and underscores. Must be unique',
     },
     password: {
+        description: 'Must be between 6 and 255 characters long and contain at least one lowercase letter, one uppercase letter, one digit, and one special character',
+    },
+    password: {
         min_length: {
             value: 6,
             message: 'Must be at least 6 characters',

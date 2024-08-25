@@ -5,13 +5,13 @@
  * Backend API of the VerdanTech software project.
  * OpenAPI spec version: 0.1.0
  */
-import type { CultivarAttributeSet } from './cultivarAttributeSet'
-import type { CultivarSchemaParentId } from './cultivarSchemaParentId'
+import type { CultivarAttributeSet } from './cultivarAttributeSet';
+import type { CultivarSchemaParentId } from './cultivarSchemaParentId';
 
 export interface CultivarSchema {
-	attributes: CultivarAttributeSet
-	id: string
-	key: string
-	name: string
-	parent_id?: CultivarSchemaParentId
+	attributes: CultivarAttributeSet;
+	id: string;
+	key: string;
+	name: string;
+	parent_id?: CultivarSchemaParentId;
 }

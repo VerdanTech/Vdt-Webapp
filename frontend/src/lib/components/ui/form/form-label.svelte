@@ -1,22 +1,22 @@
 <script lang="ts">
-	import type { Label as LabelPrimitive } from 'bits-ui'
-	import { getFormControl } from 'formsnap'
-	import { cn } from '$lib/utils/shadcn.js'
-	import { Label } from '$lib/components/ui/label/index.js'
+	import type { Label as LabelPrimitive } from 'bits-ui';
+	import { getFormControl } from 'formsnap';
+	import { cn } from '$lib/utils/shadcn.js';
+	import { Label } from '$lib/components/ui/label/index.js';
 
-	import Icon from '@iconify/svelte'
-	import iconIds from '$lib/assets/icons'
-	import * as Popover from '$components/ui/popover'
+	import Icon from '@iconify/svelte';
+	import iconIds from '$lib/assets/icons';
+	import * as Popover from '$components/ui/popover';
 
 	type $$Props = LabelPrimitive.Props & {
-		description?: string
-	}
+		description?: string;
+	};
 
-	let className: $$Props['class'] = undefined
-	export let description: string | undefined = undefined
-	export { className as class }
+	let className: $$Props['class'] = undefined;
+	export let description: string | undefined = undefined;
+	export { className as class };
 
-	const { labelAttrs } = getFormControl()
+	const { labelAttrs } = getFormControl();
 </script>
 
 <Label

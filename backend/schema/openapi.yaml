@@ -10,24 +10,16 @@ components:
       type: object
     CultivarAttributeSet:
       properties:
-        frost_date_planting_windows:
+        frost_date_planting_window_profile:
           oneOf:
           - type: 'null'
           - $ref: '#/components/schemas/FrostDatePlantingWindowProfile'
-        lifecycle:
-          oneOf:
-          - type: 'null'
-          - $ref: '#/components/schemas/LifecycleProfile'
-        origin:
-          oneOf:
-          - type: 'null'
-          - $ref: '#/components/schemas/OriginProfile'
       required: []
       title: CultivarAttributeSet
       type: object
     CultivarAttributeUpdateCommand:
       properties:
-        frost_date_planting_windows:
+        frost_date_planting_window_profile:
           oneOf:
           - type: 'null'
           - $ref: '#/components/schemas/FrostDatePlantingWindowProfileUpdateCommand'
@@ -532,46 +524,6 @@ components:
       required:
       - key
       title: GardenUniqueKeyResult
-      type: object
-    LifecycleProfile:
-      properties:
-        first_to_last_harvest:
-          oneOf:
-          - type: 'null'
-          - type: number
-        germ_to_sprout:
-          oneOf:
-          - type: 'null'
-          - type: number
-        germ_to_transplant:
-          oneOf:
-          - type: 'null'
-          - type: number
-        last_harvest_to_expiry:
-          oneOf:
-          - type: 'null'
-          - type: number
-          - const: Season
-            type: string
-        sow_to_germ:
-          oneOf:
-          - type: 'null'
-          - type: number
-        sprout_to_first_harvest:
-          oneOf:
-          - type: 'null'
-          - type: number
-        years_of_life:
-          oneOf:
-          - type: 'null'
-          - type: integer
-      required: []
-      title: LifecycleProfile
-      type: object
-    OriginProfile:
-      properties: {}
-      required: []
-      title: OriginProfile
       type: object
     RefSchema:
       properties:

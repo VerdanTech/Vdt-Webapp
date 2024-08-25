@@ -20,8 +20,8 @@ import type {
 	GardenPartialsByKeysQueryOpParams,
 	GardenPendingInvitesResult,
 	GardenUniqueKeyResult
-} from '../../types'
-import { axiosClient } from '../../../data/customAxios'
+} from '../../types';
+import { axiosClient } from '../../../data/customAxios';
 
 /**
  * Accepts a Garden Membership.
@@ -35,8 +35,8 @@ export const gardenMembershipAcceptCommandOp = (
 		method: 'POST',
 		headers: { 'Content-Type': 'application/json' },
 		data: gardenMembershipAcceptCommand
-	})
-}
+	});
+};
 /**
  * Changes the role on another's Garden Membership.
  * @summary Garden Membership role change.
@@ -49,8 +49,8 @@ export const gardenMembershipRoleChangeCommandOp = (
 		method: 'POST',
 		headers: { 'Content-Type': 'application/json' },
 		data: gardenMembershipRoleChangeCommand
-	})
-}
+	});
+};
 /**
  * Creates a new Garden and invites requested users.
  * @summary Garden creation.
@@ -61,8 +61,8 @@ export const gardenCreateCommandOp = (gardenCreateCommand: GardenCreateCommand) 
 		method: 'POST',
 		headers: { 'Content-Type': 'application/json' },
 		data: gardenCreateCommand
-	})
-}
+	});
+};
 /**
  * Creates new Garden Memberships and sends email confirmation emails.
  * @summary Garden membership invitiation.
@@ -75,8 +75,8 @@ export const gardenMembershipCreateCommandOp = (
 		method: 'POST',
 		headers: { 'Content-Type': 'application/json' },
 		data: gardenMembershipCreateCommand
-	})
-}
+	});
+};
 /**
  * Removes one's own Garden Membership from a garden.
  * @summary Garden membership deletion.
@@ -89,8 +89,8 @@ export const gardenMembershipDeleteCommandOp = (
 		method: 'POST',
 		headers: { 'Content-Type': 'application/json' },
 		data: gardenMembershipDeleteCommand
-	})
-}
+	});
+};
 /**
  * Removes another's Garden Membership from a garden.
  * @summary Removes a user from a garden.
@@ -103,8 +103,8 @@ export const gardenMembershipRevokeCommandOp = (
 		method: 'POST',
 		headers: { 'Content-Type': 'application/json' },
 		data: gardenMembershipRevokeCommand
-	})
-}
+	});
+};
 /**
  * Returns a partial representation of all gardens that are associated with the client
  * @summary Returns a partial representation of all gardens that are associated with the client
@@ -113,8 +113,8 @@ export const gardenAssociatedPartialsQueryOp = () => {
 	return axiosClient<GardenAssociatedPartialsResult>({
 		url: `/gardens/query/associated_partials`,
 		method: 'GET'
-	})
-}
+	});
+};
 /**
  * Returns a full representation of gardens given by a key.
  * @summary Returns a full representation of a garden by its key.
@@ -124,8 +124,8 @@ export const gardenFullByKeyQueryOp = (params: GardenFullByKeyQueryOpParams) => 
 		url: `/gardens/query/full_by_key`,
 		method: 'GET',
 		params
-	})
-}
+	});
+};
 /**
  * Generates a unique garden key given a plant name and a random string.
  * @summary Generate a new, unique garden key.
@@ -134,8 +134,8 @@ export const gardenGenerateUniqueKeyQueryOp = () => {
 	return axiosClient<GardenUniqueKeyResult>({
 		url: `/gardens/query/generate_unique_key`,
 		method: 'GET'
-	})
-}
+	});
+};
 /**
  * Returns a partial representation of most relevant gardens to the user, ordered by relevance.
  * @summary Returns a partial representation of most relevant gardens to the user.
@@ -147,8 +147,8 @@ export const gardenMostRelevantPartialsQueryOp = (
 		url: `/gardens/query/most_relevant`,
 		method: 'GET',
 		params
-	})
-}
+	});
+};
 /**
  * Returns a partial representation of gardens given by keys, provided they exist and the client is authorized to use them.
  * @summary Returns a partial representation of gardens given by keys.
@@ -160,8 +160,8 @@ export const gardenPartialsByKeysQueryOp = (
 		url: `/gardens/query/partials_by_key`,
 		method: 'GET',
 		params
-	})
-}
+	});
+};
 /**
  * Returns a set of tuples of gardens and associated pending garden memberships
  * @summary Returns a set of pending garden invites
@@ -170,41 +170,41 @@ export const gardenPendingInvitesQueryOp = () => {
 	return axiosClient<GardenPendingInvitesResult>({
 		url: `/gardens/query/pending_invites`,
 		method: 'GET'
-	})
-}
+	});
+};
 export type GardenMembershipAcceptCommandOpResult = NonNullable<
 	Awaited<ReturnType<typeof gardenMembershipAcceptCommandOp>>
->
+>;
 export type GardenMembershipRoleChangeCommandOpResult = NonNullable<
 	Awaited<ReturnType<typeof gardenMembershipRoleChangeCommandOp>>
->
+>;
 export type GardenCreateCommandOpResult = NonNullable<
 	Awaited<ReturnType<typeof gardenCreateCommandOp>>
->
+>;
 export type GardenMembershipCreateCommandOpResult = NonNullable<
 	Awaited<ReturnType<typeof gardenMembershipCreateCommandOp>>
->
+>;
 export type GardenMembershipDeleteCommandOpResult = NonNullable<
 	Awaited<ReturnType<typeof gardenMembershipDeleteCommandOp>>
->
+>;
 export type GardenMembershipRevokeCommandOpResult = NonNullable<
 	Awaited<ReturnType<typeof gardenMembershipRevokeCommandOp>>
->
+>;
 export type GardenAssociatedPartialsQueryOpResult = NonNullable<
 	Awaited<ReturnType<typeof gardenAssociatedPartialsQueryOp>>
->
+>;
 export type GardenFullByKeyQueryOpResult = NonNullable<
 	Awaited<ReturnType<typeof gardenFullByKeyQueryOp>>
->
+>;
 export type GardenGenerateUniqueKeyQueryOpResult = NonNullable<
 	Awaited<ReturnType<typeof gardenGenerateUniqueKeyQueryOp>>
->
+>;
 export type GardenMostRelevantPartialsQueryOpResult = NonNullable<
 	Awaited<ReturnType<typeof gardenMostRelevantPartialsQueryOp>>
->
+>;
 export type GardenPartialsByKeysQueryOpResult = NonNullable<
 	Awaited<ReturnType<typeof gardenPartialsByKeysQueryOp>>
->
+>;
 export type GardenPendingInvitesQueryOpResult = NonNullable<
 	Awaited<ReturnType<typeof gardenPendingInvitesQueryOp>>
->
+>;

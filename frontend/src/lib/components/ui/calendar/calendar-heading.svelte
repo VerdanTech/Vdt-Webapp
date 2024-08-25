@@ -1,11 +1,11 @@
 <script lang="ts">
-	import { Calendar as CalendarPrimitive } from 'bits-ui'
-	import { cn } from '$lib/utils/shadcn.js'
+	import { Calendar as CalendarPrimitive } from 'bits-ui';
+	import { cn } from '$lib/utils/shadcn.js';
 
-	type $$Props = CalendarPrimitive.HeadingProps
+	type $$Props = CalendarPrimitive.HeadingProps;
 
-	let className: $$Props['class'] = undefined
-	export { className as class }
+	let className: $$Props['class'] = undefined;
+	export { className as class };
 </script>
 
 <CalendarPrimitive.Heading

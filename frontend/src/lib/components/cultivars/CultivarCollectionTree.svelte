@@ -1,19 +1,24 @@
 <script lang="ts">
-	import { melt, createTreeView, type TreeView } from '@melt-ui/svelte'
-	import CultivarCollection from './CultivarCollection.svelte'
-	import type { CultivarCollectionFullSchema } from '$codegen/types'
+	import { melt, createTreeView, type TreeView } from '@melt-ui/svelte';
+	import type {
+		CultivarCollectionFullSchema,
+		CultivarAttributeSet
+	} from '$codegen/types';
+	import cultivarFields from '$lib/backendSchema/specs/cultivar';
+
+	/**https://www.charpeni.com/blog/properly-type-object-keys-and-object-entries*/
 
 	type Props = {
-		collectionRef: string
-	}
+		collectionRef: string;
+	};
 
-	let { collectionRef }: Props = $props()
+	let { collectionRef }: Props = $props();
 
-	const treeView = createTreeView()
+	const treeView = createTreeView();
 
 	const {
 		elements: { tree, item, group }
-	} = treeView
+	} = treeView;
 
 	const collection: CultivarCollectionFullSchema = {
 		id: 'iaesnrt',
@@ -27,84 +32,98 @@
 				name: 'cultivar1',
 				key: 'keyyy',
 				attributes: {
-					frost_date_planting_windows: {
-						first_frost_window_close: 30,
-						first_frost_window_open: 50,
-						last_frost_window_close: 20,
+					frost_date_planting_window_profile: {
 						last_frost_window_open: 40
 					}
 				}
 			}
 		]
-	}
-  const hasChildren=true
+	};
+
 </script>
 
+<!--
+  @component
+  
+  The cultivar collection tree component displays a cultivar collection
+  using Melt's nested tree view component.
+  This involves rendering each cultivar as a list item, which has children
+  elements of the cultivar's name, key, etc. and each  of its attributes,
+  where the children elements are the attributes.
+  Most descriptions and field names are taken from the backend schema.
+  The exception is that the type of the attributes requires different 
+  input components with different types.
+-->
 <div class="flex w-full flex-col rounded-xl bg-neutral-2 text-neutral-12">
 	<div class="flex flex-col gap-1 px-4 pt-4">
-		<h3 class="text-lg font-bold">Project Structure</h3>
+		<h3 class="text-lg font-bold">{collection.name}</h3>
 		<hr />
 	</div>
 
-		<ul class="overflow-auto px-4 pb-4 pt-2" {...$tree}>
-			{#each collection.cultivars as cultivar}
-      {@const hasProfiles=!!collection.cultivars?.length}
+	<ul class="overflow-auto px-4 pb-4 pt-2" {...$tree}>
+		<!-- Cultivar tree item. -->
+		{#each collection.cultivars as cultivar}
+			{@const hasProfiles = !!collection.cultivars?.length}
 
-				<li>
-					<button use:melt={$item({ id: cultivar.id , hasChildren: hasProfiles })}>
-						<span class="select-none">
-							{cultivar.name}
-						</span>
-					</button>
+			<li>
+				<button use:melt={$item({ id: cultivar.id, hasChildren: hasProfiles })}>
+					<span class="select-none">
+						{cultivar.name}
+					</span>
+				</button>
 
-					<ul use:melt={$group({ id: cultivar.id })}>
+				<!-- Cultivar tree item children. -->
+				<ul use:melt={$group({ id: cultivar.id })}>
+					<!-- Cultivar key tree item. -->
+					<li>
+						<button use:melt={$item({ id: cultivar.id + 'key' })}>
+							<span> Key </span>
+						</button>
+					</li>
+					<!-- Cultivar description tree item. -->
+					<li>
+						<button use:melt={$item({ id: cultivar.id + 'description' })}>
+							<span> Description </span>
+						</button>
+					</li>
+
+					<!-- Cultivar attribute profiles tree items. -->
+					{#each Object.entries(cultivar.attributes) as [profileKey, profileValue]}
+						{@const profileTreeId = cultivar.id + profileKey}
+						{@const profileLabel = cultivarFields[profileKey].label}
+						{@const profileDescription = cultivarFields[profileKey]?.description}
+						{@const hasAttributes = true}
+
 						<li>
-              <button use:melt={$item({ id: cultivar.id + 'key' })}>
-              <span>
-                Key
-              </span>
-              </button>
-            </li>
-						<li>
-              <button use:melt={$item({ id: cultivar.id + 'description' })} >
-                <span>
-                  Description
-                </span>
-              </button>
-            </li>
-            {#each Object.entries(cultivar.attributes) as [profileKey, profileValue]}
-            {@const profileTreeId = cultivar.id + profileKey}
-            {@const profileName = "frost_dats"}
-            {@const profileDescription = "description"}
-            {@const hasAttributes=true}
+							<button
+								use:melt={$item({ id: profileTreeId, hasChildren: hasAttributes })}
+							>
+								<span>
+									{profileLabel}
+								</span>
+							</button>
 
-            <li>
-              <button use:melt={$item({ id: profileTreeId, hasChildren: hasAttributes })} >
-                <span>
-                  {profileName}
-                </span>
-              </button>
-
-              <ul use:melt={$group({ id: profileTreeId })}>
-                {#each Object.entries(cultivar.attributes[profileKey]) as attributeKey, attributeValue}
-                  {@const attributeTreeId = cultivar.id + profileKey + attributeKey}
-                  {@const attributeName = "date1"}
-                  {@const attributeDescription = "description"}
-                  {@const hasChildren=false}
-                  <li>
-                    <button use:melt={$item({ id: attributeTreeId })} >
-                      <span>
-                        {attributeName}
-                      </span>
-                    </button>
-                  </li>
-                {/each}
-
-              </ul>
-            </li>
-            {/each}
-					</ul>
-				</li>
-			{/each}
-		</ul>
+							<!-- Cultivar attributes tree items. -->
+							<ul use:melt={$group({ id: profileTreeId })}>
+								{#each Object.entries(profileValue) as [attributeKey, attributeValue]}
+									{@const attributeTreeId = cultivar.id + profileKey + attributeKey}
+									{@const attributeLabel = cultivarFields[attributeKey].label}
+									{@const attributeDescription =
+										cultivarFields[attributeKey]?.description}
+									{@const attributeUnit = cultivarFields[attributeKey]?.unit}
+									<li>
+										<button use:melt={$item({ id: attributeTreeId })}>
+											<span>
+												{attributeLabel}
+											</span>
+										</button>
+									</li>
+								{/each}
+							</ul>
+						</li>
+					{/each}
+				</ul>
+			</li>
+		{/each}
+	</ul>
 </div>

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import Verdagraph from './verdagraph/Verdagraph.svelte'
+	import Verdagraph from './verdagraph/Verdagraph.svelte';
 </script>
 
 <svelte:head>

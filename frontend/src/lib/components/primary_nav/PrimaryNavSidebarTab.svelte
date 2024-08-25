@@ -1,16 +1,16 @@
 <script lang="ts">
-	import Icon from '@iconify/svelte'
-	import { Button } from 'bits-ui'
-	import { slide } from 'svelte/transition'
-	import { Separator } from '$lib/components/ui/separator/index.js'
-	import { Tooltip } from 'bits-ui'
-	import type { PrimaryTabSpec } from './primaryNavTabs'
+	import Icon from '@iconify/svelte';
+	import { Button } from 'bits-ui';
+	import { slide } from 'svelte/transition';
+	import { Separator } from '$lib/components/ui/separator/index.js';
+	import { Tooltip } from 'bits-ui';
+	import type { PrimaryTabSpec } from './primaryNavTabs';
 
 	type Props = {
-		spec: PrimaryTabSpec /* Describes the content of the tab. */
-		flipped?: boolean /* If true, the tab is rendered bottom to top. */
-	}
-	let { spec, flipped = false }: Props = $props()
+		spec: PrimaryTabSpec /* Describes the content of the tab. */;
+		flipped?: boolean /* If true, the tab is rendered bottom to top. */;
+	};
+	let { spec, flipped = false }: Props = $props();
 </script>
 
 <!--

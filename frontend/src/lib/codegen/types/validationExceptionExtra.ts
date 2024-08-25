@@ -5,6 +5,6 @@
  * Backend API of the VerdanTech software project.
  * OpenAPI spec version: 0.1.0
  */
-import type { ValidationExceptionExtraAnyOf } from './validationExceptionExtraAnyOf'
+import type { ValidationExceptionExtraAnyOf } from './validationExceptionExtraAnyOf';
 
-export type ValidationExceptionExtra = ValidationExceptionExtraAnyOf | unknown[] | null
+export type ValidationExceptionExtra = ValidationExceptionExtraAnyOf | unknown[] | null;

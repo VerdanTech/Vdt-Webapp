@@ -1,16 +1,16 @@
-import { z as zod } from 'zod'
-import { useMutation } from '@sveltestack/svelte-query'
+import { z as zod } from 'zod';
+import { useMutation } from '@sveltestack/svelte-query';
 import type {
 	GardenCreateCommand,
 	GardenMembershipAcceptCommand,
 	GardenMembershipDeleteCommand
-} from '$codegen/types'
+} from '$codegen/types';
 import {
 	gardenCreateCommandOp,
 	gardenMembershipAcceptCommandOp,
 	gardenMembershipDeleteCommandOp
-} from '$codegen'
-import { gardenFieldSchemas } from './schemas'
+} from '$codegen';
+import { gardenFieldSchemas } from './schemas';
 
 /**
  * Sends a garden creation request to the backend.
@@ -27,10 +27,10 @@ export const gardenCreate = {
 	}),
 	mutation: () => {
 		return useMutation(function (data: GardenCreateCommand) {
-			return gardenCreateCommandOp(data)
-		})
+			return gardenCreateCommandOp(data);
+		});
 	}
-}
+};
 
 /**
  * Sends a garden membership acceptance request to the backend.
@@ -41,10 +41,10 @@ export const gardenMembershipAccept = {
 	}),
 	mutation: () => {
 		return useMutation(function (data: GardenMembershipAcceptCommand) {
-			return gardenMembershipAcceptCommandOp(data)
-		})
+			return gardenMembershipAcceptCommandOp(data);
+		});
 	}
-}
+};
 
 /**
  * Sends a garden membership deletion request to the backend.
@@ -55,7 +55,7 @@ export const gardenMembershipDelete = {
 	}),
 	mutation: () => {
 		return useMutation(function (data: GardenMembershipDeleteCommand) {
-			return gardenMembershipDeleteCommandOp(data)
-		})
+			return gardenMembershipDeleteCommandOp(data);
+		});
 	}
-}
+};

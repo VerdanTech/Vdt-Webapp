@@ -7,5 +7,5 @@
  */
 
 export interface AccessInfoResult {
-	expiry_time_seconds: number
+	expiry_time_seconds: number;
 }

@@ -5,24 +5,22 @@
  * Backend API of the VerdanTech software project.
  * OpenAPI spec version: 0.1.0
  */
-import { faker } from '@faker-js/faker'
-import { HttpResponse, delay, http } from 'msw'
+import { faker } from '@faker-js/faker';
+import { HttpResponse, delay, http } from 'msw';
 import type {
 	CultivarCollectionFullSchema,
 	CultivarGetByClientResult,
 	CultivarGetByGardenResult,
 	FrostDatePlantingWindowProfile,
-	LifecycleProfile,
-	OriginProfile,
 	RefSchema
-} from '../../types'
+} from '../../types';
 
 export const getCultivarAttributeUpdateCommandOpResponseMock = (): string =>
-	faker.word.sample()
+	faker.word.sample();
 
 export const getCultivarGetByClientQueryOpResponseRefSchemaMock = (
 	overrideResponse: Partial<RefSchema> = {}
-): RefSchema => ({ ...{ id: faker.string.uuid() }, ...overrideResponse })
+): RefSchema => ({ ...{ id: faker.string.uuid() }, ...overrideResponse });
 
 export const getCultivarGetByClientQueryOpResponseMock = (
 	overrideResponse: Partial<CultivarGetByClientResult> = {}
@@ -62,11 +60,11 @@ export const getCultivarGetByClientQueryOpResponseMock = (
 		])
 	})),
 	...overrideResponse
-})
+});
 
 export const getCultivarGetByGardenQueryOpResponseRefSchemaMock = (
 	overrideResponse: Partial<RefSchema> = {}
-): RefSchema => ({ ...{ id: faker.string.uuid() }, ...overrideResponse })
+): RefSchema => ({ ...{ id: faker.string.uuid() }, ...overrideResponse });
 
 export const getCultivarGetByGardenQueryOpResponseMock = (
 	overrideResponse: Partial<CultivarGetByGardenResult> = {}
@@ -107,7 +105,7 @@ export const getCultivarGetByGardenQueryOpResponseMock = (
 		])
 	})),
 	...overrideResponse
-})
+});
 
 export const getCultivarGetByIdsQueryOpResponseFrostDatePlantingWindowProfileMock = (
 	overrideResponse: Partial<FrostDatePlantingWindowProfile> = {}
@@ -143,73 +141,11 @@ export const getCultivarGetByIdsQueryOpResponseFrostDatePlantingWindowProfileMoc
 		])
 	},
 	...overrideResponse
-})
-
-export const getCultivarGetByIdsQueryOpResponseLifecycleProfileMock = (
-	overrideResponse: Partial<LifecycleProfile> = {}
-): LifecycleProfile => ({
-	...{
-		first_to_last_harvest: faker.helpers.arrayElement([
-			faker.helpers.arrayElement([
-				null,
-				faker.number.int({ min: undefined, max: undefined })
-			]),
-			undefined
-		]),
-		germ_to_sprout: faker.helpers.arrayElement([
-			faker.helpers.arrayElement([
-				null,
-				faker.number.int({ min: undefined, max: undefined })
-			]),
-			undefined
-		]),
-		germ_to_transplant: faker.helpers.arrayElement([
-			faker.helpers.arrayElement([
-				null,
-				faker.number.int({ min: undefined, max: undefined })
-			]),
-			undefined
-		]),
-		last_harvest_to_expiry: faker.helpers.arrayElement([
-			faker.helpers.arrayElement([
-				null,
-				faker.number.int({ min: undefined, max: undefined }),
-				faker.word.sample()
-			]),
-			undefined
-		]),
-		sow_to_germ: faker.helpers.arrayElement([
-			faker.helpers.arrayElement([
-				null,
-				faker.number.int({ min: undefined, max: undefined })
-			]),
-			undefined
-		]),
-		sprout_to_first_harvest: faker.helpers.arrayElement([
-			faker.helpers.arrayElement([
-				null,
-				faker.number.int({ min: undefined, max: undefined })
-			]),
-			undefined
-		]),
-		years_of_life: faker.helpers.arrayElement([
-			faker.helpers.arrayElement([
-				null,
-				faker.number.int({ min: undefined, max: undefined })
-			]),
-			undefined
-		])
-	},
-	...overrideResponse
-})
-
-export const getCultivarGetByIdsQueryOpResponseOriginProfileMock = (
-	overrideResponse: Partial<OriginProfile> = {}
-): OriginProfile => ({ ...{}, ...overrideResponse })
+});
 
 export const getCultivarGetByIdsQueryOpResponseRefSchemaMock = (
 	overrideResponse: Partial<RefSchema> = {}
-): RefSchema => ({ ...{ id: faker.string.uuid() }, ...overrideResponse })
+): RefSchema => ({ ...{ id: faker.string.uuid() }, ...overrideResponse });
 
 export const getCultivarGetByIdsQueryOpResponseMock =
 	(): CultivarCollectionFullSchema[] =>
@@ -220,26 +156,12 @@ export const getCultivarGetByIdsQueryOpResponseMock =
 					(_, i) => i + 1
 				).map(() => ({
 					attributes: {
-						frost_date_planting_windows: faker.helpers.arrayElement([
+						frost_date_planting_window_profile: faker.helpers.arrayElement([
 							faker.helpers.arrayElement([
 								null,
 								{
 									...getCultivarGetByIdsQueryOpResponseFrostDatePlantingWindowProfileMock()
 								}
-							]),
-							undefined
-						]),
-						lifecycle: faker.helpers.arrayElement([
-							faker.helpers.arrayElement([
-								null,
-								{ ...getCultivarGetByIdsQueryOpResponseLifecycleProfileMock() }
-							]),
-							undefined
-						]),
-						origin: faker.helpers.arrayElement([
-							faker.helpers.arrayElement([
-								null,
-								{ ...getCultivarGetByIdsQueryOpResponseOriginProfileMock() }
 							]),
 							undefined
 						])
@@ -285,19 +207,19 @@ export const getCultivarGetByIdsQueryOpResponseMock =
 					undefined
 				])
 			})
-		)
+		);
 
 export const getCultivarAttributeUpdateCommandOpMockHandler = () => {
 	return http.post('*/cultivars/command/update', async () => {
-		await delay(1000)
+		await delay(1000);
 		return new HttpResponse(getCultivarAttributeUpdateCommandOpResponseMock(), {
 			status: 201,
 			headers: {
 				'Content-Type': 'text/plain'
 			}
-		})
-	})
-}
+		});
+	});
+};
 
 export const getCultivarGetByClientQueryOpMockHandler = (
 	overrideResponse?:
@@ -307,7 +229,7 @@ export const getCultivarGetByClientQueryOpMockHandler = (
 		  ) => Promise<CultivarGetByClientResult> | CultivarGetByClientResult)
 ) => {
 	return http.get('*/cultivars/query/get_by_client', async (info) => {
-		await delay(1000)
+		await delay(1000);
 		return new HttpResponse(
 			JSON.stringify(
 				overrideResponse !== undefined
@@ -322,9 +244,9 @@ export const getCultivarGetByClientQueryOpMockHandler = (
 					'Content-Type': 'application/json'
 				}
 			}
-		)
-	})
-}
+		);
+	});
+};
 
 export const getCultivarGetByGardenQueryOpMockHandler = (
 	overrideResponse?:
@@ -334,7 +256,7 @@ export const getCultivarGetByGardenQueryOpMockHandler = (
 		  ) => Promise<CultivarGetByGardenResult> | CultivarGetByGardenResult)
 ) => {
 	return http.get('*/cultivars/query/get_by_garden', async (info) => {
-		await delay(1000)
+		await delay(1000);
 		return new HttpResponse(
 			JSON.stringify(
 				overrideResponse !== undefined
@@ -349,9 +271,9 @@ export const getCultivarGetByGardenQueryOpMockHandler = (
 					'Content-Type': 'application/json'
 				}
 			}
-		)
-	})
-}
+		);
+	});
+};
 
 export const getCultivarGetByIdsQueryOpMockHandler = (
 	overrideResponse?:
@@ -361,7 +283,7 @@ export const getCultivarGetByIdsQueryOpMockHandler = (
 		  ) => Promise<CultivarCollectionFullSchema[]> | CultivarCollectionFullSchema[])
 ) => {
 	return http.get('*/cultivars/query/get_by_ids', async (info) => {
-		await delay(1000)
+		await delay(1000);
 		return new HttpResponse(
 			JSON.stringify(
 				overrideResponse !== undefined
@@ -376,12 +298,12 @@ export const getCultivarGetByIdsQueryOpMockHandler = (
 					'Content-Type': 'application/json'
 				}
 			}
-		)
-	})
-}
+		);
+	});
+};
 export const getCultivarsMock = () => [
 	getCultivarAttributeUpdateCommandOpMockHandler(),
 	getCultivarGetByClientQueryOpMockHandler(),
 	getCultivarGetByGardenQueryOpMockHandler(),
 	getCultivarGetByIdsQueryOpMockHandler()
-]
+];

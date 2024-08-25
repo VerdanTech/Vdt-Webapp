@@ -1,6 +1,6 @@
 <script lang="ts">
-	import * as Card from '$components/ui/card'
-	import Separator from '$components/ui/separator/separator.svelte'
+	import * as Card from '$components/ui/card';
+	import Separator from '$components/ui/separator/separator.svelte';
 </script>
 
 <svelte:head>

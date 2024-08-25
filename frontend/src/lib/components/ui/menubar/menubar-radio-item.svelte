@@ -1,14 +1,14 @@
 <script lang="ts">
-	import { Menubar as MenubarPrimitive } from 'bits-ui'
-	import Circle from 'lucide-svelte/icons/circle'
-	import { cn } from '$lib/utils/shadcn.js'
+	import { Menubar as MenubarPrimitive } from 'bits-ui';
+	import Circle from 'lucide-svelte/icons/circle';
+	import { cn } from '$lib/utils/shadcn.js';
 
-	type $$Props = MenubarPrimitive.RadioItemProps
-	type $$Events = MenubarPrimitive.RadioItemEvents
+	type $$Props = MenubarPrimitive.RadioItemProps;
+	type $$Events = MenubarPrimitive.RadioItemEvents;
 
-	let className: $$Props['class'] = undefined
-	export let value: $$Props['value']
-	export { className as class }
+	let className: $$Props['class'] = undefined;
+	export let value: $$Props['value'];
+	export { className as class };
 </script>
 
 <MenubarPrimitive.RadioItem

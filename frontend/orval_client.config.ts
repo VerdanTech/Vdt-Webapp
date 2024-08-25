@@ -1,4 +1,4 @@
-import { defineConfig } from 'orval'
+import { defineConfig } from 'orval';
 
 export default defineConfig({
 	vdt_frontend: {
@@ -34,4 +34,4 @@ export default defineConfig({
 			}
 		}
 	}
-})
+});

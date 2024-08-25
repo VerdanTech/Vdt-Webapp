@@ -7,7 +7,7 @@
  */
 
 export interface UserEmailSchema {
-	address: string
-	primary: boolean
-	verified: boolean
+	address: string;
+	primary: boolean;
+	verified: boolean;
 }

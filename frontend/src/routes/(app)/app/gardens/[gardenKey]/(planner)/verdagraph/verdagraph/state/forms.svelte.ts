@@ -1,12 +1,12 @@
-import type { Component } from 'svelte'
-import AddForm from '../forms/AddForm.svelte'
-import TranslateForm from '../forms/TranslateForm.svelte'
-import DeleteForm from '../forms/DeleteForm.svelte'
-import ObserveForm from '../forms/ObserveForm.svelte'
-import PatternsForm from '../forms/PatternsForm.svelte'
-import PlansForm from '../forms/PlansForm.svelte'
-import GeneratorsForm from '../forms/GeneratorsForm.svelte'
-import FilterForm from '../forms/FilterForm.svelte'
+import type { Component } from 'svelte';
+import AddForm from '../forms/AddForm.svelte';
+import TranslateForm from '../forms/TranslateForm.svelte';
+import DeleteForm from '../forms/DeleteForm.svelte';
+import ObserveForm from '../forms/ObserveForm.svelte';
+import PatternsForm from '../forms/PatternsForm.svelte';
+import PlansForm from '../forms/PlansForm.svelte';
+import GeneratorsForm from '../forms/GeneratorsForm.svelte';
+import FilterForm from '../forms/FilterForm.svelte';
 
 export type VerdagraphFormType =
 	| 'add'
@@ -16,13 +16,13 @@ export type VerdagraphFormType =
 	| 'patterns'
 	| 'plans'
 	| 'generators'
-	| 'filter'
+	| 'filter';
 
 type FormAttributeType = {
-	id: VerdagraphFormType
-	label: string
-	content: Component
-}
+	id: VerdagraphFormType;
+	label: string;
+	content: Component;
+};
 
 const formAttributes: FormAttributeType[] = [
 	{ id: 'add', label: 'Add', content: AddForm },
@@ -33,20 +33,20 @@ const formAttributes: FormAttributeType[] = [
 	{ id: 'plans', label: 'Plans', content: PlansForm },
 	{ id: 'generators', label: 'Generators', content: GeneratorsForm },
 	{ id: 'filter', label: 'Filter', content: FilterForm }
-]
+];
 
 /** Runes */
 
 /** Stores the IDs of the active forms. */
-let activeFormIds = $state<VerdagraphFormType[]>([])
+let activeFormIds = $state<VerdagraphFormType[]>([]);
 /** Stores the ID of the last activated form. */
-let lastActivatedId = $state<VerdagraphFormType | undefined>()
+let lastActivatedId = $state<VerdagraphFormType | undefined>();
 /** Presents the attributes of the active forms. */
 let activeForms = $derived(
 	formAttributes.filter((attributes) => activeFormIds.includes(attributes.id))
-)
+);
 /** Presents true if any forms are active. */
-let anyFormsActive = $derived(activeFormIds.length > 0)
+let anyFormsActive = $derived(activeFormIds.length > 0);
 
 /**
  * Form management for the Verdagraph.
@@ -54,18 +54,18 @@ let anyFormsActive = $derived(activeFormIds.length > 0)
 export const forms = {
 	/** Getters. */
 	get lastActivatedId(): VerdagraphFormType | undefined {
-		return lastActivatedId
+		return lastActivatedId;
 	},
 	get activeForms(): FormAttributeType[] {
-		return activeForms
+		return activeForms;
 	},
 	get anyFormsActive(): boolean {
-		return anyFormsActive
+		return anyFormsActive;
 	},
 
 	/** Setters. */
 	set lastActivatedId(newVal: VerdagraphFormType) {
-		lastActivatedId = newVal
+		lastActivatedId = newVal;
 	},
 
 	/**
@@ -75,9 +75,9 @@ export const forms = {
 	 */
 	activateForm(id: VerdagraphFormType, options?: Record<string, any>) {
 		if (!activeFormIds.includes(id)) {
-			activeFormIds.push(id)
+			activeFormIds.push(id);
 		}
-		lastActivatedId = id
+		lastActivatedId = id;
 	},
 	/**
 	 * Deactivate a form.
@@ -85,11 +85,11 @@ export const forms = {
 	 */
 	deactivateForm(id: VerdagraphFormType) {
 		if (activeFormIds.includes(id)) {
-			activeFormIds = activeFormIds.filter((item) => item !== id)
+			activeFormIds = activeFormIds.filter((item) => item !== id);
 		}
 		if (!anyFormsActive) {
-			lastActivatedId = undefined
+			lastActivatedId = undefined;
 		}
 	}
-}
-export default forms
+};
+export default forms;

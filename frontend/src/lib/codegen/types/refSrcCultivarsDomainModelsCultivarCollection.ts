@@ -7,5 +7,5 @@
  */
 
 export interface RefSrcCultivarsDomainModelsCultivarCollection {
-	id: string
+	id: string;
 }

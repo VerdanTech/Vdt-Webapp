@@ -1,5 +1,5 @@
 <script lang="ts">
-	import CultivarCollectionTree from '$lib/components/cultivars/CultivarCollectionTree.svelte'
+	import CultivarCollectionTree from '$lib/components/cultivars/CultivarCollectionTree.svelte';
 </script>
 
 <svelte:head>

@@ -7,5 +7,5 @@
  */
 
 export type UsernameExistsQueryOpParams = {
-	username: string
-}
+	username: string;
+};

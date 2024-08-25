@@ -5,8 +5,8 @@
  * Backend API of the VerdanTech software project.
  * OpenAPI spec version: 0.1.0
  */
-import type { FrostDatePlantingWindowProfileUpdateCommandLastFrostWindowOpen } from './frostDatePlantingWindowProfileUpdateCommandLastFrostWindowOpen'
+import type { FrostDatePlantingWindowProfileUpdateCommandLastFrostWindowOpen } from './frostDatePlantingWindowProfileUpdateCommandLastFrostWindowOpen';
 
 export interface FrostDatePlantingWindowProfileUpdateCommand {
-	last_frost_window_open?: FrostDatePlantingWindowProfileUpdateCommandLastFrostWindowOpen
+	last_frost_window_open?: FrostDatePlantingWindowProfileUpdateCommandLastFrostWindowOpen;
 }

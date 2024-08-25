@@ -7,5 +7,5 @@
  */
 
 export type CultivarGetByGardenQueryOpParams = {
-	garden_key: string
-}
+	garden_key: string;
+};

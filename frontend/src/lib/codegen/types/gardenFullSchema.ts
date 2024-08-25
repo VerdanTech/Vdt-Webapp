@@ -5,20 +5,20 @@
  * Backend API of the VerdanTech software project.
  * OpenAPI spec version: 0.1.0
  */
-import type { GardenFullSchemaCreatorRef } from './gardenFullSchemaCreatorRef'
-import type { GardenFullSchemaEnvironmentRef } from './gardenFullSchemaEnvironmentRef'
-import type { GardenMembershipFullSchema } from './gardenMembershipFullSchema'
-import type { GardenFullSchemaVisibility } from './gardenFullSchemaVisibility'
+import type { GardenFullSchemaCreatorRef } from './gardenFullSchemaCreatorRef';
+import type { GardenFullSchemaEnvironmentRef } from './gardenFullSchemaEnvironmentRef';
+import type { GardenMembershipFullSchema } from './gardenMembershipFullSchema';
+import type { GardenFullSchemaVisibility } from './gardenFullSchemaVisibility';
 
 export interface GardenFullSchema {
-	creator_ref?: GardenFullSchemaCreatorRef
-	description: string
-	environment_ref?: GardenFullSchemaEnvironmentRef
-	expired: boolean
-	id: string
-	key: string
-	memberships: GardenMembershipFullSchema[]
-	name: string
-	num_memberships: number
-	visibility: GardenFullSchemaVisibility
+	creator_ref?: GardenFullSchemaCreatorRef;
+	description: string;
+	environment_ref?: GardenFullSchemaEnvironmentRef;
+	expired: boolean;
+	id: string;
+	key: string;
+	memberships: GardenMembershipFullSchema[];
+	name: string;
+	num_memberships: number;
+	visibility: GardenFullSchemaVisibility;
 }

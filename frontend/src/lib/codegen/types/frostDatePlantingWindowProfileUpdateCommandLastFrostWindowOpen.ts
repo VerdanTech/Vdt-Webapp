@@ -8,4 +8,4 @@
 
 export type FrostDatePlantingWindowProfileUpdateCommandLastFrostWindowOpen =
 	| null
-	| number
+	| number;

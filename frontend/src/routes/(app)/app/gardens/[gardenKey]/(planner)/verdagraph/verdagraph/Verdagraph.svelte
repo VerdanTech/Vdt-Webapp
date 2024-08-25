@@ -1,17 +1,17 @@
 <script lang="ts">
-	import { setContext } from 'svelte'
-	import * as Resizable from '$components/ui/resizable'
-	import Toolbar from './Toolbar.svelte'
-	import createViewSettings from './state/viewSettings.svelte'
-	import Calendar from './calendar/Calendar.svelte'
-	import Layout from './layout/Layout.svelte'
-	import Tree from './tree/Tree.svelte'
-	import TimelineSelector from './timelineSelector/TimelineSelector.svelte'
-	import Form from './forms/Form.svelte'
-	import forms from './state/forms.svelte'
+	import { setContext } from 'svelte';
+	import * as Resizable from '$components/ui/resizable';
+	import Toolbar from './Toolbar.svelte';
+	import createViewSettings from './state/viewSettings.svelte';
+	import Calendar from './calendar/Calendar.svelte';
+	import Layout from './layout/Layout.svelte';
+	import Tree from './tree/Tree.svelte';
+	import TimelineSelector from './timelineSelector/TimelineSelector.svelte';
+	import Form from './forms/Form.svelte';
+	import forms from './state/forms.svelte';
 
-	let viewSettings = createViewSettings()
-	setContext('viewSettings', viewSettings)
+	let viewSettings = createViewSettings();
+	setContext('viewSettings', viewSettings);
 </script>
 
 <div class="flex h-full flex-col bg-neutral-1">

@@ -17,8 +17,8 @@ import type {
 	UserRequestEmailConfirmationCommand,
 	UserRequestPasswordResetCommand,
 	UsernameExistsQueryOpParams
-} from '../../types'
-import { axiosClient } from '../../../data/customAxios'
+} from '../../types';
+import { axiosClient } from '../../../data/customAxios';
 
 /**
  * Authenticate the request with JWT cookie authentication.
@@ -32,15 +32,15 @@ export const userLoginCommandOp = (
 		method: 'POST',
 		headers: { 'Content-Type': 'application/json' },
 		data: userPasswordVerificationQuery
-	})
-}
+	});
+};
 /**
  * Refresh the authentication process for security..
  * @summary User authentication refresh
  */
 export const userRefreshCommandOp = () => {
-	return axiosClient<AccessInfoResult>({ url: `/users/auth/refresh`, method: 'POST' })
-}
+	return axiosClient<AccessInfoResult>({ url: `/users/auth/refresh`, method: 'POST' });
+};
 /**
  * Registers a new user. Requires email confirmation: False.
  * @summary User registration.
@@ -51,8 +51,8 @@ export const userCreateCommandOp = (userCreateCommand: UserCreateCommand) => {
 		method: 'POST',
 		headers: { 'Content-Type': 'application/json' },
 		data: userCreateCommand
-	})
-}
+	});
+};
 /**
  * Closes an email confirmation and verifies the email address.
  * @summary Email confirmation.
@@ -65,8 +65,8 @@ export const userConfirmEmailConfirmationCommandOp = (
 		method: 'POST',
 		headers: { 'Content-Type': 'application/json' },
 		data: userConfirmEmailConfirmationCommand
-	})
-}
+	});
+};
 /**
  * Requests a new email verification email be sent to the email address.
  * @summary Email confirmation request.
@@ -79,8 +79,8 @@ export const userRequestEmailConfirmationCommandOp = (
 		method: 'POST',
 		headers: { 'Content-Type': 'application/json' },
 		data: userRequestEmailConfirmationCommand
-	})
-}
+	});
+};
 /**
  * Closes a password reset request and changes the password
  * @summary Password reset confirm.
@@ -93,8 +93,8 @@ export const userConfirmPasswordResetCommandOp = (
 		method: 'POST',
 		headers: { 'Content-Type': 'application/json' },
 		data: userConfirmPasswordResetCommand
-	})
-}
+	});
+};
 /**
  * Open a new password reset request and sends confirmation email.
  * @summary Password reset request.
@@ -107,8 +107,8 @@ export const userRequestPasswordResetCommandOp = (
 		method: 'POST',
 		headers: { 'Content-Type': 'application/json' },
 		data: userRequestPasswordResetCommand
-	})
-}
+	});
+};
 /**
  * Returns the profile of the authenticated user.
  * @summary User client profile view.
@@ -117,8 +117,8 @@ export const userClientProfileQueryOp = () => {
 	return axiosClient<UserFullSchema>({
 		url: `/users/query/client_profile`,
 		method: 'GET'
-	})
-}
+	});
+};
 /**
  * Returns the profiles of the user ids given.
  * @summary User public profiles view.
@@ -128,8 +128,8 @@ export const userPublicProfilesQueryOp = (params: UserPublicProfilesQueryOpParam
 		url: `/users/query/public_profiles`,
 		method: 'GET',
 		params
-	})
-}
+	});
+};
 /**
  * Returns true if the given username exists.
  * @summary Checks whether a username exists.
@@ -139,35 +139,35 @@ export const usernameExistsQueryOp = (params: UsernameExistsQueryOpParams) => {
 		url: `/users/query/username_exists`,
 		method: 'GET',
 		params
-	})
-}
+	});
+};
 export type UserLoginCommandOpResult = NonNullable<
 	Awaited<ReturnType<typeof userLoginCommandOp>>
->
+>;
 export type UserRefreshCommandOpResult = NonNullable<
 	Awaited<ReturnType<typeof userRefreshCommandOp>>
->
+>;
 export type UserCreateCommandOpResult = NonNullable<
 	Awaited<ReturnType<typeof userCreateCommandOp>>
->
+>;
 export type UserConfirmEmailConfirmationCommandOpResult = NonNullable<
 	Awaited<ReturnType<typeof userConfirmEmailConfirmationCommandOp>>
->
+>;
 export type UserRequestEmailConfirmationCommandOpResult = NonNullable<
 	Awaited<ReturnType<typeof userRequestEmailConfirmationCommandOp>>
->
+>;
 export type UserConfirmPasswordResetCommandOpResult = NonNullable<
 	Awaited<ReturnType<typeof userConfirmPasswordResetCommandOp>>
->
+>;
 export type UserRequestPasswordResetCommandOpResult = NonNullable<
 	Awaited<ReturnType<typeof userRequestPasswordResetCommandOp>>
->
+>;
 export type UserClientProfileQueryOpResult = NonNullable<
 	Awaited<ReturnType<typeof userClientProfileQueryOp>>
->
+>;
 export type UserPublicProfilesQueryOpResult = NonNullable<
 	Awaited<ReturnType<typeof userPublicProfilesQueryOp>>
->
+>;
 export type UsernameExistsQueryOpResult = NonNullable<
 	Awaited<ReturnType<typeof usernameExistsQueryOp>>
->
+>;

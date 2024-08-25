@@ -3,25 +3,25 @@
 		type DateValue,
 		DateFormatter,
 		getLocalTimeZone
-	} from '@internationalized/date'
-	import { cn } from '$lib/utils/shadcn.js'
-	import { Calendar } from '$lib/components/ui/calendar'
-	import * as Popover from '$lib/components/ui/popover/index.js'
-	import { Button } from 'bits-ui'
+	} from '@internationalized/date';
+	import { cn } from '$lib/utils/shadcn.js';
+	import { Calendar } from '$lib/components/ui/calendar';
+	import * as Popover from '$lib/components/ui/popover/index.js';
+	import { Button } from 'bits-ui';
 
 	const df = new DateFormatter('en-US', {
 		day: '2-digit',
 		month: 'short',
 		year: '2-digit'
-	})
+	});
 
 	type Props = {
-		value: DateValue
-		minValue?: DateValue | undefined
-		maxValue?: DateValue | undefined
-		onValueChange?: (date: DateValue | undefined) => void
-	}
-	let { value = $bindable(), minValue, maxValue, onValueChange }: Props = $props()
+		value: DateValue;
+		minValue?: DateValue | undefined;
+		maxValue?: DateValue | undefined;
+		onValueChange?: (date: DateValue | undefined) => void;
+	};
+	let { value = $bindable(), minValue, maxValue, onValueChange }: Props = $props();
 </script>
 
 <Popover.Root openFocus>

@@ -1,10 +1,10 @@
 <script lang="ts">
-	import Icon from '@iconify/svelte'
-	import { Tabs } from 'bits-ui'
-	import { Button } from '$lib/components/ui/button'
+	import Icon from '@iconify/svelte';
+	import { Tabs } from 'bits-ui';
+	import { Button } from '$lib/components/ui/button';
 
-	import forms from '../state/forms.svelte'
-	import iconIds from '$lib/assets/icons'
+	import forms from '../state/forms.svelte';
+	import iconIds from '$lib/assets/icons';
 </script>
 
 <Tabs.Root bind:value={forms.lastActivatedId} class="h-full bg-neutral-1">

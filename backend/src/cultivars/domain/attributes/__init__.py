@@ -19,12 +19,10 @@ class CultivarAttributeSet(Value):
     Acts as a container for sets of CultivarAttributeProfiles.
     """
 
-    lifecycle: LifecycleProfile | None = None
-    origin: OriginProfile | None = None
-    frost_date_planting_windows: FrostDatePlantingWindowProfile | None = None
+    frost_date_planting_window_profile: FrostDatePlantingWindowProfile | None = None
 
 
 class CultivarAttributeUpdateCommand(Command):
-    frost_date_planting_windows: FrostDatePlantingWindowProfileUpdateCommand | None = (
+    frost_date_planting_window_profile: FrostDatePlantingWindowProfileUpdateCommand | None = (
         None
     )

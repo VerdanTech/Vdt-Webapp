@@ -7,5 +7,5 @@
  */
 
 export type CultivarGetByIdsQueryOpParams = {
-	ids: string[]
-}
+	ids: string[];
+};

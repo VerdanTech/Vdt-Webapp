@@ -6,4 +6,4 @@
  * OpenAPI spec version: 0.1.0
  */
 
-export type FrostDatePlantingWindowProfileLastFrostWindowOpen = null | number
+export type FrostDatePlantingWindowProfileLastFrostWindowOpen = null | number;

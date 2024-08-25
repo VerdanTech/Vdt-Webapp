@@ -1,16 +1,16 @@
 <script lang="ts">
-	import * as FormPrimitive from 'formsnap'
-	import { cn } from '$lib/utils/shadcn.js'
+	import * as FormPrimitive from 'formsnap';
+	import { cn } from '$lib/utils/shadcn.js';
 
 	type $$Props = FormPrimitive.FieldErrorsProps & {
-		errorClasses?: string | undefined | null
-		serverErrors?: string[] | undefined | null
-	}
+		errorClasses?: string | undefined | null;
+		serverErrors?: string[] | undefined | null;
+	};
 
-	let className: $$Props['class'] = undefined
-	export { className as class }
-	export let errorClasses: $$Props['class'] = undefined
-	export let serverErrors: $$Props['serverErrors'] = []
+	let className: $$Props['class'] = undefined;
+	export { className as class };
+	export let errorClasses: $$Props['class'] = undefined;
+	export let serverErrors: $$Props['serverErrors'] = [];
 </script>
 
 <FormPrimitive.FieldErrors

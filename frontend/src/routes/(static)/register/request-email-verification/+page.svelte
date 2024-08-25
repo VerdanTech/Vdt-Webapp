@@ -1,14 +1,14 @@
 <script lang="ts">
-	import * as Card from '$lib/components/ui/card'
-	import { Button } from '$components/ui/button'
-	import * as Dialog from '$components/ui/dialog'
-	import { externalLinks } from '$lib/assets/links'
-	import RequestEmailConfirmationForm from './RequestEmailConfirmationForm.svelte'
+	import * as Card from '$lib/components/ui/card';
+	import { Button } from '$components/ui/button';
+	import * as Dialog from '$components/ui/dialog';
+	import { externalLinks } from '$lib/assets/links';
+	import RequestEmailConfirmationForm from './RequestEmailConfirmationForm.svelte';
 	/** Set to true on form success. */
-	let succeeded = $state<boolean>(false)
+	let succeeded = $state<boolean>(false);
 
 	/** Stores the email the form sent to. */
-	let registeredEmail = $state<string>('')
+	let registeredEmail = $state<string>('');
 </script>
 
 <svelte:head>
@@ -29,7 +29,7 @@
 		closeOnOutsideClick={true}
 		onOpenChange={(open) => {
 			if (!open) {
-				succeeded = false
+				succeeded = false;
 			}
 		}}
 	>

@@ -7,5 +7,5 @@
  */
 
 export type GardenFullByKeyQueryOpParams = {
-	garden_key: string
-}
+	garden_key: string;
+};

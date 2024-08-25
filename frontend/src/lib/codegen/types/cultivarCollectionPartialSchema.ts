@@ -5,17 +5,17 @@
  * Backend API of the VerdanTech software project.
  * OpenAPI spec version: 0.1.0
  */
-import type { CultivarCollectionPartialSchemaGardenRef } from './cultivarCollectionPartialSchemaGardenRef'
-import type { CultivarCollectionPartialSchemaParentRef } from './cultivarCollectionPartialSchemaParentRef'
-import type { CultivarCollectionPartialSchemaUserRef } from './cultivarCollectionPartialSchemaUserRef'
+import type { CultivarCollectionPartialSchemaGardenRef } from './cultivarCollectionPartialSchemaGardenRef';
+import type { CultivarCollectionPartialSchemaParentRef } from './cultivarCollectionPartialSchemaParentRef';
+import type { CultivarCollectionPartialSchemaUserRef } from './cultivarCollectionPartialSchemaUserRef';
 
 export interface CultivarCollectionPartialSchema {
-	description: string
-	garden_ref?: CultivarCollectionPartialSchemaGardenRef
-	id: string
-	key: string
-	name: string
-	parent_ref?: CultivarCollectionPartialSchemaParentRef
-	tags: string[]
-	user_ref?: CultivarCollectionPartialSchemaUserRef
+	description: string;
+	garden_ref?: CultivarCollectionPartialSchemaGardenRef;
+	id: string;
+	key: string;
+	name: string;
+	parent_ref?: CultivarCollectionPartialSchemaParentRef;
+	tags: string[];
+	user_ref?: CultivarCollectionPartialSchemaUserRef;
 }

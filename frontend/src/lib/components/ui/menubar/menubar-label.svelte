@@ -1,14 +1,14 @@
 <script lang="ts">
-	import { Menubar as MenubarPrimitive } from 'bits-ui'
-	import { cn } from '$lib/utils/shadcn.js'
+	import { Menubar as MenubarPrimitive } from 'bits-ui';
+	import { cn } from '$lib/utils/shadcn.js';
 
 	type $$Props = MenubarPrimitive.LabelProps & {
-		inset?: boolean
-	}
+		inset?: boolean;
+	};
 
-	let className: $$Props['class'] = undefined
-	export let inset: $$Props['inset'] = undefined
-	export { className as class }
+	let className: $$Props['class'] = undefined;
+	export let inset: $$Props['inset'] = undefined;
+	export { className as class };
 </script>
 
 <MenubarPrimitive.Label

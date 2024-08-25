@@ -1,27 +1,30 @@
 <script lang="ts">
-	import Icon from '@iconify/svelte'
-	import iconIds from '$lib/assets/icons'
-	import { useQueryClient } from '@sveltestack/svelte-query'
-	import { Button } from '$lib/components/ui/button'
-	import { Separator } from '$lib/components/ui/separator'
-	import { ScrollArea } from '$lib/components/ui/scroll-area/index.js'
+	import Icon from '@iconify/svelte';
+	import iconIds from '$lib/assets/icons';
+	import { useQueryClient } from '@sveltestack/svelte-query';
+	import { Button } from '$lib/components/ui/button';
+	import { Separator } from '$lib/components/ui/separator';
+	import { ScrollArea } from '$lib/components/ui/scroll-area/index.js';
 	import type {
 		GardenMembershipFullSchemaRole,
 		GardenPendingInviteSchema
-	} from '$codegen/types'
-	import { gardenMembershipAccept, gardenMembershipDelete } from '$data/garden/commands'
+	} from '$codegen/types';
+	import {
+		gardenMembershipAccept,
+		gardenMembershipDelete
+	} from '$data/garden/commands';
 
-	const queryClient = useQueryClient()
+	const queryClient = useQueryClient();
 
 	type Props = {
-		invites: GardenPendingInviteSchema[]
-	}
+		invites: GardenPendingInviteSchema[];
+	};
 
-	let { invites }: Props = $props()
+	let { invites }: Props = $props();
 
 	/** Mutations. */
-	const inviteAcceptMutation = gardenMembershipAccept.mutation()
-	const inviteDeleteMutation = gardenMembershipDelete.mutation()
+	const inviteAcceptMutation = gardenMembershipAccept.mutation();
+	const inviteDeleteMutation = gardenMembershipDelete.mutation();
 </script>
 
 <!-- Pending invites list. -->
@@ -71,10 +74,10 @@
 						{ garden_key: gardenKey },
 						{
 							onSuccess: () => {
-								queryClient.invalidateQueries('pendingInvites')
+								queryClient.invalidateQueries('pendingInvites');
 							}
 						}
-					)
+					);
 				}}
 			>
 				<Icon icon={iconIds.gardenInviteAcceptIcon} width="1.5rem" />
@@ -86,10 +89,10 @@
 						{ garden_key: gardenKey },
 						{
 							onSuccess: () => {
-								queryClient.invalidateQueries('pendingInvites')
+								queryClient.invalidateQueries('pendingInvites');
 							}
 						}
-					)
+					);
 				}}><Icon width="1.5rem" icon={iconIds.gardenInviteRejectIcon} /></Button
 			>
 		</div>

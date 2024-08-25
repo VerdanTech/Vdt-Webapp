@@ -1,6 +1,6 @@
-import { QueryClient } from '@sveltestack/svelte-query'
+import { QueryClient } from '@sveltestack/svelte-query';
 
 /* Provides access to Svelte Query's async state management. */
-const queryClient = new QueryClient()
+const queryClient = new QueryClient();
 
-export default queryClient
+export default queryClient;

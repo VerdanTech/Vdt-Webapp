@@ -7,5 +7,5 @@
  */
 
 export interface GardenUniqueKeyResult {
-	key: string
+	key: string;
 }
