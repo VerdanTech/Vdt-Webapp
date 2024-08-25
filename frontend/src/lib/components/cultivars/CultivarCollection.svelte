@@ -1,48 +1,49 @@
 
 <script lang="ts">
-    import { melt, createTreeView, type TreeView } from '@melt-ui/svelte';
-    import { setContext } from 'svelte';
-    import type {CultivarCollectionResult} from '$codegen/types/cultivarCollectionResult'
+    import { melt, type TreeView } from '@melt-ui/svelte';
+    import type {CultivarCollectionFullSchema} from '$codegen/types'
+    import Cultivar from './Cultivar.svelte'
 
     type Props = {
-        collectionRef: string
+      treeView: TreeView
+        collection: CultivarCollectionFullSchema
     }
 
-    let {collectionRef}: Props = $props()
+    let {treeView, collection}: Props = $props()
 
-    const treeView = createTreeView()
-    setContext(collectionRef, treeView)
-
-    const {elements: {tree}} = treeView
-
-    const CultivarCollectionResult = {
-        description: "this is the description",
-        key: "keykye",
-        tags: ["canada", "native_plants"],
-        cultivars: [{
-            name: "cultivar1",
-            key: "keyyy",
-            attributes: [{
-                frost_date_planting_windows: {
-                    first_frost_window_close: 30,
-                    first_frost_window_open: 50,
-                    last_frost_window_close: 20,
-                    last_frost_window_open: 40,
-                }
-            }]
-        }]
-    }
+    const {
+    elements: { item, group },
+    helpers: { isExpanded, isSelected },
+  } = treeView
 
 </script>
 
-<div
-  class="flex h-[18.75rem] w-[18.75rem] flex-col rounded-xl bg-white text-neutral-900 md:h-[350px]"
->
-  <div class="flex flex-col gap-1 px-4 pt-4">
-    <h3 class="text-lg font-bold">Project Structure</h3>
-    <hr />
-  </div>
+<ul>
 
-  <ul class="overflow-auto px-4 pb-4 pt-2" {...$tree}>
-  </ul>
-</div>
+{#each collection.cultivars as cultivar}
+
+<li>
+
+<button use:melt={$item({id: cultivar.id})}>
+   <span>
+      {cultivar.name}
+   </span>
+</button>
+
+<ul use:melt={$group({id: cultivar.id})}>
+  <li>
+    Key
+  </li>
+  <li>
+    Description
+  </li>
+  <li>
+    Parent
+  </li>
+  <Cultivar treeView={treeView} cultivar={cultivar}/>
+</ul>
+
+</li>
+
+{/each}
+</ul>

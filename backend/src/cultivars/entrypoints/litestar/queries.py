@@ -96,7 +96,7 @@ class CultivarQueryController(Controller):
         request: Request,
         state: State,
         svcs_container: Container = Dependency(skip_validation=True),
-    ) -> list[queries.CultivarCollectionResult]:
+    ) -> list[queries.CultivarCollectionFullSchema]:
         """
         Calls the cultivar collections query.
 
@@ -108,7 +108,7 @@ class CultivarQueryController(Controller):
             svcs_container (Container): service locator.
 
         Returns:
-            list[queries.CultivarCollectionResult]: the
+            list[queries.CultivarCollectionFullSchema]: the
                 cultivar collections.
         """
         svcs_container.register_local_value(State, state)

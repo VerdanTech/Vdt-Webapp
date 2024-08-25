@@ -21,33 +21,46 @@ from src.user.domain import User
 
 
 @query_result_transform
-class CultivarResult(QueryResult[Cultivar]):
+class CultivarSchema(QueryResult[Cultivar]):
+    id: uuid.UUID
     name: str
     key: str
     attributes: CultivarAttributeSet
-
+    parent_id: uuid.UUID | None
 
 @query_result_transform
-class CultivarCollectionResult(QueryResult[CultivarCollection]):
+class CultivarCollectionPartialSchema(QueryResult[CultivarCollection]):
+    id: uuid.UUID
     name: str
     key: str
     description: str
     tags: set[str]
-    parent_ref: RefSchema
-    user_ref: RefSchema
-    garden_ref: RefSchema
-    cultivars: set[CultivarResult]
+    parent_ref: RefSchema | None
+    user_ref: RefSchema | None
+    garden_ref: RefSchema | None
+
+@query_result_transform
+class CultivarCollectionFullSchema(QueryResult[CultivarCollection]):
+    id: uuid.UUID
+    name: str
+    key: str
+    description: str | None
+    tags: set[str]  
+    parent_ref: RefSchema | None
+    user_ref: RefSchema | None
+    garden_ref: RefSchema | None
+    cultivars: set[CultivarSchema]
 
 
 @query_result_transform
 class CultivarGetByGardenResult(QueryResult[None]):
-    collections: set[Ref[CultivarCollection]]
+    collections: set[CultivarCollectionPartialSchema]
     active_collection: Ref[CultivarCollection]
 
 
 @query_result_transform
 class CultivarGetByClientResult(QueryResult[None]):
-    collections: set[Ref[CultivarCollection]]
+    collections: set[CultivarCollectionPartialSchema]
 
 
 # ======================================
@@ -103,7 +116,7 @@ async def get_by_client(
 
 async def get_by_ids(
     query: CultivarGetByIdsQuery, svcs_container: Container, client: User | None
-) -> list[CultivarCollectionResult]:
+) -> list[CultivarCollectionFullSchema]:
     """
     Retrieves the cultivars by their ids.
 

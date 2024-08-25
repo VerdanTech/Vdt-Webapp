@@ -30,7 +30,7 @@ class CultivarCommandController(Controller):
         data: commands.CultivarAttributeUpdateCommand,
         state: State,
         svcs_container: Container = Dependency(skip_validation=True),
-    ) -> Cultivar:
+    ) -> str:
         """
         Calls the cultivar update application command.
 

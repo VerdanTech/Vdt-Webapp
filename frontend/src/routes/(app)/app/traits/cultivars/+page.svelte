@@ -1,9 +1,9 @@
 <script lang="ts">
-	import CultivarCollection from '$components/cultivars/CultivarCollection.svelte';
+	import CultivarCollectionTree from '$lib/components/cultivars/CultivarCollectionTree.svelte';
 </script>
 
 <svelte:head>
 	<title>Cultivar - VerdanTech</title>
 </svelte:head>
 
-<CultivarCollection collectionRef={"osaenr"} />
+<CultivarCollectionTree collectionRef={"osaenr"} />

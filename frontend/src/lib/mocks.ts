@@ -11,7 +11,6 @@ const mock_handlers = [...getUsersMock(), ...getGardensMock()]
 export const worker = setupWorker(...mock_handlers)
 
 export async function enableMocking() {
-	return
 	const { worker } = await import('./mocks')
 
 	// `worker.start()` returns a Promise that resolves

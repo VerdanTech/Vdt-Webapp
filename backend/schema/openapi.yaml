@@ -60,44 +60,87 @@ components:
       required: []
       title: CultivarAttributeUpdateCommand
       type: object
-    CultivarCollectionResult:
+    CultivarCollectionFullSchema:
       properties:
         cultivars:
           items:
-            $ref: '#/components/schemas/CultivarResult'
+            $ref: '#/components/schemas/CultivarSchema'
           type: array
         description:
-          type: string
+          oneOf:
+          - type: 'null'
+          - type: string
         garden_ref:
-          $ref: '#/components/schemas/RefSchema'
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/RefSchema'
+        id:
+          format: uuid
+          type: string
         key:
           type: string
         name:
           type: string
         parent_ref:
-          $ref: '#/components/schemas/RefSchema'
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/RefSchema'
         tags:
           items:
             type: string
           type: array
         user_ref:
-          $ref: '#/components/schemas/RefSchema'
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/RefSchema'
       required:
       - cultivars
-      - description
-      - garden_ref
+      - id
       - key
       - name
-      - parent_ref
       - tags
-      - user_ref
-      title: CultivarCollectionResult
+      title: CultivarCollectionFullSchema
+      type: object
+    CultivarCollectionPartialSchema:
+      properties:
+        description:
+          type: string
+        garden_ref:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/RefSchema'
+        id:
+          format: uuid
+          type: string
+        key:
+          type: string
+        name:
+          type: string
+        parent_ref:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/RefSchema'
+        tags:
+          items:
+            type: string
+          type: array
+        user_ref:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/RefSchema'
+      required:
+      - description
+      - id
+      - key
+      - name
+      - tags
+      title: CultivarCollectionPartialSchema
       type: object
     CultivarGetByClientResult:
       properties:
         collections:
           items:
-            $ref: '#/components/schemas/Ref[src.cultivars.domain.models.CultivarCollection]'
+            $ref: '#/components/schemas/CultivarCollectionPartialSchema'
           type: array
       required:
       - collections
@@ -109,26 +152,35 @@ components:
           $ref: '#/components/schemas/Ref[src.cultivars.domain.models.CultivarCollection]'
         collections:
           items:
-            $ref: '#/components/schemas/Ref[src.cultivars.domain.models.CultivarCollection]'
+            $ref: '#/components/schemas/CultivarCollectionPartialSchema'
           type: array
       required:
       - active_collection
       - collections
       title: CultivarGetByGardenResult
       type: object
-    CultivarResult:
+    CultivarSchema:
       properties:
         attributes:
           $ref: '#/components/schemas/CultivarAttributeSet'
+        id:
+          format: uuid
+          type: string
         key:
           type: string
         name:
           type: string
+        parent_id:
+          oneOf:
+          - type: 'null'
+          - format: uuid
+            type: string
       required:
       - attributes
+      - id
       - key
       - name
-      title: CultivarResult
+      title: CultivarSchema
       type: object
     FrostDatePlantingWindowProfile:
       properties:
@@ -859,7 +911,7 @@ paths:
             application/json:
               schema:
                 items:
-                  $ref: '#/components/schemas/CultivarCollectionResult'
+                  $ref: '#/components/schemas/CultivarCollectionFullSchema'
                 type: array
           description: Request fulfilled, document follows
           headers: {}

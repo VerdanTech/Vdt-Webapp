@@ -8,7 +8,7 @@
 import type {
 	Cultivar,
 	CultivarAttributeUpdateCommand,
-	CultivarCollectionResult,
+	CultivarCollectionFullSchema,
 	CultivarGetByClientResult,
 	CultivarGetByGardenQueryOpParams,
 	CultivarGetByGardenResult,
@@ -58,7 +58,7 @@ export const cultivarGetByGardenQueryOp = (
  * @summary Get cultivar collections from their IDs.
  */
 export const cultivarGetByIdsQueryOp = (params: CultivarGetByIdsQueryOpParams) => {
-	return axiosClient<CultivarCollectionResult[]>({
+	return axiosClient<CultivarCollectionFullSchema[]>({
 		url: `/cultivars/query/get_by_ids`,
 		method: 'GET',
 		params
