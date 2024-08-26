@@ -13,16 +13,24 @@ from src.common.domain import (
     root_entity_transform,
     value_transform,
 )
-from src.cultivars.domain import Cultivar
+from src.cultivars.domain import Cultivar, OriginEnum
 from src.workspace.domain import GeometricHistory, LocationHistory
 from src.workspace.domain.workspace import Workspace
 
-from .enums import OriginEnum
+class HarvestSizeEnum:
+    SMALL = "small"
+    MEDIUM = "medium"
+    LARGE = "large"
 
+@value_transform
+class Harvest(Value):
+    date: date
+    quantity: float
+    quality: HarvestSizeEnum
 
 @value_transform
 class QuantityHistoryPoint(Value):
-    quantity: int
+    quantity: float
     time: datetime | None
 
 
@@ -30,18 +38,16 @@ class QuantityHistoryPoint(Value):
 class QuantityHistory(Value):
     quantity_points: set[QuantityHistoryPoint] = field(factory=set)
 
-
 @value_transform
 class Lifespan(Value):
-    origin: OriginEnum = OriginEnum.DIRECT_SEED
+    origin: OriginEnum | None = None
     location_history: LocationHistory = LocationHistory()
     geometric_history: GeometricHistory = GeometricHistory()
     quantity_history: QuantityHistory = QuantityHistory()
     seed_date: date | None = None
     germ_date: date | None = None
-    first_harvest_date: date | None = None
-    last_harvest_date: date | None = None
     expiry_date: date | None = None
+    harvests: list[Harvest] = field(factory=list)
 
     @property
     def undefined(self) -> bool:

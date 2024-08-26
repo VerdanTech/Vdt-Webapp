@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { melt, createTreeView, type TreeView } from '@melt-ui/svelte';
+	import { Separator } from "$lib/components/ui/separator";
 	import type {
 		CultivarCollectionFullSchema,
 		CultivarAttributeSet
@@ -22,9 +23,9 @@
 
 	const collection: CultivarCollectionFullSchema = {
 		id: 'iaesnrt',
-		description: 'this is the description',
-		name: 'einstra',
-		key: 'keykye',
+		description: 'this is the description. west coast seeds is a seed company that operaties here in british columbia. It\'s where I get all my seeds personally its really graet and everything thianks',
+		name: '1234567890132456789013245678901234567986012306504123/06054',
+		key: 'wcs',
 		tags: ['canada', 'native_plants'],
 		cultivars: [
 			{
@@ -54,10 +55,27 @@
   The exception is that the type of the attributes requires different 
   input components with different types.
 -->
-<div class="flex w-full flex-col rounded-xl bg-neutral-2 text-neutral-12">
-	<div class="flex flex-col gap-1 px-4 pt-4">
-		<h3 class="text-lg font-bold">{collection.name}</h3>
-		<hr />
+<div class="flex w-full flex-col">
+	<div class="flex flex-col gap-1 px-4 pt-4 w-full">
+		<div class="flex flex-row items-center justify-between w-full">
+			<div class="flex flex-row items-center">
+				<h1 class="text-2xl font-bold py-1">{collection.name}</h1>
+				<span>
+					{collection.key}
+				</span>
+			</div>
+			<div>
+				Menubar
+			</div>
+		</div>
+
+		<div>
+			<span>
+				Description
+			</span>
+			<p class="text-sm rounded-lg bg-neutral-2 text-neutral-11 p-2 border border-neutral-4">{collection.description}</p>
+		</div>
+		<Separator class="bg-neutral-7 rounded-md my-1"/>
 	</div>
 
 	<ul class="overflow-auto px-4 pb-4 pt-2" {...$tree}>

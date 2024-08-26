@@ -27,6 +27,8 @@ class CultivarSchema(QueryResult[Cultivar]):
     key: str
     attributes: CultivarAttributeSet
     parent_id: uuid.UUID | None
+    created_at: datetime
+
 
 @query_result_transform
 class CultivarCollectionPartialSchema(QueryResult[CultivarCollection]):
@@ -38,6 +40,8 @@ class CultivarCollectionPartialSchema(QueryResult[CultivarCollection]):
     parent_ref: RefSchema | None
     user_ref: RefSchema | None
     garden_ref: RefSchema | None
+    created_at: datetime
+
 
 @query_result_transform
 class CultivarCollectionFullSchema(QueryResult[CultivarCollection]):
@@ -45,10 +49,11 @@ class CultivarCollectionFullSchema(QueryResult[CultivarCollection]):
     name: str
     key: str
     description: str | None
-    tags: set[str]  
+    tags: set[str]
     parent_ref: RefSchema | None
     user_ref: RefSchema | None
     garden_ref: RefSchema | None
+    created_at: datetime
     cultivars: set[CultivarSchema]
 
 

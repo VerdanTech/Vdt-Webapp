@@ -7,10 +7,10 @@ from .frost_date_planting_windows import (
     FrostDatePlantingWindowProfileUpdateCommand,
     frost_date_planting_window_specs,
 )
-from .lifecycle import LifecycleProfile
-from .origin import OriginProfile
+from .annual_lifecycle import AnnualLifecycleProfile
+from .origin import OriginProfile, OriginProfileUpdateCommand, origin_specs
 
-specs = merge_spec_collections("cultivar", [frost_date_planting_window_specs])
+specs = merge_spec_collections("cultivar", [frost_date_planting_window_specs, origin_specs])
 
 
 @value_transform
@@ -20,9 +20,11 @@ class CultivarAttributeSet(Value):
     """
 
     frost_date_planting_window_profile: FrostDatePlantingWindowProfile | None = None
+    origin_profile: OriginProfile | None = None
 
 
 class CultivarAttributeUpdateCommand(Command):
     frost_date_planting_window_profile: FrostDatePlantingWindowProfileUpdateCommand | None = (
         None
     )
+    origin_profile: OriginProfileUpdateCommand | None = None

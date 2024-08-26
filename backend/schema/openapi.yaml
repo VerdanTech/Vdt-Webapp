@@ -28,6 +28,9 @@ components:
       type: object
     CultivarCollectionFullSchema:
       properties:
+        created_at:
+          format: date-time
+          type: string
         cultivars:
           items:
             $ref: '#/components/schemas/CultivarSchema'
@@ -60,6 +63,7 @@ components:
           - type: 'null'
           - $ref: '#/components/schemas/RefSchema'
       required:
+      - created_at
       - cultivars
       - id
       - key
@@ -69,6 +73,9 @@ components:
       type: object
     CultivarCollectionPartialSchema:
       properties:
+        created_at:
+          format: date-time
+          type: string
         description:
           type: string
         garden_ref:
@@ -95,6 +102,7 @@ components:
           - type: 'null'
           - $ref: '#/components/schemas/RefSchema'
       required:
+      - created_at
       - description
       - id
       - key
@@ -129,6 +137,9 @@ components:
       properties:
         attributes:
           $ref: '#/components/schemas/CultivarAttributeSet'
+        created_at:
+          format: date-time
+          type: string
         id:
           format: uuid
           type: string
@@ -143,6 +154,7 @@ components:
             type: string
       required:
       - attributes
+      - created_at
       - id
       - key
       - name
@@ -171,6 +183,33 @@ components:
       type: object
     FrostDatePlantingWindowProfileUpdateCommand:
       properties:
+        first_frost_window_close:
+          oneOf:
+          - type: 'null'
+          - description: The amount of days between the first frost and the end of
+              the planting window. Positive values indicate the window begins after
+              the first frost date. For example, a value of 15 indicates the cultivar
+              must be planted before 15 days after the first frost date. Must be between
+              -200 and -200 days.
+            type: number
+        first_frost_window_open:
+          oneOf:
+          - type: 'null'
+          - description: The amount of days between the first frost and the beginning
+              of the planting window. Positive values indicate the window begins after
+              the first frost date. For example, a value of -15 indicates the cultivar
+              may be planted 15 days before the first frost date. Must be between
+              -200 and -200 days.
+            type: number
+        last_frost_window_close:
+          oneOf:
+          - type: 'null'
+          - description: The amount of days between the last frost and the end of
+              the planting window. Positive values indicate the window begins after
+              the last frost date. For example, a value of 15 indicates the cultivar
+              must be planted before 15 days after the last frost date. Must be between
+              -200 and -200 days.
+            type: number
         last_frost_window_open:
           oneOf:
           - type: 'null'

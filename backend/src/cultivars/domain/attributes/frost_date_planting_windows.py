@@ -17,15 +17,28 @@ values = {
     "last_frost_window_open": {
         Specs.MIN: -WINDOW_MAX_RADIUS,
         Specs.MAX: WINDOW_MAX_RADIUS,
-    }
+    },
+    "last_frost_window_close": {
+        Specs.MIN: -WINDOW_MAX_RADIUS,
+        Specs.MAX: WINDOW_MAX_RADIUS,
+    },
+    "first_frost_window_open": {
+        Specs.MIN: -WINDOW_MAX_RADIUS,
+        Specs.MAX: WINDOW_MAX_RADIUS,
+    },
+    "first_frost_window_close": {
+        Specs.MIN: -WINDOW_MAX_RADIUS,
+        Specs.MAX: WINDOW_MAX_RADIUS,
+    },
 }
 descriptions = {
     "frost_date_planting_window_profile": {
         "field": (
             "A planting window defines a period of time within an environment that a cultivar should be planted. "
-            "These attributes define an allowed planting window of time relative to the first and last frost dates."
+            "These attributes define an allowed planting window of time relative to the first and last frost dates. "
+            "These planting windows are used for incdicating within the Verdagraph when plants are suggested to be planted."
         ),
-        "label": "Frost Date Planting Window Profile",
+        "label": "Frost Date Planting Windows",
     },
     "last_frost_window_open": {
         Specs.MIN: f"Must be greater than {values['last_frost_window_open'][Specs.MIN]}",
@@ -37,6 +50,42 @@ descriptions = {
             f"Must be between {values['last_frost_window_open'][Specs.MIN]} and {values['last_frost_window_open'][Specs.MIN]} days."
         ),
         "label": "Last Frost Window - Open",
+        "unit": "days",
+    },
+    "last_frost_window_close": {
+        Specs.MIN: f"Must be greater than {values['last_frost_window_close'][Specs.MIN]}",
+        Specs.MAX: f"Must be less than {values['last_frost_window_close'][Specs.MAX]}",
+        "field": (
+            "The amount of days between the last frost and the end of the planting window. "
+            "Positive values indicate the window begins after the last frost date. "
+            "For example, a value of 15 indicates the cultivar must be planted before 15 days after the last frost date. "
+            f"Must be between {values['last_frost_window_close'][Specs.MIN]} and {values['last_frost_window_close'][Specs.MIN]} days."
+        ),
+        "label": "Last Frost Window - Close",
+        "unit": "days",
+    },
+    "first_frost_window_open": {
+        Specs.MIN: f"Must be greater than {values['first_frost_window_open'][Specs.MIN]}",
+        Specs.MAX: f"Must be less than {values['first_frost_window_open'][Specs.MAX]}",
+        "field": (
+            "The amount of days between the first frost and the beginning of the planting window. "
+            "Positive values indicate the window begins after the first frost date. "
+            "For example, a value of -15 indicates the cultivar may be planted 15 days before the first frost date. "
+            f"Must be between {values['first_frost_window_open'][Specs.MIN]} and {values['first_frost_window_open'][Specs.MIN]} days."
+        ),
+        "label": "First Frost Window - Open",
+        "unit": "days",
+    },
+    "first_frost_window_close": {
+        Specs.MIN: f"Must be greater than {values['first_frost_window_close'][Specs.MIN]}",
+        Specs.MAX: f"Must be less than {values['first_frost_window_close'][Specs.MAX]}",
+        "field": (
+            "The amount of days between the first frost and the end of the planting window. "
+            "Positive values indicate the window begins after the first frost date. "
+            "For example, a value of 15 indicates the cultivar must be planted before 15 days after the first frost date. "
+            f"Must be between {values['first_frost_window_close'][Specs.MIN]} and {values['first_frost_window_close'][Specs.MIN]} days."
+        ),
+        "label": "First Frost Window - Close",
         "unit": "days",
     },
 }
@@ -67,6 +116,54 @@ class FrostDatePlantingWindowProfileUpdateCommand(Command):
             json_schema_extra={
                 "min": values["last_frost_window_open"][Specs.MIN],
                 "max": values["last_frost_window_open"][Specs.MAX],
+            },
+        ),
+    ] | None
+    last_frost_window_close: Annotated[
+        float,
+        AfterValidator(
+            SpecManager.get_validation_method(
+                frost_date_planting_window_specs, "last_frost_window_close"
+            )
+        ),
+        # Note: Field used only for annotation, to allow custom error messages.
+        Field(
+            description=descriptions["last_frost_window_close"]["field"],
+            json_schema_extra={
+                "min": values["last_frost_window_close"][Specs.MIN],
+                "max": values["last_frost_window_close"][Specs.MAX],
+            },
+        ),
+    ] | None
+    first_frost_window_open: Annotated[
+        float,
+        AfterValidator(
+            SpecManager.get_validation_method(
+                frost_date_planting_window_specs, "first_frost_window_open"
+            )
+        ),
+        # Note: Field used only for annotation, to allow custom error messages.
+        Field(
+            description=descriptions["first_frost_window_open"]["field"],
+            json_schema_extra={
+                "min": values["first_frost_window_open"][Specs.MIN],
+                "max": values["first_frost_window_open"][Specs.MAX],
+            },
+        ),
+    ] | None
+    first_frost_window_close: Annotated[
+        float,
+        AfterValidator(
+            SpecManager.get_validation_method(
+                frost_date_planting_window_specs, "first_frost_window_close"
+            )
+        ),
+        # Note: Field used only for annotation, to allow custom error messages.
+        Field(
+            description=descriptions["first_frost_window_close"]["field"],
+            json_schema_extra={
+                "min": values["first_frost_window_close"][Specs.MIN],
+                "max": values["first_frost_window_close"][Specs.MAX],
             },
         ),
     ] | None
