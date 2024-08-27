@@ -1,6 +1,9 @@
 <script lang="ts">
 	import { melt, createTreeView, type TreeView } from '@melt-ui/svelte';
+	import Icon from '@iconify/svelte'
+	import iconIds from '$lib/assets/icons'
 	import { Separator } from "$lib/components/ui/separator";
+	import * as Collapsible from "$lib/components/ui/collapsible";
 	import type {
 		CultivarCollectionFullSchema,
 		CultivarAttributeSet
@@ -24,7 +27,7 @@
 	const collection: CultivarCollectionFullSchema = {
 		id: 'iaesnrt',
 		description: 'this is the description. west coast seeds is a seed company that operaties here in british columbia. It\'s where I get all my seeds personally its really graet and everything thianks',
-		name: '1234567890132456789013245678901234567986012306504123/06054',
+		name: '1234567890132456789013245678901234567986012306504123/060541234567890132456789013245678901234567986012306504123/06054',
 		key: 'wcs',
 		tags: ['canada', 'native_plants'],
 		cultivars: [
@@ -55,30 +58,42 @@
   The exception is that the type of the attributes requires different 
   input components with different types.
 -->
-<div class="flex w-full flex-col">
-	<div class="flex flex-col gap-1 px-4 pt-4 w-full">
+<div class="flex w-full flex-col p-6">
+	<div class="flex flex-col gap-1 w-full">
 		<div class="flex flex-row items-center justify-between w-full">
-			<div class="flex flex-row items-center">
-				<h1 class="text-2xl font-bold py-1">{collection.name}</h1>
-				<span>
-					{collection.key}
-				</span>
+			<div class="flex flex-row overflow-hidden items-center">
+				<h1 class="text-2xl font-bold truncate">{collection.name}</h1>
 			</div>
-			<div>
-				Menubar
+			<div class="bg-accent-3 p-2 mx-2">
+				Options
 			</div>
 		</div>
 
-		<div>
-			<span>
+		<div class="my-2">
+			<span class="text-sm text-neutral-12">
 				Description
 			</span>
-			<p class="text-sm rounded-lg bg-neutral-2 text-neutral-11 p-2 border border-neutral-4">{collection.description}</p>
+			<p class="text-sm rounded-lg bg-neutral-2 text-neutral-11 border border-neutral-4 mt-2 p-2">
+				{collection.description}
+			</p>
 		</div>
-		<Separator class="bg-neutral-7 rounded-md my-1"/>
+		<div class="my-2">
+			<Collapsible.Root>
+				<Collapsible.Trigger class="py-1 w-full flex items-center justify-between">
+				<span class="text-sm text-neutral-12">
+					Details
+				</span>
+				<Icon icon={iconIds.chevronRight} width="1.5rem" class=""/>
+				</Collapsible.Trigger>
+				<Collapsible.Content>
+				  Yes. Free to use for personal and commercial projects. No attribution
+				  required.
+				</Collapsible.Content>
+			  </Collapsible.Root>
+		</div>
 	</div>
 
-	<ul class="overflow-auto px-4 pb-4 pt-2" {...$tree}>
+	<ul class="overflow-auto p-2" {...$tree}>
 		<!-- Cultivar tree item. -->
 		{#each collection.cultivars as cultivar}
 			{@const hasProfiles = !!collection.cultivars?.length}

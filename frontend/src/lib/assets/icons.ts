@@ -12,6 +12,7 @@ const iconIds = {
 	defaultClose: 'mdi:close',
 	caretLeftIcon: '',
 	caretRightIcon: '',
+	chevronRight: 'material-symbols:chevron-right-rounded',
 
 	/* Navigation and UI. */
 	gardenDrawerIcon: 'material-symbols:menu-open-rounded',

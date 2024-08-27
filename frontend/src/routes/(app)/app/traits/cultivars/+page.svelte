@@ -6,4 +6,6 @@
 	<title>Cultivar - VerdanTech</title>
 </svelte:head>
 
-<CultivarCollectionTree collectionRef={'osaenr'} />
+<div class="">
+	<CultivarCollectionTree collectionRef={'osaenr'} />
+</div>
