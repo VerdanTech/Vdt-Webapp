@@ -13,7 +13,7 @@ from src.common.domain import (
     root_entity_transform,
     value_transform,
 )
-from src.cultivars.domain import Cultivar, OriginEnum
+from src.cultivars.domain import Cultivar, OriginEnum, CultivarCollection
 from src.workspace.domain import GeometricHistory, LocationHistory
 from src.workspace.domain.workspace import Workspace
 
@@ -68,9 +68,15 @@ class Lifespan(Value):
 
 @root_entity_transform
 class Plant(RootEntity):
-    cultivar_ref: Ref[Cultivar]
+    _cultivar_collection_ref: Ref[CultivarCollection]
+    _cultivar_name: str
+    _cultivar: Cultivar
     recorded_lifespan: Lifespan = Lifespan()
     expected_lifespan: Lifespan = Lifespan()
+
+    @property
+    def cultivar() -> Cultivar:
+        ...
 
     @property
     def committed(self) -> bool:

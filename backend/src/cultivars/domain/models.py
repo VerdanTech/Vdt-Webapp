@@ -29,7 +29,7 @@ class Cultivar(Entity):
 @root_entity_transform
 class CultivarCollection(RootEntity):
     name: str  # type: ignore
-    key: str  # type: ignore
+    slug: str  # type: ignore
     _cultivars: set[Cultivar] = field(factory=set)
     description: str | None = None
     tags: set[str] = field(factory=set)
