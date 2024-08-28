@@ -34,6 +34,12 @@ class CultivarCollection(RootEntity):
     description: str | None = None
     tags: set[str] = field(factory=set)
     parent_ref: Ref["CultivarCollection"] | None = None
+
+    """if there is a user ref, they is treated as the creator. 
+    When a user adds a cultivar collection to a garden, both the
+    garden and user are are added. The user is treated as creator
+     of the collection, but only admins in the garden can modify or delete it.
+       """
     user_ref: Ref[User] | None = None
     garden_ref: Ref[Garden] | None = None
 
