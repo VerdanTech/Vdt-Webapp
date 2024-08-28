@@ -59,7 +59,8 @@
   input components with different types.
 -->
 <div class="flex w-full flex-col p-6">
-	<div class="flex flex-col gap-1 w-full">
+
+		<!-- Title -->
 		<div class="flex flex-row items-center justify-between w-full">
 			<div class="flex flex-row overflow-hidden items-center">
 				<h1 class="text-2xl font-bold truncate">{collection.name}</h1>
@@ -69,31 +70,34 @@
 			</div>
 		</div>
 
-		<div class="my-2">
-			<span class="text-sm text-neutral-12">
-				Description
-			</span>
-			<p class="text-sm rounded-lg bg-neutral-2 text-neutral-11 border border-neutral-4 mt-2 p-2">
-				{collection.description}
-			</p>
-		</div>
-		<div class="my-2">
-			<Collapsible.Root>
-				<Collapsible.Trigger class="py-1 w-full flex items-center justify-between">
-				<span class="text-sm text-neutral-12">
-					Details
+		<!-- Details -->
+		<div>
+			<div class="my-2">
+				<span class="text-sm text-neutral-12 mx-2">
+					Description
 				</span>
-				<Icon icon={iconIds.chevronRight} width="1.5rem" class=""/>
-				</Collapsible.Trigger>
-				<Collapsible.Content>
-				  Yes. Free to use for personal and commercial projects. No attribution
-				  required.
-				</Collapsible.Content>
-			  </Collapsible.Root>
+				<p class="mx-2 text-sm rounded-lg bg-neutral-2 text-neutral-11 border border-neutral-4 mt-2 p-2">
+					{collection.description}
+				</p>
+			</div>
+			<div class="my-2">
+				<Collapsible.Root>
+					<Collapsible.Trigger class="py-1 w-full flex items-center justify-between hover:bg-neutral-6 rounded-lg">
+					<span class="mx-2 text-sm text-neutral-12">
+						Details
+					</span>
+					<Icon icon={iconIds.chevronRight} width="1.5rem" class="mx-2"/>
+					</Collapsible.Trigger>
+					<Collapsible.Content>
+					  Yes. Free to use for personal and commercial projects. No attribution
+					  required.
+					</Collapsible.Content>
+				  </Collapsible.Root>
+			</div>
 		</div>
-	</div>
 
-	<ul class="overflow-auto p-2" {...$tree}>
+	<!-- Tree -->
+	<ul class="overflow-auto" {...$tree}>
 		<!-- Cultivar tree item. -->
 		{#each collection.cultivars as cultivar}
 			{@const hasProfiles = !!collection.cultivars?.length}
