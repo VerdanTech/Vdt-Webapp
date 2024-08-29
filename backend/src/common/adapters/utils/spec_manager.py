@@ -177,6 +177,7 @@ class SpecManager:
             # Add the field description
             try:
                 field_description = spec_collection.descriptions[field]["field"]
+                field_description = field_description.replace("'", "\\'")
             except KeyError:
                 raise ValueError(f"Missing field description for field {field}")
             yield f"        description: '{field_description}',\n"
@@ -184,6 +185,7 @@ class SpecManager:
             # Add the field label - no throw
             try:
                 field_label = spec_collection.descriptions[field]["label"]
+                field_label = field_label.replace("'", "\\'")
                 yield f"        label: '{field_label}',\n"
             except KeyError:
                 pass
@@ -191,6 +193,7 @@ class SpecManager:
             # Add the field unit - no throw
             try:
                 field_unit = spec_collection.descriptions[field]["unit"]
+                field_unit = field_unit.replace("'", "\\'")
                 yield f"        unit: '{field_unit}',\n"
             except KeyError:
                 pass
@@ -198,30 +201,32 @@ class SpecManager:
             # Close the field object
             yield "    },\n"
 
-            # For every field in the spec collection description.
-            for field in spec_collection.descriptions:
-                if field in seen_specs:
-                    continue
+        # For every field in the spec collection description.
+        for field in spec_collection.descriptions:
+            if field in seen_specs:
+                continue
 
-                # Open the field object.
-                yield f"    {field}: {{\n"
+            # Open the field object.
+            yield f"    {field}: {{\n"
 
-                # Add the field description
-                try:
-                    field_description = spec_collection.descriptions[field]["field"]
-                except KeyError:
-                    raise ValueError(f"Missing field description for field {field}")
-                yield f"        description: '{field_description}',\n"
+            # Add the field description
+            try:
+                field_description = spec_collection.descriptions[field]["field"]
+                field_description = field_description.replace("'", "\\'")
+            except KeyError:
+                raise ValueError(f"Missing field description for field {field}")
+            yield f"        description: '{field_description}',\n"
 
-                # Add the field label - no throw
-                try:
-                    field_label = spec_collection.descriptions[field]["label"]
-                    yield f"        label: '{field_label}',\n"
-                except KeyError:
-                    pass
+            # Add the field label - no throw
+            try:
+                field_label = spec_collection.descriptions[field]["label"]
+                field_label = field_label.replace("'", "\\'")
+                yield f"        label: '{field_label}',\n"
+            except KeyError:
+                pass
 
-                # Close the field object
-                yield "    },\n"
+            # Close the field object
+            yield "    },\n"
 
         # Close the spec collection object and export default
         yield "}\n"

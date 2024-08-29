@@ -14,6 +14,10 @@ components:
           oneOf:
           - type: 'null'
           - $ref: '#/components/schemas/FrostDatePlantingWindowProfile'
+        origin_profile:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/OriginProfile'
       required: []
       title: CultivarAttributeSet
       type: object
@@ -23,6 +27,10 @@ components:
           oneOf:
           - type: 'null'
           - $ref: '#/components/schemas/FrostDatePlantingWindowProfileUpdateCommand'
+        origin_profile:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/OriginProfileUpdateCommand'
       required: []
       title: CultivarAttributeUpdateCommand
       type: object
@@ -563,6 +571,41 @@ components:
       required:
       - key
       title: GardenUniqueKeyResult
+      type: object
+    OriginProfile:
+      properties:
+        allowed_origins:
+          oneOf:
+          - type: 'null'
+          - items:
+              enum:
+              - direct seed
+              - seed transplant
+              - seedding transplant
+              type: string
+            type: array
+      required: []
+      title: OriginProfile
+      type: object
+    OriginProfileUpdateCommand:
+      properties:
+        allowed_origins:
+          oneOf:
+          - type: 'null'
+          - description: A cultivar may be allowed to start in any combination of
+              origins. In general, plants may be started from seed and transplanted
+              to where they reach maturity, started from seed in the location they
+              reach maturity, or brought in as seedlings. Some plants, such as carrots,
+              don't tolerate transplants, and so must be started directly.
+            items:
+              enum:
+              - direct seed
+              - seed transplant
+              - seedding transplant
+              type: string
+            type: array
+      required: []
+      title: OriginProfileUpdateCommand
       type: object
     RefSchema:
       properties:

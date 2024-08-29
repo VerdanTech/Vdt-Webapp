@@ -23,6 +23,7 @@ class Cultivar(Entity):
     name: str  # type: ignore
     key: str  # type: ignore
     attributes: CultivarAttributeSet = CultivarAttributeSet()
+    description: str = ""
     parent_id: uuid.UUID | None = None
 
 
@@ -31,7 +32,7 @@ class CultivarCollection(RootEntity):
     name: str  # type: ignore
     slug: str  # type: ignore
     _cultivars: set[Cultivar] = field(factory=set)
-    description: str | None = None
+    description: str = ""
     tags: set[str] = field(factory=set)
     parent_ref: Ref["CultivarCollection"] | None = None
 

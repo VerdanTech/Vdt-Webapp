@@ -1,6 +1,13 @@
 # Standard Library
+from datetime import datetime
 from enum import Enum
 from typing import Protocol
+
+# External Libraries
+from attrs import field
+
+# VerdanTech Source
+from src.common.domain import Value, value_transform
 
 
 class GeometryTypeEnum(Enum):
@@ -175,3 +182,23 @@ class Lines(Geometry, Protocol):
 
 class Ellipse(Geometry, Protocol):
     name = GeometryTypeEnum.ELLIPSE
+
+
+@value_transform
+class GeometryHistoryPoint(Value):
+    geometry: Geometry
+    time: datetime | None
+
+
+@value_transform
+class GeometricHistory(Value):
+    geometries: set[GeometryHistoryPoint] = field(factory=set)
+
+    @property
+    def undefined(self) -> bool:
+        """
+        Returns:
+            bool: True if the GeometryHistory has no defined
+                geometries.
+        """
+        return not self.geometries

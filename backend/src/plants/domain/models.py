@@ -1,5 +1,4 @@
 # Standard Library
-from dataclasses import field
 from datetime import date, datetime
 
 # External Libraries
@@ -13,20 +12,22 @@ from src.common.domain import (
     root_entity_transform,
     value_transform,
 )
-from src.cultivars.domain import Cultivar, OriginEnum, CultivarCollection
-from src.workspace.domain import GeometricHistory, LocationHistory
-from src.workspace.domain.workspace import Workspace
+from src.cultivars.domain import Cultivar, CultivarCollection, OriginEnum
+from src.workspace.domain import Workspace, LocationHistory
+from src.geometry import GeometricHistory
 
 class HarvestSizeEnum:
     SMALL = "small"
     MEDIUM = "medium"
     LARGE = "large"
 
+
 @value_transform
 class Harvest(Value):
     date: date
     quantity: float
     quality: HarvestSizeEnum
+
 
 @value_transform
 class QuantityHistoryPoint(Value):
@@ -36,7 +37,16 @@ class QuantityHistoryPoint(Value):
 
 @value_transform
 class QuantityHistory(Value):
-    quantity_points: set[QuantityHistoryPoint] = field(factory=set)
+    quantities: set[QuantityHistoryPoint] = field(factory=set)
+
+    @property
+    def undefined(self) -> bool:
+        """
+        Returns:
+            bool: True if the GeometryHistory has no defined
+                geometries.
+        """
+        return not self.quantities
 
 @value_transform
 class Lifespan(Value):
@@ -53,17 +63,17 @@ class Lifespan(Value):
     def undefined(self) -> bool:
         """
         Returns:
-            bool: True if the Lifespan has no defined location, geometries, or lifespan points.
+            bool: True if the Lifespan has no defined location, 
+                geometries, or lifespan points.
         """
         return (
-            self.location_history.locations is None
-            and self.geometric_history.geometries is None
+            self.location_history.undefined
+            and self.geometric_history.undefined
+            and self.quantity_history.undefined
             and self.seed_date is None
             and self.germ_date is None
-            and self.first_harvest_date is None
-            and self.last_harvest_date is None
             and self.expiry_date is None
-        )
+            and not self.harvests)
 
 
 @root_entity_transform
