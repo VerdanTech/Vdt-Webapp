@@ -3,6 +3,7 @@
 	import Icon from '@iconify/svelte';
 	import iconIds from '$lib/assets/icons';
 	import { Separator } from '$lib/components/ui/separator';
+	import * as  Popover from '$lib/components/ui/popover';
 	import * as Collapsible from '$lib/components/ui/collapsible';
 	import type {
 		CultivarCollectionFullSchema,
@@ -50,6 +51,21 @@
 	let detailsOpen = $state(false);
 </script>
 
+{#snippet infoPopover(description: string)}
+<Popover.Root>
+	<Popover.Trigger class="w-8">
+		<Icon
+			icon={iconIds.formFieldDescriptionIcon}
+			width="1rem"
+			class="ml-2 text-neutral-11 hover:text-neutral-10"
+		/>
+	</Popover.Trigger>
+	<Popover.Content class="max-w-2xl">
+		{description}
+	</Popover.Content>
+</Popover.Root>
+{/snippet}
+
 <!--
   @component
   
@@ -68,7 +84,7 @@
 		<div class="flex flex-row items-center overflow-hidden">
 			<h1 class="truncate text-2xl font-bold">{collection.name}</h1>
 		</div>
-		<div class="rounded-lg bg-accent-4 p-2 ml-2">Options</div>
+		<div class="rounded-lg bg-accent-4 p-2 ml-2 border border-accent-6">Options</div>
 	</div>
 
 	<!-- Details -->
@@ -124,31 +140,31 @@
 						<span class="mx-2 text-md italic">{cultivar.key}</span>
 						{/if}
 					</div>	
-					<div class="h-[1px] rounded-lg bg-neutral-3 ml-4 flex-grow"></div>
+					<div class="h-[1px] rounded-lg bg-neutral-3 flex-grow"></div>
 					<Icon icon={iconIds.chevronRight} width="1.5rem" class="ml-2 {$isExpanded(cultivarTreeId) ? 'rotate-90' : ''}" />
 				</button>
 
 				<!-- Cultivar tree item children. -->
 				<ul use:melt={$group({ id: cultivar.id })} class="w-full">
 					<!-- Cultivar name tree item. -->
-					<li class="my-2 ml-4 w-full">
-						<div use:melt={$item({ id: cultivar.id + 'name' })} class="flex items-center justify-between rounded-lg">
-								<span class="text-md font-light text-neutral-11">Name</span>
-								<span class="text-md bg-neutral-2 p-2 rounded-lg">{cultivar.name}</span>
+					<li class="my-2  w-full">
+						<div use:melt={$item({ id: cultivar.id + 'name' })} class="flex items-center justify-between">
+								<span class="text-md font-light text-neutral-11 ml-6">Name</span>
+								<span class="text-md border border-neutral-4 bg-neutral-2 p-2 rounded-lg">{cultivar.name}</span>
 						</div>
 					</li>
 					<!-- Cultivar key tree item. -->
-					<li class="my-2 ml-4 w-full">
-						<div use:melt={$item({ id: cultivar.id + 'key' })} class="flex items-center justify-between rounded-lg">
-							<span class="text-md text-neutral-11 font-light">Key</span>
-							<span class="text-md bg-neutral-2 p-2 rounded-lg">{cultivar.key}</span>
+					<li class="my-2  w-full">
+						<div use:melt={$item({ id: cultivar.id + 'key' })} class="flex items-center justify-between">
+							<span class="text-md text-neutral-11 font-light ml-6">Key</span>
+							<span class="text-md border border-neutral-4 bg-neutral-2 p-2 rounded-lg">{cultivar.key}</span>
 						</div>
 					</li>
 					<!-- Cultivar description tree item. -->
-					<li class="my-2 ml-4 w-full">
-						<div use:melt={$item({ id: cultivar.id + 'description' })} class="flex items-center justify-between rounded-lg">
-							<span class="text-md text-neutral-11 font-light">Description</span>
-							<span class="text-md bg-neutral-2 p-2 rounded-lg text-wrap ml-8 md:ml-16 lg:ml-64">{cultivar.description}</span>
+					<li class="my-2  w-full">
+						<div use:melt={$item({ id: cultivar.id + 'description' })} class="flex items-center justify-between">
+							<span class="text-md text-neutral-11 font-light ml-6">Description</span>
+							<span class="text-md border border-neutral-4 bg-neutral-2 p-2 rounded-lg text-wrap ml-8 md:ml-16 lg:ml-64">{cultivar.description}</span>
 						</div>
 					</li>
 
@@ -159,13 +175,14 @@
 						{@const profileDescription = cultivarFields[profileKey]?.description}
 						{@const hasAttributes = true}
 
-						<li class="ml-2 my-1">
+						<li class="my-1">
 							<button
-								use:melt={$item({ id: profileTreeId, hasChildren: hasAttributes })} class="w-full select-none flex w-full items-center justify-between rounded-lg py-1 transition-colors hover:bg-neutral-3"
+								use:melt={$item({ id: profileTreeId, hasChildren: hasAttributes })} class="w-full flex w-full items-center justify-between rounded-lg py-1 transition-colors hover:bg-neutral-3"
 							>
-									<span class="ml-2 text-md font-bold text-neutral-12 truncate">
+									<span class="ml-6 text-md font-medium text-neutral-12 truncate">
 										{profileLabel}
 									</span>
+									{@render infoPopover(profileDescription)}
 									<div class="h-[1px] rounded-lg bg-neutral-3 ml-4 flex-grow"></div>
 									<Icon icon={iconIds.chevronRight} width="1.5rem" class="ml-2 {$isExpanded(profileTreeId) ? 'rotate-90' : ''}" />
 							</button>
@@ -178,12 +195,21 @@
 									{@const attributeDescription =
 										cultivarFields[attributeKey]?.description}
 									{@const attributeUnit = cultivarFields[attributeKey]?.unit}
-									<li>
-										<button use:melt={$item({ id: attributeTreeId })}>
-											<span class="text-sm text-neutral-11">
+									<li class="my-2 w-full flex items-center justify-between w-full">
+										<button use:melt={$item({ id: attributeTreeId })} class="w-auto flex items-center">
+											<span class="text-sm text-neutral-11 ml-10">
 												{attributeLabel}
 											</span>
+											{@render infoPopover(attributeDescription)}
 										</button>
+										<div class="flex items-center">
+											<span class="py-2 px-4 bg-neutral-2 border border-neutral-4 mx-2 rounded-lg">
+												20
+											</span>
+											<span>
+												 {attributeUnit}
+											</span>
+										</div>
 									</li>
 								{/each}
 							</ul>

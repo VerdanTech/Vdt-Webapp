@@ -26,6 +26,9 @@ class CultivarAttributeSet(Value):
 
 
 class CultivarAttributeUpdateCommand(Command):
+    """
+    Allows updating any possible cultivar attribute.
+    """
     frost_date_planting_window_profile: FrostDatePlantingWindowProfileUpdateCommand | None = (
         None
     )

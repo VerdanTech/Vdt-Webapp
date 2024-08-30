@@ -2,7 +2,7 @@
 from enum import Enum
 
 
-class VisibilityEnum(Enum):
+class GardenVisibilityEnum(Enum):
     """
     Visibility controls the ability of a Garden
     to be read-accessed by those who are not members.

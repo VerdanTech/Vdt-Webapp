@@ -18,7 +18,7 @@ from src.common.adapters.persistence.sqlalchemy.mapper import (
     mapper_registry,
 )
 from src.common.domain import Ref
-from src.garden.domain import Garden, GardenMembership, RoleEnum, VisibilityEnum
+from src.garden.domain import Garden, GardenMembership, RoleEnum, GardenVisibilityEnum
 
 garden_table = Table(
     "garden_table",
@@ -27,7 +27,7 @@ garden_table = Table(
     Column("name", String, unique=False, nullable=False),
     Column("key", String, unique=True, nullable=False),
     Column("creator_ref_id", Uuid, nullable=True),
-    Column("visibility", Enum(VisibilityEnum), nullable=False),
+    Column("visibility", Enum(GardenVisibilityEnum), nullable=False),
     Column("description", Text, nullable=True),
     Column("is_active", Boolean, nullable=False),
     Column("created_at", DateTime, nullable=False),

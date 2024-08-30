@@ -34,7 +34,7 @@ origin_specs = SpecCollection("origin_profile", values, descriptions)
 
 @value_transform
 class OriginProfile(CultivarAttributeProfile):
-    allowed_origins: set[OriginEnum] | None = None
+    _allowed_origins: set[OriginEnum] | None = None
 
 
 class OriginProfileUpdateCommand(Command):

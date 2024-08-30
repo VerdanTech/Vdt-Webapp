@@ -13,7 +13,7 @@ from src.garden.domain import (
     Garden,
     GardenMembership,
     RoleEnum,
-    VisibilityEnum,
+    GardenVisibilityEnum,
     commands,
     generate_garden_key,
 )
@@ -53,7 +53,7 @@ class GardenPartialSchema(QueryResult[Garden]):
     name: str
     key: str
     creator_ref: RefSchema | None
-    visibility: VisibilityEnum
+    visibility: GardenVisibilityEnum
     num_memberships: int
 
 
@@ -65,7 +65,7 @@ class GardenFullSchema(QueryResult[Garden]):
     name: str
     key: str
     creator_ref: RefSchema | None
-    visibility: VisibilityEnum
+    visibility: GardenVisibilityEnum
     environment_ref: RefSchema | None
     num_memberships: int
     memberships: set[GardenMembershipFullSchema]

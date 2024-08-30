@@ -12,7 +12,7 @@ from src.common.domain import Command
 from src.common.interfaces.persistence import AbstractUow
 from src.user.domain.commands import Username
 
-from .enums import RoleEnum, VisibilityEnum
+from .enums import RoleEnum, GardenVisibilityEnum
 from .specs import specs
 
 # Load all banned garden names and keys
@@ -83,7 +83,7 @@ class GardenCreateCommand(Command):
     name: GardenName
     key: GardenKey | None
     description: GardenDescription = ""
-    visibility: VisibilityEnum = VisibilityEnum.PRIVATE
+    visibility: GardenVisibilityEnum = GardenVisibilityEnum.PRIVATE
     admin_usernames: UserInviteList = []
     editor_usernames: UserInviteList = []
     viewer_usernames: UserInviteList = []

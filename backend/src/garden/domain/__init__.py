@@ -4,5 +4,5 @@ from .commands import (
     GardenMembershipRevokeCommand,
     GardenMembershipRoleChangeCommand,
 )
-from .enums import RoleEnum, VisibilityEnum
+from .enums import RoleEnum, GardenVisibilityEnum
 from .models import Garden, GardenInvite, GardenMembership, generate_garden_key
