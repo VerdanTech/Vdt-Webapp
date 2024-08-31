@@ -18,7 +18,7 @@ from src.common.adapters.persistence.sqlalchemy.mapper import (
     mapper_registry,
 )
 from src.common.domain import Ref
-from src.garden.domain import Garden, GardenMembership, RoleEnum, GardenVisibilityEnum
+from src.garden.domain import Garden, GardenMembership, GardenVisibilityEnum, RoleEnum
 
 garden_table = Table(
     "garden_table",

@@ -19,7 +19,7 @@ from src.common.domain import (
 from src.user.domain import User
 from src.utils import key_generator
 
-from .enums import OperationEnum, PermissionEnum, RoleEnum, GardenVisibilityEnum
+from .enums import GardenVisibilityEnum, OperationEnum, PermissionEnum, RoleEnum
 from .events import MembershipAccepted, MembershipRevoked
 from .permission import PermissionRouter, permission_rules
 from .specs import specs

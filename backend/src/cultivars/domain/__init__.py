@@ -1,3 +1,3 @@
 from .attributes import CultivarAttributeSet
-from .enums import OriginEnum
+from .enums import CultivarCollectionVisibilityEnum, OriginEnum
 from .models import Cultivar, CultivarCollection

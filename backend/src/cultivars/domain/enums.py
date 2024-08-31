@@ -12,6 +12,7 @@ class OriginEnum(Enum):
     SEEDLING_TO_TRANSPLANT = "seedling transplant"
     """A seedling is transplanted directly into the area it will reach maturity in."""
 
+
 class CultivarCollectionVisibilityEnum(Enum):
     """
     Visibility controls the ability of a CultivarCollection

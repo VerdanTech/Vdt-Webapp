@@ -34,6 +34,77 @@ components:
       required: []
       title: CultivarAttributeUpdateCommand
       type: object
+    CultivarCollectionCreateCommand:
+      properties:
+        description:
+          default: ''
+          description: The description of the collection.Must be at most 1400 characters
+          maxLength: 1400
+          type: string
+        garden_ref:
+          oneOf:
+          - type: 'null'
+          - format: uuid
+            type: string
+        name:
+          description: The name of the collection.Must be between 3 and 50 characters
+            long and contain only alphanumeric characters, spaces, hyphens, and underscores.
+          maxLength: 50
+          minLength: 3
+          pattern: '[0-9A-Za-z _-]+'
+          type: string
+        parent_ref:
+          oneOf:
+          - type: 'null'
+          - format: uuid
+            type: string
+        tags:
+          default: []
+          description: A set of metadata tags.Each tag must be at most 150 characters
+            and contain only alphanumeric characters and spaces. There may be at most
+            150 tags
+          items:
+            description: A metadata tag.Must be at most 150 characters and contain
+              only alphanumeric characters and spaces
+            maxLength: 150
+            pattern: '[0-9A-Za-z ]+'
+            type: string
+          maxLength: 150
+          type: array
+        visibility:
+          default: private
+          enum:
+          - private
+          - unlisted
+          - public
+          type: string
+      required:
+      - name
+      title: CultivarCollectionCreateCommand
+      type: object
+    CultivarCollectionDeleteCommand:
+      properties:
+        collection_ref:
+          format: uuid
+          type: string
+      required:
+      - collection_ref
+      title: CultivarCollectionDeleteCommand
+      type: object
+    CultivarCollectionDuplicateCommand:
+      properties:
+        garden_ref:
+          oneOf:
+          - type: 'null'
+          - format: uuid
+            type: string
+        source_collection_ref:
+          format: uuid
+          type: string
+      required:
+      - source_collection_ref
+      title: CultivarCollectionDuplicateCommand
+      type: object
     CultivarCollectionFullSchema:
       properties:
         created_at:
@@ -44,9 +115,7 @@ components:
             $ref: '#/components/schemas/CultivarSchema'
           type: array
         description:
-          oneOf:
-          - type: 'null'
-          - type: string
+          type: string
         garden_ref:
           oneOf:
           - type: 'null'
@@ -54,14 +123,14 @@ components:
         id:
           format: uuid
           type: string
-        key:
-          type: string
         name:
           type: string
         parent_ref:
           oneOf:
           - type: 'null'
           - $ref: '#/components/schemas/RefSchema'
+        slug:
+          type: string
         tags:
           items:
             type: string
@@ -70,14 +139,58 @@ components:
           oneOf:
           - type: 'null'
           - $ref: '#/components/schemas/RefSchema'
+        visibility:
+          enum:
+          - private
+          - unlisted
+          - public
+          type: string
       required:
       - created_at
       - cultivars
+      - description
       - id
-      - key
       - name
+      - slug
       - tags
+      - visibility
       title: CultivarCollectionFullSchema
+      type: object
+    CultivarCollectionGetByClientResult:
+      properties:
+        collections:
+          items:
+            $ref: '#/components/schemas/CultivarCollectionPartialSchema'
+          type: array
+      required:
+      - collections
+      title: CultivarCollectionGetByClientResult
+      type: object
+    CultivarCollectionGetByGardenResult:
+      properties:
+        active_collection:
+          $ref: '#/components/schemas/Ref[src.cultivars.domain.models.CultivarCollection]'
+        collections:
+          items:
+            $ref: '#/components/schemas/CultivarCollectionPartialSchema'
+          type: array
+      required:
+      - active_collection
+      - collections
+      title: CultivarCollectionGetByGardenResult
+      type: object
+    CultivarCollectionMergeCommand:
+      properties:
+        source_collection_ref:
+          format: uuid
+          type: string
+        target_collection_ref:
+          format: uuid
+          type: string
+      required:
+      - source_collection_ref
+      - target_collection_ref
+      title: CultivarCollectionMergeCommand
       type: object
     CultivarCollectionPartialSchema:
       properties:
@@ -93,14 +206,14 @@ components:
         id:
           format: uuid
           type: string
-        key:
-          type: string
         name:
           type: string
         parent_ref:
           oneOf:
           - type: 'null'
           - $ref: '#/components/schemas/RefSchema'
+        slug:
+          type: string
         tags:
           items:
             type: string
@@ -109,37 +222,142 @@ components:
           oneOf:
           - type: 'null'
           - $ref: '#/components/schemas/RefSchema'
+        visibility:
+          enum:
+          - private
+          - unlisted
+          - public
+          type: string
       required:
       - created_at
       - description
       - id
-      - key
       - name
+      - slug
       - tags
+      - visibility
       title: CultivarCollectionPartialSchema
       type: object
-    CultivarGetByClientResult:
+    CultivarCollectionUpdateCommand:
       properties:
-        collections:
-          items:
-            $ref: '#/components/schemas/CultivarCollectionPartialSchema'
-          type: array
+        collection_ref:
+          format: uuid
+          type: string
+        description:
+          oneOf:
+          - type: 'null'
+          - description: The description of the collection.Must be at most 1400 characters
+            maxLength: 1400
+            type: string
+        name:
+          oneOf:
+          - type: 'null'
+          - description: The name of the collection.Must be between 3 and 50 characters
+              long and contain only alphanumeric characters, spaces, hyphens, and
+              underscores.
+            maxLength: 50
+            minLength: 3
+            pattern: '[0-9A-Za-z _-]+'
+            type: string
+        parent_ref:
+          oneOf:
+          - type: 'null'
+          - format: uuid
+            type: string
+        remove_parent:
+          default: false
+          type: boolean
+        tags:
+          oneOf:
+          - type: 'null'
+          - description: A set of metadata tags.Each tag must be at most 150 characters
+              and contain only alphanumeric characters and spaces. There may be at
+              most 150 tags
+            items:
+              description: A metadata tag.Must be at most 150 characters and contain
+                only alphanumeric characters and spaces
+              maxLength: 150
+              pattern: '[0-9A-Za-z ]+'
+              type: string
+            maxLength: 150
+            type: array
+        visibility:
+          enum:
+          - private
+          - unlisted
+          - public
+          - null
+          type:
+          - string
+          - 'null'
       required:
-      - collections
-      title: CultivarGetByClientResult
+      - collection_ref
+      title: CultivarCollectionUpdateCommand
       type: object
-    CultivarGetByGardenResult:
+    CultivarCreateCommand:
       properties:
-        active_collection:
-          $ref: '#/components/schemas/Ref[src.cultivars.domain.models.CultivarCollection]'
-        collections:
+        collection_ref:
+          format: uuid
+          type: string
+        description:
+          oneOf:
+          - type: 'null'
+          - description: A description of this plant species.Must be at most 1400
+              characters
+            maxLength: 1400
+            type: string
+        key:
+          oneOf:
+          - type: 'null'
+          - description: A very short abbreviation for this plant species.Must be
+              between 1 and 6 characters long and contain only alphanumeric characters.
+            maxLength: 6
+            minLength: 1
+            pattern: '[0-9A-Za-z]+'
+            type: string
+        names:
+          description: A set of common names associated with this plant species. Each
+            name must be between 3 and 30 characters long and contain only alphanumeric
+            characters and spaces.There may be a maximumm of 10 names
           items:
-            $ref: '#/components/schemas/CultivarCollectionPartialSchema'
+            description: A common name of this plant species. Must be between 3 and
+              30 characters long and contain only alphanumeric characters, spaces,
+              hyphens, and underscores.
+            maxLength: 30
+            minLength: 3
+            pattern: '[0-9A-Za-z _-]+'
+            type: string
+          maxLength: 10
           type: array
+        parent_id:
+          oneOf:
+          - type: 'null'
+          - format: uuid
+            type: string
+        scientific_name:
+          oneOf:
+          - type: 'null'
+          - description: The scientific name of this plant species.Must be at most
+              60 characters
+            maxLength: 60
+            type: string
       required:
-      - active_collection
-      - collections
-      title: CultivarGetByGardenResult
+      - collection_ref
+      - names
+      title: CultivarCreateCommand
+      type: object
+    CultivarDeleteCommand:
+      properties:
+        collection_ref:
+          format: uuid
+          type: string
+        cultivar_id:
+          format: uuid
+          type: string
+      required:
+      - collection_ref
+      - cultivar_id
+      title: CultivarDeleteCommand
       type: object
     CultivarSchema:
       properties:
@@ -148,25 +366,97 @@ components:
         created_at:
           format: date-time
           type: string
+        description:
+          type: string
         id:
           format: uuid
           type: string
         key:
           type: string
-        name:
-          type: string
+        names:
+          items:
+            type: string
+          type: array
         parent_id:
           oneOf:
           - type: 'null'
           - format: uuid
             type: string
+        scientific_name:
+          type: string
       required:
       - attributes
       - created_at
+      - description
       - id
       - key
-      - name
+      - names
+      - scientific_name
       title: CultivarSchema
+      type: object
+    CultivarUpdateCommand:
+      properties:
+        attributes:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/CultivarAttributeUpdateCommand'
+        collection_ref:
+          format: uuid
+          type: string
+        cultivar_id:
+          format: uuid
+          type: string
+        description:
+          oneOf:
+          - type: 'null'
+          - description: A description of this plant species.Must be at most 1400
+              characters
+            maxLength: 1400
+            type: string
+        key:
+          oneOf:
+          - type: 'null'
+          - description: A very short abbreviation for this plant species.Must be
+              between 1 and 6 characters long and contain only alphanumeric characters.
+            maxLength: 6
+            minLength: 1
+            pattern: '[0-9A-Za-z]+'
+            type: string
+        names:
+          oneOf:
+          - type: 'null'
+          - description: A set of common names associated with this plant species.
+              Each name must be between 3 and 30 characters long and contain only
+              alphanumeric characters and spaces.There may be a maximumm of 10 names
+            items:
+              description: A common name of this plant species. Must be between 3
+                and 30 characters long and contain only alphanumeric characters, spaces,
+                hyphens, and underscores.
+              maxLength: 30
+              minLength: 3
+              pattern: '[0-9A-Za-z _-]+'
+              type: string
+            maxLength: 10
+            type: array
+        parent_id:
+          oneOf:
+          - type: 'null'
+          - format: uuid
+            type: string
+        remove_parent:
+          default: false
+          type: boolean
+        scientific_name:
+          oneOf:
+          - type: 'null'
+          - description: The scientific name of this plant species.Must be at most
+              60 characters
+            maxLength: 60
+            type: string
+      required:
+      - collection_ref
+      - cultivar_id
+      title: CultivarUpdateCommand
       type: object
     FrostDatePlantingWindowProfile:
       properties:
@@ -198,7 +488,7 @@ components:
               the planting window. Positive values indicate the window begins after
               the first frost date. For example, a value of 15 indicates the cultivar
               must be planted before 15 days after the first frost date. Must be between
-              -200 and -200 days.
+              -200 and 200 days.
             type: number
         first_frost_window_open:
           oneOf:
@@ -207,7 +497,7 @@ components:
               of the planting window. Positive values indicate the window begins after
               the first frost date. For example, a value of -15 indicates the cultivar
               may be planted 15 days before the first frost date. Must be between
-              -200 and -200 days.
+              -200 and 200 days.
             type: number
         last_frost_window_close:
           oneOf:
@@ -216,7 +506,7 @@ components:
               the planting window. Positive values indicate the window begins after
               the last frost date. For example, a value of 15 indicates the cultivar
               must be planted before 15 days after the last frost date. Must be between
-              -200 and -200 days.
+              -200 and 200 days.
             type: number
         last_frost_window_open:
           oneOf:
@@ -225,7 +515,7 @@ components:
               of the planting window. Positive values indicate the window begins after
               the last frost date. For example, a value of -15 indicates the cultivar
               may be planted 15 days before the last frost date. Must be between -200
-              and -200 days.
+              and 200 days.
             type: number
       required: []
       title: FrostDatePlantingWindowProfileUpdateCommand
@@ -574,14 +864,14 @@ components:
       type: object
     OriginProfile:
       properties:
-        allowed_origins:
+        _allowed_origins:
           oneOf:
           - type: 'null'
           - items:
               enum:
               - direct seed
               - seed transplant
-              - seedding transplant
+              - seedling transplant
               type: string
             type: array
       required: []
@@ -601,7 +891,7 @@ components:
               enum:
               - direct seed
               - seed transplant
-              - seedding transplant
+              - seedling transplant
               type: string
             type: array
       required: []
@@ -821,16 +1111,214 @@ info:
   version: 0.1.0
 openapi: 3.1.0
 paths:
-  /cultivars/command/update:
+  /cultivars/command/create_collection:
     post:
       deprecated: false
-      description: Sets the given attributes onto the cultivar.
-      operationId: CultivarAttributeUpdateCommandOp
+      description: Creates a new cultivar collection.
+      operationId: CultivarCollectionCreateCommandOp
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CultivarAttributeUpdateCommand'
+              $ref: '#/components/schemas/CultivarCollectionCreateCommand'
+        required: true
+      responses:
+        '201':
+          content:
+            text/plain:
+              schema:
+                type: string
+          description: Document created, URL follows
+          headers: {}
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationException'
+          description: Bad request syntax or unsupported method
+      summary: Cultivar collection create.
+      tags:
+      - cultivars
+  /cultivars/command/create_cultivar:
+    post:
+      deprecated: false
+      description: Creates a new cultivar on the collection.
+      operationId: CultivarCreateCommandOp
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CultivarCreateCommand'
+        required: true
+      responses:
+        '201':
+          content:
+            text/plain:
+              schema:
+                type: string
+          description: Document created, URL follows
+          headers: {}
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationException'
+          description: Bad request syntax or unsupported method
+      summary: Cultivar create.
+      tags:
+      - cultivars
+  /cultivars/command/delete_collection:
+    post:
+      deprecated: false
+      description: Deletes a cultivar collection.
+      operationId: CultivarCollectionDeleteCommandOp
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CultivarCollectionDeleteCommand'
+        required: true
+      responses:
+        '201':
+          content:
+            text/plain:
+              schema:
+                type: string
+          description: Document created, URL follows
+          headers: {}
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationException'
+          description: Bad request syntax or unsupported method
+      summary: Cultivar collection delete.
+      tags:
+      - cultivars
+  /cultivars/command/delete_cultivar:
+    post:
+      deprecated: false
+      description: Deletes a given cultivar from a collection.
+      operationId: CultivarDeleteCommandOp
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CultivarDeleteCommand'
+        required: true
+      responses:
+        '201':
+          content:
+            text/plain:
+              schema:
+                type: string
+          description: Document created, URL follows
+          headers: {}
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationException'
+          description: Bad request syntax or unsupported method
+      summary: Cultivar delete.
+      tags:
+      - cultivars
+  /cultivars/command/duplicate_collection:
+    post:
+      deprecated: false
+      description: Creates a new cultivar collection by copying the attributes of
+        another.
+      operationId: CultivarCollectionDuplicateCommandOp
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CultivarCollectionDuplicateCommand'
+        required: true
+      responses:
+        '201':
+          content:
+            text/plain:
+              schema:
+                type: string
+          description: Document created, URL follows
+          headers: {}
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationException'
+          description: Bad request syntax or unsupported method
+      summary: Cultivar collection duplication.
+      tags:
+      - cultivars
+  /cultivars/command/merge_collection:
+    post:
+      deprecated: false
+      description: Copies the data of an exising cultivar collection into a another
+        existing collection.
+      operationId: CultivarCollectionMergeCommandOp
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CultivarCollectionMergeCommand'
+        required: true
+      responses:
+        '201':
+          content:
+            text/plain:
+              schema:
+                type: string
+          description: Document created, URL follows
+          headers: {}
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationException'
+          description: Bad request syntax or unsupported method
+      summary: Cultivar collection merge.
+      tags:
+      - cultivars
+  /cultivars/command/update_collection:
+    post:
+      deprecated: false
+      description: Sets the given attributes onto the cultivar collection.
+      operationId: CultivarCollectionUpdateCommandOp
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CultivarCollectionUpdateCommand'
+        required: true
+      responses:
+        '201':
+          content:
+            text/plain:
+              schema:
+                type: string
+          description: Document created, URL follows
+          headers: {}
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationException'
+          description: Bad request syntax or unsupported method
+      summary: Cultivar collection update.
+      tags:
+      - cultivars
+  /cultivars/command/update_cultivar:
+    post:
+      deprecated: false
+      description: Sets the given attributes onto the cultivar.
+      operationId: CultivarUpdateCommandOp
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CultivarUpdateCommand'
         required: true
       responses:
         '201':
@@ -859,7 +1347,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CultivarGetByClientResult'
+                $ref: '#/components/schemas/CultivarCollectionGetByClientResult'
           description: Request fulfilled, document follows
           headers: {}
       summary: Get cultivar collections from a garden.
@@ -869,7 +1357,7 @@ paths:
     get:
       deprecated: false
       description: Retrieves the cultivar collections associated with this garden.
-      operationId: CultivarGetByGardenQueryOp
+      operationId: CultivarCollectionGetByGardenQueryOp
       parameters:
       - allowEmptyValue: false
         allowReserved: false
@@ -884,7 +1372,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CultivarGetByGardenResult'
+                $ref: '#/components/schemas/CultivarCollectionGetByGardenResult'
           description: Request fulfilled, document follows
           headers: {}
         '400':
@@ -900,7 +1388,7 @@ paths:
     get:
       deprecated: false
       description: Retrieves the cultivar collections associated with the IDs.
-      operationId: CultivarGetByIdsQueryOp
+      operationId: CultivarCollectionGetByIdsQueryOp
       parameters:
       - allowEmptyValue: false
         allowReserved: false

@@ -6,12 +6,14 @@ from datetime import datetime
 from svcs import Container
 
 # VerdanTech Source
-from src import exceptions, settings
 from src.common.domain import Ref
-from src.common.interfaces.persistence.uow import AbstractUow
-from src.common.interfaces.security.passwords import AbstractPasswordCrypt
 from src.common.ops.queries import Query, QueryResult, RefSchema, query_result_transform
-from src.cultivars.domain import Cultivar, CultivarAttributeSet, CultivarCollection
+from src.cultivars.domain import (
+    Cultivar,
+    CultivarAttributeSet,
+    CultivarCollection,
+    CultivarCollectionVisibilityEnum,
+)
 from src.garden.domain.commands import GardenKey
 from src.user.domain import User
 
@@ -23,18 +25,21 @@ from src.user.domain import User
 @query_result_transform
 class CultivarSchema(QueryResult[Cultivar]):
     id: uuid.UUID
-    name: str
+    names: list[str]
     key: str
-    attributes: CultivarAttributeSet
+    scientific_name: str
+    description: str
     parent_id: uuid.UUID | None
     created_at: datetime
+    attributes: CultivarAttributeSet
 
 
 @query_result_transform
 class CultivarCollectionPartialSchema(QueryResult[CultivarCollection]):
     id: uuid.UUID
     name: str
-    key: str
+    slug: str
+    visibility: CultivarCollectionVisibilityEnum
     description: str
     tags: set[str]
     parent_ref: RefSchema | None
@@ -47,8 +52,9 @@ class CultivarCollectionPartialSchema(QueryResult[CultivarCollection]):
 class CultivarCollectionFullSchema(QueryResult[CultivarCollection]):
     id: uuid.UUID
     name: str
-    key: str
-    description: str | None
+    slug: str
+    visibility: CultivarCollectionVisibilityEnum
+    description: str
     tags: set[str]
     parent_ref: RefSchema | None
     user_ref: RefSchema | None
@@ -58,13 +64,13 @@ class CultivarCollectionFullSchema(QueryResult[CultivarCollection]):
 
 
 @query_result_transform
-class CultivarGetByGardenResult(QueryResult[None]):
+class CultivarCollectionGetByGardenResult(QueryResult[None]):
     collections: set[CultivarCollectionPartialSchema]
     active_collection: Ref[CultivarCollection]
 
 
 @query_result_transform
-class CultivarGetByClientResult(QueryResult[None]):
+class CultivarCollectionGetByClientResult(QueryResult[None]):
     collections: set[CultivarCollectionPartialSchema]
 
 
@@ -73,11 +79,11 @@ class CultivarGetByClientResult(QueryResult[None]):
 # ======================================
 
 
-class CultivarGetByGardenQuery(Query):
+class CultivarCollectionGetByGardenQuery(Query):
     garden_key: GardenKey
 
 
-class CultivarGetByIdsQuery(Query):
+class CultivarCollectionGetByIdsQuery(Query):
     cultivar_ids: list[uuid.UUID]
 
 
@@ -87,19 +93,21 @@ class CultivarGetByIdsQuery(Query):
 
 
 async def get_by_garden(
-    query: CultivarGetByGardenQuery, svcs_container: Container, client: User | None
-) -> CultivarGetByGardenResult:
+    query: CultivarCollectionGetByGardenQuery,
+    svcs_container: Container,
+    client: User | None,
+) -> CultivarCollectionGetByGardenResult:
     """
     Retrieves the cultivar collections that
     are associated with a garden.
 
     Args:
-        query (CultivarGetByGardenQuery): the query.
+        query (CultivarCollectionGetByGardenQuery): the query.
         svcs_container (Container): service locator.
         client (User): the client user.
 
     Returns:
-        CultivarGetByGardenResult: references to the
+        CultivarCollectionGetByGardenResult: references to the
             cultivar collections associated with the garden.
     """
     ...
@@ -107,26 +115,28 @@ async def get_by_garden(
 
 async def get_by_client(
     svcs_container: Container, client: User | None
-) -> CultivarGetByClientResult:
+) -> CultivarCollectionGetByClientResult:
     """
     Retrieves the cultivar collections that
     are associated with the client.
 
     Returns:
-        CultivarGetByClientResult: references to the
+        CultivarCollectionGetByClientResult: references to the
             cultivar collections associated with the gardens.
     """
     ...
 
 
 async def get_by_ids(
-    query: CultivarGetByIdsQuery, svcs_container: Container, client: User | None
+    query: CultivarCollectionGetByIdsQuery,
+    svcs_container: Container,
+    client: User | None,
 ) -> list[CultivarCollectionFullSchema]:
     """
     Retrieves the cultivars by their ids.
 
     Args:
-        query (CultivarGetByIdsQuery): the query.
+        query (CultivarCollectionGetByIdsQuery): the query.
         svcs_container (Container): service locator.
         client (User): the client user.
 

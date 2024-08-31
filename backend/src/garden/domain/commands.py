@@ -12,7 +12,7 @@ from src.common.domain import Command
 from src.common.interfaces.persistence import AbstractUow
 from src.user.domain.commands import Username
 
-from .enums import RoleEnum, GardenVisibilityEnum
+from .enums import GardenVisibilityEnum, RoleEnum
 from .specs import specs
 
 # Load all banned garden names and keys

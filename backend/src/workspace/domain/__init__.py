@@ -1,1 +1,1 @@
-from .models import Workspace, PlantingArea, Location, LocationHistory
+from .models import Location, LocationHistory, PlantingArea, Workspace

@@ -8,10 +8,10 @@
 import type {
 	CultivarAttributeUpdateCommand,
 	CultivarCollectionFullSchema,
-	CultivarGetByClientResult,
-	CultivarGetByGardenQueryOpParams,
-	CultivarGetByGardenResult,
-	CultivarGetByIdsQueryOpParams
+	CultivarCollectionGetByClientResult,
+	CultivarCollectionGetByGardenQueryOpParams,
+	CultivarCollectionGetByGardenResult,
+	CultivarCollectionGetByIdsQueryOpParams
 } from '../../types';
 import { axiosClient } from '../../../data/customAxios';
 
@@ -34,7 +34,7 @@ export const cultivarAttributeUpdateCommandOp = (
  * @summary Get cultivar collections from a garden.
  */
 export const cultivarGetByClientQueryOp = () => {
-	return axiosClient<CultivarGetByClientResult>({
+	return axiosClient<CultivarCollectionGetByClientResult>({
 		url: `/cultivars/query/get_by_client`,
 		method: 'GET'
 	});
@@ -43,10 +43,10 @@ export const cultivarGetByClientQueryOp = () => {
  * Retrieves the cultivar collections associated with this garden.
  * @summary Get cultivar collections from a garden.
  */
-export const cultivarGetByGardenQueryOp = (
-	params: CultivarGetByGardenQueryOpParams
+export const CultivarCollectionGetByGardenQueryOp = (
+	params: CultivarCollectionGetByGardenQueryOpParams
 ) => {
-	return axiosClient<CultivarGetByGardenResult>({
+	return axiosClient<CultivarCollectionGetByGardenResult>({
 		url: `/cultivars/query/get_by_garden`,
 		method: 'GET',
 		params
@@ -56,7 +56,7 @@ export const cultivarGetByGardenQueryOp = (
  * Retrieves the cultivar collections associated with the IDs.
  * @summary Get cultivar collections from their IDs.
  */
-export const cultivarGetByIdsQueryOp = (params: CultivarGetByIdsQueryOpParams) => {
+export const CultivarCollectionGetByIdsQueryOp = (params: CultivarCollectionGetByIdsQueryOpParams) => {
 	return axiosClient<CultivarCollectionFullSchema[]>({
 		url: `/cultivars/query/get_by_ids`,
 		method: 'GET',
@@ -69,9 +69,9 @@ export type CultivarAttributeUpdateCommandOpResult = NonNullable<
 export type CultivarGetByClientQueryOpResult = NonNullable<
 	Awaited<ReturnType<typeof cultivarGetByClientQueryOp>>
 >;
-export type CultivarGetByGardenQueryOpResult = NonNullable<
-	Awaited<ReturnType<typeof cultivarGetByGardenQueryOp>>
+export type CultivarCollectionGetByGardenQueryOpResult = NonNullable<
+	Awaited<ReturnType<typeof CultivarCollectionGetByGardenQueryOp>>
 >;
-export type CultivarGetByIdsQueryOpResult = NonNullable<
-	Awaited<ReturnType<typeof cultivarGetByIdsQueryOp>>
+export type CultivarCollectionGetByIdsQueryOpResult = NonNullable<
+	Awaited<ReturnType<typeof CultivarCollectionGetByIdsQueryOp>>
 >;

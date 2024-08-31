@@ -45,9 +45,7 @@ async def create_garden(
         # Generate a new garden key if one was not provided
         key: str
         if command.key is None:
-            key_result = await generate_unique_garden_key(
-                svcs_container=svcs_container, client=client
-            )
+            key_result = await generate_unique_garden_key(svcs_container=svcs_container)
             key = key_result.key
         else:
             key = command.key

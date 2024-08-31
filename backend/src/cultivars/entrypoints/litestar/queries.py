@@ -22,7 +22,7 @@ class CultivarQueryController(Controller):
         path="get_by_garden",
         summary="Get cultivar collections from a garden.",
         description="Retrieves the cultivar collections associated with this garden.",
-        operation_id=queries.CultivarGetByGardenQuery.to_operation_id(),
+        operation_id=queries.CultivarCollectionGetByGardenQuery.to_operation_id(),
     )
     async def get_by_garden(
         self,
@@ -30,7 +30,7 @@ class CultivarQueryController(Controller):
         request: Request,
         state: State,
         svcs_container: Container = Dependency(skip_validation=True),
-    ) -> queries.CultivarGetByGardenResult:
+    ) -> queries.CultivarCollectionGetByGardenResult:
         """
         Calls the garden associated cultivar collections query.
 
@@ -42,11 +42,11 @@ class CultivarQueryController(Controller):
             svcs_container (Container): service locator.
 
         Returns:
-            CultivarGetByGardenResult: references to the cultivar collections.
+            CultivarCollectionGetByGardenResult: references to the cultivar collections.
         """
         svcs_container.register_local_value(State, state)
         result = await queries.get_by_garden(
-            query=queries.CultivarGetByGardenQuery(garden_key=garden_key),
+            query=queries.CultivarCollectionGetByGardenQuery(garden_key=garden_key),
             svcs_container=svcs_container,
             client=request.user,
         )
@@ -64,7 +64,7 @@ class CultivarQueryController(Controller):
         request: Request,
         state: State,
         svcs_container: Container = Dependency(skip_validation=True),
-    ) -> queries.CultivarGetByClientResult:
+    ) -> queries.CultivarCollectionGetByClientResult:
         """
         Calls the client associated cultivar collections query.
 
@@ -75,7 +75,7 @@ class CultivarQueryController(Controller):
             svcs_container (Container): service locator.
 
         Returns:
-            CultivarGetByClientResult: references to the
+            CultivarCollectionGetByClientResult: references to the
                 cultivar collections.
         """
         svcs_container.register_local_value(State, state)
@@ -88,7 +88,7 @@ class CultivarQueryController(Controller):
         path="get_by_ids",
         summary="Get cultivar collections from their IDs.",
         description="Retrieves the cultivar collections associated with the IDs.",
-        operation_id=queries.CultivarGetByIdsQuery.to_operation_id(),
+        operation_id=queries.CultivarCollectionGetByIdsQuery.to_operation_id(),
     )
     async def get_by_ids(
         self,
@@ -113,7 +113,7 @@ class CultivarQueryController(Controller):
         """
         svcs_container.register_local_value(State, state)
         result = await queries.get_by_ids(
-            query=queries.CultivarGetByIdsQuery(cultivar_ids=ids),
+            query=queries.CultivarCollectionGetByIdsQuery(cultivar_ids=ids),
             svcs_container=svcs_container,
             client=request.user,
         )

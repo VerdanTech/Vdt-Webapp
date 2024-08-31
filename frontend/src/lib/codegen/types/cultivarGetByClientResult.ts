@@ -7,6 +7,6 @@
  */
 import type { CultivarCollectionPartialSchema } from './cultivarCollectionPartialSchema';
 
-export interface CultivarGetByClientResult {
+export interface CultivarCollectionGetByClientResult {
 	collections: CultivarCollectionPartialSchema[];
 }

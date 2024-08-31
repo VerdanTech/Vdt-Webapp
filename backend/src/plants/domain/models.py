@@ -13,8 +13,9 @@ from src.common.domain import (
     value_transform,
 )
 from src.cultivars.domain import Cultivar, CultivarCollection, OriginEnum
-from src.workspace.domain import Workspace, LocationHistory
 from src.geometry import GeometricHistory
+from src.workspace.domain import LocationHistory, Workspace
+
 
 class HarvestSizeEnum:
     SMALL = "small"
@@ -48,6 +49,7 @@ class QuantityHistory(Value):
         """
         return not self.quantities
 
+
 @value_transform
 class Lifespan(Value):
     origin: OriginEnum | None = None
@@ -63,7 +65,7 @@ class Lifespan(Value):
     def undefined(self) -> bool:
         """
         Returns:
-            bool: True if the Lifespan has no defined location, 
+            bool: True if the Lifespan has no defined location,
                 geometries, or lifespan points.
         """
         return (
@@ -73,7 +75,8 @@ class Lifespan(Value):
             and self.seed_date is None
             and self.germ_date is None
             and self.expiry_date is None
-            and not self.harvests)
+            and not self.harvests
+        )
 
 
 @root_entity_transform

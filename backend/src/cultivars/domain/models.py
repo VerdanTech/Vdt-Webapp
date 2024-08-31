@@ -5,7 +5,6 @@ import uuid
 from attrs import field
 
 # VerdanTech Source
-from .enums import CultivarCollectionVisibilityEnum
 from src.common.domain import (
     Entity,
     Ref,
@@ -17,13 +16,14 @@ from src.garden.domain import Garden
 from src.user.domain import User
 
 from .attributes import CultivarAttributeSet
+from .enums import CultivarCollectionVisibilityEnum
 
 
 @entity_transform
 class Cultivar(Entity):
     """
     Represents a species/variety of plant.
-    
+
     Attributes:
         name (str): the common names of the plant.
             Example: ["Zucchini", "Summer Squash", "Courgette"]
@@ -41,9 +41,10 @@ class Cultivar(Entity):
             the cultivar's properties will be inherited from
             the parent, and the new data will be overlaid.
     """
+
     names: set[str]  # type: ignore
     key: str  # type: ignore
-    scientific_name: str = "" # type: ignore
+    scientific_name: str = ""  # type: ignore
     description: str = ""
     _attributes: CultivarAttributeSet = CultivarAttributeSet()
     parent_id: uuid.UUID | None = None
@@ -51,6 +52,7 @@ class Cultivar(Entity):
     @property
     def attributes(self) -> CultivarAttributeSet:
         return self._attributes
+
 
 @root_entity_transform
 class CultivarCollection(RootEntity):
@@ -63,17 +65,17 @@ class CultivarCollection(RootEntity):
             Example: "West Coast Seeds"
         slug (str): a unique, URL-friendly version of the name.
             Example: "west-coast-seeds-11"
-        visibility (CultivarCollectionVisibilityEnum): 
+        visibility (CultivarCollectionVisibilityEnum):
             the visibility of the CultivarCollection.
             If owned by a user, the PRIVATE setting will allow
             only that user to access the collection. If owned by
             a garden, the PRIVATE setting will allow only those with
-            read-access to the garden access. 
+            read-access to the garden access.
         description (str): an optional description.
         tags (set[str]): an optional list of metadata.
         _cultivars (set[Cultivars]): the cultivars in the collection.
-        parent_ref (Ref[CultivarCollection]): an optional ID referring 
-            to another collection If included, the collection's cultivars 
+        parent_ref (Ref[CultivarCollection]): an optional ID referring
+            to another collection If included, the collection's cultivars
             will be inherited from the parent, and the new data will be overlaid.
         user_ref (Ref[User]): an optional reference to a User. For collections
             which were created outside of the context of a Garden, this
@@ -83,12 +85,14 @@ class CultivarCollection(RootEntity):
             For collections which were created inside the context of
             a garden, this field will refer to that garden. The garden
             is consideres the owner of the collection regardless of whether
-            user_ref is defined. 
+            user_ref is defined.
     """
 
     name: str  # type: ignore
     slug: str  # type: ignore
-    visibility: CultivarCollectionVisibilityEnum = CultivarCollectionVisibilityEnum.PRIVATE 
+    visibility: CultivarCollectionVisibilityEnum = (
+        CultivarCollectionVisibilityEnum.PRIVATE
+    )
     description: str = ""
     tags: set[str] = field(factory=set)
     _cultivars: set[Cultivar] = field(factory=set)

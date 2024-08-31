@@ -6,6 +6,6 @@
  * OpenAPI spec version: 0.1.0
  */
 
-export type CultivarGetByGardenQueryOpParams = {
+export type CultivarCollectionGetByGardenQueryOpParams = {
 	garden_key: string;
 };

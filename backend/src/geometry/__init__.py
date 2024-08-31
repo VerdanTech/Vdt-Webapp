@@ -1,1 +1,1 @@
-from .interface import Coordinate, Geometry, GeometricHistory
+from .interface import Coordinate, GeometricHistory, Geometry

@@ -8,7 +8,7 @@
 import type { RefSrcCultivarsDomainModelsCultivarCollection } from './refSrcCultivarsDomainModelsCultivarCollection';
 import type { CultivarCollectionPartialSchema } from './cultivarCollectionPartialSchema';
 
-export interface CultivarGetByGardenResult {
+export interface CultivarCollectionGetByGardenResult {
 	active_collection: RefSrcCultivarsDomainModelsCultivarCollection;
 	collections: CultivarCollectionPartialSchema[];
 }
