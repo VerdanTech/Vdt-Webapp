@@ -11,13 +11,13 @@ import type { CultivarCollectionCreateCommandVisibility } from './cultivarCollec
 
 export interface CultivarCollectionCreateCommand {
 	/**
-	 * The description of the collection.Must be at most 1400 characters
+	 * The description of the collection. Must be at most 1400 characters
 	 * @maxLength 1400
 	 */
 	description?: string;
 	garden_ref?: CultivarCollectionCreateCommandGardenRef;
 	/**
-	 * The name of the collection.Must be between 3 and 50 characters long and contain only alphanumeric characters, spaces, hyphens, and underscores.
+	 * The name of the collection. Must be between 3 and 50 characters long and contain only alphanumeric characters, spaces, hyphens, and underscores.
 	 * @minLength 3
 	 * @maxLength 50
 	 * @pattern [0-9A-Za-z _-]+
@@ -25,7 +25,7 @@ export interface CultivarCollectionCreateCommand {
 	name: string;
 	parent_ref?: CultivarCollectionCreateCommandParentRef;
 	/**
-	 * A set of metadata tags.Each tag must be at most 150 characters and contain only alphanumeric characters and spaces. There may be at most 150 tags
+	 * A set of metadata tags. Each tag must be at most 150 characters and contain only alphanumeric characters and spaces. There may be at most 150 tags.
 	 * @maxLength 150
 	 */
 	tags?: string[];

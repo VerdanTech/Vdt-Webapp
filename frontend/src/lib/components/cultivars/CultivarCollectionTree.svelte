@@ -70,6 +70,7 @@
 	};
 
 	let detailsOpen = $state(false);
+	let editingCollection = $state(false);
 </script>
 
 {#snippet infoPopover(description: string)}
@@ -112,7 +113,47 @@
 				<DropdownMenu.Trigger class="ml-2 rounded-lg border border-accent-6 bg-accent-4 p-2">
 					Options
 				</DropdownMenu.Trigger>
-				
+				<DropdownMenu.Content>
+					{#if editingCollection}
+					<DropdownMenu.Item on:click={() => {editingCollection=false}}>
+						<Icon icon={iconIds.endEditingIcon} width="1.25rem" />
+						<span class="mx-2">
+							End Editing
+						</span>
+					</DropdownMenu.Item>
+					{:else}
+					<DropdownMenu.Item on:click={()=>{editingCollection=true}}>
+						<Icon icon={iconIds.startEditingIcon} width="1.25rem" />
+						<span class="mx-2">
+							Edit Collection
+						</span>
+					</DropdownMenu.Item>
+					{/if}
+					<DropdownMenu.Item>
+						<Icon icon={iconIds.inheritCultivarCollectionIcon} width="1.25rem" />
+						<span class="mx-2">
+							Change Inheritance
+						</span>
+					</DropdownMenu.Item>
+					<DropdownMenu.Item>
+						<Icon icon={iconIds.mergeCultivarCollectionIcon} width="1.25rem" />
+						<span class="mx-2">
+							Merge Collection
+						</span>
+					</DropdownMenu.Item>
+					<DropdownMenu.Item>
+						<Icon icon={iconIds.duplicateCultivarCollectionIcon} width="1.25rem" />
+						<span class="mx-2">
+							Duplicate Collection
+						</span>
+					</DropdownMenu.Item>
+					<DropdownMenu.Item>
+						<Icon icon={iconIds.deleteIcon} width="1.25rem" />
+						<span class="mx-2">
+							Delete Collection
+						</span>
+					</DropdownMenu.Item>
+				</DropdownMenu.Content>
 			</DropdownMenu.Root>
 		</div>
 
@@ -121,6 +162,9 @@
 			<div class="my-2">
 				<div class="mx-2 flex items-center justify-between text-sm text-neutral-12">
 					<span>Description</span>
+					{#if editingCollection}
+					{@render infoPopover(cultivarFields.cultivar_collection_description.description)}
+					{/if}
 					<div class="ml-4 h-[1px] flex-grow rounded-lg bg-neutral-3"></div>
 				</div>
 				<p
@@ -147,8 +191,13 @@
 							<!-- Collection visibility. -->
 							<li class="my-2 w-full">
 								<div class="flex items-center justify-between">
-									<span class="ml-2 text-sm font-light text-neutral-11">Visibility</span
-									>
+									<div class="flex items-center">
+										<span class="ml-2 text-sm font-light text-neutral-11">Visibility</span
+										>
+										{#if editingCollection}
+										{@render infoPopover(cultivarFields.cultivar_collection_visibility.description)}
+										{/if}
+									</div>
 									<span
 										class="text-md rounded-lg border border-neutral-4 bg-neutral-2 p-2"
 										>tags</span
@@ -158,7 +207,12 @@
 							<!-- Collection tags. -->
 							<li class="my-2 w-full">
 								<div class="flex items-center justify-between">
-									<span class="ml-2 text-sm font-light text-neutral-11">Tags</span>
+									<div class="flex items-center">
+										<span class="ml-2 text-sm font-light text-neutral-11">Tags</span>
+										{#if editingCollection}
+										{@render infoPopover(cultivarFields.cultivar_collection_tags.description)}
+										{/if}
+									</div>
 									<span
 										class="text-md rounded-lg border border-neutral-4 bg-neutral-2 p-2"
 										>tags</span
@@ -170,18 +224,6 @@
 								<div class="flex items-center justify-between">
 									<span class="ml-2 text-sm font-light text-neutral-11"
 										>Inherits from</span
-									>
-									<span
-										class="text-md rounded-lg border border-neutral-4 bg-neutral-2 p-2"
-										>tags</span
-									>
-								</div>
-							</li>
-							<!-- Collection inheritance - inherits to. -->
-							<li class="my-2 w-full">
-								<div class="flex items-center justify-between">
-									<span class="ml-2 text-sm font-light text-neutral-11"
-										>Inherited by</span
 									>
 									<span
 										class="text-md rounded-lg border border-neutral-4 bg-neutral-2 p-2"

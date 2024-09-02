@@ -13,6 +13,9 @@ const iconIds = {
 	caretLeftIcon: '',
 	caretRightIcon: '',
 	chevronRight: 'material-symbols:chevron-right-rounded',
+	startEditingIcon: 'material-symbols:edit-outline',
+	endEditingIcon: 'material-symbols:edit-off-outline',
+	deleteIcon: 'material-symbols:delete-outline',
 
 	/* Navigation and UI. */
 	gardenDrawerIcon: 'material-symbols:menu-open-rounded',
@@ -31,6 +34,9 @@ const iconIds = {
 	traitsIcon: 'tdesign:share',
 	cultivarsIcon: 'tabler:plant-2',
 	cultivarIcon: 'tabler:plant-2',
+	mergeCultivarCollectionIcon: 'material-symbols:merge-rounded',
+	duplicateCultivarCollectionIcon: 'material-symbols:file-copy-outline-rounded',
+	inheritCultivarCollectionIcon: 'grommet-icons:inherit',
 	workspacesIcon: 'tabler:tools',
 	workspaceIcon: 'tabler:tools',
 	environmentIcon: 'material-symbols:sunny-outline-rounded',

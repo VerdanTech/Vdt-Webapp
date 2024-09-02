@@ -54,7 +54,7 @@ descriptions: SpecDescriptions = {
         Specs.MAX_LENGTH: f"Must contain at most {values['cultivar_names'][Specs.MAX_LENGTH]} names",
         "field": (
             "A set of common names associated with this plant species. "
-            f"Each name must be between {values['cultivar_name'][Specs.MIN_LENGTH]} and {values['cultivar_name'][Specs.MAX_LENGTH]} characters long and contain only alphanumeric characters and spaces."
+            f"Each name must be between {values['cultivar_name'][Specs.MIN_LENGTH]} and {values['cultivar_name'][Specs.MAX_LENGTH]} characters long and contain only alphanumeric characters and spaces. "
             f"There may be a maximumm of {values['cultivar_names'][Specs.MAX_LENGTH]} names"
         ),
     },
@@ -63,21 +63,21 @@ descriptions: SpecDescriptions = {
         Specs.MAX_LENGTH: f"Must be at most {values['cultivar_key'][Specs.MAX_LENGTH]} characters",
         Specs.PATTERN: "Must contain only alphanumeric characters",
         "field": (
-            "A very short abbreviation for this plant species."
+            "A very short abbreviation for this plant species. "
             f"Must be between {values['cultivar_key'][Specs.MIN_LENGTH]} and {values['cultivar_key'][Specs.MAX_LENGTH]} characters long and contain only alphanumeric characters."
         ),
     },
     "cultivar_scientific_name": {
         Specs.MAX_LENGTH: f"Must be at most {values['cultivar_scientific_name'][Specs.MAX_LENGTH]} characters",
         "field": (
-            "The scientific name of this plant species."
+            "The scientific name of this plant species. "
             f"Must be at most {values['cultivar_scientific_name'][Specs.MAX_LENGTH]} characters"
         ),
     },
     "cultivar_description": {
         Specs.MAX_LENGTH: f"Must be at most {values['cultivar_description'][Specs.MAX_LENGTH]} characters",
         "field": (
-            "A description of this plant species."
+            "A description of this plant species. "
             f"Must be at most {values['cultivar_description'][Specs.MAX_LENGTH]} characters"
         ),
     },
@@ -86,31 +86,36 @@ descriptions: SpecDescriptions = {
         Specs.MAX_LENGTH: f"Must be at most {values['cultivar_collection_name'][Specs.MAX_LENGTH]} characters",
         Specs.PATTERN: "Must contain only alphanumeric characters, spaces, hyphens, and underscores",
         "field": (
-            "The name of the collection."
+            "The name of the collection. "
             f"Must be between {values['cultivar_collection_name'][Specs.MIN_LENGTH]} and {values['cultivar_collection_name'][Specs.MAX_LENGTH]} characters long and contain only alphanumeric characters, spaces, hyphens, and underscores."
         ),
     },
     "cultivar_collection_description": {
         Specs.MAX_LENGTH: f"Must be at most {values['cultivar_collection_description'][Specs.MAX_LENGTH]} characters",
         "field": (
-            "The description of the collection."
+            "The description of the collection. "
             f"Must be at most {values['cultivar_collection_description'][Specs.MAX_LENGTH]} characters"
         ),
+    },
+    "cultivar_collection_visibility": {
+        "field": ("Public collections may be viewed by anyone and are publicly searchable. "
+                  "Unlisted collections may be viewed by anyone with the link. "
+                  "Private collections may only be owned by the creator, or by those in the garden if it is located within one.")
     },
     "cultivar_collection_tag": {
         Specs.MAX_LENGTH: f"Must be at most {values['cultivar_collection_tag'][Specs.MAX_LENGTH]} characters",
         Specs.PATTERN: "Must contain only alphanumeric characters and spaces",
         "field": (
-            "A metadata tag."
+            "A metadata tag. "
             f"Must be at most {values['cultivar_collection_tag'][Specs.MAX_LENGTH]} characters and contain only alphanumeric characters and spaces"
         ),
     },
     "cultivar_collection_tags": {
         Specs.MAX_LENGTH: f"Must contain at most {values['cultivar_collection_tags'][Specs.MAX_LENGTH]} tags",
         "field": (
-            "A set of metadata tags."
+            "A set of metadata tags. "
             f"Each tag must be at most {values['cultivar_collection_tag'][Specs.MAX_LENGTH]} characters and contain only alphanumeric characters and spaces. "
-            f"There may be at most {values['cultivar_collection_tags'][Specs.MAX_LENGTH]} tags"
+            f"There may be at most {values['cultivar_collection_tags'][Specs.MAX_LENGTH]} tags."
         ),
     },
 }

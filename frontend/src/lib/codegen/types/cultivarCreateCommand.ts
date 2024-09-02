@@ -15,7 +15,7 @@ export interface CultivarCreateCommand {
 	description?: CultivarCreateCommandDescription;
 	key?: CultivarCreateCommandKey;
 	/**
-	 * A set of common names associated with this plant species. Each name must be between 3 and 30 characters long and contain only alphanumeric characters and spaces.There may be a maximumm of 10 names
+	 * A set of common names associated with this plant species. Each name must be between 3 and 30 characters long and contain only alphanumeric characters and spaces. There may be a maximumm of 10 names
 	 * @maxLength 10
 	 */
 	names: string[];

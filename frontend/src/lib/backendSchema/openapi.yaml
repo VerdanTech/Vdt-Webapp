@@ -93,7 +93,7 @@ components:
       properties:
         description:
           default: ''
-          description: The description of the collection.Must be at most 1400 characters
+          description: The description of the collection. Must be at most 1400 characters
           maxLength: 1400
           type: string
         garden_ref:
@@ -102,7 +102,7 @@ components:
           - format: uuid
             type: string
         name:
-          description: The name of the collection.Must be between 3 and 50 characters
+          description: The name of the collection. Must be between 3 and 50 characters
             long and contain only alphanumeric characters, spaces, hyphens, and underscores.
           maxLength: 50
           minLength: 3
@@ -115,11 +115,11 @@ components:
             type: string
         tags:
           default: []
-          description: A set of metadata tags.Each tag must be at most 150 characters
+          description: A set of metadata tags. Each tag must be at most 150 characters
             and contain only alphanumeric characters and spaces. There may be at most
-            150 tags
+            150 tags.
           items:
-            description: A metadata tag.Must be at most 150 characters and contain
+            description: A metadata tag. Must be at most 150 characters and contain
               only alphanumeric characters and spaces
             maxLength: 150
             pattern: '[0-9A-Za-z ]+'
@@ -301,13 +301,13 @@ components:
         description:
           oneOf:
           - type: 'null'
-          - description: The description of the collection.Must be at most 1400 characters
+          - description: The description of the collection. Must be at most 1400 characters
             maxLength: 1400
             type: string
         name:
           oneOf:
           - type: 'null'
-          - description: The name of the collection.Must be between 3 and 50 characters
+          - description: The name of the collection. Must be between 3 and 50 characters
               long and contain only alphanumeric characters, spaces, hyphens, and
               underscores.
             maxLength: 50
@@ -325,11 +325,11 @@ components:
         tags:
           oneOf:
           - type: 'null'
-          - description: A set of metadata tags.Each tag must be at most 150 characters
+          - description: A set of metadata tags. Each tag must be at most 150 characters
               and contain only alphanumeric characters and spaces. There may be at
-              most 150 tags
+              most 150 tags.
             items:
-              description: A metadata tag.Must be at most 150 characters and contain
+              description: A metadata tag. Must be at most 150 characters and contain
                 only alphanumeric characters and spaces
               maxLength: 150
               pattern: '[0-9A-Za-z ]+'
@@ -357,14 +357,14 @@ components:
         description:
           oneOf:
           - type: 'null'
-          - description: A description of this plant species.Must be at most 1400
+          - description: A description of this plant species. Must be at most 1400
               characters
             maxLength: 1400
             type: string
         key:
           oneOf:
           - type: 'null'
-          - description: A very short abbreviation for this plant species.Must be
+          - description: A very short abbreviation for this plant species. Must be
               between 1 and 6 characters long and contain only alphanumeric characters.
             maxLength: 6
             minLength: 1
@@ -373,7 +373,7 @@ components:
         names:
           description: A set of common names associated with this plant species. Each
             name must be between 3 and 30 characters long and contain only alphanumeric
-            characters and spaces.There may be a maximumm of 10 names
+            characters and spaces. There may be a maximumm of 10 names
           items:
             description: A common name of this plant species. Must be between 3 and
               30 characters long and contain only alphanumeric characters, spaces,
@@ -392,7 +392,7 @@ components:
         scientific_name:
           oneOf:
           - type: 'null'
-          - description: The scientific name of this plant species.Must be at most
+          - description: The scientific name of this plant species. Must be at most
               60 characters
             maxLength: 60
             type: string
@@ -467,14 +467,14 @@ components:
         description:
           oneOf:
           - type: 'null'
-          - description: A description of this plant species.Must be at most 1400
+          - description: A description of this plant species. Must be at most 1400
               characters
             maxLength: 1400
             type: string
         key:
           oneOf:
           - type: 'null'
-          - description: A very short abbreviation for this plant species.Must be
+          - description: A very short abbreviation for this plant species. Must be
               between 1 and 6 characters long and contain only alphanumeric characters.
             maxLength: 6
             minLength: 1
@@ -485,7 +485,7 @@ components:
           - type: 'null'
           - description: A set of common names associated with this plant species.
               Each name must be between 3 and 30 characters long and contain only
-              alphanumeric characters and spaces.There may be a maximumm of 10 names
+              alphanumeric characters and spaces. There may be a maximumm of 10 names
             items:
               description: A common name of this plant species. Must be between 3
                 and 30 characters long and contain only alphanumeric characters, spaces,
@@ -507,7 +507,7 @@ components:
         scientific_name:
           oneOf:
           - type: 'null'
-          - description: The scientific name of this plant species.Must be at most
+          - description: The scientific name of this plant species. Must be at most
               60 characters
             maxLength: 60
             type: string
