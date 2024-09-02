@@ -12,11 +12,30 @@ import type {
 	CultivarCollectionGetByClientResult,
 	CultivarCollectionGetByGardenResult,
 	FrostDatePlantingWindowProfile,
+	OriginProfile,
 	RefSchema
 } from '../../types';
 
-export const getCultivarAttributeUpdateCommandOpResponseMock = (): string =>
+export const getCultivarCollectionCreateCommandOpResponseMock = (): string =>
 	faker.word.sample();
+
+export const getCultivarCreateCommandOpResponseMock = (): string => faker.word.sample();
+
+export const getCultivarCollectionDeleteCommandOpResponseMock = (): string =>
+	faker.word.sample();
+
+export const getCultivarDeleteCommandOpResponseMock = (): string => faker.word.sample();
+
+export const getCultivarCollectionDuplicateCommandOpResponseMock = (): string =>
+	faker.word.sample();
+
+export const getCultivarCollectionMergeCommandOpResponseMock = (): string =>
+	faker.word.sample();
+
+export const getCultivarCollectionUpdateCommandOpResponseMock = (): string =>
+	faker.word.sample();
+
+export const getCultivarUpdateCommandOpResponseMock = (): string => faker.word.sample();
 
 export const getCultivarGetByClientQueryOpResponseRefSchemaMock = (
 	overrideResponse: Partial<RefSchema> = {}
@@ -29,6 +48,7 @@ export const getCultivarGetByClientQueryOpResponseMock = (
 		{ length: faker.number.int({ min: 1, max: 10 }) },
 		(_, i) => i + 1
 	).map(() => ({
+		created_at: `${faker.date.past().toISOString().split('.')[0]}Z`,
 		description: faker.word.sample(),
 		garden_ref: faker.helpers.arrayElement([
 			faker.helpers.arrayElement([
@@ -38,7 +58,6 @@ export const getCultivarGetByClientQueryOpResponseMock = (
 			undefined
 		]),
 		id: faker.string.uuid(),
-		key: faker.word.sample(),
 		name: faker.word.sample(),
 		parent_ref: faker.helpers.arrayElement([
 			faker.helpers.arrayElement([
@@ -47,6 +66,7 @@ export const getCultivarGetByClientQueryOpResponseMock = (
 			]),
 			undefined
 		]),
+		slug: faker.word.sample(),
 		tags: Array.from(
 			{ length: faker.number.int({ min: 1, max: 10 }) },
 			(_, i) => i + 1
@@ -57,7 +77,8 @@ export const getCultivarGetByClientQueryOpResponseMock = (
 				{ ...getCultivarGetByClientQueryOpResponseRefSchemaMock() }
 			]),
 			undefined
-		])
+		]),
+		visibility: faker.helpers.arrayElement(['private', 'unlisted', 'public'] as const)
 	})),
 	...overrideResponse
 });
@@ -74,6 +95,7 @@ export const getCultivarCollectionGetByGardenQueryOpResponseMock = (
 		{ length: faker.number.int({ min: 1, max: 10 }) },
 		(_, i) => i + 1
 	).map(() => ({
+		created_at: `${faker.date.past().toISOString().split('.')[0]}Z`,
 		description: faker.word.sample(),
 		garden_ref: faker.helpers.arrayElement([
 			faker.helpers.arrayElement([
@@ -83,7 +105,6 @@ export const getCultivarCollectionGetByGardenQueryOpResponseMock = (
 			undefined
 		]),
 		id: faker.string.uuid(),
-		key: faker.word.sample(),
 		name: faker.word.sample(),
 		parent_ref: faker.helpers.arrayElement([
 			faker.helpers.arrayElement([
@@ -92,6 +113,7 @@ export const getCultivarCollectionGetByGardenQueryOpResponseMock = (
 			]),
 			undefined
 		]),
+		slug: faker.word.sample(),
 		tags: Array.from(
 			{ length: faker.number.int({ min: 1, max: 10 }) },
 			(_, i) => i + 1
@@ -102,40 +124,61 @@ export const getCultivarCollectionGetByGardenQueryOpResponseMock = (
 				{ ...getCultivarCollectionGetByGardenQueryOpResponseRefSchemaMock() }
 			]),
 			undefined
-		])
+		]),
+		visibility: faker.helpers.arrayElement(['private', 'unlisted', 'public'] as const)
 	})),
 	...overrideResponse
 });
 
-export const getCultivarCollectionGetByIdsQueryOpResponseFrostDatePlantingWindowProfileMock = (
-	overrideResponse: Partial<FrostDatePlantingWindowProfile> = {}
-): FrostDatePlantingWindowProfile => ({
+export const getCultivarCollectionGetByIdsQueryOpResponseFrostDatePlantingWindowProfileMock =
+	(
+		overrideResponse: Partial<FrostDatePlantingWindowProfile> = {}
+	): FrostDatePlantingWindowProfile => ({
+		...{
+			first_frost_window_close: faker.helpers.arrayElement([
+				faker.helpers.arrayElement([
+					null,
+					faker.number.int({ min: undefined, max: undefined })
+				]),
+				undefined
+			]),
+			first_frost_window_open: faker.helpers.arrayElement([
+				faker.helpers.arrayElement([
+					null,
+					faker.number.int({ min: undefined, max: undefined })
+				]),
+				undefined
+			]),
+			last_frost_window_close: faker.helpers.arrayElement([
+				faker.helpers.arrayElement([
+					null,
+					faker.number.int({ min: undefined, max: undefined })
+				]),
+				undefined
+			]),
+			last_frost_window_open: faker.helpers.arrayElement([
+				faker.helpers.arrayElement([
+					null,
+					faker.number.int({ min: undefined, max: undefined })
+				]),
+				undefined
+			])
+		},
+		...overrideResponse
+	});
+
+export const getCultivarCollectionGetByIdsQueryOpResponseOriginProfileMock = (
+	overrideResponse: Partial<OriginProfile> = {}
+): OriginProfile => ({
 	...{
-		first_frost_window_close: faker.helpers.arrayElement([
+		_allowed_origins: faker.helpers.arrayElement([
 			faker.helpers.arrayElement([
 				null,
-				faker.number.int({ min: undefined, max: undefined })
-			]),
-			undefined
-		]),
-		first_frost_window_open: faker.helpers.arrayElement([
-			faker.helpers.arrayElement([
-				null,
-				faker.number.int({ min: undefined, max: undefined })
-			]),
-			undefined
-		]),
-		last_frost_window_close: faker.helpers.arrayElement([
-			faker.helpers.arrayElement([
-				null,
-				faker.number.int({ min: undefined, max: undefined })
-			]),
-			undefined
-		]),
-		last_frost_window_open: faker.helpers.arrayElement([
-			faker.helpers.arrayElement([
-				null,
-				faker.number.int({ min: undefined, max: undefined })
+				faker.helpers.arrayElements([
+					'direct seed',
+					'seed transplant',
+					'seedling transplant'
+				] as const)
 			]),
 			undefined
 		])
@@ -151,6 +194,7 @@ export const getCultivarCollectionGetByIdsQueryOpResponseMock =
 	(): CultivarCollectionFullSchema[] =>
 		Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(
 			() => ({
+				created_at: `${faker.date.past().toISOString().split('.')[0]}Z`,
 				cultivars: Array.from(
 					{ length: faker.number.int({ min: 1, max: 10 }) },
 					(_, i) => i + 1
@@ -164,20 +208,30 @@ export const getCultivarCollectionGetByIdsQueryOpResponseMock =
 								}
 							]),
 							undefined
+						]),
+						origin_profile: faker.helpers.arrayElement([
+							faker.helpers.arrayElement([
+								null,
+								{ ...getCultivarCollectionGetByIdsQueryOpResponseOriginProfileMock() }
+							]),
+							undefined
 						])
 					},
+					created_at: `${faker.date.past().toISOString().split('.')[0]}Z`,
+					description: faker.word.sample(),
 					id: faker.string.uuid(),
 					key: faker.word.sample(),
-					name: faker.word.sample(),
+					names: Array.from(
+						{ length: faker.number.int({ min: 1, max: 10 }) },
+						(_, i) => i + 1
+					).map(() => faker.word.sample()),
 					parent_id: faker.helpers.arrayElement([
 						faker.helpers.arrayElement([null, faker.string.uuid()]),
 						undefined
-					])
+					]),
+					scientific_name: faker.word.sample()
 				})),
-				description: faker.helpers.arrayElement([
-					faker.helpers.arrayElement([null, faker.word.sample()]),
-					undefined
-				]),
+				description: faker.word.sample(),
 				garden_ref: faker.helpers.arrayElement([
 					faker.helpers.arrayElement([
 						null,
@@ -186,7 +240,6 @@ export const getCultivarCollectionGetByIdsQueryOpResponseMock =
 					undefined
 				]),
 				id: faker.string.uuid(),
-				key: faker.word.sample(),
 				name: faker.word.sample(),
 				parent_ref: faker.helpers.arrayElement([
 					faker.helpers.arrayElement([
@@ -195,6 +248,7 @@ export const getCultivarCollectionGetByIdsQueryOpResponseMock =
 					]),
 					undefined
 				]),
+				slug: faker.word.sample(),
 				tags: Array.from(
 					{ length: faker.number.int({ min: 1, max: 10 }) },
 					(_, i) => i + 1
@@ -205,14 +259,103 @@ export const getCultivarCollectionGetByIdsQueryOpResponseMock =
 						{ ...getCultivarCollectionGetByIdsQueryOpResponseRefSchemaMock() }
 					]),
 					undefined
-				])
+				]),
+				visibility: faker.helpers.arrayElement([
+					'private',
+					'unlisted',
+					'public'
+				] as const)
 			})
 		);
 
-export const getCultivarAttributeUpdateCommandOpMockHandler = () => {
-	return http.post('*/cultivars/command/update', async () => {
+export const getCultivarCollectionCreateCommandOpMockHandler = () => {
+	return http.post('*/cultivars/command/create_collection', async () => {
 		await delay(1000);
-		return new HttpResponse(getCultivarAttributeUpdateCommandOpResponseMock(), {
+		return new HttpResponse(getCultivarCollectionCreateCommandOpResponseMock(), {
+			status: 201,
+			headers: {
+				'Content-Type': 'text/plain'
+			}
+		});
+	});
+};
+
+export const getCultivarCreateCommandOpMockHandler = () => {
+	return http.post('*/cultivars/command/create_cultivar', async () => {
+		await delay(1000);
+		return new HttpResponse(getCultivarCreateCommandOpResponseMock(), {
+			status: 201,
+			headers: {
+				'Content-Type': 'text/plain'
+			}
+		});
+	});
+};
+
+export const getCultivarCollectionDeleteCommandOpMockHandler = () => {
+	return http.post('*/cultivars/command/delete_collection', async () => {
+		await delay(1000);
+		return new HttpResponse(getCultivarCollectionDeleteCommandOpResponseMock(), {
+			status: 201,
+			headers: {
+				'Content-Type': 'text/plain'
+			}
+		});
+	});
+};
+
+export const getCultivarDeleteCommandOpMockHandler = () => {
+	return http.post('*/cultivars/command/delete_cultivar', async () => {
+		await delay(1000);
+		return new HttpResponse(getCultivarDeleteCommandOpResponseMock(), {
+			status: 201,
+			headers: {
+				'Content-Type': 'text/plain'
+			}
+		});
+	});
+};
+
+export const getCultivarCollectionDuplicateCommandOpMockHandler = () => {
+	return http.post('*/cultivars/command/duplicate_collection', async () => {
+		await delay(1000);
+		return new HttpResponse(getCultivarCollectionDuplicateCommandOpResponseMock(), {
+			status: 201,
+			headers: {
+				'Content-Type': 'text/plain'
+			}
+		});
+	});
+};
+
+export const getCultivarCollectionMergeCommandOpMockHandler = () => {
+	return http.post('*/cultivars/command/merge_collection', async () => {
+		await delay(1000);
+		return new HttpResponse(getCultivarCollectionMergeCommandOpResponseMock(), {
+			status: 201,
+			headers: {
+				'Content-Type': 'text/plain'
+			}
+		});
+	});
+};
+
+export const getCultivarCollectionUpdateCommandOpMockHandler = () => {
+	return http.post('*/cultivars/command/update_collection', async () => {
+		await delay(1000);
+		return new HttpResponse(getCultivarCollectionUpdateCommandOpResponseMock(), {
+			status: 201,
+			headers: {
+				'Content-Type': 'text/plain'
+			}
+		});
+	});
+};
+
+export const getCultivarUpdateCommandOpMockHandler = () => {
+	return http.post('*/cultivars/command/update_cultivar', async () => {
+		await delay(1000);
+		return new HttpResponse(getCultivarUpdateCommandOpResponseMock(), {
 			status: 201,
 			headers: {
 				'Content-Type': 'text/plain'
@@ -226,7 +369,9 @@ export const getCultivarGetByClientQueryOpMockHandler = (
 		| CultivarCollectionGetByClientResult
 		| ((
 				info: Parameters<Parameters<typeof http.get>[1]>[0]
-		  ) => Promise<CultivarCollectionGetByClientResult> | CultivarCollectionGetByClientResult)
+		  ) =>
+				| Promise<CultivarCollectionGetByClientResult>
+				| CultivarCollectionGetByClientResult)
 ) => {
 	return http.get('*/cultivars/query/get_by_client', async (info) => {
 		await delay(1000);
@@ -253,7 +398,9 @@ export const getCultivarCollectionGetByGardenQueryOpMockHandler = (
 		| CultivarCollectionGetByGardenResult
 		| ((
 				info: Parameters<Parameters<typeof http.get>[1]>[0]
-		  ) => Promise<CultivarCollectionGetByGardenResult> | CultivarCollectionGetByGardenResult)
+		  ) =>
+				| Promise<CultivarCollectionGetByGardenResult>
+				| CultivarCollectionGetByGardenResult)
 ) => {
 	return http.get('*/cultivars/query/get_by_garden', async (info) => {
 		await delay(1000);
@@ -302,7 +449,14 @@ export const getCultivarCollectionGetByIdsQueryOpMockHandler = (
 	});
 };
 export const getCultivarsMock = () => [
-	getCultivarAttributeUpdateCommandOpMockHandler(),
+	getCultivarCollectionCreateCommandOpMockHandler(),
+	getCultivarCreateCommandOpMockHandler(),
+	getCultivarCollectionDeleteCommandOpMockHandler(),
+	getCultivarDeleteCommandOpMockHandler(),
+	getCultivarCollectionDuplicateCommandOpMockHandler(),
+	getCultivarCollectionMergeCommandOpMockHandler(),
+	getCultivarCollectionUpdateCommandOpMockHandler(),
+	getCultivarUpdateCommandOpMockHandler(),
 	getCultivarGetByClientQueryOpMockHandler(),
 	getCultivarCollectionGetByGardenQueryOpMockHandler(),
 	getCultivarCollectionGetByIdsQueryOpMockHandler()

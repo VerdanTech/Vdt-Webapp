@@ -288,8 +288,8 @@ components:
           - public
           - null
           type:
-          - string
           - 'null'
+          - string
       required:
       - collection_ref
       title: CultivarCollectionUpdateCommand

@@ -147,7 +147,7 @@ export const cultivarFields = {
         label: 'Frost Date Planting Windows',
     },
     origin_profile: {
-        description: 'The origin refers to the method used to create plants. ',
+        description: 'The origin refers to the method used to create plants.',
         label: 'Origin Profile',
     },
     allowed_origins: {

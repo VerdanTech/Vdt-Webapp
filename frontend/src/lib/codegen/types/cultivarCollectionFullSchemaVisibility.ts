@@ -6,4 +6,8 @@
  * OpenAPI spec version: 0.1.0
  */
 
-export type CultivarCollectionFullSchemaDescription = null | string;
+export enum CultivarCollectionFullSchemaVisibility {
+	private = 'private',
+	unlisted = 'unlisted',
+	public = 'public'
+}

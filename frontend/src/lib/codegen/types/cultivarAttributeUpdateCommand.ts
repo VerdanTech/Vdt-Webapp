@@ -6,7 +6,9 @@
  * OpenAPI spec version: 0.1.0
  */
 import type { CultivarAttributeUpdateCommandFrostDatePlantingWindowProfile } from './cultivarAttributeUpdateCommandFrostDatePlantingWindowProfile';
+import type { CultivarAttributeUpdateCommandOriginProfile } from './cultivarAttributeUpdateCommandOriginProfile';
 
 export interface CultivarAttributeUpdateCommand {
 	frost_date_planting_window_profile?: CultivarAttributeUpdateCommandFrostDatePlantingWindowProfile;
+	origin_profile?: CultivarAttributeUpdateCommandOriginProfile;
 }

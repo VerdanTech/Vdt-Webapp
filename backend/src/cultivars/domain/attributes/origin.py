@@ -16,7 +16,7 @@ type AllowedOriginsType = set[OriginEnum]
 values = {}
 descriptions = {
     "origin_profile": {
-        "field": ("The origin refers to the method used to create plants. "),
+        "field": ("The origin refers to the method used to create plants."),
         "label": "Origin Profile",
     },
     "allowed_origins": {

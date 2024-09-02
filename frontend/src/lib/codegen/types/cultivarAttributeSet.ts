@@ -6,7 +6,9 @@
  * OpenAPI spec version: 0.1.0
  */
 import type { CultivarAttributeSetFrostDatePlantingWindowProfile } from './cultivarAttributeSetFrostDatePlantingWindowProfile';
+import type { CultivarAttributeSetOriginProfile } from './cultivarAttributeSetOriginProfile';
 
 export interface CultivarAttributeSet {
 	frost_date_planting_window_profile?: CultivarAttributeSetFrostDatePlantingWindowProfile;
+	origin_profile?: CultivarAttributeSetOriginProfile;
 }

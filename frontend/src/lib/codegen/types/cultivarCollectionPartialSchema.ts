@@ -8,14 +8,17 @@
 import type { CultivarCollectionPartialSchemaGardenRef } from './cultivarCollectionPartialSchemaGardenRef';
 import type { CultivarCollectionPartialSchemaParentRef } from './cultivarCollectionPartialSchemaParentRef';
 import type { CultivarCollectionPartialSchemaUserRef } from './cultivarCollectionPartialSchemaUserRef';
+import type { CultivarCollectionPartialSchemaVisibility } from './cultivarCollectionPartialSchemaVisibility';
 
 export interface CultivarCollectionPartialSchema {
+	created_at: string;
 	description: string;
 	garden_ref?: CultivarCollectionPartialSchemaGardenRef;
 	id: string;
-	key: string;
 	name: string;
 	parent_ref?: CultivarCollectionPartialSchemaParentRef;
+	slug: string;
 	tags: string[];
 	user_ref?: CultivarCollectionPartialSchemaUserRef;
+	visibility: CultivarCollectionPartialSchemaVisibility;
 }
