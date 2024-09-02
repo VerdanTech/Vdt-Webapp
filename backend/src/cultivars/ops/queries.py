@@ -25,6 +25,7 @@ from src.user.domain import User
 @query_result_transform
 class CultivarSchema(QueryResult[Cultivar]):
     id: uuid.UUID
+    name: str
     names: list[str]
     key: str
     scientific_name: str

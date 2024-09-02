@@ -88,7 +88,7 @@ class Plant(RootEntity):
     expected_lifespan: Lifespan = Lifespan()
 
     @property
-    def cultivar() -> Cultivar:
+    def cultivar(self) -> Cultivar:
         ...
 
     @property

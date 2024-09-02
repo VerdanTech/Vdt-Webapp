@@ -18,7 +18,6 @@ import type {
 	GardenAssociatedPartialsResult,
 	GardenPendingInvitesResult
 } from '$codegen/types';
-import { AxiosResponse } from 'axios';
 
 /**
  * Retrieves a unique garden key.

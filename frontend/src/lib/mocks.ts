@@ -5,8 +5,9 @@
 import { setupWorker } from 'msw/browser';
 import { getUsersMock } from '$codegen/client/users/users.msw';
 import { getGardensMock } from '$codegen/client/gardens/gardens.msw';
+import { getCultivarsMock } from '$codegen/client/cultivars/cultivars.msw';
 
-const mock_handlers = [...getUsersMock(), ...getGardensMock()];
+const mock_handlers = [...getUsersMock(), ...getGardensMock(), ...getCultivarsMock()];
 
 export const worker = setupWorker(...mock_handlers);
 

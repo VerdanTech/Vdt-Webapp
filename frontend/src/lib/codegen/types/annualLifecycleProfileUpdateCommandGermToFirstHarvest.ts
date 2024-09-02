@@ -5,6 +5,5 @@
  * Backend API of the VerdanTech software project.
  * OpenAPI spec version: 0.1.0
  */
-import type { OriginProfile } from './originProfile';
 
-export type CultivarAttributeSetOriginProfile = null | OriginProfile;
+export type AnnualLifecycleProfileUpdateCommandGermToFirstHarvest = null | number;

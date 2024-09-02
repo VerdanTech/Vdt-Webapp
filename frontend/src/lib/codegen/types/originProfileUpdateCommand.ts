@@ -5,8 +5,8 @@
  * Backend API of the VerdanTech software project.
  * OpenAPI spec version: 0.1.0
  */
-import type { OriginProfileUpdateCommandAllowedOrigins } from './originProfileUpdateCommandAllowedOrigins';
+import type { OriginProfileUpdateCommandTransplantable } from './originProfileUpdateCommandTransplantable';
 
 export interface OriginProfileUpdateCommand {
-	allowed_origins?: OriginProfileUpdateCommandAllowedOrigins;
+	transplantable?: OriginProfileUpdateCommandTransplantable;
 }

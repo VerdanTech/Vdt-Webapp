@@ -11,8 +11,6 @@ import type {
 	CultivarCollectionFullSchema,
 	CultivarCollectionGetByClientResult,
 	CultivarCollectionGetByGardenResult,
-	FrostDatePlantingWindowProfile,
-	OriginProfile,
 	RefSchema
 } from '../../types';
 
@@ -130,62 +128,6 @@ export const getCultivarCollectionGetByGardenQueryOpResponseMock = (
 	...overrideResponse
 });
 
-export const getCultivarCollectionGetByIdsQueryOpResponseFrostDatePlantingWindowProfileMock =
-	(
-		overrideResponse: Partial<FrostDatePlantingWindowProfile> = {}
-	): FrostDatePlantingWindowProfile => ({
-		...{
-			first_frost_window_close: faker.helpers.arrayElement([
-				faker.helpers.arrayElement([
-					null,
-					faker.number.int({ min: undefined, max: undefined })
-				]),
-				undefined
-			]),
-			first_frost_window_open: faker.helpers.arrayElement([
-				faker.helpers.arrayElement([
-					null,
-					faker.number.int({ min: undefined, max: undefined })
-				]),
-				undefined
-			]),
-			last_frost_window_close: faker.helpers.arrayElement([
-				faker.helpers.arrayElement([
-					null,
-					faker.number.int({ min: undefined, max: undefined })
-				]),
-				undefined
-			]),
-			last_frost_window_open: faker.helpers.arrayElement([
-				faker.helpers.arrayElement([
-					null,
-					faker.number.int({ min: undefined, max: undefined })
-				]),
-				undefined
-			])
-		},
-		...overrideResponse
-	});
-
-export const getCultivarCollectionGetByIdsQueryOpResponseOriginProfileMock = (
-	overrideResponse: Partial<OriginProfile> = {}
-): OriginProfile => ({
-	...{
-		_allowed_origins: faker.helpers.arrayElement([
-			faker.helpers.arrayElement([
-				null,
-				faker.helpers.arrayElements([
-					'direct seed',
-					'seed transplant',
-					'seedling transplant'
-				] as const)
-			]),
-			undefined
-		])
-	},
-	...overrideResponse
-});
-
 export const getCultivarCollectionGetByIdsQueryOpResponseRefSchemaMock = (
 	overrideResponse: Partial<RefSchema> = {}
 ): RefSchema => ({ ...{ id: faker.string.uuid() }, ...overrideResponse });
@@ -200,20 +142,79 @@ export const getCultivarCollectionGetByIdsQueryOpResponseMock =
 					(_, i) => i + 1
 				).map(() => ({
 					attributes: {
+						annual_lifecycle_profile: faker.helpers.arrayElement([
+							{
+								first_to_last_harvest: faker.helpers.arrayElement([
+									faker.helpers.arrayElement([
+										null,
+										faker.number.int({ min: undefined, max: undefined })
+									]),
+									undefined
+								]),
+								germ_to_first_harvest: faker.helpers.arrayElement([
+									faker.helpers.arrayElement([
+										null,
+										faker.number.int({ min: undefined, max: undefined })
+									]),
+									undefined
+								]),
+								germ_to_transplant: faker.helpers.arrayElement([
+									faker.helpers.arrayElement([
+										null,
+										faker.number.int({ min: undefined, max: undefined })
+									]),
+									undefined
+								]),
+								seed_to_germ: faker.helpers.arrayElement([
+									faker.helpers.arrayElement([
+										null,
+										faker.number.int({ min: undefined, max: undefined })
+									]),
+									undefined
+								])
+							},
+							undefined
+						]),
 						frost_date_planting_window_profile: faker.helpers.arrayElement([
-							faker.helpers.arrayElement([
-								null,
-								{
-									...getCultivarCollectionGetByIdsQueryOpResponseFrostDatePlantingWindowProfileMock()
-								}
-							]),
+							{
+								first_frost_window_close: faker.helpers.arrayElement([
+									faker.helpers.arrayElement([
+										null,
+										faker.number.int({ min: undefined, max: undefined })
+									]),
+									undefined
+								]),
+								first_frost_window_open: faker.helpers.arrayElement([
+									faker.helpers.arrayElement([
+										null,
+										faker.number.int({ min: undefined, max: undefined })
+									]),
+									undefined
+								]),
+								last_frost_window_close: faker.helpers.arrayElement([
+									faker.helpers.arrayElement([
+										null,
+										faker.number.int({ min: undefined, max: undefined })
+									]),
+									undefined
+								]),
+								last_frost_window_open: faker.helpers.arrayElement([
+									faker.helpers.arrayElement([
+										null,
+										faker.number.int({ min: undefined, max: undefined })
+									]),
+									undefined
+								])
+							},
 							undefined
 						]),
 						origin_profile: faker.helpers.arrayElement([
-							faker.helpers.arrayElement([
-								null,
-								{ ...getCultivarCollectionGetByIdsQueryOpResponseOriginProfileMock() }
-							]),
+							{
+								transplantable: faker.helpers.arrayElement([
+									faker.helpers.arrayElement([null, faker.datatype.boolean()]),
+									undefined
+								])
+							},
 							undefined
 						])
 					},
@@ -221,6 +222,7 @@ export const getCultivarCollectionGetByIdsQueryOpResponseMock =
 					description: faker.word.sample(),
 					id: faker.string.uuid(),
 					key: faker.word.sample(),
+					name: faker.word.sample(),
 					names: Array.from(
 						{ length: faker.number.int({ min: 1, max: 10 }) },
 						(_, i) => i + 1

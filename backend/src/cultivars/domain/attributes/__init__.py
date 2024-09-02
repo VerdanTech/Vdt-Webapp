@@ -2,7 +2,11 @@
 from src.common.adapters.utils.spec_manager import merge_spec_collections
 from src.common.domain import Command, Value, value_transform
 
-from .annual_lifecycle import AnnualLifecycleProfile
+from .annual_lifecycle import (
+    AnnualLifecycleProfile,
+    AnnualLifecycleProfileUpdateCommand,
+    annual_lifecycle_specs,
+)
 from .frost_date_planting_windows import (
     FrostDatePlantingWindowProfile,
     FrostDatePlantingWindowProfileUpdateCommand,
@@ -11,7 +15,7 @@ from .frost_date_planting_windows import (
 from .origin import OriginProfile, OriginProfileUpdateCommand, origin_specs
 
 specs = merge_spec_collections(
-    "cultivar", [frost_date_planting_window_specs, origin_specs]
+    "cultivar", [frost_date_planting_window_specs, origin_specs, annual_lifecycle_specs]
 )
 
 
@@ -21,8 +25,9 @@ class CultivarAttributeSet(Value):
     Acts as a container for sets of CultivarAttributeProfiles.
     """
 
-    frost_date_planting_window_profile: FrostDatePlantingWindowProfile | None = None
-    origin_profile: OriginProfile | None = None
+    frost_date_planting_window_profile: FrostDatePlantingWindowProfile = FrostDatePlantingWindowProfile()
+    origin_profile: OriginProfile = OriginProfile()
+    annual_lifecycle_profile: AnnualLifecycleProfile = AnnualLifecycleProfile()
 
 
 class CultivarAttributeUpdateCommand(Command):
@@ -34,3 +39,4 @@ class CultivarAttributeUpdateCommand(Command):
         None
     )
     origin_profile: OriginProfileUpdateCommand | None = None
+    annual_lifecycle_profile: AnnualLifecycleProfileUpdateCommand | None = None

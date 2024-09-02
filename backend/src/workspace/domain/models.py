@@ -42,16 +42,10 @@ class LocationHistory(Value):
     def undefined(self) -> bool:
         """
         Returns:
-            bool: True if the Location has no defined locations. 
+            bool: True if the Location has no defined locations.
         """
-        return (
-            self.location_history.locations is None
-            and self.geometric_history.geometries is None
-            and self.seed_date is None
-            and self.germ_date is None
-            and self.first_harvest_date is None
-            and self.last_harvest_date is None
-            and self.expiry_date is None
+        return self.locations is None
+
 
 @entity_transform
 class PlantingArea(Entity):

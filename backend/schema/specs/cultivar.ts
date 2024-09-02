@@ -142,6 +142,54 @@ export const cultivarFields = {
         label: 'First Frost Window - Close',
         unit: 'days',
     },
+    seed_to_germ: {
+        min: {
+            value: 0,
+            message: 'Must be greater than 0',
+        },
+        max: {
+            value: 60,
+            message: 'Must be less than 60',
+        },
+        description: 'The expected amount of days from starting a seed to its germination. Must be between 0 and 60 days.',
+        label: 'Seed to Germination Duration',
+    },
+    germ_to_transplant: {
+        min: {
+            value: 0,
+            message: 'Must be greater than 0',
+        },
+        max: {
+            value: 200,
+            message: 'Must be less than 200',
+        },
+        description: 'The expected amount of days from the germination of a seed to when it will be ready for transplant. For cultivars which are not able to be transplanted, this value is unused. Must be between 0 and 200 days.',
+        label: 'Germination to Transplant Duration',
+    },
+    germ_to_first_harvest: {
+        min: {
+            value: 0,
+            message: 'Must be greater than 0',
+        },
+        max: {
+            value: 200,
+            message: 'Must be less than 200',
+        },
+        description: 'The expected amount of days the germination of a seed to when it will be ready for a harvest. Must be between 0 and 200 days.',
+        label: 'Germination to Harvest Duration',
+    },
+    first_to_last_harvest: {
+        min: {
+            value: 0,
+            message: 'Must be greater than 0',
+        },
+        max: {
+            value: 120,
+            message: 'Must be less than 120',
+        },
+        description: 'The expected amount of days the first and last harvest of a plant. For plants which only have one harvest, this values is zero. Must be between 0 and 120 days.',
+        label: 'First to Last Harvest Duration',
+    },
     frost_date_planting_window_profile: {
         description: 'A planting window defines a period of time within an environment that a cultivar should be planted. These attributes define an allowed planting window of time relative to the first and last frost dates. These planting windows are used for incdicating within the Verdagraph when plants are suggested to be planted.',
         label: 'Frost Date Planting Windows',
@@ -150,9 +198,13 @@ export const cultivarFields = {
         description: 'The origin refers to the method used to create plants.',
         label: 'Origin Profile',
     },
-    allowed_origins: {
-        description: 'A cultivar may be allowed to start in any combination of origins. In general, plants may be started from seed and transplanted to where they reach maturity, started from seed in the location they reach maturity, or brought in as seedlings. Some plants, such as carrots, don\'t tolerate transplants, and so must be started directly.',
-        label: 'Allowed Origins',
+    transplantable: {
+        description: 'Defines whether a plant may be started as a seed in one location and transplanted to another. Some plants, such as carrots, don\'t tolerate transplants, and so must be started directly.',
+        label: 'Transplant Allowed',
+    },
+    annual_lifecycle_profile: {
+        description: 'The annual lifecycle defines the length of the stages of life for annual plants.',
+        label: 'Annual Lifecycle Profile',
     },
 }
 export default cultivarFields

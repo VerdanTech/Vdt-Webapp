@@ -6,8 +6,4 @@
  * OpenAPI spec version: 0.1.0
  */
 
-export enum _OriginProfileAllowedOriginsOneOfItem {
-	direct_seed = 'direct seed',
-	seed_transplant = 'seed transplant',
-	seedling_transplant = 'seedling transplant'
-}
+export type OriginProfileUpdateCommandTransplantable = null | boolean;

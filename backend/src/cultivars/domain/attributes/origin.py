@@ -8,10 +8,7 @@ from pydantic import Field
 from src.common.adapters.utils.spec_manager import SpecCollection
 from src.common.domain import Command, value_transform
 
-from ..enums import OriginEnum
 from .profile import CultivarAttributeProfile
-
-type AllowedOriginsType = set[OriginEnum]
 
 values = {}
 descriptions = {
@@ -19,14 +16,12 @@ descriptions = {
         "field": ("The origin refers to the method used to create plants."),
         "label": "Origin Profile",
     },
-    "allowed_origins": {
+    "transplantable": {
         "field": (
-            "A cultivar may be allowed to start in any combination of origins. "
-            "In general, plants may be started from seed and transplanted to where they reach maturity, "
-            "started from seed in the location they reach maturity, or brought in as seedlings. "
+            "Defines whether a plant may be started as a seed in one location and transplanted to another. "
             "Some plants, such as carrots, don't tolerate transplants, and so must be started directly."
         ),
-        "label": "Allowed Origins",
+        "label": "Transplant Allowed",
     },
 }
 origin_specs = SpecCollection("origin_profile", values, descriptions)
@@ -34,10 +29,13 @@ origin_specs = SpecCollection("origin_profile", values, descriptions)
 
 @value_transform
 class OriginProfile(CultivarAttributeProfile):
-    _allowed_origins: set[OriginEnum] | None = None
+    transplantable: bool | None = None
+
+
+Transplantable = Annotated[
+    bool, Field(description=descriptions["transplantable"]["field"])
+]
 
 
 class OriginProfileUpdateCommand(Command):
-    allowed_origins: Annotated[
-        set[OriginEnum], Field(description=descriptions["allowed_origins"]["field"])
-    ] | None = None
+    transplantable: Transplantable | None = None

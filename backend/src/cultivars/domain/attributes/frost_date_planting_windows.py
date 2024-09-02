@@ -102,68 +102,74 @@ class FrostDatePlantingWindowProfile(CultivarAttributeProfile):
     first_frost_window_close: float | None = None
 
 
+LastFrostWindowOpen = Annotated[
+    float,
+    AfterValidator(
+        SpecManager.get_validation_method(
+            frost_date_planting_window_specs, "last_frost_window_open"
+        )
+    ),
+    # Note: Field used only for annotation, to allow custom error messages.
+    Field(
+        description=descriptions["last_frost_window_open"]["field"],
+        json_schema_extra={
+            "min": values["last_frost_window_open"][Specs.MIN],
+            "max": values["last_frost_window_open"][Specs.MAX],
+        },
+    ),
+]
+LastFrostWindowClose = Annotated[
+    float,
+    AfterValidator(
+        SpecManager.get_validation_method(
+            frost_date_planting_window_specs, "last_frost_window_close"
+        )
+    ),
+    # Note: Field used only for annotation, to allow custom error messages.
+    Field(
+        description=descriptions["last_frost_window_close"]["field"],
+        json_schema_extra={
+            "min": values["last_frost_window_close"][Specs.MIN],
+            "max": values["last_frost_window_close"][Specs.MAX],
+        },
+    ),
+]
+FirstFrostWindowOpen = Annotated[
+    float,
+    AfterValidator(
+        SpecManager.get_validation_method(
+            frost_date_planting_window_specs, "first_frost_window_open"
+        )
+    ),
+    # Note: Field used only for annotation, to allow custom error messages.
+    Field(
+        description=descriptions["first_frost_window_open"]["field"],
+        json_schema_extra={
+            "min": values["first_frost_window_open"][Specs.MIN],
+            "max": values["first_frost_window_open"][Specs.MAX],
+        },
+    ),
+]
+FirstFrostWindowClose = Annotated[
+    float,
+    AfterValidator(
+        SpecManager.get_validation_method(
+            frost_date_planting_window_specs, "first_frost_window_close"
+        )
+    ),
+    # Note: Field used only for annotation, to allow custom error messages.
+    Field(
+        description=descriptions["first_frost_window_close"]["field"],
+        json_schema_extra={
+            "min": values["first_frost_window_close"][Specs.MIN],
+            "max": values["first_frost_window_close"][Specs.MAX],
+        },
+    ),
+]
+
+
 class FrostDatePlantingWindowProfileUpdateCommand(Command):
-    last_frost_window_open: Annotated[
-        float,
-        AfterValidator(
-            SpecManager.get_validation_method(
-                frost_date_planting_window_specs, "last_frost_window_open"
-            )
-        ),
-        # Note: Field used only for annotation, to allow custom error messages.
-        Field(
-            description=descriptions["last_frost_window_open"]["field"],
-            json_schema_extra={
-                "min": values["last_frost_window_open"][Specs.MIN],
-                "max": values["last_frost_window_open"][Specs.MAX],
-            },
-        ),
-    ] | None
-    last_frost_window_close: Annotated[
-        float,
-        AfterValidator(
-            SpecManager.get_validation_method(
-                frost_date_planting_window_specs, "last_frost_window_close"
-            )
-        ),
-        # Note: Field used only for annotation, to allow custom error messages.
-        Field(
-            description=descriptions["last_frost_window_close"]["field"],
-            json_schema_extra={
-                "min": values["last_frost_window_close"][Specs.MIN],
-                "max": values["last_frost_window_close"][Specs.MAX],
-            },
-        ),
-    ] | None
-    first_frost_window_open: Annotated[
-        float,
-        AfterValidator(
-            SpecManager.get_validation_method(
-                frost_date_planting_window_specs, "first_frost_window_open"
-            )
-        ),
-        # Note: Field used only for annotation, to allow custom error messages.
-        Field(
-            description=descriptions["first_frost_window_open"]["field"],
-            json_schema_extra={
-                "min": values["first_frost_window_open"][Specs.MIN],
-                "max": values["first_frost_window_open"][Specs.MAX],
-            },
-        ),
-    ] | None
-    first_frost_window_close: Annotated[
-        float,
-        AfterValidator(
-            SpecManager.get_validation_method(
-                frost_date_planting_window_specs, "first_frost_window_close"
-            )
-        ),
-        # Note: Field used only for annotation, to allow custom error messages.
-        Field(
-            description=descriptions["first_frost_window_close"]["field"],
-            json_schema_extra={
-                "min": values["first_frost_window_close"][Specs.MIN],
-                "max": values["first_frost_window_close"][Specs.MAX],
-            },
-        ),
-    ] | None
+    last_frost_window_open: LastFrostWindowOpen | None = None
+    last_frost_window_close: LastFrostWindowClose | None = None
+    first_frost_window_open: FirstFrostWindowOpen | None = None
+    first_frost_window_close: FirstFrostWindowClose | None = None

@@ -5,8 +5,5 @@
  * Backend API of the VerdanTech software project.
  * OpenAPI spec version: 0.1.0
  */
-import type { OriginProfileTransplantable } from './originProfileTransplantable';
 
-export interface OriginProfile {
-	transplantable?: OriginProfileTransplantable;
-}
+export type AnnualLifecycleProfileUpdateCommandGermToTransplant = null | number;

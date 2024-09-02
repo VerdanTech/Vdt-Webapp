@@ -25,7 +25,7 @@ class Cultivar(Entity):
     Represents a species/variety of plant.
 
     Attributes:
-        name (str): the common names of the plant.
+        name (list[str]): the common names of the plant.
             Example: ["Zucchini", "Summer Squash", "Courgette"]
         key (str) a short, few character representation.
             Used for visual representation of plants
@@ -42,7 +42,7 @@ class Cultivar(Entity):
             the parent, and the new data will be overlaid.
     """
 
-    names: set[str]  # type: ignore
+    names: list[str]  # type: ignore
     key: str  # type: ignore
     scientific_name: str = ""  # type: ignore
     description: str = ""
@@ -50,8 +50,16 @@ class Cultivar(Entity):
     parent_id: uuid.UUID | None = None
 
     @property
+    def name(self) -> str:
+        """
+        Returns a single name for purposes of labelling.
+        """
+        return self.names[0] or ""
+
+    @property
     def attributes(self) -> CultivarAttributeSet:
         return self._attributes
+    
 
 
 @root_entity_transform

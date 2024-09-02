@@ -8,21 +8,76 @@ components:
       - expiry_time_seconds
       title: AccessInfoResult
       type: object
+    AnnualLifecycleProfile:
+      properties:
+        first_to_last_harvest:
+          oneOf:
+          - type: 'null'
+          - type: number
+        germ_to_first_harvest:
+          oneOf:
+          - type: 'null'
+          - type: number
+        germ_to_transplant:
+          oneOf:
+          - type: 'null'
+          - type: number
+        seed_to_germ:
+          oneOf:
+          - type: 'null'
+          - type: number
+      required: []
+      title: AnnualLifecycleProfile
+      type: object
+    AnnualLifecycleProfileUpdateCommand:
+      properties:
+        first_to_last_harvest:
+          oneOf:
+          - type: 'null'
+          - description: The expected amount of days the first and last harvest of
+              a plant. For plants which only have one harvest, this values is zero.
+              Must be between 0 and 120 days.
+            type: number
+        germ_to_first_harvest:
+          oneOf:
+          - type: 'null'
+          - description: The expected amount of days the germination of a seed to
+              when it will be ready for a harvest. Must be between 0 and 200 days.
+            type: number
+        germ_to_transplant:
+          oneOf:
+          - type: 'null'
+          - description: The expected amount of days from the germination of a seed
+              to when it will be ready for transplant. For cultivars which are not
+              able to be transplanted, this value is unused. Must be between 0 and
+              200 days.
+            type: number
+        seed_to_germ:
+          oneOf:
+          - type: 'null'
+          - description: The expected amount of days from starting a seed to its germination.
+              Must be between 0 and 60 days.
+            type: number
+      required: []
+      title: AnnualLifecycleProfileUpdateCommand
+      type: object
     CultivarAttributeSet:
       properties:
+        annual_lifecycle_profile:
+          $ref: '#/components/schemas/AnnualLifecycleProfile'
         frost_date_planting_window_profile:
-          oneOf:
-          - type: 'null'
-          - $ref: '#/components/schemas/FrostDatePlantingWindowProfile'
+          $ref: '#/components/schemas/FrostDatePlantingWindowProfile'
         origin_profile:
-          oneOf:
-          - type: 'null'
-          - $ref: '#/components/schemas/OriginProfile'
+          $ref: '#/components/schemas/OriginProfile'
       required: []
       title: CultivarAttributeSet
       type: object
     CultivarAttributeUpdateCommand:
       properties:
+        annual_lifecycle_profile:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/AnnualLifecycleProfileUpdateCommand'
         frost_date_planting_window_profile:
           oneOf:
           - type: 'null'
@@ -373,6 +428,8 @@ components:
           type: string
         key:
           type: string
+        name:
+          type: string
         names:
           items:
             type: string
@@ -390,6 +447,7 @@ components:
       - description
       - id
       - key
+      - name
       - names
       - scientific_name
       title: CultivarSchema
@@ -864,36 +922,22 @@ components:
       type: object
     OriginProfile:
       properties:
-        _allowed_origins:
+        transplantable:
           oneOf:
           - type: 'null'
-          - items:
-              enum:
-              - direct seed
-              - seed transplant
-              - seedling transplant
-              type: string
-            type: array
+          - type: boolean
       required: []
       title: OriginProfile
       type: object
     OriginProfileUpdateCommand:
       properties:
-        allowed_origins:
+        transplantable:
           oneOf:
           - type: 'null'
-          - description: A cultivar may be allowed to start in any combination of
-              origins. In general, plants may be started from seed and transplanted
-              to where they reach maturity, started from seed in the location they
-              reach maturity, or brought in as seedlings. Some plants, such as carrots,
-              don't tolerate transplants, and so must be started directly.
-            items:
-              enum:
-              - direct seed
-              - seed transplant
-              - seedling transplant
-              type: string
-            type: array
+          - description: Defines whether a plant may be started as a seed in one location
+              and transplanted to another. Some plants, such as carrots, don't tolerate
+              transplants, and so must be started directly.
+            type: boolean
       required: []
       title: OriginProfileUpdateCommand
       type: object

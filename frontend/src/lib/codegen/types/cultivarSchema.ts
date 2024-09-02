@@ -14,6 +14,7 @@ export interface CultivarSchema {
 	description: string;
 	id: string;
 	key: string;
+	name: string;
 	names: string[];
 	parent_id?: CultivarSchemaParentId;
 	scientific_name: string;

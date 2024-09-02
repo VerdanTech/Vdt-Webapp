@@ -40,7 +40,7 @@ CultivarName = Annotated[
     ),
 ]
 CultivarNames = Annotated[
-    set[CultivarName],
+    list[CultivarName],
     AfterValidator(SpecManager.get_validation_method(specs, "cultivar_names")),
     # Note: Field used only for annotation, to allow custom error messages.
     Field(
