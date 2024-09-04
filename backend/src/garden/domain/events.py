@@ -21,9 +21,9 @@ class PendingInvites(Event):
 
     garden_ref: Ref["Garden"]
     client_ref: Ref[User]
-    admin_ids: list[uuid.UUID] = []
-    editor_ids: list[uuid.UUID] = []
-    viewer_ids: list[uuid.UUID] = []
+    admin_usernames: list[str] = []
+    editor_usernames: list[str] = []
+    viewer_usernames: list[str] = []
 
 
 @event_transform

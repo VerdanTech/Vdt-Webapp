@@ -157,7 +157,7 @@ class UserAlchemyRepository(BaseAlchemyRepository[User], AbstractUserRepository)
         return email is not None
 
     # ======================================
-    # Query-only methods
+    # Query-focused methods
     # ======================================
 
     async def get_by_ids(self, ids: list[uuid.UUID]) -> list[User]:
@@ -171,6 +171,25 @@ class UserAlchemyRepository(BaseAlchemyRepository[User], AbstractUserRepository)
             list[User]: the found users.
         """
         statement = select(User).filter(user_table.c.id.in_(ids))
+        query = await self.session.execute(statement)
+        users = query.scalars().all()
+
+        return list(users)
+
+    async def get_by_usernames(self, usernames: list[str]) -> list[User]:
+        """
+        Given a list of usernames return the users to whom they belong.
+
+        Args:
+            usernames (list[str]): the usernames to search for.
+
+        Returns:
+            list[User]: the found users.
+        """
+        usernames_lower = [username.lower() for username in usernames]
+        statement = select(User).filter(
+            func.lower(user_table.c.username).in_(usernames_lower)
+        )
         query = await self.session.execute(statement)
         users = query.scalars().all()
 

@@ -1,22 +1,22 @@
 <script lang="ts">
-	import Logo from '$lib/assets/logo.svelte'
-	import { Separator } from '$lib/components/ui/separator/index'
-	import { Button } from 'bits-ui'
-	import PrimaryNavSidebarTab from './PrimaryNavSidebarTab.svelte'
-	import PrimaryNavBottomTabDropdown from './PrimaryNavBottomTab.svelte'
-	import PrimaryNavBottomDrawer from './PrimaryNavBottomDrawer.svelte'
-	import activeGardenKey from '$state/activeGarden.svelte'
-	import { gardenMostRelevantPartialsQuery } from '$data/garden/queries'
+	import Logo from '$lib/assets/logo.svelte';
+	import { Separator } from '$lib/components/ui/separator/index';
+	import { Button } from 'bits-ui';
+	import PrimaryNavSidebarTab from './PrimaryNavSidebarTab.svelte';
+	import PrimaryNavBottomTabDropdown from './PrimaryNavBottomTab.svelte';
+	import PrimaryNavBottomDrawer from './PrimaryNavBottomDrawer.svelte';
+	import activeGardenKey from '$state/activeGarden.svelte';
+	import { gardenMostRelevantPartialsQuery } from '$data/garden/queries';
 
 	import {
 		getGardenSpecifcTabs,
 		getGardensTab,
 		getNonGardenSpecificTabs
-	} from './primaryNavTabs'
-	import type { PrimaryTabSpec } from './primaryNavTabs'
+	} from './primaryNavTabs';
+	import type { PrimaryTabSpec } from './primaryNavTabs';
 
 	/* Settings. */
-	const MAX_GARDENS_IN_TAB_SIDEBAR = 10 /* The maximum amount of gardens listed on the Gardens tab. */
+	const MAX_GARDENS_IN_TAB_SIDEBAR = 10; /* The maximum amount of gardens listed on the Gardens tab. */
 
 	/* Queries */
 	const mostRelevantPartialGardens = gardenMostRelevantPartialsQuery(
@@ -24,35 +24,37 @@
 		{
 			onSuccess: updateGardensTab
 		}
-	)
+	);
 
 	/* Tab categories. */
 	const nonGardenSpecificTabs: PrimaryTabSpec[] =
-		getNonGardenSpecificTabs() /* Points to static pages. */
+		getNonGardenSpecificTabs(); /* Points to static pages. */
 	let gardensTab: PrimaryTabSpec = getGardensTab(
 		[]
-	) /* Gives quick access to other gardens. */
-	let gardenTabs: PrimaryTabSpec[] = [] /* Allows accessing all features in a Garden. */
+	); /* Gives quick access to other gardens. */
+	let gardenTabs: PrimaryTabSpec[] =
+		[]; /* Allows accessing all features in a Garden. */
 
 	/* Get mobile specific tabs. */
-	let commonsTab = nonGardenSpecificTabs.find((t) => t.id === 'commons')
-	let profileTab = nonGardenSpecificTabs.find((t) => t.id === 'profile')
-	let resourcesTab = nonGardenSpecificTabs.find((t) => t.id === 'resources')
+	let traitsTab = nonGardenSpecificTabs.find((t) => t.id === 'traits');
+	let profileTab = nonGardenSpecificTabs.find((t) => t.id === 'profile');
+	let resourcesTab = nonGardenSpecificTabs.find((t) => t.id === 'resources');
 
 	/* Retrieve the gardens tab if the associated partials query is complete. */
 	function updateGardensTab() {
 		if ($mostRelevantPartialGardens.data) {
+			console.log($mostRelevantPartialGardens.data);
 			gardensTab = getGardensTab(
 				/* TODO: change store access when svelte-query is updated to Svelte 5. */
-				$mostRelevantPartialGardens.data.gardens
-			)
+				$mostRelevantPartialGardens.data
+			);
 		}
 	}
-	updateGardensTab()
+	updateGardensTab();
 
 	/* Retrieve the garden tabs if there is an active garden. */
 	if (activeGardenKey.value !== null) {
-		gardenTabs = getGardenSpecifcTabs(activeGardenKey.value)
+		gardenTabs = getGardenSpecifcTabs(activeGardenKey.value);
 	}
 </script>
 
@@ -75,8 +77,8 @@ users in a Garden context.
 	{#if resourcesTab}
 		<PrimaryNavBottomTabDropdown spec={resourcesTab} />
 	{/if}
-	{#if commonsTab}
-		<PrimaryNavBottomTabDropdown spec={commonsTab} />
+	{#if traitsTab}
+		<PrimaryNavBottomTabDropdown spec={traitsTab} />
 	{/if}
 	<PrimaryNavBottomTabDropdown spec={gardensTab} />
 	{#if activeGardenKey.value !== null}

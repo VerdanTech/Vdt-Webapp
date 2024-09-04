@@ -7,8 +7,20 @@
  */
 
 export interface GardenMembershipCreateCommand {
-	admin_ids?: string[]
-	editor_ids?: string[]
-	garden_id: string
-	viewer_ids?: string[]
+	/**
+	 * A maximum of 10 users can be invited at once
+	 * @maxLength 10
+	 */
+	admin_usernames?: string[];
+	/**
+	 * A maximum of 10 users can be invited at once
+	 * @maxLength 10
+	 */
+	editor_usernames?: string[];
+	garden_id: string;
+	/**
+	 * A maximum of 10 users can be invited at once
+	 * @maxLength 10
+	 */
+	viewer_usernames?: string[];
 }

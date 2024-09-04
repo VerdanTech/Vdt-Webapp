@@ -57,6 +57,7 @@
 				"python.formatting.provider": "black"
 			},
             "extensions": [
+				// Backend
                 "ms-python.python",
 				"christian-kohler.path-intellisense",
 				"ms-python.black-formatter",
@@ -67,8 +68,13 @@
 				"njpwerner.autodocstring",
 				"pomdtr.excalidraw-editor",
 				"mtxr.sqltools",
-				"mtxr.sqltools-driver-pg"
+				"mtxr.sqltools-driver-pg",
 
+				// Frontend
+				"1YiB.svelte-bundle",
+				"pmneo.tsimporter",
+				"sidthesloth.html5-boilerplate",
+				"bradlc.vscode-tailwindcss"
             ]
         }
 	},

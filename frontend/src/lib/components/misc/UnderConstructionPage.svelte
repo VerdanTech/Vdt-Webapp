@@ -1,5 +1,5 @@
 <script lang="ts">
-	import Icon from '@iconify/svelte'
+	import Icon from '@iconify/svelte';
 </script>
 
 <div class="mt-12 flex flex-col items-center">

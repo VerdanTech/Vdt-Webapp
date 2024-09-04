@@ -1,5 +1,4 @@
 # Standard Library
-from dataclasses import field
 from datetime import date, datetime
 
 # External Libraries
@@ -13,58 +12,84 @@ from src.common.domain import (
     root_entity_transform,
     value_transform,
 )
-from src.cultivars.domain import Cultivar
-from src.workspace.domain import GeometricHistory, LocationHistory
-from src.workspace.domain.workspace import Workspace
+from src.cultivars.domain import Cultivar, CultivarCollection, OriginEnum
+from src.geometry import GeometricHistory
+from src.workspace.domain import LocationHistory, Workspace
 
-from .enums import OriginEnum
+
+class HarvestSizeEnum:
+    SMALL = "small"
+    MEDIUM = "medium"
+    LARGE = "large"
+
+
+@value_transform
+class Harvest(Value):
+    date: date
+    quantity: float
+    quality: HarvestSizeEnum
 
 
 @value_transform
 class QuantityHistoryPoint(Value):
-    quantity: int
+    quantity: float
     time: datetime | None
 
 
 @value_transform
 class QuantityHistory(Value):
-    quantity_points: set[QuantityHistoryPoint] = field(factory=set)
-
-
-@value_transform
-class Lifespan(Value):
-    origin: OriginEnum = OriginEnum.DIRECT_SEED
-    location_history: LocationHistory = LocationHistory()
-    geometric_history: GeometricHistory = GeometricHistory()
-    quantity_history: QuantityHistory = QuantityHistory()
-    seed_date: date | None = None
-    germ_date: date | None = None
-    first_harvest_date: date | None = None
-    last_harvest_date: date | None = None
-    expiry_date: date | None = None
+    quantities: set[QuantityHistoryPoint] = field(factory=set)
 
     @property
     def undefined(self) -> bool:
         """
         Returns:
-            bool: True if the Lifespan has no defined location, geometries, or lifespan points.
+            bool: True if the GeometryHistory has no defined
+                geometries.
+        """
+        return not self.quantities
+
+
+@value_transform
+class Lifespan(Value):
+    origin: OriginEnum | None = None
+    location_history: LocationHistory = LocationHistory()
+    geometric_history: GeometricHistory = GeometricHistory()
+    quantity_history: QuantityHistory = QuantityHistory()
+    seed_date: date | None = None
+    germ_date: date | None = None
+    expiry_date: date | None = None
+    harvests: list[Harvest] = field(factory=list)
+
+    @property
+    def undefined(self) -> bool:
+        """
+        Returns:
+            bool: True if the Lifespan has no defined location,
+                geometries, or lifespan points.
         """
         return (
-            self.location_history.locations is None
-            and self.geometric_history.geometries is None
+            self.location_history.undefined
+            and self.geometric_history.undefined
+            and self.quantity_history.undefined
             and self.seed_date is None
             and self.germ_date is None
-            and self.first_harvest_date is None
-            and self.last_harvest_date is None
             and self.expiry_date is None
+            and not self.harvests
         )
 
 
 @root_entity_transform
 class Plant(RootEntity):
-    cultivar_ref: Ref[Cultivar]
+    _cultivar_collection_ref: Ref[CultivarCollection]
+    _cultivar_name: str
+    _cultivar: Cultivar
     recorded_lifespan: Lifespan = Lifespan()
     expected_lifespan: Lifespan = Lifespan()
+
+    @property
+    def cultivar(self) -> Cultivar:
+        ...
 
     @property
     def committed(self) -> bool:

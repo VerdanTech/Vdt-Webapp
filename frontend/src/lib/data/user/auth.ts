@@ -1,8 +1,8 @@
-import { z as zod } from 'zod'
-import { QueryClient, useMutation } from '@sveltestack/svelte-query'
-import type { UserPasswordVerificationQuery } from '$codegen/types'
-import { userLoginCommandOp } from '$codegen'
-import { userFieldSchemas } from './schemas'
+import { z as zod } from 'zod';
+import { QueryClient, useMutation } from '@sveltestack/svelte-query';
+import type { UserPasswordVerificationQuery } from '$codegen/types';
+import { userLoginCommandOp } from '$codegen';
+import { userFieldSchemas } from './schemas';
 
 /**
  * Sends an authentication request to the backend.
@@ -15,14 +15,14 @@ export const userLogin = {
 	mutation: (queryClient: QueryClient) => {
 		return useMutation(
 			function (data: UserPasswordVerificationQuery) {
-				return userLoginCommandOp(data)
+				return userLoginCommandOp(data);
 			},
 			{
 				/* Re-request the client user on mutation. */
 				onSettled: () => {
-					queryClient.invalidateQueries('clientProfile')
+					queryClient.invalidateQueries('clientProfile');
 				}
 			}
-		)
+		);
 	}
-}
+};

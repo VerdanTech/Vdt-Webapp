@@ -5,12 +5,12 @@
  * Backend API of the VerdanTech software project.
  * OpenAPI spec version: 0.1.0
  */
-import type { EmailSchema } from './emailSchema'
+import type { UserEmailSchema } from './userEmailSchema';
 
 export interface UserFullSchema {
-	created_at: string
-	emails: EmailSchema[]
-	id: string
-	is_superuser: boolean
-	username: string
+	created_at: string;
+	emails: UserEmailSchema[];
+	id: string;
+	is_superuser: boolean;
+	username: string;
 }

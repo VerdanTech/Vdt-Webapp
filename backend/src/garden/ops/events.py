@@ -49,10 +49,10 @@ async def process_garden_invite(
         # permission to authorize for, create a GardenInvite
         # for every existing user which is not already a member
         invites: list[GardenInvite] = []
-        if event.admin_ids and client_membership.authorize(
+        if event.admin_usernames and client_membership.authorize(
             operation=PermissionRouter.invite(role=RoleEnum.ADMIN),
         ):
-            users = await uow.repos.users.get_by_ids(event.admin_ids)
+            users = await uow.repos.users.get_by_usernames(event.admin_usernames)
             invites += [
                 GardenInvite(
                     user_ref=Ref(id=user.id_or_error()),
@@ -64,10 +64,10 @@ async def process_garden_invite(
                 if not garden.is_user_member(user)
             ]
 
-        if event.editor_ids and client_membership.authorize(
+        if event.editor_usernames and client_membership.authorize(
             operation=PermissionRouter.invite(role=RoleEnum.EDIT),
         ):
-            users = await uow.repos.users.get_by_ids(event.editor_ids)
+            users = await uow.repos.users.get_by_usernames(event.editor_usernames)
             invites += [
                 GardenInvite(
                     user_ref=Ref(id=user.id_or_error()),
@@ -79,10 +79,10 @@ async def process_garden_invite(
                 if not garden.is_user_member(user)
             ]
 
-        if event.viewer_ids and client_membership.authorize(
+        if event.viewer_usernames and client_membership.authorize(
             operation=PermissionRouter.invite(role=RoleEnum.VIEW),
         ):
-            users = await uow.repos.users.get_by_ids(event.viewer_ids)
+            users = await uow.repos.users.get_by_usernames(event.viewer_usernames)
             invites += [
                 GardenInvite(
                     user_ref=Ref(id=user.id_or_error()),

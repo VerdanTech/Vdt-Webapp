@@ -7,5 +7,5 @@
  */
 
 export type UserPublicProfilesQueryOpParams = {
-	user_ids: string[]
-}
+	user_ids: string[];
+};

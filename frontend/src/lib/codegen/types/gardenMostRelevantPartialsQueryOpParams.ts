@@ -7,5 +7,5 @@
  */
 
 export type GardenMostRelevantPartialsQueryOpParams = {
-	max_gardens: number
-}
+	max_gardens: number;
+};

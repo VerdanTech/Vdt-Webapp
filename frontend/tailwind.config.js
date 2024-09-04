@@ -28,7 +28,7 @@ const config = {
 			}
 		}
 	}
-}
+};
 
 /**
  * Generates a color scale object for Tailwind CSS with values from 1 to 12.
@@ -40,14 +40,14 @@ const config = {
  * @returns {Record<string, string>} An object representing the color scale, with keys from 1 to 12 and corresponding CSS variable values.
  */
 function getColorScale(name) {
-	const scale = {}
+	const scale = {};
 	for (let i = 1; i <= 12; i++) {
-		scale[i] = `var(--${name}-${i})`
+		scale[i] = `var(--${name}-${i})`;
 		// next line only needed if using alpha values
 		//scale[`a${i}`] = `var(--${name}-a${i})`;
 	}
 
-	return scale
+	return scale;
 }
 
-export default config
+export default config;

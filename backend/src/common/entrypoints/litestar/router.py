@@ -6,11 +6,12 @@ from litestar import Router
 
 # VerdanTech Source
 from src import settings
+from src.cultivars.entrypoints.litestar.router import create_cultivar_router
 from src.garden.entrypoints.litestar.router import create_garden_router
 from src.user.entrypoints.litestar.router import create_user_router
 
 # List of all router factories
-router_factories = [create_user_router, create_garden_router]
+router_factories = [create_user_router, create_garden_router, create_cultivar_router]
 
 
 def create_routers() -> List[Router]:

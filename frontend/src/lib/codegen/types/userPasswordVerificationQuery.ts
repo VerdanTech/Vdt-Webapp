@@ -7,12 +7,12 @@
  */
 
 export interface UserPasswordVerificationQuery {
-	email_address: string
+	email_address: string;
 	/**
 	 * Must be between 6 and 255 characters long and contain at least one lowercase letter, one uppercase letter, one digit, and one special character
 	 * @minLength 6
 	 * @maxLength 255
 	 * @pattern ^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*\W).*$
 	 */
-	password: string
+	password: string;
 }

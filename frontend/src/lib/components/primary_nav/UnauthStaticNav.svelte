@@ -1,11 +1,11 @@
 <script>
-	import Icon from '@iconify/svelte'
-	import * as Popover from '$lib/components/ui/popover/index'
-	import { Separator } from '$lib/components/ui/separator/index'
-	import { Button } from '$lib/components/ui/button'
-	import Logo from '$lib/assets/logo.svelte'
-	import { externalLinks } from '$lib/assets/links'
-	import iconIds from '$lib/assets/icons'
+	import Icon from '@iconify/svelte';
+	import * as Popover from '$lib/components/ui/popover/index';
+	import { Separator } from '$lib/components/ui/separator/index';
+	import { Button } from '$lib/components/ui/button';
+	import Logo from '$lib/assets/logo.svelte';
+	import { externalLinks } from '$lib/assets/links';
+	import iconIds from '$lib/assets/icons';
 
 	let navLinks = [
 		{
@@ -20,7 +20,7 @@
 			url: externalLinks.project,
 			label: 'Project'
 		}
-	]
+	];
 </script>
 
 <!--

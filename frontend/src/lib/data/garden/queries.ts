@@ -1,36 +1,50 @@
-import { useQuery } from '@sveltestack/svelte-query'
-import type { UseQueryStoreResult, UseQueryOptions } from '@sveltestack/svelte-query'
+import { useQuery } from '@sveltestack/svelte-query';
+import type { UseQueryOptions } from '@sveltestack/svelte-query';
 import {
 	gardenGenerateUniqueKeyQueryOp,
 	gardenAssociatedPartialsQueryOp,
 	gardenMostRelevantPartialsQueryOp,
 	gardenPartialsByKeysQueryOp,
-	gardenFullByKeyQueryOp
-} from '$codegen'
-import {
+	gardenFullByKeyQueryOp,
+	gardenPendingInvitesQueryOp
+} from '$codegen';
+import type {
 	GardenMostRelevantPartialsQueryOpParams,
 	GardenPartialSchema,
 	GardenFullSchema,
 	GardenPartialsByKeysQueryOpParams,
-	GardenFullByKeyQueryOpParams
-} from '$codegen/types'
+	GardenFullByKeyQueryOpParams,
+	GardenUniqueKeyResult,
+	GardenAssociatedPartialsResult,
+	GardenPendingInvitesResult
+} from '$codegen/types';
 
 /**
  * Retrieves a unique garden key.
  */
-export const gardenGenerateUniqueKeyQuery = () => {
-	return useQuery('uniqueGardenKey', gardenGenerateUniqueKeyQueryOp, {
-		staleTime: Infinity
-	})
-}
+export const gardenGenerateUniqueKeyQuery = (
+	options?: UseQueryOptions<GardenUniqueKeyResult>
+) => {
+	return useQuery<GardenUniqueKeyResult>(
+		'uniqueGardenKey',
+		gardenGenerateUniqueKeyQueryOp,
+		options
+	);
+};
 
 /**
  * Returns a partial representation of all gardens
  * that are associated withthe client.
  */
-export const gardenAssociatedPartialsQuery = (options?: UseQueryOptions) => {
-	return useQuery('userVisibleGardens', gardenAssociatedPartialsQueryOp, options)
-}
+export const gardenAssociatedPartialsQuery = (
+	options?: UseQueryOptions<GardenAssociatedPartialsResult>
+) => {
+	return useQuery<GardenAssociatedPartialsResult>(
+		'userVisibleGardens',
+		gardenAssociatedPartialsQueryOp,
+		options
+	);
+};
 
 /**
  * Returns a partial representation of the most relevant gardens to the client.
@@ -43,11 +57,11 @@ export const gardenMostRelevantPartialsQuery = (
 	return useQuery<GardenPartialSchema[]>(
 		['mostRelevantGardens', data.max_gardens],
 		() => {
-			return gardenMostRelevantPartialsQueryOp(data)
+			return gardenMostRelevantPartialsQueryOp(data);
 		},
 		options
-	)
-}
+	);
+};
 
 /**
  * Returns a partial representation of gardens given by keys.
@@ -57,10 +71,10 @@ export const gardenPartialsQuery = (data: GardenPartialsByKeysQueryOpParams) => 
 	return useQuery<GardenPartialSchema[]>(
 		['partialsByKeys', [...data.garden_keys]],
 		() => {
-			return gardenPartialsByKeysQueryOp(data)
+			return gardenPartialsByKeysQueryOp(data);
 		}
-	)
-}
+	);
+};
 
 /**
  * Returns a full representation of a garden by its key.
@@ -68,6 +82,19 @@ export const gardenPartialsQuery = (data: GardenPartialsByKeysQueryOpParams) => 
  */
 export const gardenFullQuery = (data: GardenFullByKeyQueryOpParams) => {
 	return useQuery<GardenFullSchema>(['fullByKey', data.garden_key], () => {
-		return gardenFullByKeyQueryOp(data)
-	})
-}
+		return gardenFullByKeyQueryOp(data);
+	});
+};
+
+/**
+ * Returns a set of garden and associated pending garden memberships.
+ */
+export const gardenPendingInvitesQuery = (
+	options?: UseQueryOptions<GardenPendingInvitesResult>
+) => {
+	return useQuery<GardenPendingInvitesResult>(
+		'pendingInvites',
+		gardenPendingInvitesQueryOp,
+		options
+	);
+};

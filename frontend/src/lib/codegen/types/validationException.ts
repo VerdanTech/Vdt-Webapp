@@ -5,13 +5,13 @@
  * Backend API of the VerdanTech software project.
  * OpenAPI spec version: 0.1.0
  */
-import type { ValidationExceptionExtra } from './validationExceptionExtra'
+import type { ValidationExceptionExtra } from './validationExceptionExtra';
 
 /**
  * Validation Exception
  */
 export interface ValidationException {
-	detail: string
-	extra?: ValidationExceptionExtra
-	status_code: number
+	detail: string;
+	extra?: ValidationExceptionExtra;
+	status_code: number;
 }

@@ -7,5 +7,5 @@
  */
 
 export type GardenPartialsByKeysQueryOpParams = {
-	garden_keys: string[]
-}
+	garden_keys: string[];
+};

@@ -1,9 +1,9 @@
 <script lang="ts">
-	import UnderConstructionPage from '$components/misc/UnderConstructionPage.svelte'
+	import UnderConstructionPage from '$components/misc/UnderConstructionPage.svelte';
 </script>
 
 <svelte:head>
-	<title>Verify Email - VerdanTech</title>
+	<title>Guides - VerdanTech</title>
 </svelte:head>
 
 <UnderConstructionPage />

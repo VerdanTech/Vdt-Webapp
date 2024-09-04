@@ -44,7 +44,7 @@ async def test_verify_password_email_confirmation_required(
     """
     Ensure that when the query is called with an email that does
     exist but the user is not verified and email confirmation is required,
-    the PasswordVerificationResult returned indicates that email verification is required.
+    the UserPasswordVerificationResult returned indicates that email verification is required.
 
     Args:
         svcs_container (Container): service locator with mock services.
@@ -81,7 +81,7 @@ async def test_verify_password_success_incorrect_password(
     """
     Ensure that when the query is called with an email that does
     exist and a password which does not match that of the user, the
-    PasswordVerificationResult returned indicates that the password is not verified.
+    UserPasswordVerificationResult returned indicates that the password is not verified.
 
     Args:
         svcs_container (Container): service locator with mock services.
@@ -118,7 +118,7 @@ async def test_verify_password_success_correct_password(
     """
     Ensure that when the query is called with an email that does
     exist and a password which matches that of the user, the
-    PasswordVerificationResult returned indicates that the password is verified.
+    UserPasswordVerificationResult returned indicates that the password is verified.
 
     Args:
         svcs_container (Container): service locator with mock services.

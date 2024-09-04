@@ -7,5 +7,5 @@
  */
 
 export interface UserRequestPasswordResetCommand {
-	email_address: string
+	email_address: string;
 }

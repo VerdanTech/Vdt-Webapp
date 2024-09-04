@@ -29,9 +29,15 @@ importers:
       lucide-svelte:
         specifier: ^0.416.0
         version: 0.416.0(svelte@5.0.0-next.184)
+      mode-watcher:
+        specifier: ^0.4.1
+        version: 0.4.1(svelte@5.0.0-next.184)
       paneforge:
         specifier: ^0.0.5
         version: 0.0.5(svelte@5.0.0-next.184)
+      svelte-sonner:
+        specifier: ^0.3.27
+        version: 0.3.27(svelte@5.0.0-next.184)
       sveltekit-superforms:
         specifier: ^2.16.1
         version: 2.16.1(@sveltejs/kit@2.5.18(@sveltejs/vite-plugin-svelte@3.1.1(svelte@5.0.0-next.184)(vite@5.3.3(@types/node@20.14.10)))(svelte@5.0.0-next.184)(vite@5.3.3(@types/node@20.14.10)))(svelte@5.0.0-next.184)
@@ -2040,6 +2046,11 @@ packages:
     resolution: {integrity: sha512-FP+p8RB8OWpF3YZBCrP5gtADmtXApB5AMLn+vdyA+PyxCjrCs00mjyUozssO33cwDeT3wNGdLxJ5M//YqtHAJw==}
     hasBin: true
 
+  mode-watcher@0.4.1:
+    resolution: {integrity: sha512-bNC+1NXmwEFZtziCdZSgP7HFQTpqJPcQn9GwwJQGSf6SBF3neEPYV1uRwkYuAQwbsvsXIYtzaqgedDzJ7D1mhg==}
+    peerDependencies:
+      svelte: ^4.0.0 || ^5.0.0-next.1
+
   mri@1.2.0:
     resolution: {integrity: sha512-tzzskb3bG8LvYGFF/mDTpq3jpI6Q9wc3LEmBaghu+DdCssd1FakN7Bc0hVNmEyGq1bq3RgfkCb3cmQLpNPOroA==}
     engines: {node: '>=4'}
@@ -2675,6 +2686,11 @@ packages:
         optional: true
       typescript:
         optional: true
+
+  svelte-sonner@0.3.27:
+    resolution: {integrity: sha512-+PvbuePNTyTNCepCWqKcFeu+Lo27yYuwfSc7zJvrWjCRMJrWAmccPg3j7jO1W13QoN3TySXU5Trb956VBQiM5Q==}
+    peerDependencies:
+      svelte: ^3.0.0 || ^4.0.0 || ^5.0.0-next.1
 
   svelte@5.0.0-next.184:
     resolution: {integrity: sha512-oHWNajXOytt/5s2Ark3o/CP7bHLx+o/QZjTkCtU1dECqSmYyGqrIsoZi0Cx0VBdXAHMqI+1/T70ppaL1cL7LEw==}
@@ -5047,6 +5063,10 @@ snapshots:
     dependencies:
       minimist: 1.2.8
 
+  mode-watcher@0.4.1(svelte@5.0.0-next.184):
+    dependencies:
+      svelte: 5.0.0-next.184
+
   mri@1.2.0: {}
 
   mrmime@2.0.0: {}
@@ -5659,6 +5679,10 @@ snapshots:
       postcss: 8.4.39
       postcss-load-config: 4.0.2(postcss@8.4.39)(ts-node@10.9.2(@types/node@20.14.10)(typescript@5.5.3))
       typescript: 5.5.3
+
+  svelte-sonner@0.3.27(svelte@5.0.0-next.184):
+    dependencies:
+      svelte: 5.0.0-next.184
 
   svelte@5.0.0-next.184:
     dependencies:

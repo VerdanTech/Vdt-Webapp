@@ -9,8 +9,13 @@ const iconIds = {
 	formFieldDescriptionIcon: 'material-symbols:info-outline-rounded',
 	defaultSpinnerIcon: 'humbleicons:spinner-earring',
 	defaultRefreshIcon: 'material-symbols:refresh-rounded',
+	defaultClose: 'mdi:close',
 	caretLeftIcon: '',
 	caretRightIcon: '',
+	chevronRight: 'material-symbols:chevron-right-rounded',
+	startEditingIcon: 'material-symbols:edit-outline',
+	endEditingIcon: 'material-symbols:edit-off-outline',
+	deleteIcon: 'material-symbols:delete-outline',
 
 	/* Navigation and UI. */
 	gardenDrawerIcon: 'material-symbols:menu-open-rounded',
@@ -26,9 +31,12 @@ const iconIds = {
 	profileSettingsIcon: 'mdi:cog-outline',
 
 	/* Non-garden specific. */
-	commonsIcon: 'tdesign:share',
+	traitsIcon: 'tdesign:share',
 	cultivarsIcon: 'tabler:plant-2',
 	cultivarIcon: 'tabler:plant-2',
+	mergeCultivarCollectionIcon: 'material-symbols:merge-rounded',
+	duplicateCultivarCollectionIcon: 'material-symbols:file-copy-outline-rounded',
+	inheritCultivarCollectionIcon: 'grommet-icons:inherit',
 	workspacesIcon: 'tabler:tools',
 	workspaceIcon: 'tabler:tools',
 	environmentIcon: 'material-symbols:sunny-outline-rounded',
@@ -44,6 +52,12 @@ const iconIds = {
 	gardenPlannerVerdagraphIcon: 'material-symbols:leaf-spark-outline-rounded',
 	gardenConfigIcon: 'material-symbols:settings-outline',
 	//gardenConnectionsIconId: 'material-symbols:network-node',
+	gardenInviteAcceptIcon: 'material-symbols:check-rounded',
+	gardenInviteRejectIcon: 'material-symbols:delete-forever-outline-rounded',
+
+	gardensCreateIcon: 'mdi:plus-circle-outline',
+	gardensDiscoverIcon: 'ic:round-travel-explore',
+	gardensInviteIcon: 'material-symbols:mail-outline',
 
 	/* Verdagraph */
 	verdagraphPointerSelectIcon: 'mdi:cursor-default-outline',
@@ -73,5 +87,5 @@ const iconIds = {
 	verdagraphDayForwardIcon: 'mdi:chevron-right',
 	verdagraphWeekForwardIcon: 'mdi:chevron-double-right',
 	verdagraphMonthForwardIcon: 'mdi:chevron-triple-right'
-}
-export default iconIds
+};
+export default iconIds;

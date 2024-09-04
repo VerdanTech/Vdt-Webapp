@@ -1,17 +1,17 @@
 <script lang="ts">
-	import Icon from '@iconify/svelte'
-	import { Button } from '$lib/components/ui/button'
-	import { Separator } from '$lib/components/ui/separator/index.js'
-	import { Popover } from 'bits-ui'
-	import { flyAndScale } from '$lib/utils'
-	import type { PrimaryTabSpec } from './primaryNavTabs'
+	import Icon from '@iconify/svelte';
+	import { Button } from '$lib/components/ui/button';
+	import { Separator } from '$lib/components/ui/separator/index.js';
+	import { Popover } from 'bits-ui';
+	import { flyAndScale } from '$lib/utils/shadcn';
+	import type { PrimaryTabSpec } from './primaryNavTabs';
 
 	type Props = {
-		spec: PrimaryTabSpec /* Describes the content of the tab. */
-	}
-	let { spec }: Props = $props()
+		spec: PrimaryTabSpec /* Describes the content of the tab. */;
+	};
+	let { spec }: Props = $props();
 
-	let popover_open = $state(false)
+	let popover_open = $state(false);
 </script>
 
 <!--

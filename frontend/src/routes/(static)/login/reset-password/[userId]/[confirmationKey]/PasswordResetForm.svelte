@@ -1,23 +1,23 @@
 <script lang="ts">
-	import { page } from '$app/stores'
-	import * as Form from '$lib/components/ui/form'
-	import { Input } from '$lib/components/ui/input'
-	import { superForm, defaults } from 'sveltekit-superforms'
-	import { zod } from 'sveltekit-superforms/adapters'
-	import { userConfirmPasswordReset } from '$lib/data/user/commands'
-	import { createServerErrors } from '$state/formServerErrors.svelte'
+	import { page } from '$app/stores';
+	import * as Form from '$lib/components/ui/form';
+	import { Input } from '$lib/components/ui/input';
+	import { superForm, defaults } from 'sveltekit-superforms';
+	import { zod } from 'sveltekit-superforms/adapters';
+	import { userConfirmPasswordReset } from '$lib/data/user/commands';
+	import { createServerErrors } from '$state/formServerErrors.svelte';
 
 	type Props = {
 		/** Set to true once the form has been submitted and received a 200 response. */
-		succeeded: boolean
-	}
+		succeeded: boolean;
+	};
 
-	let { succeeded = $bindable(false) }: Props = $props()
+	let { succeeded = $bindable(false) }: Props = $props();
 
 	/* Form mutation. */
-	const mutation = userConfirmPasswordReset.mutation()
+	const mutation = userConfirmPasswordReset.mutation();
 	/* Server error state. */
-	const serverErrors = createServerErrors()
+	const serverErrors = createServerErrors();
 
 	/**
 	 * Standard form configuration:
@@ -32,7 +32,7 @@
 		user_id: $page.params.userId,
 		new_password1: '',
 		new_password2: ''
-	}
+	};
 	const form = superForm(defaults(initialData, zod(userConfirmPasswordReset.schema)), {
 		SPA: true,
 		validators: zod(
@@ -48,20 +48,20 @@
 			if (form.valid) {
 				$mutation.mutate(form.data, {
 					onSuccess: () => {
-						succeeded = true
+						succeeded = true;
 					},
 					onError: (error) => {
 						// @ts-ignore
-						serverErrors.setErrors(error)
+						serverErrors.setErrors(error);
 					}
-				})
+				});
 			}
 		},
 		onChange() {
-			serverErrors.reset()
+			serverErrors.reset();
 		}
-	})
-	const { form: formData, enhance } = form
+	});
+	const { form: formData, enhance } = form;
 </script>
 
 <form method="POST" autocomplete="off" use:enhance>

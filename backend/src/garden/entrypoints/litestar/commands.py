@@ -5,6 +5,7 @@ from litestar.params import Dependency
 from svcs import Container
 
 # VerdanTech Source
+from src.common.entrypoints.litestar import requires_account
 from src.common.ops.processors import asgi_processor
 from src.garden.domain import commands
 
@@ -22,6 +23,7 @@ class GardenCommandController(Controller):
         summary="Garden creation.",
         description="Creates a new Garden and invites requested users.",
         operation_id=commands.GardenCreateCommand.to_operation_id(),
+        guards=[requires_account],
     )
     async def garden_create(
         self,
@@ -49,6 +51,7 @@ class GardenCommandController(Controller):
         summary="Garden membership invitiation.",
         description="Creates new Garden Memberships and sends email confirmation emails.",
         operation_id=commands.GardenMembershipCreateCommand.to_operation_id(),
+        guards=[requires_account],
     )
     async def invite(
         self,
@@ -76,6 +79,7 @@ class GardenCommandController(Controller):
         summary="Garden membership invitiation acceptance.",
         description="Accepts a Garden Membership.",
         operation_id=commands.GardenMembershipAcceptCommand.to_operation_id(),
+        guards=[requires_account],
     )
     async def accept_invite(
         self,
@@ -103,6 +107,7 @@ class GardenCommandController(Controller):
         summary="Garden membership deletion.",
         description="Removes one's own Garden Membership from a garden.",
         operation_id=commands.GardenMembershipDeleteCommand.to_operation_id(),
+        guards=[requires_account],
     )
     async def leave(
         self,
@@ -130,6 +135,7 @@ class GardenCommandController(Controller):
         summary="Removes a user from a garden.",
         description="Removes another's Garden Membership from a garden.",
         operation_id=commands.GardenMembershipRevokeCommand.to_operation_id(),
+        guards=[requires_account],
     )
     async def revoke_membership(
         self,
@@ -160,6 +166,7 @@ class GardenCommandController(Controller):
         summary="Garden Membership role change.",
         description="Changes the role on another's Garden Membership.",
         operation_id=commands.GardenMembershipRoleChangeCommand.to_operation_id(),
+        guards=[requires_account],
     )
     async def change_role(
         self,

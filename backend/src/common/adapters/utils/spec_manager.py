@@ -19,6 +19,8 @@ class Specs(Enum):
     """
 
     TYPE = "type"
+    MIN = "min"
+    MAX = "max"
     MIN_LENGTH = "min_length"
     MAX_LENGTH = "max_length"
     PATTERN = "pattern"
@@ -32,6 +34,15 @@ type SpecDescriptions = dict[Field, dict[Specs | Literal["field"], str]]
 """Contains the error message descriptions."""
 
 SpecCollection = namedtuple("SpecCollection", ["domain", "values", "descriptions"])
+
+
+def merge_spec_collections(domain: str, specs: list[SpecCollection]) -> SpecCollection:
+    result_values = {}
+    result_descriptions = {}
+    for spec in specs:
+        result_values = {**result_values, **spec.values}
+        result_descriptions = {**result_descriptions, **spec.descriptions}
+    return SpecCollection(domain, result_values, result_descriptions)
 
 
 def validate_pattern(value: str | SecretStr, pattern: str | re.Pattern) -> bool:
@@ -49,6 +60,8 @@ def validate_pattern(value: str | SecretStr, pattern: str | re.Pattern) -> bool:
 
 """Validation methods. Returns true if the value is valid."""
 spec_validation_methods = {
+    Specs.MIN: lambda value, min: value >= min,
+    Specs.MAX: lambda value, max: value <= max,
     Specs.MIN_LENGTH: lambda value, min_length: len(value) >= min_length,
     Specs.MAX_LENGTH: lambda value, max_length: len(value) <= max_length,
     Specs.PATTERN: validate_pattern,
@@ -124,8 +137,10 @@ class SpecManager:
         # Open the spec collection object.
         yield f"export const {object_name} = {{\n"
 
-        # For every field in the spec collection.
+        # For every field in the spec collection values.
+        seen_specs: list[str] = []
         for field in spec_collection.values:
+            seen_specs.append(field)
             # Open the field object.
             yield f"    {field}: {{\n"
 
@@ -137,9 +152,9 @@ class SpecManager:
                 # Get the value for the spec
                 value = spec_collection.values[field][spec]
 
-                # Apply strings to pattern
+                # Apply slashes to pattern
                 if spec.value == Specs.PATTERN.value:
-                    value = f"'{value}'"
+                    value = f"/{value}/"
 
                 # Get the descripton for the spec.
                 try:
@@ -162,10 +177,53 @@ class SpecManager:
             # Add the field description
             try:
                 field_description = spec_collection.descriptions[field]["field"]
+                field_description = field_description.replace("'", "\\'")
             except KeyError:
                 raise ValueError(f"Missing field description for field {field}")
+            yield f"        description: '{field_description}',\n"
 
-            yield f"        description: '{field_description}'\n"
+            # Add the field label - no throw
+            try:
+                field_label = spec_collection.descriptions[field]["label"]
+                field_label = field_label.replace("'", "\\'")
+                yield f"        label: '{field_label}',\n"
+            except KeyError:
+                pass
+
+            # Add the field unit - no throw
+            try:
+                field_unit = spec_collection.descriptions[field]["unit"]
+                field_unit = field_unit.replace("'", "\\'")
+                yield f"        unit: '{field_unit}',\n"
+            except KeyError:
+                pass
+
+            # Close the field object
+            yield "    },\n"
+
+        # For every field in the spec collection description.
+        for field in spec_collection.descriptions:
+            if field in seen_specs:
+                continue
+
+            # Open the field object.
+            yield f"    {field}: {{\n"
+
+            # Add the field description
+            try:
+                field_description = spec_collection.descriptions[field]["field"]
+                field_description = field_description.replace("'", "\\'")
+            except KeyError:
+                raise ValueError(f"Missing field description for field {field}")
+            yield f"        description: '{field_description}',\n"
+
+            # Add the field label - no throw
+            try:
+                field_label = spec_collection.descriptions[field]["label"]
+                field_label = field_label.replace("'", "\\'")
+                yield f"        label: '{field_label}',\n"
+            except KeyError:
+                pass
 
             # Close the field object
             yield "    },\n"
@@ -181,13 +239,16 @@ if __name__ == "__main__":
     """
     # Make sure to import all files so their specs are registered
     # VerdanTech Source
+    from src.cultivars.domain.specs import specs as cultivar_specs
     from src.garden.domain.specs import specs as garden_specs
     from src.user.domain.specs import specs as user_specs
+
+    specs = [garden_specs, user_specs, cultivar_specs]
 
     output_dir = "./schema/specs/"
     os.makedirs(output_dir, exist_ok=True)
 
-    for spec_collection in [user_specs, garden_specs]:
+    for spec_collection in specs:
         file_path = os.path.join(output_dir, f"{spec_collection.domain}.ts")
 
         with open(file_path, "w") as file:

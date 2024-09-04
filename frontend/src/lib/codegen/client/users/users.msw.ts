@@ -5,25 +5,37 @@
  * Backend API of the VerdanTech software project.
  * OpenAPI spec version: 0.1.0
  */
-import { faker } from '@faker-js/faker'
-import { HttpResponse, delay, http } from 'msw'
-import type { UserFullSchema, UserPublicSchema } from '../../types'
+import { faker } from '@faker-js/faker';
+import { HttpResponse, delay, http } from 'msw';
+import type { AccessInfoResult, UserFullSchema, UserPublicSchema } from '../../types';
 
-export const getUserLoginCommandOpResponseMock = (): string => faker.word.sample()
+export const getUserLoginCommandOpResponseMock = (
+	overrideResponse: Partial<AccessInfoResult> = {}
+): AccessInfoResult => ({
+	expiry_time_seconds: faker.number.int({ min: undefined, max: undefined }),
+	...overrideResponse
+});
 
-export const getUserCreateCommandOpResponseMock = (): string => faker.word.sample()
+export const getUserRefreshCommandOpResponseMock = (
+	overrideResponse: Partial<AccessInfoResult> = {}
+): AccessInfoResult => ({
+	expiry_time_seconds: faker.number.int({ min: undefined, max: undefined }),
+	...overrideResponse
+});
+
+export const getUserCreateCommandOpResponseMock = (): string => faker.word.sample();
 
 export const getUserConfirmEmailConfirmationCommandOpResponseMock = (): string =>
-	faker.word.sample()
+	faker.word.sample();
 
 export const getUserRequestEmailConfirmationCommandOpResponseMock = (): string =>
-	faker.word.sample()
+	faker.word.sample();
 
 export const getUserConfirmPasswordResetCommandOpResponseMock = (): string =>
-	faker.word.sample()
+	faker.word.sample();
 
 export const getUserRequestPasswordResetCommandOpResponseMock = (): string =>
-	faker.word.sample()
+	faker.word.sample();
 
 export const getUserClientProfileQueryOpResponseMock = (
 	overrideResponse: Partial<UserFullSchema> = {}
@@ -41,22 +53,25 @@ export const getUserClientProfileQueryOpResponseMock = (
 	is_superuser: faker.datatype.boolean(),
 	username: faker.word.sample(),
 	...overrideResponse
-})
+});
 
 export const getUserPublicProfilesQueryOpResponseMock = (): UserPublicSchema[] =>
 	Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(
 		() => ({ id: faker.string.uuid(), username: faker.word.sample() })
-	)
+	);
+
+export const getUsernameExistsQueryOpResponseMock = (): boolean =>
+	faker.datatype.boolean();
 
 export const getUserLoginCommandOpMockHandler = (
 	overrideResponse?:
-		| string
+		| AccessInfoResult
 		| ((
 				info: Parameters<Parameters<typeof http.post>[1]>[0]
-		  ) => Promise<string> | string)
+		  ) => Promise<AccessInfoResult> | AccessInfoResult)
 ) => {
 	return http.post('*/users/auth/login', async (info) => {
-		await delay(1000)
+		await delay(1000);
 		return new HttpResponse(
 			JSON.stringify(
 				overrideResponse !== undefined
@@ -71,69 +86,96 @@ export const getUserLoginCommandOpMockHandler = (
 					'Content-Type': 'application/json'
 				}
 			}
-		)
-	})
-}
+		);
+	});
+};
+
+export const getUserRefreshCommandOpMockHandler = (
+	overrideResponse?:
+		| AccessInfoResult
+		| ((
+				info: Parameters<Parameters<typeof http.post>[1]>[0]
+		  ) => Promise<AccessInfoResult> | AccessInfoResult)
+) => {
+	return http.post('*/users/auth/refresh', async (info) => {
+		await delay(1000);
+		return new HttpResponse(
+			JSON.stringify(
+				overrideResponse !== undefined
+					? typeof overrideResponse === 'function'
+						? await overrideResponse(info)
+						: overrideResponse
+					: getUserRefreshCommandOpResponseMock()
+			),
+			{
+				status: 201,
+				headers: {
+					'Content-Type': 'application/json'
+				}
+			}
+		);
+	});
+};
 
 export const getUserCreateCommandOpMockHandler = () => {
 	return http.post('*/users/command/create', async () => {
-		await delay(1000)
+		await delay(1000);
 		return new HttpResponse(getUserCreateCommandOpResponseMock(), {
 			status: 201,
 			headers: {
 				'Content-Type': 'text/plain'
 			}
-		})
-	})
-}
+		});
+	});
+};
 
 export const getUserConfirmEmailConfirmationCommandOpMockHandler = () => {
 	return http.post('*/users/command/email/verification_confirm', async () => {
-		await delay(1000)
+		await delay(1000);
 		return new HttpResponse(getUserConfirmEmailConfirmationCommandOpResponseMock(), {
 			status: 201,
 			headers: {
 				'Content-Type': 'text/plain'
 			}
-		})
-	})
-}
+		});
+	});
+};
 
 export const getUserRequestEmailConfirmationCommandOpMockHandler = () => {
 	return http.post('*/users/command/email/verification_request', async () => {
-		await delay(1000)
+		await delay(1000);
 		return new HttpResponse(getUserRequestEmailConfirmationCommandOpResponseMock(), {
 			status: 201,
 			headers: {
 				'Content-Type': 'text/plain'
 			}
-		})
-	})
-}
+		});
+	});
+};
 
 export const getUserConfirmPasswordResetCommandOpMockHandler = () => {
 	return http.post('*/users/command/password/confirm', async () => {
-		await delay(1000)
+		await delay(1000);
 		return new HttpResponse(getUserConfirmPasswordResetCommandOpResponseMock(), {
 			status: 201,
 			headers: {
 				'Content-Type': 'text/plain'
 			}
-		})
-	})
-}
+		});
+	});
+};
 
 export const getUserRequestPasswordResetCommandOpMockHandler = () => {
 	return http.post('*/users/command/password/request', async () => {
-		await delay(1000)
+		await delay(1000);
 		return new HttpResponse(getUserRequestPasswordResetCommandOpResponseMock(), {
 			status: 201,
 			headers: {
 				'Content-Type': 'text/plain'
 			}
-		})
-	})
-}
+		});
+	});
+};
 
 export const getUserClientProfileQueryOpMockHandler = (
 	overrideResponse?:
@@ -143,7 +185,7 @@ export const getUserClientProfileQueryOpMockHandler = (
 		  ) => Promise<UserFullSchema> | UserFullSchema)
 ) => {
 	return http.get('*/users/query/client_profile', async (info) => {
-		await delay(1000)
+		await delay(1000);
 		return new HttpResponse(
 			JSON.stringify(
 				overrideResponse !== undefined
@@ -158,9 +200,9 @@ export const getUserClientProfileQueryOpMockHandler = (
 					'Content-Type': 'application/json'
 				}
 			}
-		)
-	})
-}
+		);
+	});
+};
 
 export const getUserPublicProfilesQueryOpMockHandler = (
 	overrideResponse?:
@@ -170,7 +212,7 @@ export const getUserPublicProfilesQueryOpMockHandler = (
 		  ) => Promise<UserPublicSchema[]> | UserPublicSchema[])
 ) => {
 	return http.get('*/users/query/public_profiles', async (info) => {
-		await delay(1000)
+		await delay(1000);
 		return new HttpResponse(
 			JSON.stringify(
 				overrideResponse !== undefined
@@ -185,16 +227,45 @@ export const getUserPublicProfilesQueryOpMockHandler = (
 					'Content-Type': 'application/json'
 				}
 			}
-		)
-	})
-}
+		);
+	});
+};
+
+export const getUsernameExistsQueryOpMockHandler = (
+	overrideResponse?:
+		| boolean
+		| ((
+				info: Parameters<Parameters<typeof http.get>[1]>[0]
+		  ) => Promise<boolean> | boolean)
+) => {
+	return http.get('*/users/query/username_exists', async (info) => {
+		await delay(1000);
+		return new HttpResponse(
+			JSON.stringify(
+				overrideResponse !== undefined
+					? typeof overrideResponse === 'function'
+						? await overrideResponse(info)
+						: overrideResponse
+					: getUsernameExistsQueryOpResponseMock()
+			),
+			{
+				status: 200,
+				headers: {
+					'Content-Type': 'application/json'
+				}
+			}
+		);
+	});
+};
 export const getUsersMock = () => [
 	getUserLoginCommandOpMockHandler(),
+	getUserRefreshCommandOpMockHandler(),
 	getUserCreateCommandOpMockHandler(),
 	getUserConfirmEmailConfirmationCommandOpMockHandler(),
 	getUserRequestEmailConfirmationCommandOpMockHandler(),
 	getUserConfirmPasswordResetCommandOpMockHandler(),
 	getUserRequestPasswordResetCommandOpMockHandler(),
 	getUserClientProfileQueryOpMockHandler(),
-	getUserPublicProfilesQueryOpMockHandler()
-]
+	getUserPublicProfilesQueryOpMockHandler(),
+	getUsernameExistsQueryOpMockHandler()
+];

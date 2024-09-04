@@ -7,6 +7,6 @@
  */
 
 export interface UserPublicSchema {
-	id: string
-	username: string
+	id: string;
+	username: string;
 }

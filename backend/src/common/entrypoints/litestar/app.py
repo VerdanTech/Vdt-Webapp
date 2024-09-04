@@ -6,12 +6,12 @@ from litestar.datastructures import State
 from src import exceptions, settings
 from src.common.adapters.persistence.sqlalchemy import litestar_alchemy_client_lifespan
 
-from .auth import jwt_auth
+from .auth import default_auth_mw
 from .dependencies import svcs_plugin
 from .exceptions import application_exception_handler
+from .middleware import cors_config
 from .openapi import openapi_config
 from .router import create_base_router
-from .middleware import cors_config
 
 
 def create_app(alchemy_uri=settings.POSTGRES_URI) -> "Litestar":
@@ -30,7 +30,7 @@ def create_app(alchemy_uri=settings.POSTGRES_URI) -> "Litestar":
         lifespan=[litestar_alchemy_client_lifespan],
         plugins=[svcs_plugin],
         openapi_config=openapi_config,
-        on_app_init=[jwt_auth.on_app_init],
+        middleware=[default_auth_mw],
         state=State({"alchemy_uri": alchemy_uri}),
         exception_handlers={
             exceptions.ApplicationException: application_exception_handler

@@ -1,18 +1,18 @@
 <script lang="ts">
-	import { goto } from '$app/navigation'
-	import { useQueryClient } from '@sveltestack/svelte-query'
-	import * as Form from '$lib/components/ui/form'
-	import { Input } from '$lib/components/ui/input'
-	import { superForm, defaults } from 'sveltekit-superforms'
-	import { zod } from 'sveltekit-superforms/adapters'
-	import { userLogin } from '$lib/data/user/auth'
-	import { createServerErrors } from '$state/formServerErrors.svelte'
-	import isAuthenticated from '$state/authenticated.svelte'
+	import { goto } from '$app/navigation';
+	import { useQueryClient } from '@sveltestack/svelte-query';
+	import * as Form from '$lib/components/ui/form';
+	import { Input } from '$lib/components/ui/input';
+	import { superForm, defaults } from 'sveltekit-superforms';
+	import { zod } from 'sveltekit-superforms/adapters';
+	import { userLogin } from '$lib/data/user/auth';
+	import { createServerErrors } from '$state/formServerErrors.svelte';
+	import authentication from '$state/authentication.svelte';
 	/* Form mutation. */
-	const queryClient = useQueryClient()
-	const mutation = userLogin.mutation(queryClient)
+	const queryClient = useQueryClient();
+	const mutation = userLogin.mutation(queryClient);
 	/* Server error state. */
-	const serverErrors = createServerErrors()
+	const serverErrors = createServerErrors();
 
 	/**
 	 * Standard form configuration:
@@ -28,27 +28,27 @@
 		onUpdate({ form }) {
 			if (form.valid) {
 				$mutation.mutate(form.data, {
-					onSuccess: () => {
+					onSuccess: (data) => {
 						/**
 						 * TODO: Move this state update to the data layer.
 						 * It is here because having both onSuccess callbacks
 						 * caused only the first to be run.
 						 */
-						isAuthenticated.value = true
-						goto('/app')
+						authentication.login(data.expiry_time_seconds);
+						goto('/app');
 					},
 					onError: (error) => {
 						// @ts-ignore
-						serverErrors.setErrors(error)
+						serverErrors.setErrors(error);
 					}
-				})
+				});
 			}
 		},
 		onChange() {
-			serverErrors.reset()
+			serverErrors.reset();
 		}
-	})
-	const { form: formData, enhance } = form
+	});
+	const { form: formData, enhance } = form;
 </script>
 
 <form method="POST" use:enhance>

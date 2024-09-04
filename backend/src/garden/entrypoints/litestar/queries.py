@@ -5,6 +5,7 @@ from litestar.params import Dependency
 from svcs import Container
 
 # VerdanTech Source
+from src.common.entrypoints.litestar.auth.guard import requires_account
 from src.garden.ops import queries
 
 
@@ -19,13 +20,13 @@ class GardenQueryController(Controller):
         summary="Generate a new, unique garden key.",
         description="Generates a unique garden key given a plant name and a random string.",
         operation_id="GardenGenerateUniqueKeyQueryOp",
+        guards=[requires_account],
     )
     async def generate_unique_garden_key(
         self,
         state: State,
-        request: Request,
         svcs_container: Container = Dependency(skip_validation=True),
-    ) -> queries.UniqueGardenKeyResult:
+    ) -> queries.GardenUniqueKeyResult:
         """
         Calls the unique garden key generation query.
 
@@ -35,12 +36,10 @@ class GardenQueryController(Controller):
             svcs_container (Container): service locator.
 
         Returns:
-            UniqueGardenKeyResult: the generated key.
+            GardenUniqueKeyResult: the generated key.
         """
         svcs_container.register_local_value(State, state)
-        key = await queries.generate_unique_garden_key(
-            svcs_container=svcs_container, client=request.user
-        )
+        key = await queries.generate_unique_garden_key(svcs_container=svcs_container)
         return key
 
     @get(
@@ -48,13 +47,14 @@ class GardenQueryController(Controller):
         summary="Returns a partial representation of all gardens that are associated with the client",
         description="Returns a partial representation of all gardens that are associated with the client",
         operation_id="GardenAssociatedPartialsQueryOp",
+        guards=[requires_account],
     )
     async def associated_partials(
         self,
         state: State,
         request: Request,
         svcs_container: Container = Dependency(skip_validation=True),
-    ) -> queries.AssociatedPartialsResult:
+    ) -> queries.GardenAssociatedPartialsResult:
         """
         Calls the associated garden partials query.
 
@@ -64,7 +64,7 @@ class GardenQueryController(Controller):
             svcs_container (Container): service locator.
 
         Returns:
-            AssociatedPartialsResult: the associated garden partials.
+            GardenAssociatedPartialsResult: the associated garden partials.
         """
         svcs_container.register_local_value(State, state)
         partials = await queries.get_associated_partials(
@@ -77,6 +77,7 @@ class GardenQueryController(Controller):
         summary="Returns a partial representation of most relevant gardens to the user.",
         description="Returns a partial representation of most relevant gardens to the user, ordered by relevance.",
         operation_id=queries.GardenMostRelevantPartialsQuery.to_operation_id(),
+        guards=[requires_account],
     )
     async def most_relevant(
         self,
@@ -167,3 +168,33 @@ class GardenQueryController(Controller):
             query=data, svcs_container=svcs_container, client=request.user
         )
         return schema
+
+    @get(
+        path="pending_invites",
+        summary="Returns a set of pending garden invites",
+        description="Returns a set of tuples of gardens and associated pending garden memberships",
+        operation_id="GardenPendingInvitesQueryOp",
+        guards=[requires_account],
+    )
+    async def pending_invites(
+        self,
+        state: State,
+        request: Request,
+        svcs_container: Container = Dependency(skip_validation=True),
+    ) -> queries.GardenPendingInvitesResult:
+        """
+        Calls the pending invites query.
+
+        Args:
+            state (State): Litestar global app state.
+            request (Request): Litestar http request object.
+            svcs_container (Container): service locator.
+
+        Returns:
+            GardenPendingInvitesResult: the pending invites.
+        """
+        svcs_container.register_local_value(State, state)
+        invites = await queries.get_pending_invites(
+            svcs_container=svcs_container, client=request.user
+        )
+        return invites

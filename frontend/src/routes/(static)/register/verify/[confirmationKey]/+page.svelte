@@ -1,28 +1,28 @@
 <script lang="ts">
-	import { page } from '$app/stores'
-	import { goto } from '$app/navigation'
-	import * as Card from '$lib/components/ui/card'
-	import { userConfirmEmailConfirmation } from '$lib/data/user/commands'
-	import Icon from '@iconify/svelte'
-	import iconIds from '$lib/assets/icons'
-	import { createServerErrors } from '$state/formServerErrors.svelte'
+	import { page } from '$app/stores';
+	import { goto } from '$app/navigation';
+	import * as Card from '$lib/components/ui/card';
+	import { userConfirmEmailConfirmation } from '$lib/data/user/commands';
+	import Icon from '@iconify/svelte';
+	import iconIds from '$lib/assets/icons';
+	import { createServerErrors } from '$state/formServerErrors.svelte';
 
 	/* Initialize the mutation on page load with url parameter. */
-	const confirmationKey = $page.params.confirmationKey
-	const mutation = userConfirmEmailConfirmation.mutation()
-	const serverErrors = createServerErrors()
+	const confirmationKey = $page.params.confirmationKey;
+	const mutation = userConfirmEmailConfirmation.mutation();
+	const serverErrors = createServerErrors();
 	$mutation.mutate(
 		{ key: confirmationKey },
 		{
 			onSuccess: () => {
-				goto('/login')
+				goto('/login');
 			},
 			onError: (error) => {
 				// @ts-ignore
-				serverErrors.setErrors(error)
+				serverErrors.setErrors(error);
 			}
 		}
-	)
+	);
 </script>
 
 <svelte:head>

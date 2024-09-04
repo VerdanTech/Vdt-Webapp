@@ -5,23 +5,24 @@
  * Backend API of the VerdanTech software project.
  * OpenAPI spec version: 0.1.0
  */
-import { faker } from '@faker-js/faker'
-import { HttpResponse, delay, http } from 'msw'
+import { faker } from '@faker-js/faker';
+import { HttpResponse, delay, http } from 'msw';
 import type {
-	AssociatedPartialsResult,
+	GardenAssociatedPartialsResult,
 	GardenFullSchema,
 	GardenPartialSchema,
-	RefSchema,
-	UniqueGardenKeyResult
-} from '../../types'
+	GardenPendingInvitesResult,
+	GardenUniqueKeyResult,
+	RefSchema
+} from '../../types';
 
 export const getGardenAssociatedPartialsQueryOpResponseRefSchemaMock = (
 	overrideResponse: Partial<RefSchema> = {}
-): RefSchema => ({ ...{ id: faker.string.uuid() }, ...overrideResponse })
+): RefSchema => ({ ...{ id: faker.string.uuid() }, ...overrideResponse });
 
 export const getGardenAssociatedPartialsQueryOpResponseMock = (
-	overrideResponse: Partial<AssociatedPartialsResult> = {}
-): AssociatedPartialsResult => ({
+	overrideResponse: Partial<GardenAssociatedPartialsResult> = {}
+): GardenAssociatedPartialsResult => ({
 	admin_memberships: Array.from(
 		{ length: faker.number.int({ min: 1, max: 10 }) },
 		(_, i) => i + 1
@@ -51,24 +52,16 @@ export const getGardenAssociatedPartialsQueryOpResponseMock = (
 		num_memberships: faker.number.int({ min: undefined, max: undefined }),
 		visibility: faker.helpers.arrayElement(['private', 'unlisted', 'public'] as const)
 	})),
-	pending_memberships: Array.from(
-		{ length: faker.number.int({ min: 1, max: 10 }) },
-		(_, i) => i + 1
-	).map(() => faker.string.uuid()),
-	recently_viewed: Array.from(
-		{ length: faker.number.int({ min: 1, max: 10 }) },
-		(_, i) => i + 1
-	).map(() => faker.string.uuid()),
 	view_memberships: Array.from(
 		{ length: faker.number.int({ min: 1, max: 10 }) },
 		(_, i) => i + 1
 	).map(() => faker.string.uuid()),
 	...overrideResponse
-})
+});
 
 export const getGardenFullByKeyQueryOpResponseRefSchemaMock = (
 	overrideResponse: Partial<RefSchema> = {}
-): RefSchema => ({ ...{ id: faker.string.uuid() }, ...overrideResponse })
+): RefSchema => ({ ...{ id: faker.string.uuid() }, ...overrideResponse });
 
 export const getGardenFullByKeyQueryOpResponseMock = (
 	overrideResponse: Partial<GardenFullSchema> = {}
@@ -98,7 +91,6 @@ export const getGardenFullByKeyQueryOpResponseMock = (
 		accepted: faker.datatype.boolean(),
 		created_at: `${faker.date.past().toISOString().split('.')[0]}Z`,
 		favorite: faker.datatype.boolean(),
-		garden_ref: { id: faker.string.uuid() },
 		inviter_ref: faker.helpers.arrayElement([
 			faker.helpers.arrayElement([
 				null,
@@ -113,15 +105,15 @@ export const getGardenFullByKeyQueryOpResponseMock = (
 	num_memberships: faker.number.int({ min: undefined, max: undefined }),
 	visibility: faker.helpers.arrayElement(['private', 'unlisted', 'public'] as const),
 	...overrideResponse
-})
+});
 
 export const getGardenGenerateUniqueKeyQueryOpResponseMock = (
-	overrideResponse: Partial<UniqueGardenKeyResult> = {}
-): UniqueGardenKeyResult => ({ key: faker.word.sample(), ...overrideResponse })
+	overrideResponse: Partial<GardenUniqueKeyResult> = {}
+): GardenUniqueKeyResult => ({ key: faker.word.sample(), ...overrideResponse });
 
 export const getGardenMostRelevantPartialsQueryOpResponseRefSchemaMock = (
 	overrideResponse: Partial<RefSchema> = {}
-): RefSchema => ({ ...{ id: faker.string.uuid() }, ...overrideResponse })
+): RefSchema => ({ ...{ id: faker.string.uuid() }, ...overrideResponse });
 
 export const getGardenMostRelevantPartialsQueryOpResponseMock =
 	(): GardenPartialSchema[] =>
@@ -144,11 +136,11 @@ export const getGardenMostRelevantPartialsQueryOpResponseMock =
 					'public'
 				] as const)
 			})
-		)
+		);
 
 export const getGardenPartialsByKeysQueryOpResponseRefSchemaMock = (
 	overrideResponse: Partial<RefSchema> = {}
-): RefSchema => ({ ...{ id: faker.string.uuid() }, ...overrideResponse })
+): RefSchema => ({ ...{ id: faker.string.uuid() }, ...overrideResponse });
 
 export const getGardenPartialsByKeysQueryOpResponseMock = (): GardenPartialSchema[] =>
 	Array.from({ length: faker.number.int({ min: 1, max: 10 }) }, (_, i) => i + 1).map(
@@ -166,89 +158,133 @@ export const getGardenPartialsByKeysQueryOpResponseMock = (): GardenPartialSchem
 			num_memberships: faker.number.int({ min: undefined, max: undefined }),
 			visibility: faker.helpers.arrayElement(['private', 'unlisted', 'public'] as const)
 		})
-	)
+	);
+
+export const getGardenPendingInvitesQueryOpResponseRefSchemaMock = (
+	overrideResponse: Partial<RefSchema> = {}
+): RefSchema => ({ ...{ id: faker.string.uuid() }, ...overrideResponse });
+
+export const getGardenPendingInvitesQueryOpResponseMock = (
+	overrideResponse: Partial<GardenPendingInvitesResult> = {}
+): GardenPendingInvitesResult => ({
+	pending_invites: Array.from(
+		{ length: faker.number.int({ min: 1, max: 10 }) },
+		(_, i) => i + 1
+	).map(() => ({
+		expiry_countdown_hours: faker.number.int({ min: undefined, max: undefined }),
+		garden: {
+			creator_ref: faker.helpers.arrayElement([
+				faker.helpers.arrayElement([
+					null,
+					{ ...getGardenPendingInvitesQueryOpResponseRefSchemaMock() }
+				]),
+				undefined
+			]),
+			id: faker.string.uuid(),
+			key: faker.word.sample(),
+			name: faker.word.sample(),
+			num_memberships: faker.number.int({ min: undefined, max: undefined }),
+			visibility: faker.helpers.arrayElement(['private', 'unlisted', 'public'] as const)
+		},
+		invite: {
+			accepted: faker.datatype.boolean(),
+			created_at: `${faker.date.past().toISOString().split('.')[0]}Z`,
+			favorite: faker.datatype.boolean(),
+			inviter_ref: faker.helpers.arrayElement([
+				faker.helpers.arrayElement([
+					null,
+					{ ...getGardenPendingInvitesQueryOpResponseRefSchemaMock() }
+				]),
+				undefined
+			]),
+			role: faker.helpers.arrayElement(['admin', 'editor', 'viewer'] as const),
+			user_ref: { id: faker.string.uuid() }
+		}
+	})),
+	...overrideResponse
+});
 
 export const getGardenMembershipAcceptCommandOpMockHandler = () => {
 	return http.post('*/gardens/command/accept_invite', async () => {
-		await delay(1000)
+		await delay(1000);
 		return new HttpResponse(null, {
 			status: 201,
 			headers: {
 				'Content-Type': 'application/json'
 			}
-		})
-	})
-}
+		});
+	});
+};
 
 export const getGardenMembershipRoleChangeCommandOpMockHandler = () => {
 	return http.post('*/gardens/command/change_role', async () => {
-		await delay(1000)
+		await delay(1000);
 		return new HttpResponse(null, {
 			status: 201,
 			headers: {
 				'Content-Type': 'application/json'
 			}
-		})
-	})
-}
+		});
+	});
+};
 
 export const getGardenCreateCommandOpMockHandler = () => {
 	return http.post('*/gardens/command/create', async () => {
-		await delay(1000)
+		await delay(1000);
 		return new HttpResponse(null, {
 			status: 201,
 			headers: {
 				'Content-Type': 'application/json'
 			}
-		})
-	})
-}
+		});
+	});
+};
 
 export const getGardenMembershipCreateCommandOpMockHandler = () => {
 	return http.post('*/gardens/command/invite', async () => {
-		await delay(1000)
+		await delay(1000);
 		return new HttpResponse(null, {
 			status: 201,
 			headers: {
 				'Content-Type': 'application/json'
 			}
-		})
-	})
-}
+		});
+	});
+};
 
 export const getGardenMembershipDeleteCommandOpMockHandler = () => {
 	return http.post('*/gardens/command/leave', async () => {
-		await delay(1000)
+		await delay(1000);
 		return new HttpResponse(null, {
 			status: 201,
 			headers: {
 				'Content-Type': 'application/json'
 			}
-		})
-	})
-}
+		});
+	});
+};
 
 export const getGardenMembershipRevokeCommandOpMockHandler = () => {
 	return http.post('*/gardens/command/revoke', async () => {
-		await delay(1000)
+		await delay(1000);
 		return new HttpResponse(null, {
 			status: 201,
 			headers: {
 				'Content-Type': 'application/json'
 			}
-		})
-	})
-}
+		});
+	});
+};
 
 export const getGardenAssociatedPartialsQueryOpMockHandler = (
 	overrideResponse?:
-		| AssociatedPartialsResult
+		| GardenAssociatedPartialsResult
 		| ((
 				info: Parameters<Parameters<typeof http.get>[1]>[0]
-		  ) => Promise<AssociatedPartialsResult> | AssociatedPartialsResult)
+		  ) => Promise<GardenAssociatedPartialsResult> | GardenAssociatedPartialsResult)
 ) => {
 	return http.get('*/gardens/query/associated_partials', async (info) => {
-		await delay(1000)
+		await delay(1000);
 		return new HttpResponse(
 			JSON.stringify(
 				overrideResponse !== undefined
@@ -263,9 +299,9 @@ export const getGardenAssociatedPartialsQueryOpMockHandler = (
 					'Content-Type': 'application/json'
 				}
 			}
-		)
-	})
-}
+		);
+	});
+};
 
 export const getGardenFullByKeyQueryOpMockHandler = (
 	overrideResponse?:
@@ -275,7 +311,7 @@ export const getGardenFullByKeyQueryOpMockHandler = (
 		  ) => Promise<GardenFullSchema> | GardenFullSchema)
 ) => {
 	return http.get('*/gardens/query/full_by_key', async (info) => {
-		await delay(1000)
+		await delay(1000);
 		return new HttpResponse(
 			JSON.stringify(
 				overrideResponse !== undefined
@@ -290,19 +326,19 @@ export const getGardenFullByKeyQueryOpMockHandler = (
 					'Content-Type': 'application/json'
 				}
 			}
-		)
-	})
-}
+		);
+	});
+};
 
 export const getGardenGenerateUniqueKeyQueryOpMockHandler = (
 	overrideResponse?:
-		| UniqueGardenKeyResult
+		| GardenUniqueKeyResult
 		| ((
 				info: Parameters<Parameters<typeof http.get>[1]>[0]
-		  ) => Promise<UniqueGardenKeyResult> | UniqueGardenKeyResult)
+		  ) => Promise<GardenUniqueKeyResult> | GardenUniqueKeyResult)
 ) => {
 	return http.get('*/gardens/query/generate_unique_key', async (info) => {
-		await delay(1000)
+		await delay(1000);
 		return new HttpResponse(
 			JSON.stringify(
 				overrideResponse !== undefined
@@ -317,9 +353,9 @@ export const getGardenGenerateUniqueKeyQueryOpMockHandler = (
 					'Content-Type': 'application/json'
 				}
 			}
-		)
-	})
-}
+		);
+	});
+};
 
 export const getGardenMostRelevantPartialsQueryOpMockHandler = (
 	overrideResponse?:
@@ -329,7 +365,7 @@ export const getGardenMostRelevantPartialsQueryOpMockHandler = (
 		  ) => Promise<GardenPartialSchema[]> | GardenPartialSchema[])
 ) => {
 	return http.get('*/gardens/query/most_relevant', async (info) => {
-		await delay(1000)
+		await delay(1000);
 		return new HttpResponse(
 			JSON.stringify(
 				overrideResponse !== undefined
@@ -344,9 +380,9 @@ export const getGardenMostRelevantPartialsQueryOpMockHandler = (
 					'Content-Type': 'application/json'
 				}
 			}
-		)
-	})
-}
+		);
+	});
+};
 
 export const getGardenPartialsByKeysQueryOpMockHandler = (
 	overrideResponse?:
@@ -356,7 +392,7 @@ export const getGardenPartialsByKeysQueryOpMockHandler = (
 		  ) => Promise<GardenPartialSchema[]> | GardenPartialSchema[])
 ) => {
 	return http.get('*/gardens/query/partials_by_key', async (info) => {
-		await delay(1000)
+		await delay(1000);
 		return new HttpResponse(
 			JSON.stringify(
 				overrideResponse !== undefined
@@ -371,9 +407,36 @@ export const getGardenPartialsByKeysQueryOpMockHandler = (
 					'Content-Type': 'application/json'
 				}
 			}
-		)
-	})
-}
+		);
+	});
+};
+
+export const getGardenPendingInvitesQueryOpMockHandler = (
+	overrideResponse?:
+		| GardenPendingInvitesResult
+		| ((
+				info: Parameters<Parameters<typeof http.get>[1]>[0]
+		  ) => Promise<GardenPendingInvitesResult> | GardenPendingInvitesResult)
+) => {
+	return http.get('*/gardens/query/pending_invites', async (info) => {
+		await delay(1000);
+		return new HttpResponse(
+			JSON.stringify(
+				overrideResponse !== undefined
+					? typeof overrideResponse === 'function'
+						? await overrideResponse(info)
+						: overrideResponse
+					: getGardenPendingInvitesQueryOpResponseMock()
+			),
+			{
+				status: 200,
+				headers: {
+					'Content-Type': 'application/json'
+				}
+			}
+		);
+	});
+};
 export const getGardensMock = () => [
 	getGardenMembershipAcceptCommandOpMockHandler(),
 	getGardenMembershipRoleChangeCommandOpMockHandler(),
@@ -385,5 +448,6 @@ export const getGardensMock = () => [
 	getGardenFullByKeyQueryOpMockHandler(),
 	getGardenGenerateUniqueKeyQueryOpMockHandler(),
 	getGardenMostRelevantPartialsQueryOpMockHandler(),
-	getGardenPartialsByKeysQueryOpMockHandler()
-]
+	getGardenPartialsByKeysQueryOpMockHandler(),
+	getGardenPendingInvitesQueryOpMockHandler()
+];

@@ -5,14 +5,14 @@
  * Backend API of the VerdanTech software project.
  * OpenAPI spec version: 0.1.0
  */
-import type { GardenPartialSchemaCreatorRef } from './gardenPartialSchemaCreatorRef'
-import type { GardenPartialSchemaVisibility } from './gardenPartialSchemaVisibility'
+import type { GardenPartialSchemaCreatorRef } from './gardenPartialSchemaCreatorRef';
+import type { GardenPartialSchemaVisibility } from './gardenPartialSchemaVisibility';
 
 export interface GardenPartialSchema {
-	creator_ref?: GardenPartialSchemaCreatorRef
-	id: string
-	key: string
-	name: string
-	num_memberships: number
-	visibility: GardenPartialSchemaVisibility
+	creator_ref?: GardenPartialSchemaCreatorRef;
+	id: string;
+	key: string;
+	name: string;
+	num_memberships: number;
+	visibility: GardenPartialSchemaVisibility;
 }

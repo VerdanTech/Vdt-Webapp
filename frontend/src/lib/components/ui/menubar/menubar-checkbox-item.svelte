@@ -1,14 +1,14 @@
 <script lang="ts">
-	import { Menubar as MenubarPrimitive } from 'bits-ui'
-	import Check from 'lucide-svelte/icons/check'
-	import { cn } from '$lib/utils.js'
+	import { Menubar as MenubarPrimitive } from 'bits-ui';
+	import Check from 'lucide-svelte/icons/check';
+	import { cn } from '$lib/utils/shadcn.js';
 
-	type $$Props = MenubarPrimitive.CheckboxItemProps
-	type $$Events = MenubarPrimitive.CheckboxItemEvents
+	type $$Props = MenubarPrimitive.CheckboxItemProps;
+	type $$Events = MenubarPrimitive.CheckboxItemEvents;
 
-	let className: $$Props['class'] = undefined
-	export let checked: $$Props['checked'] = false
-	export { className as class }
+	let className: $$Props['class'] = undefined;
+	export let checked: $$Props['checked'] = false;
+	export { className as class };
 </script>
 
 <MenubarPrimitive.CheckboxItem

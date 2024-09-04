@@ -40,7 +40,7 @@
 
 ### QueryResults
 
-#### ::: src.user.ops.queries.EmailSchema
+#### ::: src.user.ops.queries.UserEmailSchema
     options:
       show_root_heading: true
 #### ::: src.user.ops.queries.UserFullSchema
@@ -49,7 +49,7 @@
 #### ::: src.user.ops.queries.UserPublicSchema
     options:
       show_root_heading: true
-#### ::: src.user.ops.queries.PasswordVerificationResult
+#### ::: src.user.ops.queries.UserPasswordVerificationResult
     options:
       show_root_heading: true
 

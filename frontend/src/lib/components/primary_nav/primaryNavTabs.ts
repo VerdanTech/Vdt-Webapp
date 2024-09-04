@@ -1,33 +1,33 @@
-import iconIds from '$lib/assets/icons'
-import { externalLinks } from '$lib/assets/links'
-import { GardenPartialSchema } from '$codegen'
+import iconIds from '$lib/assets/icons';
+import { externalLinks } from '$lib/assets/links';
+import { GardenPartialSchema } from '$codegen';
 
 /**
  * Utility to get the base URL for the active garden.
  */
 const getGardenBaseUrl = (gardenKey: string): string => {
-	return '/app/gardens/' + gardenKey
-}
+	return '/app/gardens/' + gardenKey;
+};
 
 /**
  * @brief   Specifies the primary navigation tabs between feature domains.
  */
 export type PrimaryTabSpec = {
-	id: string
-	url: string
-	label: string
-	iconId: string
-	submenuItems: PrimaryTabItemSpec[] | null
-}
+	id: string;
+	url: string;
+	label: string;
+	iconId: string;
+	submenuItems: PrimaryTabItemSpec[] | null;
+};
 
 /**
  * @brief   Specifies the entries to the submenu of primary navigation tabs.
  */
 export type PrimaryTabItemSpec = {
-	url: string
-	label: string
-	iconId: string | null
-}
+	url: string;
+	label: string;
+	iconId: string | null;
+};
 
 /**
  * Constructs the tab which lists gardens the user has access to.
@@ -47,8 +47,8 @@ export const getGardensTab = (
 			url: getGardenBaseUrl(garden.key),
 			iconId: null
 		}))
-	}
-}
+	};
+};
 
 /**
  * Constructs the tabs of pages specific to one garden.
@@ -133,8 +133,8 @@ export const getGardenSpecifcTabs = (gardenKey: string): PrimaryTabSpec[] => {
 		//url: getGardenBaseUrl(gardenKey) + '/connections',
 		//submenuItems: null
 		//}
-	]
-}
+	];
+};
 
 /**
  * Constructs the non-garden specific tabs of static pages.
@@ -143,25 +143,25 @@ export const getGardenSpecifcTabs = (gardenKey: string): PrimaryTabSpec[] => {
 export const getNonGardenSpecificTabs = (): PrimaryTabSpec[] => {
 	return [
 		{
-			id: 'commons',
-			label: 'Commons',
-			iconId: iconIds.commonsIcon,
-			url: '/app/commons',
+			id: 'traits',
+			label: 'Traits',
+			iconId: iconIds.traitsIcon,
+			url: '/app/traits',
 			submenuItems: [
 				{
 					label: 'Cultivars',
 					iconId: iconIds.cultivarIcon,
-					url: '/app/commons/cultivars'
+					url: '/app/traits/cultivars'
 				},
 				{
 					label: 'Workspaces',
 					iconId: iconIds.workspaceIcon,
-					url: '/app/commons/workspaces'
+					url: '/app/traits/workspaces'
 				},
 				{
 					label: 'Environments',
 					iconId: iconIds.environmentIcon,
-					url: '/app/commons/environments'
+					url: '/app/traits/environments'
 				}
 			]
 		},
@@ -211,5 +211,5 @@ export const getNonGardenSpecificTabs = (): PrimaryTabSpec[] => {
 				}
 			]
 		}
-	]
-}
+	];
+};

@@ -1,7 +1,7 @@
 <script>
-	import PrimaryNav from '$components/primary_nav/PrimaryNav.svelte'
+	import PrimaryNav from '$components/primary_nav/PrimaryNav.svelte';
 
-	let { children } = $props()
+	let { children } = $props();
 </script>
 
 <!-- Wraps the primary nav to provide proper spacing between the nav and content. -->

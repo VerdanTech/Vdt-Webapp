@@ -7,26 +7,26 @@
  */
 
 export interface UserCreateCommand {
-	email_address: string
+	email_address: string;
 	/**
 	 * Must be between 6 and 255 characters long and contain at least one lowercase letter, one uppercase letter, one digit, and one special character
 	 * @minLength 6
 	 * @maxLength 255
 	 * @pattern ^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*\W).*$
 	 */
-	password1: string
+	password1: string;
 	/**
 	 * Must be between 6 and 255 characters long and contain at least one lowercase letter, one uppercase letter, one digit, and one special character
 	 * @minLength 6
 	 * @maxLength 255
 	 * @pattern ^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*\W).*$
 	 */
-	password2: string
+	password2: string;
 	/**
 	 * Must be between 3 and 50 characters long and contain only alphanumeric characters and underscores. Must be unique
 	 * @minLength 3
 	 * @maxLength 50
 	 * @pattern ^[a-zA-Z0-9_]*$
 	 */
-	username: string
+	username: string;
 }

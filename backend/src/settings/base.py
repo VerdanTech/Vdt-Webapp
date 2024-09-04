@@ -1,8 +1,7 @@
 # Standard Library
-import re
+from datetime import timedelta
 from enum import Enum
 from pathlib import Path
-from typing import Pattern
 
 # External Libraries
 from decouple import Csv, config
@@ -22,6 +21,7 @@ API_URL_BASE: str = ""
 # CLIENT RELATED SETTINGS
 # ======================================
 
+CLIENT_SAMESITE: bool = config("CLIENT_SAMESITE", cast=bool, default=False)
 CLIENT_DOMAIN: str = config("CLIENT_DOMAIN", cast=str, default="verdantech.io")  # type: ignore
 if USING_HTTPS:
     CLIENT_BASE_URL: str = "https://" + CLIENT_DOMAIN + "/"
@@ -51,7 +51,16 @@ ALLOW_ORIGINS = config("ALLOWED_ORIGINS", cast=Csv(), default="")
 # AUTH SETTINGS
 # ======================================
 
-JWT_SECRET = str(config("JWT_SECRET", cast=str, default="developmentsecret123"))
+ACCESS_JWT_SECRET = str(
+    config("ACCESS_JWT_SECRET", cast=str, default="developmentsecret123")
+)
+ACCESS_JWT_EXPIRY_TIMEDELTA = timedelta(minutes=15)
+ACCESS_JWT_ALGORITHM = "HS256"
+REFRESH_JWT_SECRET = str(
+    config("REFRESH_JWT_SECRET", cast=str, default="developmentsecret456")
+)
+REFRESH_JWT_EXPIRY_TIMEDELTA = timedelta(days=7)
+REFRESH_JWT_ALGORITHM = "HS256"
 
 # ============================================================================
 # APPLICATION SETTINGS
@@ -121,7 +130,7 @@ class EmailConfirmationOptions(Enum):
         return self.value == self.REQUIRED_FOR_LOGIN
 
 
-EMAIL_CONFIRMATION = EmailConfirmationOptions.REQUIRED_FOR_LOGIN
+EMAIL_CONFIRMATION = EmailConfirmationOptions.REQUIRED_FOR_NONE
 EMAIL_VERIFICATON_EXPIRY_TIME_HOURS: int = 72
 
 # Email confirmation

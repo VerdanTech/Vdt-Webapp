@@ -1,10 +1,10 @@
-import { defineConfig } from 'orval'
+import { defineConfig } from 'orval';
 
 export default defineConfig({
 	vdt_frontend: {
 		input: {
 			// Path to the openapi specification.
-			target: './schema.yaml',
+			target: './src/lib/backendSchema/openapi.yaml',
 			// Whether to apply IBM OpenAPI linter.
 			validation: false
 		},
@@ -34,4 +34,4 @@ export default defineConfig({
 			}
 		}
 	}
-})
+});

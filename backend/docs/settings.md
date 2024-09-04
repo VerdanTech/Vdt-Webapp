@@ -17,6 +17,7 @@ This section contains settings relevant to the Litestar application and other AP
 
 | Name | Type | Description | Default |
 | -------- | ------- | ------- | ------- |
+| CLIENT_SAMESITE | bool | Identical to the environment variable. | False |
 | CLIENT_DOMAIN | str | Identical to the environment variable. |`/verdantech.io` |
 | CLIENT_BASE_URL | str | Base of the URL to the frontend. | `http://verdantech.io/` |
 | CLIENT_EMAIL_VERIFICATION_URL | str | Frontend URL for email verification. Required to send email verification emails. | `http://verdantech.io/register/verify/` |
@@ -44,7 +45,8 @@ This section contains settings relevant to the Litestar application and other AP
 
 | Name | Type | Description | Default |
 | -------- | ------- | ------- | ------- |
-| JWT_SECRET | str | Identical to environment the variable. | `developmentsecret123` |
+| ACCESS_JWT_SECRET | str | Identical to the environment variable. | `developmentsecret123` |
+| REFRESH_JWT_SECRET | str | Identical to the environment variable. | `developmentsecret456` |
 
 ## Application
 

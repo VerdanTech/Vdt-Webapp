@@ -20,6 +20,9 @@ values: SpecValues = {
     "garden_description": {
         Specs.MAX_LENGTH: 1400,
     },
+    "user_invites_list": {
+        Specs.MAX_LENGTH: 10,
+    },
 }
 descriptions: SpecDescriptions = {
     "garden_name": {
@@ -37,6 +40,10 @@ descriptions: SpecDescriptions = {
     "garden_description": {
         Specs.MAX_LENGTH: f"Must be at most {values['garden_description'][Specs.MAX_LENGTH]} characters",
         "field": f"Must be at most {values['garden_description'][Specs.MAX_LENGTH]} characters",
+    },
+    "user_invites_list": {
+        Specs.MAX_LENGTH: f"A maximum of {values['user_invites_list'][Specs.MAX_LENGTH]} users can be invited at once",
+        "field": f"A maximum of {values['user_invites_list'][Specs.MAX_LENGTH]} users can be invited at once",
     },
 }
 specs = SpecCollection("garden", values, descriptions)

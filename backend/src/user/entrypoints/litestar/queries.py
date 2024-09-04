@@ -8,6 +8,7 @@ from litestar.params import Dependency
 from svcs import Container
 
 # VerdanTech Source
+from src.common.entrypoints.litestar import requires_account
 from src.user.ops import queries
 
 
@@ -51,11 +52,11 @@ class UserQueryController(Controller):
 
     @get(
         path="client_profile",
-        # name=url_to_route_name(urls.USER_ROUTER_URL_BASE, urls.USER_CLIENT_PROFILE_URL),
         summary="User client profile view.",
         description="Returns the profile of the authenticated user.",
         response_description="The profile of the authenticated user.",
         operation_id="UserClientProfileQueryOp",
+        guards=[requires_account],
     )
     async def client_profile(
         self,
@@ -78,3 +79,18 @@ class UserQueryController(Controller):
         svcs_container.register_local_value(State, state)
         user_schema = await queries.client_profile(client=request.user)
         return user_schema
+
+    @get(
+        path="username_exists",
+        summary="Checks whether a username exists.",
+        description="Returns true if the given username exists.",
+        response_description="True if the given username exists.",
+        operation_id=queries.UsernameExistsQuery.to_operation_id(),
+    )
+    async def username_exists(
+        self,
+        username: str,
+        state: State,
+        svcs_container: Container = Dependency(skip_validation=True),
+    ) -> bool:
+        ...

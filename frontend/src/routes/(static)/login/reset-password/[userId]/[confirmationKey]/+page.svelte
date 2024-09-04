@@ -1,12 +1,12 @@
 <script lang="ts">
-	import { page } from '$app/stores'
-	import * as Card from '$lib/components/ui/card'
-	import { Button } from '$components/ui/button'
-	import * as Dialog from '$components/ui/dialog'
-	import PasswordResetForm from './PasswordResetForm.svelte'
+	import { page } from '$app/stores';
+	import * as Card from '$lib/components/ui/card';
+	import { Button } from '$components/ui/button';
+	import * as Dialog from '$components/ui/dialog';
+	import PasswordResetForm from './PasswordResetForm.svelte';
 
 	/** Set to true on form success. */
-	let succeeded = $state<boolean>(false)
+	let succeeded = $state<boolean>(false);
 </script>
 
 <svelte:head>

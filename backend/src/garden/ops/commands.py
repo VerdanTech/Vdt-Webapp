@@ -45,9 +45,7 @@ async def create_garden(
         # Generate a new garden key if one was not provided
         key: str
         if command.key is None:
-            key_result = await generate_unique_garden_key(
-                svcs_container=svcs_container, client=client
-            )
+            key_result = await generate_unique_garden_key(svcs_container=svcs_container)
             key = key_result.key
         else:
             key = command.key
@@ -82,9 +80,9 @@ async def create_garden(
             events.PendingInvites(
                 garden_ref=garden.ref,
                 client_ref=client.ref,
-                admin_ids=command.admin_ids,
-                editor_ids=command.editor_ids,
-                viewer_ids=command.viewer_ids,
+                admin_usernames=command.admin_usernames,
+                editor_usernames=command.editor_usernames,
+                viewer_usernames=command.viewer_usernames,
             )
         )
 
@@ -115,9 +113,9 @@ async def create_invites(
         events.PendingInvites(
             garden_ref=Ref(id=command.garden_id),
             client_ref=client.ref,
-            admin_ids=command.admin_ids,
-            editor_ids=command.editor_ids,
-            viewer_ids=command.viewer_ids,
+            admin_usernames=command.admin_usernames,
+            editor_usernames=command.editor_usernames,
+            viewer_usernames=command.viewer_usernames,
         )
     )
 

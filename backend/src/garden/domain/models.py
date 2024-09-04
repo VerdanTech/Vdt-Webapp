@@ -19,7 +19,7 @@ from src.common.domain import (
 from src.user.domain import User
 from src.utils import key_generator
 
-from .enums import OperationEnum, PermissionEnum, RoleEnum, VisibilityEnum
+from .enums import GardenVisibilityEnum, OperationEnum, PermissionEnum, RoleEnum
 from .events import MembershipAccepted, MembershipRevoked
 from .permission import PermissionRouter, permission_rules
 from .specs import specs
@@ -197,7 +197,7 @@ class Garden(RootEntity):
         name (str): Nnn-unique name.
         key (str): unique shortand name for URLs - unique.
         creator (Ref[User]): user who created the Garden.
-        visibility (VisibilityEnum): controls which non-member users can view this Garden.
+        visibility (GardenVisibilityEnum): controls which non-member users can view this Garden.
         memberships (set[GardenMembership]): all memberships in the Garden. One per User.
         description (str): optional description.
         is_active (bool): whether the Garden is active. Marks for deletion.
@@ -206,7 +206,7 @@ class Garden(RootEntity):
     name: str  # type: ignore
     key: str  # type: ignore
     creator_ref: Ref[User] | None  # type: ignore
-    visibility: VisibilityEnum = VisibilityEnum.PRIVATE
+    visibility: GardenVisibilityEnum = GardenVisibilityEnum.PRIVATE
     memberships: set[GardenMembership] = field(factory=set)
     description: str = ""
     is_active: bool = True

@@ -5,16 +5,15 @@
  * Backend API of the VerdanTech software project.
  * OpenAPI spec version: 0.1.0
  */
-import type { RefSchema } from './refSchema'
-import type { GardenMembershipFullSchemaInviterRef } from './gardenMembershipFullSchemaInviterRef'
-import type { GardenMembershipFullSchemaRole } from './gardenMembershipFullSchemaRole'
+import type { GardenMembershipFullSchemaInviterRef } from './gardenMembershipFullSchemaInviterRef';
+import type { GardenMembershipFullSchemaRole } from './gardenMembershipFullSchemaRole';
+import type { RefSchema } from './refSchema';
 
 export interface GardenMembershipFullSchema {
-	accepted: boolean
-	created_at: string
-	favorite: boolean
-	garden_ref: RefSchema
-	inviter_ref?: GardenMembershipFullSchemaInviterRef
-	role: GardenMembershipFullSchemaRole
-	user_ref: RefSchema
+	accepted: boolean;
+	created_at: string;
+	favorite: boolean;
+	inviter_ref?: GardenMembershipFullSchemaInviterRef;
+	role: GardenMembershipFullSchemaRole;
+	user_ref: RefSchema;
 }
