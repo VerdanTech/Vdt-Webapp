@@ -7,6 +7,7 @@
 	import * as Collapsible from '$lib/components/ui/collapsible';
 	import cultivarFields from '$lib/backendSchema/specs/cultivar';
 	import { cultivarCollectionQuery } from '$data/cultivar/queries';
+	import InPlaceEdit from '$components/InPlaceEdit.svelte';
 
 	/**https://www.charpeni.com/blog/properly-type-object-keys-and-object-entries*/
 
@@ -40,6 +41,7 @@
 		name: 'West Coast Seeds',
 		slug: 'west-coast-seeds',
 		tags: ['west coast', 'canada', 'native_plants'],
+		visibility: "private",
 		cultivars: [
 			{
 				id: 'iaosen',
@@ -198,10 +200,13 @@
 										{@render infoPopover(cultivarFields.cultivar_collection_visibility.description)}
 										{/if}
 									</div>
-									<span
+									<InPlaceEdit editing={editingCollection} value={collection.visibility}></InPlaceEdit>
+									<!--
+										<span
 										class="text-md rounded-lg border border-neutral-4 bg-neutral-2 p-2"
 										>tags</span
-									>
+										>
+									-->
 								</div>
 							</li>
 							<!-- Collection tags. -->
@@ -227,7 +232,7 @@
 									>
 									<span
 										class="text-md rounded-lg border border-neutral-4 bg-neutral-2 p-2"
-										>tags</span
+										>TODO</span
 									>
 								</div>
 							</li>
@@ -237,7 +242,7 @@
 									<span class="ml-2 text-sm font-light text-neutral-11">Creator</span>
 									<span
 										class="text-md rounded-lg border border-neutral-4 bg-neutral-2 p-2"
-										>tags</span
+										>TODO</span
 									>
 								</div>
 							</li>
