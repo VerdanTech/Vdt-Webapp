@@ -1,14 +1,14 @@
 <script lang="ts">
-    type Props = {
-        editing: boolean
-        value: any
-    }
+	type Props = {
+		editing: boolean;
+		value: any;
+	};
 
-    let {editing = $bindable(), value}: Props = $props()
+	let { editing = $bindable(), value }: Props = $props();
 </script>
 
 {#if editing}
-value
+	value
 {:else}
-not edeting
+	not edeting
 {/if}

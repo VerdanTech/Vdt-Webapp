@@ -2,24 +2,36 @@
 	import { melt, createTreeView, type TreeView } from '@melt-ui/svelte';
 	import Icon from '@iconify/svelte';
 	import iconIds from '$lib/assets/icons';
-	import * as DropdownMenu from "$lib/components/ui/dropdown-menu";
+	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
 	import * as Popover from '$lib/components/ui/popover';
 	import * as Collapsible from '$lib/components/ui/collapsible';
-	import * as Select from "$lib/components/ui/select";
+	import * as Select from '$lib/components/ui/select';
+	import { Field, Control, Label, FieldErrors, Description } from 'formsnap';
 	import cultivarFields from '$lib/backendSchema/specs/cultivar';
 	import { cultivarCollectionQuery } from '$data/cultivar/queries';
 	import InPlaceEdit from '$components/InPlaceEdit.svelte';
-	import { CultivarCollectionCreateCommandVisibility, CultivarCollectionFullSchemaVisibility } from '$codegen/types';
-	import type {CultivarSchema, CultivarCollectionFullSchema } from '$codegen/types';
-
-
-	/**https://www.charpeni.com/blog/properly-type-object-keys-and-object-entries*/
+	import { superForm, defaults } from 'sveltekit-superforms';
+	import { zod } from 'sveltekit-superforms/adapters';
+	import {
+		CultivarCollectionCreateCommandVisibility,
+		CultivarCollectionFullSchemaVisibility, CultivarCollectionUpdateCommandVisibility 
+	} from '$codegen/types';
+	import type { CultivarSchema, CultivarCollectionFullSchema } from '$codegen/types';
+	import { cultivarCollectionUpdate } from '$data/cultivar/commands';
+	import { createServerErrors } from '$state/formServerErrors.svelte';
+	import CultivarTree from './CultivarTree.svelte';
 
 	/** Props. */
 	type Props = {
 		collectionId: string;
+		gardenRef: string | undefined;
 	};
-	let { collectionId }: Props = $props();
+	let { collectionId, gardenRef = undefined }: Props = $props();
+
+	/** Form mutations. */
+	const collectionUpdateMutation = cultivarCollectionUpdate.mutation();
+	/** Server errors. */
+	const serverErrors = createServerErrors();
 
 	/** Queries. */
 	const collectionQuery = cultivarCollectionQuery(
@@ -46,21 +58,20 @@
 		slug: 'west-coast-seeds',
 		tags: ['west coast', 'canada', 'native_plants'],
 		visibility: CultivarCollectionFullSchemaVisibility.private,
-		created_at: "todo: figureout dt format",
+		created_at: 'todo: figureout dt format',
 		cultivars: [
 			{
 				id: 'iaosen',
 				name: 'Lettuce',
 				names: ['Lettuce', 'The green shit'],
 				key: 'Le',
-				description:
-					'Lettuce is a pretty good plant, I like making wraps with it.',
+				description: 'Lettuce is a pretty good plant, I like making wraps with it.',
 				attributes: {
 					frost_date_planting_window_profile: {
 						last_frost_window_open: 40,
 						last_frost_window_close: null,
 						first_frost_window_open: 20,
-						first_frost_window_close: 30,
+						first_frost_window_close: 30
 					},
 					origin_profile: {
 						transplantable: true
@@ -76,12 +87,58 @@
 		] as CultivarSchema[]
 	};
 
+	/**
+	 * Standard form configuration:
+	 * - SPA: True disables server-side functionality.
+	 * - validators: Zod schema specifies form validation.
+	 * - onUpdate: Submission handler. Activates svelte-query mutation,
+	 *  executes success task, and sets server errors on failure.
+	 * - onChange: Reset server errors.
+	 */
+	const form = superForm(defaults(zod(cultivarCollectionUpdate.schema)), {
+		SPA: true,
+		validators: zod(cultivarCollectionUpdate.schema),
+		onUpdate({ form }) {
+			if (form.valid) {
+				$collectionUpdateMutation.mutate(form.data, {
+					onSuccess: () => {
+						/** TODO: Optimistic update. */
+					},
+					onError: (error) => {
+						// @ts-ignore
+						serverErrors.setErrors(error);
+					}
+				});
+			}
+		},
+		onChange() {
+			serverErrors.reset();
+		}
+	});
+	const { form: formData, enhance } = form;
+
 	/* Defines the labels for the visibility enum options. */
-		const visibilityOptions = [
+	const visibilityOptions = [
 		{ value: CultivarCollectionFullSchemaVisibility.private, label: 'Private' },
 		{ value: CultivarCollectionFullSchemaVisibility.unlisted, label: 'Unlisted' },
 		{ value: CultivarCollectionFullSchemaVisibility.public, label: 'Public' }
 	];
+
+	function debounceFormSubmit() {}
+
+	/**
+	 * Used to update the visibility on the superforms when it changes on the form.
+	 * Required as the value of the superform data can't be bound to the form value type.
+	 */
+	 function onVisibilitySelectedChange(
+		value: { value: CultivarCollectionFullSchemaVisibility; label?: string } | undefined
+	) {
+		if (value) {
+			/** @ts-ignore */
+			$formData.visibility = value.value;
+			debounceFormSubmit()
+		}
+	}
 
 	let detailsOpen = $state(false);
 	let editingCollection = $state(false);
@@ -97,6 +154,21 @@
 			/>
 		</Popover.Trigger>
 		<Popover.Content class="max-w-2xl">
+			{description}
+		</Popover.Content>
+	</Popover.Root>
+{/snippet}
+
+{#snippet errorPopover(description: string, errorAttrs)}
+	<Popover.Root>
+		<Popover.Trigger class="w-8">
+			<Icon
+				icon={iconIds.formFieldDescriptionIcon}
+				width="1rem"
+				class="ml-2 text-destructive-6 hover:text-destructive-7"
+			/>
+		</Popover.Trigger>
+		<Popover.Content {...errorAttrs} class="max-w-2xl">
 			{description}
 		</Popover.Content>
 	</Popover.Root>
@@ -124,178 +196,193 @@
 				<h1 class="truncate text-2xl font-bold">{collection.name}</h1>
 			</div>
 			<DropdownMenu.Root>
-				<DropdownMenu.Trigger class="ml-2 rounded-lg border border-accent-6 bg-accent-4 p-2">
+				<DropdownMenu.Trigger
+					class="ml-2 rounded-lg border border-accent-6 bg-accent-4 p-2"
+				>
 					Options
 				</DropdownMenu.Trigger>
 				<DropdownMenu.Content>
 					{#if editingCollection}
-					<DropdownMenu.Item on:click={() => {editingCollection=false}}>
-						<Icon icon={iconIds.endEditingIcon} width="1.25rem" />
-						<span class="mx-2">
-							End Editing
-						</span>
-					</DropdownMenu.Item>
+						<DropdownMenu.Item
+							on:click={() => {
+								editingCollection = false;
+							}}
+						>
+							<Icon icon={iconIds.endEditingIcon} width="1.25rem" />
+							<span class="mx-2"> End Editing </span>
+						</DropdownMenu.Item>
 					{:else}
-					<DropdownMenu.Item on:click={()=>{editingCollection=true}}>
-						<Icon icon={iconIds.startEditingIcon} width="1.25rem" />
-						<span class="mx-2">
-							Edit Collection
-						</span>
-					</DropdownMenu.Item>
+						<DropdownMenu.Item
+							on:click={() => {
+								editingCollection = true;
+							}}
+						>
+							<Icon icon={iconIds.startEditingIcon} width="1.25rem" />
+							<span class="mx-2"> Edit Collection </span>
+						</DropdownMenu.Item>
 					{/if}
 					<DropdownMenu.Item>
 						<Icon icon={iconIds.inheritCultivarCollectionIcon} width="1.25rem" />
-						<span class="mx-2">
-							Change Inheritance
-						</span>
+						<span class="mx-2"> Change Inheritance </span>
 					</DropdownMenu.Item>
 					<DropdownMenu.Item>
 						<Icon icon={iconIds.mergeCultivarCollectionIcon} width="1.25rem" />
-						<span class="mx-2">
-							Merge Collection
-						</span>
+						<span class="mx-2"> Merge Collection </span>
 					</DropdownMenu.Item>
 					<DropdownMenu.Item>
 						<Icon icon={iconIds.duplicateCultivarCollectionIcon} width="1.25rem" />
-						<span class="mx-2">
-							Duplicate Collection
-						</span>
+						<span class="mx-2"> Duplicate Collection </span>
 					</DropdownMenu.Item>
 					<DropdownMenu.Item>
 						<Icon icon={iconIds.deleteIcon} width="1.25rem" />
-						<span class="mx-2">
-							Delete Collection
-						</span>
+						<span class="mx-2"> Delete Collection </span>
 					</DropdownMenu.Item>
 				</DropdownMenu.Content>
 			</DropdownMenu.Root>
 		</div>
 
-		<!-- Details -->
-		<div>
-			<div class="my-2">
-				<div class="mx-2 flex items-center justify-between text-sm text-neutral-12">
-					<span>Description</span>
-					{#if editingCollection}
-					{@render infoPopover(cultivarFields.cultivar_collection_description.description)}
-					{/if}
-					<div class="ml-4 h-[1px] flex-grow rounded-lg bg-neutral-3"></div>
-				</div>
-				<p
-					class="mx-2 mt-2 rounded-lg border border-neutral-4 bg-neutral-2 p-2 text-sm text-neutral-11"
-				>
-					{collection.description}
-				</p>
-			</div>
-			<div class="my-2">
-				<Collapsible.Root bind:open={detailsOpen}>
-					<Collapsible.Trigger
-						class="flex w-full items-center justify-between rounded-lg py-1 transition-colors hover:bg-neutral-3"
-					>
-						<span class="mx-2 text-sm text-neutral-12">Details</span>
+		<!-- Collection info -->
+		<form method="POST" use:enhance>
+			<div>
+				<div class="my-2">
+					<div class="mx-2 flex items-center justify-between text-sm text-neutral-12">
+						<span>Description</span>
+						{#if editingCollection}
+							{@render infoPopover(
+								cultivarFields.cultivar_collection_description.description
+							)}
+						{/if}
 						<div class="ml-4 h-[1px] flex-grow rounded-lg bg-neutral-3"></div>
-						<Icon
-							icon={iconIds.chevronRight}
-							width="1.5rem"
-							class="ml-2 {detailsOpen ? 'rotate-90' : ''}"
-						/>
-					</Collapsible.Trigger>
-					<Collapsible.Content class="mx-2 mt-2 text-neutral-11">
-						<ul class="flex w-full flex-col">
-							<!-- Collection visibility. -->
-							<li class="my-2 w-full">
-								<div class="flex items-center justify-between">
-									<div class="flex items-center">
-										<span class="ml-2 text-sm font-light text-neutral-11">Visibility</span
-										>
-										{#if editingCollection}
-										{@render infoPopover(cultivarFields.cultivar_collection_visibility.description)}
-										{/if}
-									</div>
-									<Select.Root
-									portal={null}
-									loop={true}
-									required={false}
-									disabled={!editingCollection}
-									items={visibilityOptions}
-									selected={{"value": collection.visibility, "label": "Private"}}
-								>
-									<Select.Trigger chevron={editingCollection} class="ml-2 text-sm font-light text-neutral-12 max-w-32 disabled:cursor-auto">
-										<Select.Value placeholder="Private" />
-									</Select.Trigger>
-									<Select.Content>
-										<Select.Group>
-											<Select.Label>Collection Visibility</Select.Label>
-											{#each visibilityOptions as visibilityOption}
-												<Select.Item value={visibilityOption.value} label={visibilityOption.label}
-													>{visibilityOption.label}</Select.Item
+					</div>
+					<p
+						class="mx-2 mt-2 rounded-lg border border-neutral-4 bg-neutral-2 p-2 text-sm text-neutral-11"
+					>
+						{collection.description}
+					</p>
+				</div>
+				<div class="my-2">
+					<Collapsible.Root bind:open={detailsOpen}>
+						<Collapsible.Trigger
+							class="flex w-full items-center justify-between rounded-lg py-1 transition-colors hover:bg-neutral-3"
+						>
+							<span class="mx-2 text-sm text-neutral-12">Details</span>
+							<div class="ml-4 h-[1px] flex-grow rounded-lg bg-neutral-3"></div>
+							<Icon
+								icon={iconIds.chevronRight}
+								width="1.5rem"
+								class="ml-2 {detailsOpen ? 'rotate-90' : ''}"
+							/>
+						</Collapsible.Trigger>
+						<Collapsible.Content class="mx-2 mt-2 text-neutral-11">
+							<ul class="flex w-full flex-col">
+								<!-- Collection visibility. -->
+								<li class="my-2 w-full">
+									<Field {form} name="visibility">
+										<Control let:attrs>
+											<div class="flex items-center justify-between">
+												<div class="flex items-center">
+													<span class="ml-2 text-sm font-light text-neutral-11"
+														>Visibility</span
+													>
+													{@render infoPopover(
+														cultivarFields.cultivar_collection_visibility.description
+													)}
+													<FieldErrors let:errors let:errorAttrs>
+														{#each errors as err}
+															{@render errorPopover(err, errorAttrs)}
+														{/each}
+														{#each serverErrors.errors['cultivar_collection_visibility'] as err}
+															{@render errorPopover(err, errorAttrs)}
+														{/each}
+													</FieldErrors>
+												</div>
+												<Select.Root
+													portal={null}
+													loop={true}
+													required={false}
+													disabled={!editingCollection}
+													items={visibilityOptions}
+													onSelectedChange={onVisibilitySelectedChange}
+													selected={{ value: collection.visibility, label: 'Private' }}
 												>
-											{/each}
-										</Select.Group>
-									</Select.Content>
-									<Select.Input name="gardenVisibility" />
-								</Select.Root>
-									<!--
+													<Select.Trigger
+														chevron={editingCollection}
+														class="ml-2 w-28 text-sm font-light text-neutral-12 disabled:cursor-auto"
+													>
+														<Select.Value placeholder="Private" />
+													</Select.Trigger>
+													<Select.Content>
+														<Select.Group>
+															{#each visibilityOptions as visibilityOption}
+																<Select.Item
+																	value={visibilityOption.value}
+																	label={visibilityOption.label}
+																	>{visibilityOption.label}</Select.Item
+																>
+															{/each}
+														</Select.Group>
+													</Select.Content>
+													<Select.Input {...attrs} name="cultivraCollectionVisibility" />
+												</Select.Root>
+											</div>
+										</Control>
+									</Field>
+								</li>
+								<!-- Collection tags. -->
+								<li class="my-2 w-full">
+									<div class="flex items-center justify-between">
+										<div class="flex items-center">
+											<span class="ml-2 text-sm font-light text-neutral-11">Tags</span>
+											{@render infoPopover(
+												cultivarFields.cultivar_collection_tags.description
+											)}
+										</div>
 										<span
-										class="text-md rounded-lg border border-neutral-4 bg-neutral-2 p-2"
-										>tags</span
+											class="text-md rounded-lg border border-neutral-4 bg-neutral-2 p-2"
+											>tags</span
 										>
-									-->
-								</div>
-							</li>
-							<!-- Collection tags. -->
-							<li class="my-2 w-full">
-								<div class="flex items-center justify-between">
-									<div class="flex items-center">
-										<span class="ml-2 text-sm font-light text-neutral-11">Tags</span>
-										{#if editingCollection}
-										{@render infoPopover(cultivarFields.cultivar_collection_tags.description)}
-										{/if}
 									</div>
-									<span
-										class="text-md rounded-lg border border-neutral-4 bg-neutral-2 p-2"
-										>tags</span
-									>
-								</div>
-							</li>
-							<!-- Collection inheritance - inherited from. -->
-							<li class="my-2 w-full">
-								<div class="flex items-center justify-between">
-									<span class="ml-2 text-sm font-light text-neutral-11"
-										>Inherits from</span
-									>
-									<span
-										class="text-md rounded-lg border border-neutral-4 bg-neutral-2 p-2"
-										>TODO</span
-									>
-								</div>
-							</li>
-							<!-- Collection creator. -->
-							<li class="my-2 w-full">
-								<div class="flex items-center justify-between">
-									<span class="ml-2 text-sm font-light text-neutral-11">Creator</span>
-									<span
-										class="text-md rounded-lg border border-neutral-4 bg-neutral-2 p-2"
-										>TODO</span
-									>
-								</div>
-							</li>
-							<!-- Collection created at. -->
-							<li class="my-2 w-full">
-								<div class="flex items-center justify-between">
-									<span class="ml-2 text-sm font-light text-neutral-11">Created at</span
-									>
-									<span
-										class="text-md rounded-lg border border-neutral-4 bg-neutral-2 p-2"
-										>tags</span
-									>
-								</div>
-							</li>
-						</ul>
-					</Collapsible.Content>
-				</Collapsible.Root>
+								</li>
+								<!-- Collection inheritance - inherited from. -->
+								<li class="my-2 w-full">
+									<div class="flex items-center justify-between">
+										<span class="ml-2 text-sm font-light text-neutral-11"
+											>Inherits from</span
+										>
+										<span
+											class="text-md rounded-lg border border-neutral-4 bg-neutral-2 p-2"
+											>TODO</span
+										>
+									</div>
+								</li>
+								<!-- Collection creator. -->
+								<li class="my-2 w-full">
+									<div class="flex items-center justify-between">
+										<span class="ml-2 text-sm font-light text-neutral-11">Creator</span>
+										<span
+											class="text-md rounded-lg border border-neutral-4 bg-neutral-2 p-2"
+											>TODO</span
+										>
+									</div>
+								</li>
+								<!-- Collection created at. -->
+								<li class="my-2 w-full">
+									<div class="flex items-center justify-between">
+										<span class="ml-2 text-sm font-light text-neutral-11"
+											>Created at</span
+										>
+										<span
+											class="text-md rounded-lg border border-neutral-4 bg-neutral-2 p-2"
+											>tags</span
+										>
+									</div>
+								</li>
+							</ul>
+						</Collapsible.Content>
+					</Collapsible.Root>
+				</div>
 			</div>
-		</div>
+		</form>
 
 		<!-- Cultivars menu -->
 		<div class="my-3 h-8 w-full rounded-2xl border border-neutral-8 bg-neutral-3"></div>
@@ -308,154 +395,7 @@
 				{@const cultivarTreeId = cultivar.id}
 
 				<li class="w-full">
-					<button
-						use:melt={$item({ id: cultivarTreeId, hasChildren: hasProfiles })}
-						class="flex w-full w-full select-none items-center justify-between rounded-lg py-1 transition-colors hover:bg-neutral-3"
-					>
-						<div class="flex items-center overflow-hidden">
-							<span class="mx-2 truncate text-lg font-bold text-neutral-12">
-								{cultivar.name}
-							</span>
-							{#if cultivar.key}
-								<span class="h-l w-1 text-neutral-12">&#183;</span>
-								<span class="text-md mx-2 italic">{cultivar.key}</span>
-							{/if}
-						</div>
-						<div class="h-[1px] flex-grow rounded-lg bg-neutral-3"></div>
-						<Icon
-							icon={iconIds.chevronRight}
-							width="1.5rem"
-							class="ml-2 {$isExpanded(cultivarTreeId) ? 'rotate-90' : ''}"
-						/>
-					</button>
-
-					<!-- Cultivar tree item children. -->
-					<ul use:melt={$group({ id: cultivar.id })} class="w-full">
-						<!-- Details tree item -->
-						<li class="my-2 w-full">
-							<button
-								use:melt={$item({ id: cultivar.id + 'details', hasChildren: true })}
-								class="flex w-full items-center justify-between rounded-lg py-1 transition-colors hover:bg-neutral-3"
-							>
-								<span class="text-md ml-6 truncate font-medium text-neutral-12">
-									Details
-								</span>
-								<div class="ml-4 h-[1px] flex-grow rounded-lg bg-neutral-3"></div>
-								<Icon
-									icon={iconIds.chevronRight}
-									width="1.5rem"
-									class="ml-2 {$isExpanded(cultivar.id + 'details') ? 'rotate-90' : ''}"
-								/>
-							</button>
-
-							<ul use:melt={$group({ id: cultivar.id + 'details' })} class="w-full">
-								<!-- Cultivar name tree item. -->
-								<li class="my-2 w-full">
-									<div
-										use:melt={$item({ id: cultivar.id + 'name' })}
-										class="flex items-center justify-between"
-									>
-										<span class="ml-10 text-sm font-light text-neutral-11">Name</span>
-										<span
-											class="text-md rounded-lg border border-neutral-4 bg-neutral-2 p-2"
-											>{cultivar.names}</span
-										>
-									</div>
-								</li>
-								<!-- Cultivar key tree item. -->
-								<li class="my-2 w-full">
-									<div
-										use:melt={$item({ id: cultivar.id + 'key' })}
-										class="flex items-center justify-between"
-									>
-										<span class="ml-10 text-sm font-light text-neutral-11">Key</span>
-										<span
-											class="text-md rounded-lg border border-neutral-4 bg-neutral-2 p-2"
-											>{cultivar.key}</span
-										>
-									</div>
-								</li>
-								<!-- Cultivar description tree item. -->
-								<li class="my-2 w-full">
-									<div
-										use:melt={$item({ id: cultivar.id + 'description' })}
-										class="flex items-center justify-between"
-									>
-										<span class="ml-10 text-sm font-light text-neutral-11"
-											>Description</span
-										>
-										<span
-											class="text-md ml-8 text-wrap rounded-lg border border-neutral-4 bg-neutral-2 p-2 md:ml-16 lg:ml-64"
-											>{cultivar.description}</span
-										>
-									</div>
-								</li>
-							</ul>
-						</li>
-
-						<!-- Cultivar attribute profiles tree items. -->
-						{#if cultivar.attributes}
-							{#each Object.entries(cultivar.attributes) as [profileKey, profileValue]}
-								{@const profileTreeId = cultivar.id + profileKey}
-								{@const profileLabel = cultivarFields[profileKey as keyof typeof cultivarFields]?.label}
-								{@const profileDescription = cultivarFields[profileKey as keyof typeof cultivarFields]?.description}
-								{@const hasAttributes = true}
-
-								<li class="my-1">
-									<button
-										use:melt={$item({ id: profileTreeId, hasChildren: hasAttributes })}
-										class="flex w-full items-center justify-between rounded-lg py-1 transition-colors hover:bg-neutral-3"
-									>
-										<span class="text-md ml-6 truncate font-medium text-neutral-12">
-											{profileLabel}
-										</span>
-										{@render infoPopover(profileDescription)}
-										<div class="ml-4 h-[1px] flex-grow rounded-lg bg-neutral-3"></div>
-										<Icon
-											icon={iconIds.chevronRight}
-											width="1.5rem"
-											class="ml-2 {$isExpanded(profileTreeId) ? 'rotate-90' : ''}"
-										/>
-									</button>
-
-									<!-- Cultivar attributes tree items. -->
-									{#if profileValue}
-										<ul use:melt={$group({ id: profileTreeId })}>
-											{#each Object.entries(profileValue) as [attributeKey, attributeValue]}
-												{@const attributeTreeId =
-													cultivar.id + profileKey + attributeKey}
-												{@const attributeLabel = cultivarFields[attributeKey as keyof typeof cultivarFields]?.label}
-												{@const attributeDescription =
-													cultivarFields[attributeKey as keyof typeof cultivarFields]?.description}
-												{@const attributeUnit = cultivarFields[attributeKey as keyof typeof cultivarFields]?.unit}
-												<li class="my-2 flex w-full items-center justify-between">
-													<button
-														use:melt={$item({ id: attributeTreeId })}
-														class="flex w-auto items-center"
-													>
-														<span class="ml-10 text-sm text-neutral-11">
-															{attributeLabel}
-														</span>
-														{@render infoPopover(attributeDescription)}
-													</button>
-													<div class="flex items-center">
-														<span
-															class="mx-2 rounded-lg border border-neutral-4 bg-neutral-2 px-4 py-2"
-														>
-															20
-														</span>
-														<span>
-															{attributeUnit}
-														</span>
-													</div>
-												</li>
-											{/each}
-										</ul>
-									{/if}
-								</li>
-							{/each}
-						{/if}
-					</ul>
+					<CultivarTree collectionRef={collection.id} cultivar={cultivar}/>
 				</li>
 			{/each}
 		</ul>

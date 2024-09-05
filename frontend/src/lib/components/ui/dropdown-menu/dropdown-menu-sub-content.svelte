@@ -1,15 +1,15 @@
 <script lang="ts">
-	import { DropdownMenu as DropdownMenuPrimitive } from "bits-ui";
-	import { cn, flyAndScale } from "$lib/utils";
+	import { DropdownMenu as DropdownMenuPrimitive } from 'bits-ui';
+	import { cn, flyAndScale } from '$lib/utils';
 
 	type $$Props = DropdownMenuPrimitive.SubContentProps;
 	type $$Events = DropdownMenuPrimitive.SubContentEvents;
 
-	let className: $$Props["class"] = undefined;
-	export let transition: $$Props["transition"] = flyAndScale;
-	export let transitionConfig: $$Props["transitionConfig"] = {
+	let className: $$Props['class'] = undefined;
+	export let transition: $$Props['transition'] = flyAndScale;
+	export let transitionConfig: $$Props['transitionConfig'] = {
 		x: -10,
-		y: 0,
+		y: 0
 	};
 	export { className as class };
 </script>
@@ -18,7 +18,7 @@
 	{transition}
 	{transitionConfig}
 	class={cn(
-		"bg-neutral-3 z-50 min-w-[8rem] rounded-md border p-1 shadow-lg focus:outline-none",
+		'z-50 min-w-[8rem] rounded-md border bg-neutral-3 p-1 shadow-lg focus:outline-none',
 		className
 	)}
 	{...$$restProps}
