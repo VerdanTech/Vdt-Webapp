@@ -8,6 +8,7 @@
 
 	let className: $$Props['class'] = undefined;
 	export { className as class };
+	export let chevron: boolean = true
 </script>
 
 <SelectPrimitive.Trigger
@@ -21,7 +22,9 @@
 	on:keydown
 >
 	<slot {builder} />
+	{#if chevron}
 	<div>
 		<ChevronDown class="h-4 w-4 opacity-50" />
 	</div>
+	{/if}
 </SelectPrimitive.Trigger>

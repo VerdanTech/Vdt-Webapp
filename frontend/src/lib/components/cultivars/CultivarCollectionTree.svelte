@@ -5,9 +5,13 @@
 	import * as DropdownMenu from "$lib/components/ui/dropdown-menu";
 	import * as Popover from '$lib/components/ui/popover';
 	import * as Collapsible from '$lib/components/ui/collapsible';
+	import * as Select from "$lib/components/ui/select";
 	import cultivarFields from '$lib/backendSchema/specs/cultivar';
 	import { cultivarCollectionQuery } from '$data/cultivar/queries';
 	import InPlaceEdit from '$components/InPlaceEdit.svelte';
+	import { CultivarCollectionCreateCommandVisibility, CultivarCollectionFullSchemaVisibility } from '$codegen/types';
+	import type {CultivarSchema, CultivarCollectionFullSchema } from '$codegen/types';
+
 
 	/**https://www.charpeni.com/blog/properly-type-object-keys-and-object-entries*/
 
@@ -34,14 +38,15 @@
 		helpers: { isExpanded }
 	} = treeView;
 
-	const collection = {
+	const collection: CultivarCollectionFullSchema = {
 		id: 'iaesnrt',
 		description:
 			"this is the description. west coast seeds is a seed company that operaties here in british columbia. It's where I get all my seeds personally its really graet and everything thianks",
 		name: 'West Coast Seeds',
 		slug: 'west-coast-seeds',
 		tags: ['west coast', 'canada', 'native_plants'],
-		visibility: "private",
+		visibility: CultivarCollectionFullSchemaVisibility.private,
+		created_at: "todo: figureout dt format",
 		cultivars: [
 			{
 				id: 'iaosen',
@@ -68,8 +73,15 @@
 					}
 				}
 			}
-		]
+		] as CultivarSchema[]
 	};
+
+	/* Defines the labels for the visibility enum options. */
+		const visibilityOptions = [
+		{ value: CultivarCollectionFullSchemaVisibility.private, label: 'Private' },
+		{ value: CultivarCollectionFullSchemaVisibility.unlisted, label: 'Unlisted' },
+		{ value: CultivarCollectionFullSchemaVisibility.public, label: 'Public' }
+	];
 
 	let detailsOpen = $state(false);
 	let editingCollection = $state(false);
@@ -200,7 +212,29 @@
 										{@render infoPopover(cultivarFields.cultivar_collection_visibility.description)}
 										{/if}
 									</div>
-									<InPlaceEdit editing={editingCollection} value={collection.visibility}></InPlaceEdit>
+									<Select.Root
+									portal={null}
+									loop={true}
+									required={false}
+									disabled={!editingCollection}
+									items={visibilityOptions}
+									selected={{"value": collection.visibility, "label": "Private"}}
+								>
+									<Select.Trigger chevron={editingCollection} class="ml-2 text-sm font-light text-neutral-12 max-w-32 disabled:cursor-auto">
+										<Select.Value placeholder="Private" />
+									</Select.Trigger>
+									<Select.Content>
+										<Select.Group>
+											<Select.Label>Collection Visibility</Select.Label>
+											{#each visibilityOptions as visibilityOption}
+												<Select.Item value={visibilityOption.value} label={visibilityOption.label}
+													>{visibilityOption.label}</Select.Item
+												>
+											{/each}
+										</Select.Group>
+									</Select.Content>
+									<Select.Input name="gardenVisibility" />
+								</Select.Root>
 									<!--
 										<span
 										class="text-md rounded-lg border border-neutral-4 bg-neutral-2 p-2"
