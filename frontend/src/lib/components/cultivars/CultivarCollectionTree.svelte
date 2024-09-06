@@ -14,12 +14,16 @@
 	import { zod } from 'sveltekit-superforms/adapters';
 	import {
 		CultivarCollectionCreateCommandVisibility,
-		CultivarCollectionFullSchemaVisibility, CultivarCollectionUpdateCommandVisibility 
+		CultivarCollectionFullSchemaVisibility,
+		CultivarCollectionUpdateCommandVisibility
 	} from '$codegen/types';
 	import type { CultivarSchema, CultivarCollectionFullSchema } from '$codegen/types';
 	import { cultivarCollectionUpdate } from '$data/cultivar/commands';
 	import { createServerErrors } from '$state/formServerErrors.svelte';
 	import CultivarTree from './CultivarTree.svelte';
+	import FormInfoPopover from '$components/misc/FormInfoPopover.svelte';
+	import FormErrorPopover from '$components/misc/FormErrorPopover.svelte';
+
 
 	/** Props. */
 	type Props = {
@@ -36,11 +40,6 @@
 	/** Queries. */
 	const collectionQuery = cultivarCollectionQuery(
 		{ ids: [collectionId] },
-		{
-			onSuccess: (data) => {
-				console.log(data);
-			}
-		}
 	);
 
 	const treeView = createTreeView();
@@ -130,49 +129,19 @@
 	 * Used to update the visibility on the superforms when it changes on the form.
 	 * Required as the value of the superform data can't be bound to the form value type.
 	 */
-	 function onVisibilitySelectedChange(
+	function onVisibilitySelectedChange(
 		value: { value: CultivarCollectionFullSchemaVisibility; label?: string } | undefined
 	) {
 		if (value) {
 			/** @ts-ignore */
 			$formData.visibility = value.value;
-			debounceFormSubmit()
+			debounceFormSubmit();
 		}
 	}
 
 	let detailsOpen = $state(false);
 	let editingCollection = $state(false);
 </script>
-
-{#snippet infoPopover(description: string)}
-	<Popover.Root>
-		<Popover.Trigger class="w-8">
-			<Icon
-				icon={iconIds.formFieldDescriptionIcon}
-				width="1rem"
-				class="ml-2 text-neutral-11 hover:text-neutral-10"
-			/>
-		</Popover.Trigger>
-		<Popover.Content class="max-w-2xl">
-			{description}
-		</Popover.Content>
-	</Popover.Root>
-{/snippet}
-
-{#snippet errorPopover(description: string, errorAttrs)}
-	<Popover.Root>
-		<Popover.Trigger class="w-8">
-			<Icon
-				icon={iconIds.formFieldDescriptionIcon}
-				width="1rem"
-				class="ml-2 text-destructive-6 hover:text-destructive-7"
-			/>
-		</Popover.Trigger>
-		<Popover.Content {...errorAttrs} class="max-w-2xl">
-			{description}
-		</Popover.Content>
-	</Popover.Root>
-{/snippet}
 
 <!--
   @component
@@ -248,9 +217,7 @@
 					<div class="mx-2 flex items-center justify-between text-sm text-neutral-12">
 						<span>Description</span>
 						{#if editingCollection}
-							{@render infoPopover(
-								cultivarFields.cultivar_collection_description.description
-							)}
+							<FormInfoPopover description={cultivarFields.cultivar_collection_description.description}/>
 						{/if}
 						<div class="ml-4 h-[1px] flex-grow rounded-lg bg-neutral-3"></div>
 					</div>
@@ -284,15 +251,13 @@
 													<span class="ml-2 text-sm font-light text-neutral-11"
 														>Visibility</span
 													>
-													{@render infoPopover(
-														cultivarFields.cultivar_collection_visibility.description
-													)}
+													<FormInfoPopover description={cultivarFields.cultivar_collection_visibility.description} />
 													<FieldErrors let:errors let:errorAttrs>
 														{#each errors as err}
-															{@render errorPopover(err, errorAttrs)}
+															<FormErrorPopover description={err} errorAttrs={errorAttrs}/>
 														{/each}
 														{#each serverErrors.errors['cultivar_collection_visibility'] as err}
-															{@render errorPopover(err, errorAttrs)}
+															<FormErrorPopover description={err} errorAttrs={errorAttrs}/>
 														{/each}
 													</FieldErrors>
 												</div>
@@ -322,7 +287,10 @@
 															{/each}
 														</Select.Group>
 													</Select.Content>
-													<Select.Input {...attrs} name="cultivraCollectionVisibility" />
+													<Select.Input
+														{...attrs}
+														name="cultivraCollectionVisibility"
+													/>
 												</Select.Root>
 											</div>
 										</Control>
@@ -333,9 +301,7 @@
 									<div class="flex items-center justify-between">
 										<div class="flex items-center">
 											<span class="ml-2 text-sm font-light text-neutral-11">Tags</span>
-											{@render infoPopover(
-												cultivarFields.cultivar_collection_tags.description
-											)}
+											<FormInfoPopover description={cultivarFields.cultivar_collection_tags.description} />
 										</div>
 										<span
 											class="text-md rounded-lg border border-neutral-4 bg-neutral-2 p-2"
@@ -391,11 +357,8 @@
 		<ul class="overflow-none w-full" {...$tree}>
 			<!-- Cultivar tree item. -->
 			{#each collection.cultivars as cultivar}
-				{@const hasProfiles = !!collection.cultivars?.length}
-				{@const cultivarTreeId = cultivar.id}
-
 				<li class="w-full">
-					<CultivarTree collectionRef={collection.id} cultivar={cultivar}/>
+					<CultivarTree treeView={treeView} collectionRef={collection.id} cultivar={cultivar} />
 				</li>
 			{/each}
 		</ul>
