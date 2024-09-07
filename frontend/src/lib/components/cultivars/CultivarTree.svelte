@@ -9,7 +9,6 @@
 	import FormInfoPopover from '$components/misc/FormInfoPopover.svelte';
 	import FormErrorPopover from '$components/misc/FormErrorPopover.svelte';
 
-
 	type Props = {
 		collectionRef: string;
 		cultivar: CultivarSchema;
@@ -121,7 +120,7 @@
 					<span class="text-md ml-6 truncate font-medium text-neutral-12">
 						{profileLabel}
 					</span>
-                    <FormInfoPopover description={profileDescription} />
+					<FormInfoPopover description={profileDescription} />
 					<div class="ml-4 h-[1px] flex-grow rounded-lg bg-neutral-3"></div>
 					<Icon
 						icon={iconIds.chevronRight}
@@ -150,7 +149,7 @@
 									<span class="ml-10 text-sm text-neutral-11">
 										{attributeLabel}
 									</span>
-                                    <FormInfoPopover description={attributeDescription} />
+									<FormInfoPopover description={attributeDescription} />
 								</button>
 								<div class="flex items-center">
 									<span

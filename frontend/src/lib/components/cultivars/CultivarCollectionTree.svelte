@@ -6,6 +6,7 @@
 	import * as Popover from '$lib/components/ui/popover';
 	import * as Collapsible from '$lib/components/ui/collapsible';
 	import * as Select from '$lib/components/ui/select';
+	import { Input } from '$lib/components/ui/input';
 	import { Field, Control, Label, FieldErrors, Description } from 'formsnap';
 	import cultivarFields from '$lib/backendSchema/specs/cultivar';
 	import { cultivarCollectionQuery } from '$data/cultivar/queries';
@@ -23,7 +24,7 @@
 	import CultivarTree from './CultivarTree.svelte';
 	import FormInfoPopover from '$components/misc/FormInfoPopover.svelte';
 	import FormErrorPopover from '$components/misc/FormErrorPopover.svelte';
-
+	import debounce from '$lib/utils/debounce';
 
 	/** Props. */
 	type Props = {
@@ -38,9 +39,7 @@
 	const serverErrors = createServerErrors();
 
 	/** Queries. */
-	const collectionQuery = cultivarCollectionQuery(
-		{ ids: [collectionId] },
-	);
+	const collectionQuery = cultivarCollectionQuery({ ids: [collectionId] });
 
 	const treeView = createTreeView();
 
@@ -53,7 +52,7 @@
 		id: 'iaesnrt',
 		description:
 			"this is the description. west coast seeds is a seed company that operaties here in british columbia. It's where I get all my seeds personally its really graet and everything thianks",
-		name: 'West Coast Seeds',
+		name: 'West Coast Seeds ienarstienoarstientsstoienarstoienarstoienarstoienarst',
 		slug: 'west-coast-seeds',
 		tags: ['west coast', 'canada', 'native_plants'],
 		visibility: CultivarCollectionFullSchemaVisibility.private,
@@ -96,6 +95,7 @@
 	 */
 	const form = superForm(defaults(zod(cultivarCollectionUpdate.schema)), {
 		SPA: true,
+		resetForm: true,
 		validators: zod(cultivarCollectionUpdate.schema),
 		onUpdate({ form }) {
 			if (form.valid) {
@@ -123,7 +123,9 @@
 		{ value: CultivarCollectionFullSchemaVisibility.public, label: 'Public' }
 	];
 
-	function debounceFormSubmit() {}
+	let debounceFormSubmit = debounce(() => {
+		form.submit();
+	}, 100);
 
 	/**
 	 * Used to update the visibility on the superforms when it changes on the form.
@@ -217,7 +219,9 @@
 					<div class="mx-2 flex items-center justify-between text-sm text-neutral-12">
 						<span>Description</span>
 						{#if editingCollection}
-							<FormInfoPopover description={cultivarFields.cultivar_collection_description.description}/>
+							<FormInfoPopover
+								description={cultivarFields.cultivar_collection_description.description}
+							/>
 						{/if}
 						<div class="ml-4 h-[1px] flex-grow rounded-lg bg-neutral-3"></div>
 					</div>
@@ -242,6 +246,63 @@
 						</Collapsible.Trigger>
 						<Collapsible.Content class="mx-2 mt-2 text-neutral-11">
 							<ul class="flex w-full flex-col">
+								<!-- Collection name. -->
+								<li class="my-2 w-full">
+									{#if editingCollection}
+										<Field {form} name="name">
+											<Control let:attrs>
+												<div class="flex items-center justify-between">
+													<div class="flex items-center">
+														<span class="ml-2 text-sm font-light text-neutral-11"
+															>Name</span
+														>
+														<FormInfoPopover
+															description={cultivarFields.cultivar_collection_name
+																.description}
+														/>
+														<FieldErrors
+															let:errors
+															let:errorAttrs
+															class="flex items-center"
+														>
+															{#each errors as err}
+																<FormErrorPopover description={err} {errorAttrs} />
+															{/each}
+															{#each serverErrors.errors['cultivar_collection_name'] as err}
+																<FormErrorPopover description={err} {errorAttrs} />
+															{/each}
+														</FieldErrors>
+													</div>
+													<Input
+														{...attrs}
+														type="text"
+														bind:value={collection.name}
+														on:input={() => {
+															$formData.name = collection.name;
+															console.log(collection.name)
+															debounceFormSubmit();
+														}}
+														class="w-auto data-[fs-error]:border-destructive-7 data-[fs-error]:outline-destructive-6"
+													/>
+												</div>
+											</Control>
+										</Field>
+									{:else}
+										<div class="flex items-center justify-between">
+											<div class="flex items-center">
+												<span class="ml-2 text-sm font-light text-neutral-11">Name</span
+												>
+												<FormInfoPopover
+													description={cultivarFields.cultivar_collection_name
+														.description}
+												/>
+											</div>
+											<span class="w-auto data-[fs-error]:outline-destructive-7"
+												>{collection.name}</span
+											>
+										</div>
+									{/if}
+								</li>
 								<!-- Collection visibility. -->
 								<li class="my-2 w-full">
 									<Field {form} name="visibility">
@@ -251,13 +312,20 @@
 													<span class="ml-2 text-sm font-light text-neutral-11"
 														>Visibility</span
 													>
-													<FormInfoPopover description={cultivarFields.cultivar_collection_visibility.description} />
-													<FieldErrors let:errors let:errorAttrs>
+													<FormInfoPopover
+														description={cultivarFields.cultivar_collection_visibility
+															.description}
+													/>
+													<FieldErrors
+														let:errors
+														let:errorAttrs
+														class="flex items-center"
+													>
 														{#each errors as err}
-															<FormErrorPopover description={err} errorAttrs={errorAttrs}/>
+															<FormErrorPopover description={err} {errorAttrs} />
 														{/each}
 														{#each serverErrors.errors['cultivar_collection_visibility'] as err}
-															<FormErrorPopover description={err} errorAttrs={errorAttrs}/>
+															<FormErrorPopover description={err} {errorAttrs} />
 														{/each}
 													</FieldErrors>
 												</div>
@@ -272,7 +340,7 @@
 												>
 													<Select.Trigger
 														chevron={editingCollection}
-														class="ml-2 w-28 text-sm font-light text-neutral-12 disabled:cursor-auto"
+														class="ml-2 w-auto max-w-28 text-sm font-light text-neutral-12 disabled:cursor-auto"
 													>
 														<Select.Value placeholder="Private" />
 													</Select.Trigger>
@@ -301,7 +369,10 @@
 									<div class="flex items-center justify-between">
 										<div class="flex items-center">
 											<span class="ml-2 text-sm font-light text-neutral-11">Tags</span>
-											<FormInfoPopover description={cultivarFields.cultivar_collection_tags.description} />
+											<FormInfoPopover
+												description={cultivarFields.cultivar_collection_tags
+													.description}
+											/>
 										</div>
 										<span
 											class="text-md rounded-lg border border-neutral-4 bg-neutral-2 p-2"
@@ -358,7 +429,7 @@
 			<!-- Cultivar tree item. -->
 			{#each collection.cultivars as cultivar}
 				<li class="w-full">
-					<CultivarTree treeView={treeView} collectionRef={collection.id} cultivar={cultivar} />
+					<CultivarTree {treeView} collectionRef={collection.id} {cultivar} />
 				</li>
 			{/each}
 		</ul>

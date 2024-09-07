@@ -1,14 +1,15 @@
 <script lang="ts">
 	type Props = {
 		editing: boolean;
-		value: any;
+		nonEditingComponent: unknown;
+		editingComponent: unknown;
 	};
 
-	let { editing = $bindable(), value }: Props = $props();
+	let { editing, nonEditingComponent, editingComponent }: Props = $props();
 </script>
 
 {#if editing}
-	value
+	{@render nonEditingComponent()}
 {:else}
-	not edeting
+	{@render editingComponent()}
 {/if}
