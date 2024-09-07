@@ -6,6 +6,7 @@
 	import * as Popover from '$lib/components/ui/popover';
 	import * as Collapsible from '$lib/components/ui/collapsible';
 	import * as Select from '$lib/components/ui/select';
+	import { Textarea } from '$lib/components/ui/textarea/index.js';
 	import { Input } from '$lib/components/ui/input';
 	import { Field, Control, Label, FieldErrors, Description } from 'formsnap';
 	import cultivarFields from '$lib/backendSchema/specs/cultivar';
@@ -52,7 +53,7 @@
 		id: 'iaesnrt',
 		description:
 			"this is the description. west coast seeds is a seed company that operaties here in british columbia. It's where I get all my seeds personally its really graet and everything thianks",
-		name: 'West Coast Seeds ienarstienoarstientsstoienarstoienarstoienarstoienarst',
+		name: 'West Coast Seeds ',
 		slug: 'west-coast-seeds',
 		tags: ['west coast', 'canada', 'native_plants'],
 		visibility: CultivarCollectionFullSchemaVisibility.private,
@@ -98,6 +99,7 @@
 		resetForm: true,
 		validators: zod(cultivarCollectionUpdate.schema),
 		onUpdate({ form }) {
+			console.log('submiting form');
 			if (form.valid) {
 				$collectionUpdateMutation.mutate(form.data, {
 					onSuccess: () => {
@@ -122,10 +124,20 @@
 		{ value: CultivarCollectionFullSchemaVisibility.unlisted, label: 'Unlisted' },
 		{ value: CultivarCollectionFullSchemaVisibility.public, label: 'Public' }
 	];
+	function visibilityEnumToOption(visibility: CultivarCollectionFullSchemaVisibility) {
+		switch (visibility) {
+			case CultivarCollectionFullSchemaVisibility.private:
+				return visibilityOptions[0];
+			case CultivarCollectionFullSchemaVisibility.unlisted:
+				return visibilityOptions[1];
+			case CultivarCollectionFullSchemaVisibility.public:
+				return visibilityOptions[2];
+		}
+	}
 
 	let debounceFormSubmit = debounce(() => {
 		form.submit();
-	}, 100);
+	}, 1000);
 
 	/**
 	 * Used to update the visibility on the superforms when it changes on the form.
@@ -144,6 +156,17 @@
 	let detailsOpen = $state(false);
 	let editingCollection = $state(false);
 </script>
+
+{#snippet inlineErrors(formFieldName: string)}
+	<FieldErrors let:errors let:errorAttrs class="flex items-center">
+		{#each errors as err}
+			<FormErrorPopover description={err} {errorAttrs} />
+		{/each}
+		{#each serverErrors.errors[formFieldName] as err}
+			<FormErrorPopover description={err} {errorAttrs} />
+		{/each}
+	</FieldErrors>
+{/snippet}
 
 <!--
   @component
@@ -216,20 +239,50 @@
 		<form method="POST" use:enhance>
 			<div>
 				<div class="my-2">
-					<div class="mx-2 flex items-center justify-between text-sm text-neutral-12">
-						<span>Description</span>
-						{#if editingCollection}
-							<FormInfoPopover
-								description={cultivarFields.cultivar_collection_description.description}
-							/>
-						{/if}
-						<div class="ml-4 h-[1px] flex-grow rounded-lg bg-neutral-3"></div>
-					</div>
-					<p
-						class="mx-2 mt-2 rounded-lg border border-neutral-4 bg-neutral-2 p-2 text-sm text-neutral-11"
-					>
-						{collection.description}
-					</p>
+					{#if editingCollection}
+						<Field {form} name="description">
+							<Control let:attrs>
+								<div
+									class="mx-2 flex items-center justify-between text-sm text-neutral-12"
+								>
+									<Label>Description</Label>
+									<Description>
+										<FormInfoPopover
+											description={cultivarFields.cultivar_collection_description
+												.description}
+										/>
+									</Description>
+									{@render inlineErrors('cultivar_collection_description')}
+									<div class="ml-4 h-[1px] flex-grow rounded-lg bg-neutral-3"></div>
+								</div>
+								<Textarea
+									{...attrs}
+									bind:value={collection.description}
+									on:input={() => {
+										$formData.description = collection.description;
+										debounceFormSubmit();
+									}}
+									class="mx-2 mt-2 rounded-lg border border-neutral-4 bg-neutral-2 p-2 text-sm text-neutral-11 data-[fs-error]:border-destructive-7 data-[fs-error]:outline-destructive-6"
+								/>
+							</Control></Field
+						>
+					{:else}
+						<div class="mx-2 flex items-center justify-between text-sm text-neutral-12">
+							<span>Description</span>
+							{#if editingCollection}
+								<FormInfoPopover
+									description={cultivarFields.cultivar_collection_description
+										.description}
+								/>
+							{/if}
+							<div class="ml-4 h-[1px] flex-grow rounded-lg bg-neutral-3"></div>
+						</div>
+						<p
+							class="mx-2 mt-2 rounded-lg border border-neutral-4 bg-neutral-2 p-2 text-sm text-neutral-11"
+						>
+							{collection.description}
+						</p>
+					{/if}
 				</div>
 				<div class="my-2">
 					<Collapsible.Root bind:open={detailsOpen}>
@@ -253,36 +306,26 @@
 											<Control let:attrs>
 												<div class="flex items-center justify-between">
 													<div class="flex items-center">
-														<span class="ml-2 text-sm font-light text-neutral-11"
-															>Name</span
+														<Label class="ml-2 text-sm font-light text-neutral-11"
+															>Name</Label
 														>
-														<FormInfoPopover
-															description={cultivarFields.cultivar_collection_name
-																.description}
-														/>
-														<FieldErrors
-															let:errors
-															let:errorAttrs
-															class="flex items-center"
-														>
-															{#each errors as err}
-																<FormErrorPopover description={err} {errorAttrs} />
-															{/each}
-															{#each serverErrors.errors['cultivar_collection_name'] as err}
-																<FormErrorPopover description={err} {errorAttrs} />
-															{/each}
-														</FieldErrors>
+														<Description>
+															<FormInfoPopover
+																description={cultivarFields.cultivar_collection_name
+																	.description}
+															/>
+														</Description>
+														{@render inlineErrors('cultivar_collection_name')}
 													</div>
-													<Input
+													<input
 														{...attrs}
 														type="text"
 														bind:value={collection.name}
-														on:input={() => {
+														oninput={() => {
 															$formData.name = collection.name;
-															console.log(collection.name)
 															debounceFormSubmit();
 														}}
-														class="w-auto data-[fs-error]:border-destructive-7 data-[fs-error]:outline-destructive-6"
+														class="rounded-md border bg-neutral-1 px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-6 focus-visible:ring-offset-2 data-[fs-error]:border-destructive-7 data-[fs-error]:outline-destructive-6"
 													/>
 												</div>
 											</Control>
@@ -297,7 +340,8 @@
 														.description}
 												/>
 											</div>
-											<span class="w-auto data-[fs-error]:outline-destructive-7"
+											<span
+												class="w-auto text-right data-[fs-error]:outline-destructive-7"
 												>{collection.name}</span
 											>
 										</div>
@@ -305,64 +349,81 @@
 								</li>
 								<!-- Collection visibility. -->
 								<li class="my-2 w-full">
-									<Field {form} name="visibility">
-										<Control let:attrs>
-											<div class="flex items-center justify-between">
-												<div class="flex items-center">
-													<span class="ml-2 text-sm font-light text-neutral-11"
-														>Visibility</span
-													>
-													<FormInfoPopover
-														description={cultivarFields.cultivar_collection_visibility
-															.description}
-													/>
-													<FieldErrors
-														let:errors
-														let:errorAttrs
-														class="flex items-center"
-													>
-														{#each errors as err}
-															<FormErrorPopover description={err} {errorAttrs} />
-														{/each}
-														{#each serverErrors.errors['cultivar_collection_visibility'] as err}
-															<FormErrorPopover description={err} {errorAttrs} />
-														{/each}
-													</FieldErrors>
-												</div>
-												<Select.Root
-													portal={null}
-													loop={true}
-													required={false}
-													disabled={!editingCollection}
-													items={visibilityOptions}
-													onSelectedChange={onVisibilitySelectedChange}
-													selected={{ value: collection.visibility, label: 'Private' }}
-												>
-													<Select.Trigger
-														chevron={editingCollection}
-														class="ml-2 w-auto max-w-28 text-sm font-light text-neutral-12 disabled:cursor-auto"
-													>
-														<Select.Value placeholder="Private" />
-													</Select.Trigger>
-													<Select.Content>
-														<Select.Group>
-															{#each visibilityOptions as visibilityOption}
-																<Select.Item
-																	value={visibilityOption.value}
-																	label={visibilityOption.label}
-																	>{visibilityOption.label}</Select.Item
-																>
+									{#if editingCollection}
+										<Field {form} name="visibility">
+											<Control let:attrs>
+												<div class="flex items-center justify-between">
+													<div class="flex items-center">
+														<Label class="ml-2 text-sm font-light text-neutral-11"
+															>Visibility</Label
+														>
+														<Description>
+															<FormInfoPopover
+																description={cultivarFields
+																	.cultivar_collection_visibility.description}
+															/>
+														</Description>
+														<FieldErrors
+															let:errors
+															let:errorAttrs
+															class="flex items-center"
+														>
+															{#each errors as err}
+																<FormErrorPopover description={err} {errorAttrs} />
 															{/each}
-														</Select.Group>
-													</Select.Content>
-													<Select.Input
-														{...attrs}
-														name="cultivraCollectionVisibility"
-													/>
-												</Select.Root>
+															{#each serverErrors.errors['cultivar_collection_visibility'] as err}
+																<FormErrorPopover description={err} {errorAttrs} />
+															{/each}
+														</FieldErrors>
+													</div>
+													<Select.Root
+														portal={null}
+														loop={true}
+														required={false}
+														items={visibilityOptions}
+														onSelectedChange={onVisibilitySelectedChange}
+														selected={visibilityEnumToOption(collection.visibility)}
+													>
+														<Select.Trigger
+															chevron={editingCollection}
+															class="ml-2 w-32 text-sm font-light text-neutral-11 disabled:cursor-auto"
+														>
+															<Select.Value placeholder="Private" />
+														</Select.Trigger>
+														<Select.Content>
+															<Select.Group>
+																{#each visibilityOptions as visibilityOption}
+																	<Select.Item
+																		class="text-neutral-11"
+																		value={visibilityOption.value}
+																		label={visibilityOption.label}
+																		>{visibilityOption.label}</Select.Item
+																	>
+																{/each}
+															</Select.Group>
+														</Select.Content>
+														<Select.Input
+															{...attrs}
+															name="cultivarCollectionVisibility"
+														/>
+													</Select.Root>
+												</div>
+											</Control>
+										</Field>
+									{:else}
+										<div class="flex items-center justify-between">
+											<div class="flex items-center">
+												<span class="ml-2 text-sm font-light text-neutral-11"
+													>Visibility</span
+												>
+												<FormInfoPopover
+													description={cultivarFields.cultivar_collection_visibility
+														.description}
+												/>
 											</div>
-										</Control>
-									</Field>
+											<span>{visibilityEnumToOption(collection.visibility).label}</span>
+										</div>
+									{/if}
 								</li>
 								<!-- Collection tags. -->
 								<li class="my-2 w-full">
