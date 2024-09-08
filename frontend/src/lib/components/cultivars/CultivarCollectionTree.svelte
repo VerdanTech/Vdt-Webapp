@@ -1,5 +1,10 @@
 <script lang="ts">
 	import { melt, createTreeView, type TreeView } from '@melt-ui/svelte';
+	import {
+		getLocalTimeZone,
+		DateFormatter,
+		parseDateTime
+	} from '@internationalized/date';
 	import Icon from '@iconify/svelte';
 	import iconIds from '$lib/assets/icons';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
@@ -25,6 +30,7 @@
 	import CultivarTree from './CultivarTree.svelte';
 	import FormInfoPopover from '$components/misc/FormInfoPopover.svelte';
 	import FormErrorPopover from '$components/misc/FormErrorPopover.svelte';
+	import TagsInput from './TagsInput.svelte';
 	import debounce from '$lib/utils/debounce';
 
 	/** Props. */
@@ -55,12 +61,38 @@
 			"this is the description. west coast seeds is a seed company that operaties here in british columbia. It's where I get all my seeds personally its really graet and everything thianks",
 		name: 'West Coast Seeds ',
 		slug: 'west-coast-seeds',
-		tags: ['west coast', 'canada', 'native_plants'],
+		tags: ['west coast', 'canada', 'native_plants', 'tag1', 'tag2', 'tag3', 'tag4'],
 		visibility: CultivarCollectionFullSchemaVisibility.private,
-		created_at: 'todo: figureout dt format',
+		created_at: '2023-09-07T15:30:00Z',
+		parent_ref: { id: 'aisroe' },
+		user_ref: { id: 'aisroe' },
 		cultivars: [
 			{
 				id: 'iaosen',
+				name: 'Lettuce',
+				names: ['Lettuce', 'The green shit'],
+				key: 'Le',
+				description: 'Lettuce is a pretty good plant, I like making wraps with it.',
+				attributes: {
+					frost_date_planting_window_profile: {
+						last_frost_window_open: 40,
+						last_frost_window_close: null,
+						first_frost_window_open: 20,
+						first_frost_window_close: 30
+					},
+					origin_profile: {
+						transplantable: true
+					},
+					annual_lifecycle_profile: {
+						seed_to_germ: null,
+						germ_to_transplant: 0,
+						germ_to_first_harvest: null,
+						first_to_last_harvest: 100
+					}
+				}
+			},
+			{
+				id: 'iaosesn',
 				name: 'Lettuce',
 				names: ['Lettuce', 'The green shit'],
 				key: 'Le',
@@ -152,6 +184,12 @@
 			debounceFormSubmit();
 		}
 	}
+
+	const dateFormatter = new DateFormatter('en-US', {
+		dateStyle: 'full',
+		timeStyle: 'short',
+		timeZone: getLocalTimeZone()
+	});
 
 	let detailsOpen = $state(false);
 	let editingCollection = $state(false);
@@ -246,7 +284,7 @@
 									class="mx-2 flex items-center justify-between text-sm text-neutral-12"
 								>
 									<Label>Description</Label>
-									<Description>
+									<Description class="items center flex">
 										<FormInfoPopover
 											description={cultivarFields.cultivar_collection_description
 												.description}
@@ -262,19 +300,13 @@
 										$formData.description = collection.description;
 										debounceFormSubmit();
 									}}
-									class="mx-2 mt-2 rounded-lg border border-neutral-4 bg-neutral-2 p-2 text-sm text-neutral-11 data-[fs-error]:border-destructive-7 data-[fs-error]:outline-destructive-6"
+									class="mx-2 min-h-12 mt-2 rounded-lg border border-neutral-4 bg-neutral-2 p-2 text-sm text-neutral-11 data-[fs-error]:border-destructive-7 data-[fs-error]:outline-destructive-6"
 								/>
 							</Control></Field
 						>
 					{:else}
 						<div class="mx-2 flex items-center justify-between text-sm text-neutral-12">
 							<span>Description</span>
-							{#if editingCollection}
-								<FormInfoPopover
-									description={cultivarFields.cultivar_collection_description
-										.description}
-								/>
-							{/if}
 							<div class="ml-4 h-[1px] flex-grow rounded-lg bg-neutral-3"></div>
 						</div>
 						<p
@@ -309,7 +341,7 @@
 														<Label class="ml-2 text-sm font-light text-neutral-11"
 															>Name</Label
 														>
-														<Description>
+														<Description class="items center flex">
 															<FormInfoPopover
 																description={cultivarFields.cultivar_collection_name
 																	.description}
@@ -341,7 +373,7 @@
 												/>
 											</div>
 											<span
-												class="w-auto text-right data-[fs-error]:outline-destructive-7"
+												class="w-auto text-right py-2 text-sm data-[fs-error]:outline-destructive-7"
 												>{collection.name}</span
 											>
 										</div>
@@ -357,7 +389,7 @@
 														<Label class="ml-2 text-sm font-light text-neutral-11"
 															>Visibility</Label
 														>
-														<Description>
+														<Description class="items center flex">
 															<FormInfoPopover
 																description={cultivarFields
 																	.cultivar_collection_visibility.description}
@@ -421,60 +453,110 @@
 														.description}
 												/>
 											</div>
-											<span>{visibilityEnumToOption(collection.visibility).label}</span>
+											<span class="text-right text-sm py-2"
+												>{visibilityEnumToOption(collection.visibility).label}</span
+											>
 										</div>
 									{/if}
 								</li>
 								<!-- Collection tags. -->
 								<li class="my-2 w-full">
-									<div class="flex items-center justify-between">
-										<div class="flex items-center">
-											<span class="ml-2 text-sm font-light text-neutral-11">Tags</span>
-											<FormInfoPopover
-												description={cultivarFields.cultivar_collection_tags
-													.description}
-											/>
-										</div>
-										<span
-											class="text-md rounded-lg border border-neutral-4 bg-neutral-2 p-2"
-											>tags</span
+									{#if editingCollection}
+										<Field {form} name="tags">
+											<Control let:attrs>
+												<div class="flex items-center justify-between">
+													<div class="flex items-center">
+														<Label class="ml-2 text-sm font-light text-neutral-11"
+															>Tags</Label
+														>
+														<Description class="flex items-center">
+															<FormInfoPopover
+																description={cultivarFields.cultivar_collection_tags
+																	.description}
+															/>
+														</Description>
+														{@render inlineErrors('cultivar_collection_tags')}
+													</div>
+													<TagsInput
+														bind:tagsInput={collection.tags}
+														maxTags={cultivarFields.cultivar_collection_tags.max_length
+															.value}
+														placeholder="Enter a tag"
+														onChange={() => {
+															() => {
+																$formData.tags = collection.tags;
+																debounceFormSubmit();
+															};
+														}}
+														formAttrs={attrs}
+													/>
+												</div>
+											</Control></Field
 										>
-									</div>
+									{:else}
+										<div class="flex items-center justify-between">
+											<div class="flex items-center">
+												<span class="ml-2 text-sm font-light text-neutral-11">Tags</span
+												>
+												<FormInfoPopover
+													description={cultivarFields.cultivar_collection_tags
+														.description}
+												/>
+											</div>
+											<div
+												class="rounded-lg border border-neutral-4 bg-neutral-1 p-2 text-right text-right text-sm"
+											>
+												{#each collection.tags as tag}
+													<span class="first:hidden"> , </span>
+													<span>
+														{tag}
+													</span>
+												{/each}
+											</div>
+										</div>
+									{/if}
 								</li>
 								<!-- Collection inheritance - inherited from. -->
-								<li class="my-2 w-full">
-									<div class="flex items-center justify-between">
-										<span class="ml-2 text-sm font-light text-neutral-11"
-											>Inherits from</span
-										>
-										<span
-											class="text-md rounded-lg border border-neutral-4 bg-neutral-2 p-2"
-											>TODO</span
-										>
-									</div>
-								</li>
+								{#if collection.parent_ref}
+									<li class="my-2 w-full">
+										<div class="flex items-center justify-between">
+											<span class="ml-2 text-sm font-light text-neutral-11"
+												>Inherits from</span
+											>
+											<span
+												class="text-md rounded-lg border border-neutral-4 bg-neutral-2 p-2"
+												>TODO</span
+											>
+										</div>
+									</li>
+								{/if}
 								<!-- Collection creator. -->
-								<li class="my-2 w-full">
-									<div class="flex items-center justify-between">
-										<span class="ml-2 text-sm font-light text-neutral-11">Creator</span>
-										<span
-											class="text-md rounded-lg border border-neutral-4 bg-neutral-2 p-2"
-											>TODO</span
-										>
-									</div>
-								</li>
+								{#if collection.user_ref}
+									<li class="my-2 w-full">
+										<div class="flex items-center justify-between">
+											<span class="ml-2 text-sm font-light text-neutral-11"
+												>Creator</span
+											>
+											<span
+												class="text-md rounded-lg border border-neutral-4 bg-neutral-2 p-2"
+												>TODO</span
+											>
+										</div>
+									</li>
+								{/if}
 								<!-- Collection created at. -->
-								<li class="my-2 w-full">
-									<div class="flex items-center justify-between">
-										<span class="ml-2 text-sm font-light text-neutral-11"
-											>Created at</span
-										>
-										<span
-											class="text-md rounded-lg border border-neutral-4 bg-neutral-2 p-2"
-											>tags</span
-										>
-									</div>
-								</li>
+								{#if collection.created_at}
+									<li class="my-2 w-full">
+										<div class="flex items-center justify-between">
+											<span class="ml-2 text-sm font-light text-neutral-11"
+												>Created at</span
+											>
+											<span class="p-2 text-right text-sm"
+												>{dateFormatter.format(new Date(collection.created_at))}</span
+											>
+										</div>
+									</li>
+								{/if}
 							</ul>
 						</Collapsible.Content>
 					</Collapsible.Root>
@@ -483,7 +565,17 @@
 		</form>
 
 		<!-- Cultivars menu -->
-		<div class="my-3 h-8 w-full rounded-2xl border border-neutral-8 bg-neutral-3"></div>
+		<div class="my-3 h-8 w-full rounded-2xl border border-neutral-8 bg-neutral-3 flex items-center justify-between">
+			<div>
+				Add
+			</div>
+			<div class="flex-grow">
+				Search
+			</div>
+			<div>
+				Sort
+			</div>
+		</div>
 
 		<!-- Tree -->
 		<ul class="overflow-none w-full" {...$tree}>

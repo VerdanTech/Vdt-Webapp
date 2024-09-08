@@ -21,6 +21,8 @@
 		elements: { item, group },
 		helpers: { isExpanded }
 	} = treeView;
+
+	let editingCultivar: boolean = $state(false)
 </script>
 
 <button
@@ -44,8 +46,34 @@
 	/>
 </button>
 
+
 <!-- Cultivar tree item children. -->
 <ul use:melt={$group({ id: cultivar.id })} class="w-full">
+	<!-- Options menu -->
+	<div
+	class="my-3 px-4 flex w-full items-center  justify-between rounded-lg py-1 bg-neutral-2 border"
+	>
+	{#if editingCultivar}
+	<div class="flex items-center">
+		<Icon icon={iconIds.endEditingIcon} width="1.25rem" />
+		<span class="text-md ml-3 mr-6 truncate font-medium text-neutral-12"> End editing </span>
+	</div>
+	{:else}
+	<div class="flex items-center">
+		<Icon icon={iconIds.startEditingIcon} width="1.25rem" />
+		<span class="text-md ml-3 mr-6 truncate font-medium text-neutral-12"> Edit </span>
+	</div>
+	{/if}
+	<div class="flex items-center">
+		<Icon icon={iconIds.inheritCultivarCollectionIcon} width="1.25rem" />
+		<span class="text-md ml-3 mr-6 truncate font-medium text-neutral-12"> Change Inheritance </span>
+	</div>
+	<div class="flex items-center flex-grow justify-end">
+		<Icon icon={iconIds.deleteIcon} width="1.25rem" class="text-destructive-11" />
+		<span class="text-md ml-3 truncate font-medium text-neutral-12"> Delete </span>
+	</div>
+	</div>
+
 	<!-- Details tree item -->
 	<li class="my-2 w-full">
 		<button
