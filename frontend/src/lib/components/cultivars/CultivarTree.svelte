@@ -13,9 +13,10 @@
 		collectionRef: string;
 		cultivar: CultivarSchema;
 		treeView: TreeView;
+		editing: boolean;
 	};
 
-	let { collectionRef, cultivar, treeView }: Props = $props();
+	let { collectionRef, cultivar, treeView, editing }: Props = $props();
 
 	const {
 		elements: { item, group },
@@ -49,30 +50,7 @@
 
 <!-- Cultivar tree item children. -->
 <ul use:melt={$group({ id: cultivar.id })} class="w-full">
-	<!-- Options menu -->
-	<div
-	class="my-3 px-4 flex w-full items-center  justify-between rounded-lg py-1 bg-neutral-2 border"
-	>
-	{#if editingCultivar}
-	<div class="flex items-center">
-		<Icon icon={iconIds.endEditingIcon} width="1.25rem" />
-		<span class="text-md ml-3 mr-6 truncate font-medium text-neutral-12"> End editing </span>
-	</div>
-	{:else}
-	<div class="flex items-center">
-		<Icon icon={iconIds.startEditingIcon} width="1.25rem" />
-		<span class="text-md ml-3 mr-6 truncate font-medium text-neutral-12"> Edit </span>
-	</div>
-	{/if}
-	<div class="flex items-center">
-		<Icon icon={iconIds.inheritCultivarCollectionIcon} width="1.25rem" />
-		<span class="text-md ml-3 mr-6 truncate font-medium text-neutral-12"> Change Inheritance </span>
-	</div>
-	<div class="flex items-center flex-grow justify-end">
-		<Icon icon={iconIds.deleteIcon} width="1.25rem" class="text-destructive-11" />
-		<span class="text-md ml-3 truncate font-medium text-neutral-12"> Delete </span>
-	</div>
-	</div>
+
 
 	<!-- Details tree item -->
 	<li class="my-2 w-full">
@@ -114,6 +92,18 @@
 					>
 				</div>
 			</li>
+			<!-- Cultivar scientific name tree item. -->
+			<li class="my-2 w-full">
+				<div
+					use:melt={$item({ id: cultivar.id + 'scientific_name' })}
+					class="flex items-center justify-between"
+				>
+					<span class="ml-10 text-sm font-light text-neutral-11">Scientific Name</span>
+					<span class="text-md rounded-lg border border-neutral-4 bg-neutral-2 p-2"
+						>{cultivar.scientific_name}</span
+					>
+				</div>
+			</li>
 			<!-- Cultivar description tree item. -->
 			<li class="my-2 w-full">
 				<div
@@ -124,6 +114,19 @@
 					<span
 						class="text-md ml-8 text-wrap rounded-lg border border-neutral-4 bg-neutral-2 p-2 md:ml-16 lg:ml-64"
 						>{cultivar.description}</span
+					>
+				</div>
+			</li>
+			<!-- Cultivar parent tree item. -->
+			<li class="my-2 w-full">
+				<div
+					use:melt={$item({ id: cultivar.id + 'parent' })}
+					class="flex items-center justify-between"
+				>
+					<span class="ml-10 text-sm font-light text-neutral-11">Inherits from</span>
+					<span
+						class="text-md ml-8 text-wrap rounded-lg border border-neutral-4 bg-neutral-2 p-2 md:ml-16 lg:ml-64"
+						>todo</span
 					>
 				</div>
 			</li>

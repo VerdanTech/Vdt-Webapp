@@ -1,16 +1,19 @@
 <script lang="ts">
+	import { derived } from 'svelte/store';
 	import { melt, createTreeView, type TreeView } from '@melt-ui/svelte';
 	import {
 		getLocalTimeZone,
 		DateFormatter,
 		parseDateTime
 	} from '@internationalized/date';
-	import Icon from '@iconify/svelte';
+	import {Button} from 'bits-ui'
+	import Icon, { addIcon } from '@iconify/svelte';
 	import iconIds from '$lib/assets/icons';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
 	import * as Popover from '$lib/components/ui/popover';
 	import * as Collapsible from '$lib/components/ui/collapsible';
 	import * as Select from '$lib/components/ui/select';
+	import * as Dialog from "$lib/components/ui/dialog";
 	import { Textarea } from '$lib/components/ui/textarea/index.js';
 	import { Input } from '$lib/components/ui/input';
 	import { Field, Control, Label, FieldErrors, Description } from 'formsnap';
@@ -30,7 +33,8 @@
 	import CultivarTree from './CultivarTree.svelte';
 	import FormInfoPopover from '$components/misc/FormInfoPopover.svelte';
 	import FormErrorPopover from '$components/misc/FormErrorPopover.svelte';
-	import TagsInput from './TagsInput.svelte';
+	import CultivarCreateForm from './CultivarCreateForm.svelte';
+	import TagsInput from '$components/ui/TagsInput.svelte';
 	import debounce from '$lib/utils/debounce';
 
 	/** Props. */
@@ -193,6 +197,27 @@
 
 	let detailsOpen = $state(false);
 	let editingCollection = $state(false);
+	let cultivarSearch = $state('');
+	let cultivarSort = $state<'alphabetical' | 'reverseAlphabetical'>('alphabetical');
+
+	const sortedCollectionQuery = derived(collectionQuery, ($collectionQuery) => {
+		if ($collectionQuery.data && $collectionQuery.data[0].cultivars) {
+			let collection = $collectionQuery.data[0].cultivars
+			if (cultivarSearch) {
+				collection = collection.filter((cultivar) => {return cultivar.name.toLowerCase().includes(cultivarSearch.toLowerCase())})
+			}
+			if (cultivarSort) {
+				switch (cultivarSort) {
+					case 'alphabetical':
+						collection = collection.sort((a, b) => a.name.localeCompare(b.name))
+						break;
+					case 'reverseAlphabetical':
+						collection = collection.sort((a, b) => b.name.localeCompare(a.name))
+				}
+			}
+			return collection
+		}
+	})
 </script>
 
 {#snippet inlineErrors(formFieldName: string)}
@@ -504,7 +529,7 @@
 												/>
 											</div>
 											<div
-												class="rounded-lg border border-neutral-4 bg-neutral-1 p-2 text-right text-right text-sm"
+												class="rounded-lg border border-neutral-4 bg-neutral-1 p-2 text-right text-sm"
 											>
 												{#each collection.tags as tag}
 													<span class="first:hidden"> , </span>
@@ -565,16 +590,44 @@
 		</form>
 
 		<!-- Cultivars menu -->
-		<div class="my-3 h-8 w-full rounded-2xl border border-neutral-8 bg-neutral-3 flex items-center justify-between">
-			<div>
-				Add
+		<div class="my-3 h-8 w-full rounded-2xl border border-neutral-8 bg-neutral-2 flex items-center justify-between">
+			<Dialog.Root>
+				<Dialog.Trigger class="flex items-center hover:bg-neutral-3 w-auto h-full rounded-l-2xl border-r border-neutral-7">
+					<Icon icon={iconIds.addIcon} width="1rem" class="mr-3 ml-4 sm:ml-6" />
+					<span class="mr-6 hidden sm:block">Add</span>
+				</Dialog.Trigger>
+				<Dialog.Content>
+				  <Dialog.Header>
+					<Dialog.Title>Add a Cultivar</Dialog.Title>
+					<CultivarCreateForm collectionRef={collection.id}/>
+				  </Dialog.Header>
+				</Dialog.Content>
+			  </Dialog.Root>
+			<div class="flex-grow group flex items-center hover:bg-neutral-3 w-auto h-full border-r border-neutral-7">
+				<Icon icon={iconIds.searchIcon} width="1.25rem" class="mr-3 ml-6" />
+				<input bind:value={cultivarSearch} placeholder="Search" class="mr-6 w-full bg-neutral-2 group-hover:bg-neutral-3"/>
+				<Button.Root on:click={() => {cultivarSearch = ''}} class="hover:bg-neutral-4 h-full">
+					<Icon icon={iconIds.defaultClose} width="1rem" class="mr-3 ml-3" />
+				</Button.Root>
 			</div>
-			<div class="flex-grow">
-				Search
-			</div>
-			<div>
-				Sort
-			</div>
+			<DropdownMenu.Root>
+				<DropdownMenu.Trigger class="flex items-center hover:bg-neutral-3 w-auto h-full rounded-r-2xl border-l border-neutral-7">
+					<Icon icon={iconIds.sortIcon} width="1rem" class="mr-3 ml-3 sm:ml-6" />
+					<span class="mr-6 hidden sm:block">Sort</span>
+				</DropdownMenu.Trigger>
+				<DropdownMenu.Content>
+					<DropdownMenu.RadioGroup bind:value={cultivarSort}>
+						<DropdownMenu.RadioItem value="alphabetical">
+							<Icon icon={iconIds.sortAlphaIcon} width="1.25rem" class="mr-2" />
+							<span class="">Alphabetical</span>
+						</DropdownMenu.RadioItem>
+						<DropdownMenu.RadioItem value="reverseAlphabetical">
+							<Icon icon={iconIds.sortReverseAlphaIcon} width="1.25rem" class="mr-2" />
+							<span class="">Reverse alphabetical</span>
+						</DropdownMenu.RadioItem>
+					  </DropdownMenu.RadioGroup>
+				</DropdownMenu.Content>
+			  </DropdownMenu.Root>
 		</div>
 
 		<!-- Tree -->
@@ -582,7 +635,7 @@
 			<!-- Cultivar tree item. -->
 			{#each collection.cultivars as cultivar}
 				<li class="w-full">
-					<CultivarTree {treeView} collectionRef={collection.id} {cultivar} />
+					<CultivarTree {treeView} collectionRef={collection.id} {cultivar} editing={editingCollection} />
 				</li>
 			{/each}
 		</ul>

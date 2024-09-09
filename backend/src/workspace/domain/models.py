@@ -44,7 +44,7 @@ class LocationHistory(Value):
         Returns:
             bool: True if the Location has no defined locations.
         """
-        return self.locations is None
+        return not self.locations
 
 
 @entity_transform
