@@ -13,7 +13,7 @@
 	};
 
 	let {
-		tagsInput = $bindable(),
+		tagsInput = $bindable([]),
 		maxTags,
 		placeholder,
 		onChange,
@@ -33,7 +33,8 @@
 		placeholder: placeholder,
 		/** Sync the bindable input prop and Melt's writable store. */
 		add(tag: string) {
-			tagsInput?.push(tag);
+			tagsInput.push(tag);
+			console.log(tag);
 			if (onChange) {
 				onChange();
 			}
@@ -41,7 +42,7 @@
 		},
 		/** The ID of the tag is the previous ID, the value is the newly set value. */
 		update(tag: Tag.Tag) {
-			tagsInput = tagsInput?.filter((tagId) => {
+			tagsInput = tagsInput.filter((tagId) => {
 				return tagId !== tag.id;
 			});
 			if (onChange) {
@@ -50,7 +51,7 @@
 			return { id: tag.value, value: tag.value };
 		},
 		remove(tag: Tag.Tag) {
-			tagsInput = tagsInput?.filter((tagId) => {
+			tagsInput = tagsInput.filter((tagId) => {
 				return tagId !== tag.id;
 			});
 			if (onChange) {

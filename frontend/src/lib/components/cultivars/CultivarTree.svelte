@@ -8,22 +8,25 @@
 	import { createServerErrors } from '$state/formServerErrors.svelte';
 	import FormInfoPopover from '$components/misc/FormInfoPopover.svelte';
 	import FormErrorPopover from '$components/misc/FormErrorPopover.svelte';
+	import * as Dialog from '$lib/components/ui/dialog';
+	import CultivarDeleteForm from './CultivarDeleteForm.svelte';
 
 	type Props = {
-		collectionRef: string;
+		collectionId: string;
 		cultivar: CultivarSchema;
 		treeView: TreeView;
 		editing: boolean;
 	};
 
-	let { collectionRef, cultivar, treeView, editing }: Props = $props();
+	let { collectionId, cultivar, treeView, editing }: Props = $props();
+
+	let cultivarDeleteFormOpen = $state(false)
 
 	const {
 		elements: { item, group },
 		helpers: { isExpanded }
 	} = treeView;
 
-	let editingCultivar: boolean = $state(false)
 </script>
 
 <button
@@ -40,6 +43,35 @@
 		{/if}
 	</div>
 	<div class="h-[1px] flex-grow rounded-lg bg-neutral-3"></div>
+	{#if editing} 
+	<Dialog.Root bind:open={cultivarDeleteFormOpen}>
+		<Dialog.Trigger
+			class="ml-2"
+		>
+			<Icon icon={iconIds.deleteIcon} width="1.25rem" class="text-destructive-9 hover:text-destructive-10" />
+		</Dialog.Trigger>
+		<Dialog.Content>
+			<Dialog.Header>
+				<Dialog.Title>
+					<span>
+						Deleting
+					</span>
+					<span class="italic font-bold">
+						{cultivar.name}
+					</span>
+				</Dialog.Title>
+				<Dialog.Description>Make sure you want to proceed. This action is irreversible.</Dialog.Description>
+				<CultivarDeleteForm
+					collectionId={collectionId}
+					cultivarId={cultivar.id}
+					onSuccess={() => {
+						cultivarDeleteFormOpen = false;
+					}}
+				/>
+			</Dialog.Header>
+		</Dialog.Content>
+	</Dialog.Root>
+	{/if}
 	<Icon
 		icon={iconIds.chevronRight}
 		width="1.5rem"
@@ -47,11 +79,8 @@
 	/>
 </button>
 
-
 <!-- Cultivar tree item children. -->
 <ul use:melt={$group({ id: cultivar.id })} class="w-full">
-
-
 	<!-- Details tree item -->
 	<li class="my-2 w-full">
 		<button

@@ -62,8 +62,9 @@
 	<!-- Username -->
 	<Form.Field {form} name="username">
 		<Form.Control let:attrs>
-			<Form.Label description={userCreate.schema.shape.username.description}
-				>Username</Form.Label
+			<Form.Label
+				description={userCreate.schema.shape.username.description}
+				optional={userCreate.schema.shape.username.isOptional()}>Username</Form.Label
 			>
 			<Input
 				{...attrs}
@@ -80,8 +81,8 @@
 	<Form.Field {form} name="email_address">
 		<Form.Control let:attrs>
 			<Form.Label
-				description={userCreate.schema.shape['email_address']?._def.description}
-				>Email</Form.Label
+				description={userCreate.schema.shape.email_address.description}
+				optional={userCreate.schema.shape.email_address.isOptional()}>Email</Form.Label
 			>
 			<Input
 				{...attrs}
@@ -96,8 +97,9 @@
 	<!-- Password1 -->
 	<Form.Field {form} name="password1">
 		<Form.Control let:attrs>
-			<Form.Label description={userCreate.schema.shape['password1']?._def.description}
-				>Password</Form.Label
+			<Form.Label
+				description={userCreate.schema.shape.password1.description}
+				optional={userCreate.schema.shape.password1.isOptional()}>Password</Form.Label
 			>
 			<Input {...attrs} type="password" bind:value={$formData.password1} />
 		</Form.Control>
@@ -107,7 +109,9 @@
 	<!-- Password2 -->
 	<Form.Field {form} name="password2">
 		<Form.Control let:attrs>
-			<Form.Label description={userCreate.schema.shape['password2']?._def.description}
+			<Form.Label
+				description={userCreate.schema.shape.password2.description}
+				optional={userCreate.schema.shape.password2.isOptional()}
 				>Confirm Password</Form.Label
 			>
 			<Input {...attrs} type="password" bind:value={$formData.password2} />

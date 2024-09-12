@@ -70,6 +70,10 @@ export const cultivarFieldSchemas = {
 				)
 				.describe(cultivarFields.cultivar_name.description)
 		)
+		.min(
+			cultivarFields.cultivar_names.min_length.value,
+			cultivarFields.cultivar_names.min_length.message
+		)
 		.max(
 			cultivarFields.cultivar_names.max_length.value,
 			cultivarFields.cultivar_names.max_length.message

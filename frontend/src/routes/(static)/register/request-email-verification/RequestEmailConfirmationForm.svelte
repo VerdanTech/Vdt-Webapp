@@ -58,8 +58,10 @@
 	<Form.Field {form} name="email_address">
 		<Form.Control let:attrs>
 			<Form.Label
-				description={userRequestEmailConfirmation.schema.shape['email_address']?._def
-					.description}>Email</Form.Label
+				description={userRequestEmailConfirmation.schema.shape.email_address
+					.description}
+				optional={userRequestEmailConfirmation.schema.shape.email_address.isOptional()}
+				>Email</Form.Label
 			>
 			<Input
 				{...attrs}

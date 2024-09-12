@@ -110,8 +110,9 @@
 	<!-- Garden name -->
 	<Form.Field {form} name="name">
 		<Form.Control let:attrs>
-			<Form.Label description={gardenCreate.schema.shape.name.description}
-				>Name</Form.Label
+			<Form.Label
+				description={gardenCreate.schema.shape.name.description}
+				optional={gardenCreate.schema.shape.name.isOptional()}>Name</Form.Label
 			>
 			<Input
 				{...attrs}
@@ -126,8 +127,9 @@
 	<!-- Garden key -->
 	<Form.Field {form} name="key">
 		<Form.Control let:attrs>
-			<Form.Label description={gardenCreate.schema.shape.key.description}
-				>Key</Form.Label
+			<Form.Label
+				description={gardenCreate.schema.shape.key.description}
+				optional={gardenCreate.schema.shape.key.isOptional()}>Key</Form.Label
 			>
 			<span class="flex">
 				<!--
@@ -162,7 +164,9 @@
 	<!-- Garden visibility -->
 	<Form.Field {form} name="visibility">
 		<Form.Control let:attrs>
-			<Form.Label description={gardenCreate.schema.shape.visibility.description}
+			<Form.Label
+				description={gardenCreate.schema.shape.visibility.description}
+				optional={gardenCreate.schema.shape.visibility.isOptional()}
 				>Visibility</Form.Label
 			>
 			<Select.Root
@@ -199,7 +203,9 @@
 	<!-- Garden description -->
 	<Form.Field {form} name="description">
 		<Form.Control let:attrs>
-			<Form.Label description={gardenCreate.schema.shape.description.description}
+			<Form.Label
+				description={gardenCreate.schema.shape.description.description}
+				optional={gardenCreate.schema.shape.description.isOptional()}
 				>Description</Form.Label
 			>
 			<Textarea {...attrs} bind:value={$formData.description} />
@@ -210,7 +216,9 @@
 	<!-- Admins to invite -->
 	<Form.Field {form} name="admin_usernames">
 		<Form.Control let:attrs>
-			<Form.Label description={gardenCreate.schema.shape.admin_usernames.description}
+			<Form.Label
+				description={gardenCreate.schema.shape.admin_usernames.description}
+				optional={gardenCreate.schema.shape.admin_usernames.isOptional()}
 				>Admin Invites</Form.Label
 			>
 			<GardenCreateFormUserTagsInput
@@ -225,7 +233,9 @@
 	<!-- Editors to invite -->
 	<Form.Field {form} name="editor_usernames">
 		<Form.Control let:attrs>
-			<Form.Label description={gardenCreate.schema.shape.editor_usernames.description}
+			<Form.Label
+				description={gardenCreate.schema.shape.editor_usernames.description}
+				optional={gardenCreate.schema.shape.editor_usernames.isOptional()}
 				>Editor Invites</Form.Label
 			>
 			<GardenCreateFormUserTagsInput
@@ -242,7 +252,9 @@
 	<!-- Viewers to invite -->
 	<Form.Field {form} name="viewer_usernames">
 		<Form.Control let:attrs>
-			<Form.Label description={gardenCreate.schema.shape.viewer_usernames.description}
+			<Form.Label
+				description={gardenCreate.schema.shape.viewer_usernames.description}
+				optional={gardenCreate.schema.shape.viewer_usernames.isOptional()}
 				>Viewer Invites</Form.Label
 			>
 			<GardenCreateFormUserTagsInput

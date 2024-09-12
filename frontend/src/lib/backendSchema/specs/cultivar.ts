@@ -17,12 +17,16 @@ export const cultivarFields = {
 			'A common name of this plant species. Must be between 3 and 30 characters long and contain only alphanumeric characters, spaces, hyphens, and underscores.'
 	},
 	cultivar_names: {
+		min_length: {
+			value: 1,
+			message: 'Must contain at least 1 name'
+		},
 		max_length: {
 			value: 10,
 			message: 'Must contain at most 10 names'
 		},
 		description:
-			'A set of common names associated with this plant species. Each name must be between 3 and 30 characters long and contain only alphanumeric characters and spaces. There may be a maximumm of 10 names'
+			'A set of common names associated with this plant species. Each name must be between 3 and 30 characters long and contain only alphanumeric characters and spaces. There must be at least 1 name and a maximum of 10 names'
 	},
 	cultivar_key: {
 		min_length: {

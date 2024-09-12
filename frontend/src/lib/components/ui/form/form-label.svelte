@@ -8,10 +8,12 @@
 
 	type $$Props = LabelPrimitive.Props & {
 		description?: string;
+		optional?: boolean;
 	};
 
 	let className: $$Props['class'] = undefined;
 	export let description: string | undefined = undefined;
+	export let optional: boolean = false;
 	export { className as class };
 
 	const { labelAttrs } = getFormControl();
@@ -26,6 +28,9 @@
 	{...$$restProps}
 >
 	<slot {labelAttrs} />
+	{#if !optional}
+		<span class="mx-1 translate-y-[2px]">*</span>
+	{/if}
 	{#if description}
 		<FormInfoPopover {description} />
 	{/if}

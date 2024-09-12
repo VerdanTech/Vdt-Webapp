@@ -16,6 +16,7 @@ values: SpecValues = {
         Specs.PATTERN: r"[0-9A-Za-z _-]+",
     },
     "cultivar_names": {
+        Specs.MIN_LENGTH: 1,
         Specs.MAX_LENGTH: 10,
     },
     "cultivar_key": {
@@ -51,11 +52,12 @@ descriptions: SpecDescriptions = {
         ),
     },
     "cultivar_names": {
+        Specs.MIN_LENGTH: f"Must contain at least {values['cultivar_names'][Specs.MIN_LENGTH]} name",
         Specs.MAX_LENGTH: f"Must contain at most {values['cultivar_names'][Specs.MAX_LENGTH]} names",
         "field": (
             "A set of common names associated with this plant species. "
             f"Each name must be between {values['cultivar_name'][Specs.MIN_LENGTH]} and {values['cultivar_name'][Specs.MAX_LENGTH]} characters long and contain only alphanumeric characters and spaces. "
-            f"There may be a maximumm of {values['cultivar_names'][Specs.MAX_LENGTH]} names"
+            f"There must be at least {values['cultivar_names'][Specs.MIN_LENGTH]} name and a maximum of {values['cultivar_names'][Specs.MAX_LENGTH]} names"
         ),
     },
     "cultivar_key": {

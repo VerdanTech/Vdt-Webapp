@@ -1,19 +1,18 @@
 <script lang="ts">
-	import { derived } from 'svelte/store';
 	import { melt, createTreeView, type TreeView } from '@melt-ui/svelte';
 	import {
 		getLocalTimeZone,
 		DateFormatter,
 		parseDateTime
 	} from '@internationalized/date';
-	import {Button} from 'bits-ui'
+	import { Button } from 'bits-ui';
 	import Icon, { addIcon } from '@iconify/svelte';
 	import iconIds from '$lib/assets/icons';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
 	import * as Popover from '$lib/components/ui/popover';
 	import * as Collapsible from '$lib/components/ui/collapsible';
 	import * as Select from '$lib/components/ui/select';
-	import * as Dialog from "$lib/components/ui/dialog";
+	import * as Dialog from '$lib/components/ui/dialog';
 	import { Textarea } from '$lib/components/ui/textarea/index.js';
 	import { Input } from '$lib/components/ui/input';
 	import { Field, Control, Label, FieldErrors, Description } from 'formsnap';
@@ -40,7 +39,7 @@
 	/** Props. */
 	type Props = {
 		collectionId: string;
-		gardenRef: string | undefined;
+		gardenRef?: string | undefined;
 	};
 	let { collectionId, gardenRef = undefined }: Props = $props();
 
@@ -60,7 +59,7 @@
 	} = treeView;
 
 	const collection: CultivarCollectionFullSchema = {
-		id: 'iaesnrt',
+		id: '1e9c7a10-29fb-482e-b657-7572fb805745',
 		description:
 			"this is the description. west coast seeds is a seed company that operaties here in british columbia. It's where I get all my seeds personally its really graet and everything thianks",
 		name: 'West Coast Seeds ',
@@ -72,7 +71,7 @@
 		user_ref: { id: 'aisroe' },
 		cultivars: [
 			{
-				id: 'iaosen',
+				id: '6fec522b-9b6f-4bee-806e-ac262dd31442',
 				name: 'Lettuce',
 				names: ['Lettuce', 'The green shit'],
 				key: 'Le',
@@ -96,8 +95,8 @@
 				}
 			},
 			{
-				id: 'iaosesn',
-				name: 'Lettuce',
+				id: 'cb4b907e-06c8-4dc6-8e7a-e5023eca2f66',
+				name: 'Rettuce',
 				names: ['Lettuce', 'The green shit'],
 				key: 'Le',
 				description: 'Lettuce is a pretty good plant, I like making wraps with it.',
@@ -135,7 +134,8 @@
 		resetForm: true,
 		validators: zod(cultivarCollectionUpdate.schema),
 		onUpdate({ form }) {
-			console.log('submiting form');
+			form.data.collection_ref = collectionId;
+			console.log(form.data);
 			if (form.valid) {
 				$collectionUpdateMutation.mutate(form.data, {
 					onSuccess: () => {
@@ -195,29 +195,37 @@
 		timeZone: getLocalTimeZone()
 	});
 
-	let detailsOpen = $state(false);
-	let editingCollection = $state(false);
-	let cultivarSearch = $state('');
-	let cultivarSort = $state<'alphabetical' | 'reverseAlphabetical'>('alphabetical');
+	/** State. */
+	let detailsOpen = $state(false); /** Controls the state of the Details collapsible. */
+	let editingCollection = $state(false); /** True if the collection is in the editing state. */
+	let cultivarCreateFormOpen = $state(false); /** Controls the open state of the cultivar creation dialog. */
+	let cultivarSearch = $state(''); /** Used to filter the displayed cultivars. */
+	let cultivarSort = $state('alphabetical'); /** Used to sort the displayed cultivars. */
 
-	const sortedCollectionQuery = derived(collectionQuery, ($collectionQuery) => {
+	/** Filters and sorts the displayed cultivars based on the cultivar search and sort. */
+	const sortedCollectionQuery = $derived.by(() => {
 		if ($collectionQuery.data && $collectionQuery.data[0].cultivars) {
-			let collection = $collectionQuery.data[0].cultivars
-			if (cultivarSearch) {
-				collection = collection.filter((cultivar) => {return cultivar.name.toLowerCase().includes(cultivarSearch.toLowerCase())})
-			}
-			if (cultivarSort) {
+			let collection = [...$collectionQuery.data[0].cultivars];
+			collection.sort((a, b) => {
 				switch (cultivarSort) {
 					case 'alphabetical':
-						collection = collection.sort((a, b) => a.name.localeCompare(b.name))
-						break;
+						return a.name.localeCompare(b.name);
 					case 'reverseAlphabetical':
-						collection = collection.sort((a, b) => b.name.localeCompare(a.name))
+						return b.name.localeCompare(a.name);
+					default:
+						return 0; // No sorting
 				}
+			});
+			if (cultivarSearch) {
+				collection = collection.filter((cultivar) => {
+					return cultivar.name.toLowerCase().includes(cultivarSearch.toLowerCase());
+				});
 			}
-			return collection
+			return collection;
+		} else {
+			return [];
 		}
-	})
+	});
 </script>
 
 {#snippet inlineErrors(formFieldName: string)}
@@ -325,7 +333,7 @@
 										$formData.description = collection.description;
 										debounceFormSubmit();
 									}}
-									class="mx-2 min-h-12 mt-2 rounded-lg border border-neutral-4 bg-neutral-2 p-2 text-sm text-neutral-11 data-[fs-error]:border-destructive-7 data-[fs-error]:outline-destructive-6"
+									class="mx-2 mt-2 min-h-12 rounded-lg border border-neutral-4 bg-neutral-2 p-2 text-sm text-neutral-11 data-[fs-error]:border-destructive-7 data-[fs-error]:outline-destructive-6"
 								/>
 							</Control></Field
 						>
@@ -398,7 +406,7 @@
 												/>
 											</div>
 											<span
-												class="w-auto text-right py-2 text-sm data-[fs-error]:outline-destructive-7"
+												class="w-auto py-2 text-right text-sm data-[fs-error]:outline-destructive-7"
 												>{collection.name}</span
 											>
 										</div>
@@ -478,7 +486,7 @@
 														.description}
 												/>
 											</div>
-											<span class="text-right text-sm py-2"
+											<span class="py-2 text-right text-sm"
 												>{visibilityEnumToOption(collection.visibility).label}</span
 											>
 										</div>
@@ -508,10 +516,8 @@
 															.value}
 														placeholder="Enter a tag"
 														onChange={() => {
-															() => {
-																$formData.tags = collection.tags;
-																debounceFormSubmit();
-															};
+															$formData.tags = collection.tags;
+															debounceFormSubmit();
 														}}
 														formAttrs={attrs}
 													/>
@@ -590,29 +596,52 @@
 		</form>
 
 		<!-- Cultivars menu -->
-		<div class="my-3 h-8 w-full rounded-2xl border border-neutral-8 bg-neutral-2 flex items-center justify-between">
-			<Dialog.Root>
-				<Dialog.Trigger class="flex items-center hover:bg-neutral-3 w-auto h-full rounded-l-2xl border-r border-neutral-7">
-					<Icon icon={iconIds.addIcon} width="1rem" class="mr-3 ml-4 sm:ml-6" />
+		<div
+			class="my-3 flex h-8 w-full items-center justify-between rounded-2xl border border-neutral-8 bg-neutral-2"
+		>
+			<Dialog.Root bind:open={cultivarCreateFormOpen}>
+				<Dialog.Trigger
+					class="flex h-full w-auto items-center rounded-l-2xl border-r border-neutral-7 hover:bg-neutral-3"
+				>
+					<Icon icon={iconIds.addIcon} width="1rem" class="ml-4 mr-3 sm:ml-6" />
 					<span class="mr-6 hidden sm:block">Add</span>
 				</Dialog.Trigger>
 				<Dialog.Content>
-				  <Dialog.Header>
-					<Dialog.Title>Add a Cultivar</Dialog.Title>
-					<CultivarCreateForm collectionRef={collection.id}/>
-				  </Dialog.Header>
+					<Dialog.Header>
+						<Dialog.Title>Add a Cultivar</Dialog.Title>
+						<CultivarCreateForm
+							collectionId={collection.id}
+							cultivars={collection.cultivars}
+							onSuccess={() => {
+								cultivarCreateFormOpen = false;
+							}}
+						/>
+					</Dialog.Header>
 				</Dialog.Content>
-			  </Dialog.Root>
-			<div class="flex-grow group flex items-center hover:bg-neutral-3 w-auto h-full border-r border-neutral-7">
-				<Icon icon={iconIds.searchIcon} width="1.25rem" class="mr-3 ml-6" />
-				<input bind:value={cultivarSearch} placeholder="Search" class="mr-6 w-full bg-neutral-2 group-hover:bg-neutral-3"/>
-				<Button.Root on:click={() => {cultivarSearch = ''}} class="hover:bg-neutral-4 h-full">
-					<Icon icon={iconIds.defaultClose} width="1rem" class="mr-3 ml-3" />
+			</Dialog.Root>
+			<div
+				class="group flex h-full w-auto flex-grow items-center border-r border-neutral-7 hover:bg-neutral-3"
+			>
+				<Icon icon={iconIds.searchIcon} width="1.25rem" class="ml-6 mr-3" />
+				<input
+					bind:value={cultivarSearch}
+					placeholder="Search"
+					class="mr-6 w-full bg-neutral-2 group-hover:bg-neutral-3"
+				/>
+				<Button.Root
+					on:click={() => {
+						cultivarSearch = '';
+					}}
+					class="h-full hover:bg-neutral-4"
+				>
+					<Icon icon={iconIds.defaultClose} width="1rem" class="ml-3 mr-3" />
 				</Button.Root>
 			</div>
 			<DropdownMenu.Root>
-				<DropdownMenu.Trigger class="flex items-center hover:bg-neutral-3 w-auto h-full rounded-r-2xl border-l border-neutral-7">
-					<Icon icon={iconIds.sortIcon} width="1rem" class="mr-3 ml-3 sm:ml-6" />
+				<DropdownMenu.Trigger
+					class="flex h-full w-auto items-center rounded-r-2xl border-l border-neutral-7 hover:bg-neutral-3"
+				>
+					<Icon icon={iconIds.sortIcon} width="1rem" class="ml-3 mr-3 sm:ml-6" />
 					<span class="mr-6 hidden sm:block">Sort</span>
 				</DropdownMenu.Trigger>
 				<DropdownMenu.Content>
@@ -625,17 +654,22 @@
 							<Icon icon={iconIds.sortReverseAlphaIcon} width="1.25rem" class="mr-2" />
 							<span class="">Reverse alphabetical</span>
 						</DropdownMenu.RadioItem>
-					  </DropdownMenu.RadioGroup>
+					</DropdownMenu.RadioGroup>
 				</DropdownMenu.Content>
-			  </DropdownMenu.Root>
+			</DropdownMenu.Root>
 		</div>
 
 		<!-- Tree -->
 		<ul class="overflow-none w-full" {...$tree}>
 			<!-- Cultivar tree item. -->
-			{#each collection.cultivars as cultivar}
+			{#each collection.cultivars ?? [] as cultivar}
 				<li class="w-full">
-					<CultivarTree {treeView} collectionRef={collection.id} {cultivar} editing={editingCollection} />
+					<CultivarTree
+						{treeView}
+						collectionRef={collection.id}
+						{cultivar}
+						editing={editingCollection}
+					/>
 				</li>
 			{/each}
 		</ul>
