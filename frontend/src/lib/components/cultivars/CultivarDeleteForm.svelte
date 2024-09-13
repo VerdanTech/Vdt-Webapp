@@ -1,16 +1,10 @@
 <script lang="ts">
 	import { useQueryClient } from '@sveltestack/svelte-query';
 	import * as Form from '$lib/components/ui/form';
-	import { Input } from '$lib/components/ui/input';
-	import { Textarea } from '$lib/components/ui/textarea';
 	import { superForm, defaults } from 'sveltekit-superforms';
 	import { zod } from 'sveltekit-superforms/adapters';
 	import { cultivarDelete } from '$lib/data/cultivar/commands';
 	import { createServerErrors } from '$state/formServerErrors.svelte';
-	import TagsInput from '$components/ui/TagsInput.svelte';
-	import cultivarFields from '$lib/backendSchema/specs/cultivar';
-	import type { CultivarSchema } from '$codegen/types';
-	import CultivarParentCombobox from './CultivarParentCombobox.svelte';
 
 	type Props = {
 		collectionId: string;
@@ -40,6 +34,7 @@
 		SPA: true,
 		validators: zod(cultivarDelete.schema),
 		onUpdate({ form }) {
+			console.log(form.data);
 			if (form.valid) {
 				$mutation.mutate(form.data, {
 					onSuccess: () => {

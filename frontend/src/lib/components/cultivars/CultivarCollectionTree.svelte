@@ -26,7 +26,11 @@
 		CultivarCollectionFullSchemaVisibility,
 		CultivarCollectionUpdateCommandVisibility
 	} from '$codegen/types';
-	import type { CultivarSchema, CultivarCollectionFullSchema } from '$codegen/types';
+	import type {
+		CultivarSchema,
+		CultivarCollectionFullSchema,
+		CultivarCollectionUpdateCommand
+	} from '$codegen/types';
 	import { cultivarCollectionUpdate } from '$data/cultivar/commands';
 	import { createServerErrors } from '$state/formServerErrors.svelte';
 	import CultivarTree from './CultivarTree.svelte';
@@ -64,7 +68,7 @@
 			"this is the description. west coast seeds is a seed company that operaties here in british columbia. It's where I get all my seeds personally its really graet and everything thianks",
 		name: 'West Coast Seeds ',
 		slug: 'west-coast-seeds',
-		tags: ['west coast', 'canada', 'native_plants', 'tag1', 'tag2', 'tag3', 'tag4'],
+		tags: ['tag1', 'tag2'],
 		visibility: CultivarCollectionFullSchemaVisibility.private,
 		created_at: '2023-09-07T15:30:00Z',
 		parent_ref: { id: 'aisroe' },
@@ -75,7 +79,7 @@
 				name: 'Lettuce',
 				names: ['Lettuce', 'The green shit'],
 				key: 'Le',
-				description: 'Lettuce is a pretty good plant, I like making wraps with it.',
+				description: 'this is the description. west coast seeds is a seed company that operaties here in british columbia. Its where I get all my seeds personally its really graet and everything thianks',
 				attributes: {
 					frost_date_planting_window_profile: {
 						last_frost_window_open: 40,
@@ -129,18 +133,14 @@
 	 *  executes success task, and sets server errors on failure.
 	 * - onChange: Reset server errors.
 	 */
-	const form = superForm(defaults(zod(cultivarCollectionUpdate.schema)), {
+	const initialData: CultivarCollectionUpdateCommand = { collection_ref: collectionId };
+	const form = superForm(defaults(initialData, zod(cultivarCollectionUpdate.schema)), {
 		SPA: true,
 		resetForm: true,
 		validators: zod(cultivarCollectionUpdate.schema),
 		onUpdate({ form }) {
-			form.data.collection_ref = collectionId;
-			console.log(form.data);
 			if (form.valid) {
 				$collectionUpdateMutation.mutate(form.data, {
-					onSuccess: () => {
-						/** TODO: Optimistic update. */
-					},
 					onError: (error) => {
 						// @ts-ignore
 						serverErrors.setErrors(error);
@@ -197,31 +197,49 @@
 
 	/** State. */
 	let detailsOpen = $state(false); /** Controls the state of the Details collapsible. */
-	let editingCollection = $state(false); /** True if the collection is in the editing state. */
-	let cultivarCreateFormOpen = $state(false); /** Controls the open state of the cultivar creation dialog. */
+	let editingCollection =
+		$state(false); /** True if the collection is in the editing state. */
+	let cultivarCreateFormOpen =
+		$state(false); /** Controls the open state of the cultivar creation dialog. */
 	let cultivarSearch = $state(''); /** Used to filter the displayed cultivars. */
-	let cultivarSort = $state('alphabetical'); /** Used to sort the displayed cultivars. */
+	let cultivarSort =
+		$state('alphabetical'); /** Used to sort the displayed cultivars. */
 
-	/** Filters and sorts the displayed cultivars based on the cultivar search and sort. */
-	const sortedCollectionQuery = $derived.by(() => {
-		if ($collectionQuery.data && $collectionQuery.data[0].cultivars) {
-			let collection = [...$collectionQuery.data[0].cultivars];
-			collection.sort((a, b) => {
+	/**
+	 * Filters and sorts the displayed cultivars based on the cultivar search and sort.
+	 * Returns an array of indices of the original cultivar collection store.
+	 */
+	const sortedCollectionIndices = $derived.by(() => {
+		if ($collectionQuery.data && $collectionQuery.data[0]?.cultivars) {
+			const originalCultivars = $collectionQuery.data[0].cultivars;
+
+			/** Create an array of indices. */
+			let indices = originalCultivars.map((_, index) => index);
+
+			/** Sort the indices based on the cultivars they point to. */
+			indices.sort((a, b) => {
+				const cultivarA = originalCultivars[a];
+				const cultivarB = originalCultivars[b];
+
 				switch (cultivarSort) {
 					case 'alphabetical':
-						return a.name.localeCompare(b.name);
+						return cultivarA.name.localeCompare(cultivarB.name);
 					case 'reverseAlphabetical':
-						return b.name.localeCompare(a.name);
+						return cultivarB.name.localeCompare(cultivarA.name);
 					default:
 						return 0; // No sorting
 				}
 			});
+
+			/** Filter the indices based on the search term. */
 			if (cultivarSearch) {
-				collection = collection.filter((cultivar) => {
+				indices = indices.filter((index) => {
+					const cultivar = originalCultivars[index];
 					return cultivar.name.toLowerCase().includes(cultivarSearch.toLowerCase());
 				});
 			}
-			return collection;
+
+			return indices;
 		} else {
 			return [];
 		}
@@ -342,11 +360,17 @@
 							<span>Description</span>
 							<div class="ml-4 h-[1px] flex-grow rounded-lg bg-neutral-3"></div>
 						</div>
-						<p
-							class="mx-2 mt-2 rounded-lg border border-neutral-4 bg-neutral-2 p-2 text-sm text-neutral-11"
+						<div
+							class="m-2 rounded-lg border border-neutral-4 bg-neutral-2 p-2 text-sm text-neutral-11"
 						>
-							{collection.description}
-						</p>
+							{#if collection.description}
+								<p>
+									{collection.description}
+								</p>
+							{:else}
+								<span class="font-light italic text-neutral-10"> None </span>
+							{/if}
+						</div>
 					{/if}
 				</div>
 				<div class="my-2">
@@ -537,12 +561,16 @@
 											<div
 												class="rounded-lg border border-neutral-4 bg-neutral-1 p-2 text-right text-sm"
 											>
-												{#each collection.tags as tag}
-													<span class="first:hidden"> , </span>
-													<span>
-														{tag}
-													</span>
-												{/each}
+												{#if collection.tags.length > 0}
+													{#each collection.tags as tag}
+														<span class="first:hidden"> , </span>
+														<span>
+															{tag}
+														</span>
+													{/each}
+												{:else}
+													<span class="font-light italic text-neutral-11"> None </span>
+												{/if}
 											</div>
 										</div>
 									{/if}
@@ -662,12 +690,16 @@
 		<!-- Tree -->
 		<ul class="overflow-none w-full" {...$tree}>
 			<!-- Cultivar tree item. -->
-			{#each collection.cultivars ?? [] as cultivar}
+			<!--
+				{#each sortedCollectionIndices ?? [] as index}
+				bind:cultivar={$collectionQuery.data[0].cultivars[index]}
+			-->
+				{#each collection.cultivars as cultivar, index}
 				<li class="w-full">
 					<CultivarTree
 						{treeView}
-						collectionRef={collection.id}
-						{cultivar}
+						collectionId={collection.id}
+						bind:cultivar={collection.cultivars[index]}
 						editing={editingCollection}
 					/>
 				</li>
