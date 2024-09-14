@@ -15,6 +15,7 @@
 	import { Textarea } from '$lib/components/ui/textarea/index.js';
 	import TagsInput from '$components/ui/TagsInput.svelte';
 	import CultivarDeleteForm from './CultivarDeleteForm.svelte';
+	import CultivarAttributeTreeItem from './CultivarAttributeTreeItem.svelte';
 	import debounce from '$lib/utils/debounce';
 
 	type Props = {
@@ -256,9 +257,7 @@
 										description={cultivarFields.cultivar_key.description}
 									/>
 								</div>
-								<div
-									class="p-2 text-right text-sm"
-								>
+								<div class="p-2 text-right text-sm">
 									<span
 										class="w-auto py-2 text-right text-sm data-[fs-error]:outline-destructive-7"
 										>{cultivar.key}</span
@@ -271,107 +270,109 @@
 				<!-- Cultivar scientific name tree item. -->
 				<li class="my-2 w-full">
 					{#if editing}
-					<Field {form} name="scientific_name">
-						<Control let:attrs>
-							<div class="flex items-center justify-between">
-								<div class="flex items-center">
-									<Label class="ml-10 text-sm font-light text-neutral-11">Scientific Name</Label
-									>
-									<Description class="flex items-center">
-										<FormInfoPopover
-											description={cultivarFields.cultivar_scientific_name.description}
-										/>
-									</Description>
-									{@render inlineErrors('cultivar_scientific_name')}
+						<Field {form} name="scientific_name">
+							<Control let:attrs>
+								<div class="flex items-center justify-between">
+									<div class="flex items-center">
+										<Label class="ml-10 text-sm font-light text-neutral-11"
+											>Scientific Name</Label
+										>
+										<Description class="flex items-center">
+											<FormInfoPopover
+												description={cultivarFields.cultivar_scientific_name
+													.description}
+											/>
+										</Description>
+										{@render inlineErrors('cultivar_scientific_name')}
+									</div>
+									<input
+										{...attrs}
+										type="text"
+										bind:value={cultivar.scientific_name}
+										oninput={() => {
+											$formData.scientific_name = cultivar.scientific_name;
+											debounceFormSubmit();
+										}}
+										placeholder="None"
+										class="rounded-md border bg-neutral-1 px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-6 focus-visible:ring-offset-2 data-[fs-error]:border-destructive-7 data-[fs-error]:outline-destructive-6"
+									/>
 								</div>
-								<input
-									{...attrs}
-									type="text"
-									bind:value={cultivar.scientific_name}
-									oninput={() => {
-										$formData.scientific_name = cultivar.scientific_name;
-										debounceFormSubmit();
-									}}
-									placeholder="None"
-									class="rounded-md border bg-neutral-1 px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-6 focus-visible:ring-offset-2 data-[fs-error]:border-destructive-7 data-[fs-error]:outline-destructive-6"
+							</Control></Field
+						>
+					{:else}
+						<div class="flex items-center justify-between">
+							<div class="flex items-center">
+								<span class="ml-10 text-sm font-light text-neutral-11"
+									>Scientific Name</span
+								>
+								<FormInfoPopover
+									description={cultivarFields.cultivar_scientific_name.description}
 								/>
 							</div>
-						</Control></Field
-					>
-				{:else}
-					<div class="flex items-center justify-between">
-						<div class="flex items-center">
-							<span class="ml-10 text-sm font-light text-neutral-11">Scientific Name</span>
-							<FormInfoPopover
-								description={cultivarFields.cultivar_scientific_name.description}
-							/>
+							<div class="rounded-lg p-2 text-right text-sm">
+								{#if cultivar.scientific_name}
+									<span
+										class="w-auto py-2 text-right text-sm data-[fs-error]:outline-destructive-7"
+										>{cultivar.scientific_name}</span
+									>
+								{:else}
+									<span class="font-light italic text-neutral-11"> None </span>
+								{/if}
+							</div>
 						</div>
-						<div
-							class="rounded-lg p-2 text-right text-sm"
-						>
-							{#if cultivar.scientific_name}
-							<span
-								class="w-auto py-2 text-right text-sm data-[fs-error]:outline-destructive-7"
-								>{cultivar.scientific_name}</span
-							>
-							{:else}
-							<span class="font-light italic text-neutral-11"> None </span>
-							{/if}
-						</div>
-					</div>
-				{/if}
+					{/if}
 				</li>
 				<!-- Cultivar description tree item. -->
 				<li class="my-2 w-full">
 					{#if editing}
-					<Field {form} name="description">
-						<Control let:attrs>
-							<div class="flex items-center justify-between">
-								<div class="flex items-center">
-									<Label class="ml-10 text-sm font-light text-neutral-11">Description</Label
-									>
-									<Description class="flex items-center">
-										<FormInfoPopover
-											description={cultivarFields.cultivar_description.description}
-										/>
-									</Description>
-									{@render inlineErrors('cultivar_description')}
+						<Field {form} name="description">
+							<Control let:attrs>
+								<div class="flex items-center justify-between">
+									<div class="flex items-center">
+										<Label class="ml-10 text-sm font-light text-neutral-11"
+											>Description</Label
+										>
+										<Description class="flex items-center">
+											<FormInfoPopover
+												description={cultivarFields.cultivar_description.description}
+											/>
+										</Description>
+										{@render inlineErrors('cultivar_description')}
+									</div>
+									<Textarea
+										{...attrs}
+										bind:value={cultivar.description}
+										oninput={() => {
+											$formData.description = cultivar.description;
+											debounceFormSubmit();
+										}}
+										placeholder="None"
+										class="rounded-md border bg-neutral-1 px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-6 focus-visible:ring-offset-2 data-[fs-error]:border-destructive-7 data-[fs-error]:outline-destructive-6"
+									/>
 								</div>
-								<Textarea
-									{...attrs}
-									bind:value={cultivar.description}
-									oninput={() => {
-										$formData.description = cultivar.description;
-										debounceFormSubmit();
-									}}
-									placeholder="None"
-									class="rounded-md border bg-neutral-1 px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-6 focus-visible:ring-offset-2 data-[fs-error]:border-destructive-7 data-[fs-error]:outline-destructive-6"
+							</Control></Field
+						>
+					{:else}
+						<div class="flex items-center justify-between">
+							<div class="flex items-center">
+								<span class="ml-10 text-sm font-light text-neutral-11">Description</span
+								>
+								<FormInfoPopover
+									description={cultivarFields.cultivar_description.description}
 								/>
 							</div>
-						</Control></Field
-					>
-				{:else}
-					<div class="flex items-center justify-between">
-						<div class="flex items-center">
-							<span class="ml-10 text-sm font-light text-neutral-11">Description</span>
-							<FormInfoPopover
-								description={cultivarFields.cultivar_description.description}
-							/>
+							<div class="rounded-lg border border-neutral-4 p-2 text-right text-sm">
+								{#if cultivar.description}
+									<span
+										class="w-auto py-2 text-right text-sm data-[fs-error]:outline-destructive-7"
+										>{cultivar.description}</span
+									>
+								{:else}
+									<span class="font-light italic text-neutral-11"> None </span>
+								{/if}
+							</div>
 						</div>
-						<div
-							class="rounded-lg border border-neutral-4  p-2 text-right text-sm"
-						>
-							{#if cultivar.description}
-							<span
-							class="w-auto py-2 text-right text-sm data-[fs-error]:outline-destructive-7"
-							>{cultivar.description}</span
-							>
-							{:else}
-							<span class="font-light italic text-neutral-11"> None </span>
-							{/if}
-						</div>
-					</div>
-				{/if}	
+					{/if}
 				</li>
 				<!-- Cultivar parent tree item. -->
 				<li class="my-2 w-full">
@@ -420,34 +421,8 @@
 					{#if profileValue}
 						<ul use:melt={$group({ id: profileTreeId })}>
 							{#each Object.entries(profileValue) as [attributeKey, attributeValue]}
-								{@const attributeTreeId = cultivar.id + profileKey + attributeKey}
-								{@const attributeLabel =
-									cultivarFields[attributeKey as keyof typeof cultivarFields]?.label}
-								{@const attributeDescription =
-									cultivarFields[attributeKey as keyof typeof cultivarFields]
-										?.description}
-								{@const attributeUnit =
-									cultivarFields[attributeKey as keyof typeof cultivarFields]?.unit}
-								<li class="my-2 flex w-full items-center justify-between">
-									<button
-										use:melt={$item({ id: attributeTreeId })}
-										class="flex w-auto items-center"
-									>
-										<span class="ml-10 text-sm text-neutral-11">
-											{attributeLabel}
-										</span>
-										<FormInfoPopover description={attributeDescription} />
-									</button>
-									<div class="flex items-center">
-										<span
-											class="mx-2 rounded-lg border border-neutral-4 bg-neutral-2 px-4 py-2"
-										>
-											20
-										</span>
-										<span>
-											{attributeUnit}
-										</span>
-									</div>
+								<li class="my-2 flex w-full items-center">
+									<CultivarAttributeTreeItem attributeKey={attributeKey} attributeValue={attributeValue} form={form} serverErrors={serverErrors} editing={editing} />
 								</li>
 							{/each}
 						</ul>

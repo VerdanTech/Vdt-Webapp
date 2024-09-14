@@ -79,7 +79,8 @@
 				name: 'Lettuce',
 				names: ['Lettuce', 'The green shit'],
 				key: 'Le',
-				description: 'this is the description. west coast seeds is a seed company that operaties here in british columbia. Its where I get all my seeds personally its really graet and everything thianks',
+				description:
+					'this is the description. west coast seeds is a seed company that operaties here in british columbia. Its where I get all my seeds personally its really graet and everything thianks',
 				attributes: {
 					frost_date_planting_window_profile: {
 						last_frost_window_open: 40,
@@ -694,7 +695,7 @@
 				{#each sortedCollectionIndices ?? [] as index}
 				bind:cultivar={$collectionQuery.data[0].cultivars[index]}
 			-->
-				{#each collection.cultivars as cultivar, index}
+			{#each collection.cultivars as cultivar, index}
 				<li class="w-full">
 					<CultivarTree
 						{treeView}
