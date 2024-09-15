@@ -422,7 +422,7 @@
 						<ul use:melt={$group({ id: profileTreeId })}>
 							{#each Object.entries(profileValue) as [attributeKey, attributeValue]}
 								<li class="my-2 flex w-full items-center">
-									<CultivarAttributeTreeItem attributeKey={attributeKey} attributeValue={attributeValue} form={form} serverErrors={serverErrors} editing={editing} />
+									<CultivarAttributeTreeItem profileKey={profileKey} attributeKey={attributeKey} attributeValue={attributeValue} form={form} bind:formData={$formData} serverErrors={serverErrors} editing={editing} debounceFormSubmit={debounceFormSubmit} />
 								</li>
 							{/each}
 						</ul>

@@ -6,7 +6,8 @@
 	import { attributeKeyToComponent } from './attributes';
 	type Props = {};
 
-	let { attributeKey, attributeValue, form, serverErrors, editing } = $props();
+	let { profileKey, attributeKey, attributeValue, form, formData = $bindable(), serverErrors, editing, debounceFormSubmit } = $props();
+
 </script>
 
 {#snippet inlineErrors(formFieldName: string)}
@@ -40,6 +41,13 @@
                 formAttrs={attrs}
                 bind:value={attributeValue}
                 editing={editing}
+				onChange={() => {
+					formData.attributes[profileKey][attributeKey] = attributeValue
+					debounceFormSubmit()
+					console.log(profileKey)
+					console.log(attributeKey)
+					console.log(formData)
+				}}
             />
 			</div>
 		</Control></Field

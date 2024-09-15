@@ -25,6 +25,7 @@ import {
 	cultivarCollectionMergeCommandOp
 } from '$codegen';
 import { cultivarFieldSchemas } from './schemas';
+import { fi } from '@faker-js/faker';
 
 /** Creates a new cultivar in a collection. */
 export const cultivarCreate = {
@@ -53,7 +54,27 @@ export const cultivarUpdate = {
 		scientific_name: cultivarFieldSchemas.cultivar_scientific_name.optional(),
 		description: cultivarFieldSchemas.cultivar_description.optional(),
 		parent_id: zod.string().uuid().optional(),
-		remove_parent: zod.boolean().optional()
+		remove_parent: zod.boolean().optional(),
+		attributes: zod.object(
+			{
+				frost_date_planting_window_profile: zod.object({
+					first_frost_window_open: cultivarFieldSchemas.first_frost_window_open.optional(),
+					first_frost_window_close: cultivarFieldSchemas.first_frost_window_close.optional(),
+					last_frost_window_open: cultivarFieldSchemas.last_frost_window_open.optional(),
+					last_frost_window_close: cultivarFieldSchemas.last_frost_window_close.optional()
+				}),
+				origin_profile: zod.object({
+					transplantable: cultivarFieldSchemas.transplantable.optional()
+				}),
+				annual_lifecycle_profile: zod.object({
+					seed_to_germ: cultivarFieldSchemas.seed_to_germ.optional(),
+					germ_to_transplant: cultivarFieldSchemas.germ_to_transplant.optional(),
+					germ_to_first_harvest: cultivarFieldSchemas.germ_to_first_harvest.optional(),
+					first_to_last_harvest: cultivarFieldSchemas.first_to_last_harvest.optional()
+
+				})
+			}
+		)
 	}),
 	mutation: () => {
 		return useMutation(function (data: CultivarUpdateCommand) {

@@ -1,22 +1,22 @@
 import { SvelteComponent } from 'svelte';
-import LastFrostWindowOpen from './LastFrostWindowOpen.svelte';
+import NumberAttribute from './NumberAttribute.svelte';
 
 /** Maps each cultivar attribute to a component. */
 const attributeComponents = {
 	/** Frost date planting windows profile. */
-	last_frost_window_open: LastFrostWindowOpen,
-	last_frost_window_close: LastFrostWindowOpen,
-	first_frost_window_open: LastFrostWindowOpen,
-	first_frost_window_close: LastFrostWindowOpen,
+	last_frost_window_open: NumberAttribute,
+	last_frost_window_close: NumberAttribute,
+	first_frost_window_open: NumberAttribute,
+	first_frost_window_close: NumberAttribute,
 
 	/** Origin profile. */
-	transplantable: LastFrostWindowOpen,
+	transplantable: NumberAttribute,
 
 	/** Annual lifecycle profile. */
-	seed_to_germ: LastFrostWindowOpen,
-	germ_to_transplant: LastFrostWindowOpen,
-	germ_to_first_harvest: LastFrostWindowOpen,
-	first_to_last_harvest: LastFrostWindowOpen
+	seed_to_germ: NumberAttribute,
+	germ_to_transplant: NumberAttribute,
+	germ_to_first_harvest: NumberAttribute,
+	first_to_last_harvest: NumberAttribute
 };
 /**
  * Given a cultivar attribute key, returns the component represented by it.
