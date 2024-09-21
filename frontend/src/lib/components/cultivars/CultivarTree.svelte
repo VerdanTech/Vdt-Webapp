@@ -15,8 +15,8 @@
 	import { Textarea } from '$lib/components/ui/textarea/index.js';
 	import TagsInput from '$components/ui/TagsInput.svelte';
 	import CultivarDeleteForm from './CultivarDeleteForm.svelte';
-	import CultivarAttributeTreeItem from './CultivarAttributeTreeItem.svelte';
 	import debounce from '$lib/utils/debounce';
+	import { attributeKeyToComponent } from './attributes';
 
 	type Props = {
 		collectionId: string;
@@ -68,7 +68,7 @@
 			serverErrors.reset();
 		}
 	});
-	const { form: formData, enhance } = form;
+	const { form: formData, errors, enhance } = form;
 
 	let debounceFormSubmit = debounce(() => {
 		form.submit();
@@ -86,6 +86,18 @@
 			<FormErrorPopover description={err} {errorAttrs} />
 		{/each}
 		{#each serverErrors.errors[formFieldName] as err}
+			<FormErrorPopover description={err} {errorAttrs} />
+		{/each}
+	</FieldErrors>
+{/snippet}
+
+{#snippet inlineAttributeErrors(profileKey: string, attributeKey: string)}
+	<FieldErrors let:errorAttrs class="flex items-center">
+		{#each $errors.attributes?.[profileKey]?.[attributeKey] as err}
+			<FormErrorPopover description={err} {errorAttrs} />
+		{/each}
+		<!-- TODO: If the errors returned by the backend are nested, change this. -->
+		{#each serverErrors.errors[attributeKey] as err}
 			<FormErrorPopover description={err} {errorAttrs} />
 		{/each}
 	</FieldErrors>
@@ -420,9 +432,61 @@
 					<!-- Cultivar attributes tree items. -->
 					{#if profileValue}
 						<ul use:melt={$group({ id: profileTreeId })}>
-							{#each Object.entries(profileValue) as [attributeKey, attributeValue]}
+							{#each Object.entries(cultivar.attributes[profileKey]) as [attributeKey, attributeValue]}
+							{@const attributeLabel =
+								cultivarFields[attributeKey as keyof typeof cultivarFields]?.label}
+							{@const attributeDescription =
+								cultivarFields[attributeKey as keyof typeof cultivarFields]?.description}
 								<li class="my-2 flex w-full items-center">
-									<CultivarAttributeTreeItem profileKey={profileKey} attributeKey={attributeKey} attributeValue={attributeValue} form={form} bind:formData={$formData} serverErrors={serverErrors} editing={editing} debounceFormSubmit={debounceFormSubmit} />
+									{#if editing}
+										<Field {form} name={attributeKey}>
+											<Control let:attrs>
+												<div class="flex w-full items-center justify-between">
+													<div class="flex items-center">
+														<Label class="ml-10 text-sm font-light text-neutral-11"
+															>{attributeLabel}</Label
+														>
+														<Description class="flex items-center">
+															<FormInfoPopover
+																description={attributeDescription}
+															/>
+														</Description>
+														{@render inlineAttributeErrors(profileKey, attributeKey)}
+													</div>
+													<svelte:component
+														this={attributeKeyToComponent(attributeKey)}
+														formAttrs={attrs}
+														bind:value={cultivar.attributes[profileKey][attributeKey]}
+														{editing}
+														onChange={() => {
+															$formData.attributes[profileKey][attributeKey] =
+															cultivar.attributes[profileKey][attributeKey];
+															debounceFormSubmit();
+															console.log(profileKey);
+															console.log(attributeKey);
+															console.log($formData);
+														}}
+													/>
+												</div>
+											</Control></Field
+										>
+									{:else}
+										<div class="flex w-full items-center justify-between">
+											<div class="flex items-center">
+												<span class="ml-10 text-sm font-light text-neutral-11"
+													>{attributeLabel}</span
+												>
+												<FormInfoPopover
+													description={attributeDescription}
+												/>
+											</div>
+											<svelte:component
+												this={attributeKeyToComponent(attributeKey)}
+												bind:value={cultivar.attributes[profileKey][attributeKey]}
+												{editing}
+											/>
+										</div>
+									{/if}
 								</li>
 							{/each}
 						</ul>
