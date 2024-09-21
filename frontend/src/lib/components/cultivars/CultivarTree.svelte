@@ -441,7 +441,7 @@
 									{#if editing}
 										<Field {form} name={attributeKey}>
 											<Control let:attrs>
-												<div class="flex w-full items-center justify-between">
+												<div class="flex w-full items-center justify-between text-sm">
 													<div class="flex items-center">
 														<Label class="ml-10 text-sm font-light text-neutral-11"
 															>{attributeLabel}</Label
@@ -456,6 +456,7 @@
 													<svelte:component
 														this={attributeKeyToComponent(attributeKey)}
 														formAttrs={attrs}
+														attributeKey={attributeKey}
 														bind:value={cultivar.attributes[profileKey][attributeKey]}
 														{editing}
 														onChange={() => {
@@ -480,11 +481,15 @@
 													description={attributeDescription}
 												/>
 											</div>
-											<svelte:component
+											<div class="p-2 text-right text-sm">
+
+												<svelte:component
 												this={attributeKeyToComponent(attributeKey)}
+												attributeKey={attributeKey}
 												bind:value={cultivar.attributes[profileKey][attributeKey]}
 												{editing}
-											/>
+												/>
+											</div>
 										</div>
 									{/if}
 								</li>

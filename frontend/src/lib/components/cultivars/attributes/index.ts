@@ -1,5 +1,6 @@
 import { SvelteComponent } from 'svelte';
 import NumberAttribute from './NumberAttribute.svelte';
+import BooleanAttribute from './BooleanAttribute.svelte';
 
 /** Maps each cultivar attribute to a component. */
 const attributeComponents = {
@@ -10,7 +11,7 @@ const attributeComponents = {
 	first_frost_window_close: NumberAttribute,
 
 	/** Origin profile. */
-	transplantable: NumberAttribute,
+	transplantable: BooleanAttribute,
 
 	/** Annual lifecycle profile. */
 	seed_to_germ: NumberAttribute,
