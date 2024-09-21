@@ -1,9 +1,15 @@
 <script lang="ts">
-	import { Input } from "$lib/components/ui/input";
+	import { Input } from '$lib/components/ui/input';
 
 	type Props = {};
 
-	let { formAttrs = undefined, attributeKey, value = $bindable(), editing, onChange } = $props();
+	let {
+		formAttrs = undefined,
+		attributeKey,
+		value = $bindable(),
+		editing,
+		onChange
+	} = $props();
 </script>
 
 {#if editing && formAttrs}
@@ -15,12 +21,10 @@
 		placeholder="None"
 		class="w-auto"
 	/>
+{:else if value}
+	<span class="rounded-lg border border-neutral-4 bg-neutral-2 px-4 py-2">
+		{value}
+	</span>
 {:else}
-{#if value}
-<span class="rounded-lg border border-neutral-4 bg-neutral-2 px-4 py-2">
-	{value}
-</span>
-{:else}
-<span class="font-light italic text-neutral-11"> None </span>
-{/if}
+	<span class="font-light italic text-neutral-11"> None </span>
 {/if}

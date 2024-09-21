@@ -433,10 +433,11 @@
 					{#if profileValue}
 						<ul use:melt={$group({ id: profileTreeId })}>
 							{#each Object.entries(cultivar.attributes[profileKey]) as [attributeKey, attributeValue]}
-							{@const attributeLabel =
-								cultivarFields[attributeKey as keyof typeof cultivarFields]?.label}
-							{@const attributeDescription =
-								cultivarFields[attributeKey as keyof typeof cultivarFields]?.description}
+								{@const attributeLabel =
+									cultivarFields[attributeKey as keyof typeof cultivarFields]?.label}
+								{@const attributeDescription =
+									cultivarFields[attributeKey as keyof typeof cultivarFields]
+										?.description}
 								<li class="my-2 flex w-full items-center">
 									{#if editing}
 										<Field {form} name={attributeKey}>
@@ -447,21 +448,19 @@
 															>{attributeLabel}</Label
 														>
 														<Description class="flex items-center">
-															<FormInfoPopover
-																description={attributeDescription}
-															/>
+															<FormInfoPopover description={attributeDescription} />
 														</Description>
 														{@render inlineAttributeErrors(profileKey, attributeKey)}
 													</div>
 													<svelte:component
 														this={attributeKeyToComponent(attributeKey)}
 														formAttrs={attrs}
-														attributeKey={attributeKey}
+														{attributeKey}
 														bind:value={cultivar.attributes[profileKey][attributeKey]}
 														{editing}
 														onChange={() => {
 															$formData.attributes[profileKey][attributeKey] =
-															cultivar.attributes[profileKey][attributeKey];
+																cultivar.attributes[profileKey][attributeKey];
 															debounceFormSubmit();
 															console.log(profileKey);
 															console.log(attributeKey);
@@ -477,17 +476,14 @@
 												<span class="ml-10 text-sm font-light text-neutral-11"
 													>{attributeLabel}</span
 												>
-												<FormInfoPopover
-													description={attributeDescription}
-												/>
+												<FormInfoPopover description={attributeDescription} />
 											</div>
 											<div class="p-2 text-right text-sm">
-
 												<svelte:component
-												this={attributeKeyToComponent(attributeKey)}
-												attributeKey={attributeKey}
-												bind:value={cultivar.attributes[profileKey][attributeKey]}
-												{editing}
+													this={attributeKeyToComponent(attributeKey)}
+													{attributeKey}
+													bind:value={cultivar.attributes[profileKey][attributeKey]}
+													{editing}
 												/>
 											</div>
 										</div>
