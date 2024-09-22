@@ -1,21 +1,21 @@
 <script lang="ts">
-	import { DropdownMenu as DropdownMenuPrimitive } from "bits-ui";
-	import { cn } from "$lib/utils";
+	import { DropdownMenu as DropdownMenuPrimitive } from 'bits-ui';
+	import { cn } from '$lib/utils';
 
 	type $$Props = DropdownMenuPrimitive.ItemProps & {
 		inset?: boolean;
 	};
 	type $$Events = DropdownMenuPrimitive.ItemEvents;
 
-	let className: $$Props["class"] = undefined;
-	export let inset: $$Props["inset"] = undefined;
+	let className: $$Props['class'] = undefined;
+	export let inset: $$Props['inset'] = undefined;
 	export { className as class };
 </script>
 
 <DropdownMenuPrimitive.Item
 	class={cn(
-		"data-[highlighted]:bg-accent-6 data-[highlighted]:text-accent-12 relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
-		inset && "pl-8",
+		'relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none data-[disabled]:pointer-events-none data-[highlighted]:bg-accent-6 data-[highlighted]:text-accent-12 data-[disabled]:opacity-50',
+		inset && 'pl-8',
 		className
 	)}
 	{...$$restProps}

@@ -1,22 +1,25 @@
 <script lang="ts">
+	import { useQueryClient } from '@sveltestack/svelte-query';
 	import * as Form from '$lib/components/ui/form';
-	import { Input } from '$lib/components/ui/input';
 	import { superForm, defaults } from 'sveltekit-superforms';
 	import { zod } from 'sveltekit-superforms/adapters';
-	import { userRequestPasswordReset } from '$lib/data/user/commands';
+	import { cultivarDelete } from '$lib/data/cultivar/commands';
 	import { createServerErrors } from '$state/formServerErrors.svelte';
 
 	type Props = {
-		/** Set to true once the form has been submitted and received a 200 response. */
-		succeeded: boolean;
+		collectionId: string;
+		cultivarId: string;
+		onSuccess?: Function | undefined;
 	};
 
-	let { succeeded = $bindable(false) }: Props = $props();
+	let { collectionId, cultivarId, onSuccess = undefined }: Props = $props();
 
 	/* Form mutation. */
-	const mutation = userRequestPasswordReset.mutation();
+	const mutation = cultivarDelete.mutation();
 	/* Server error state. */
 	const serverErrors = createServerErrors();
+
+	const queryClient = useQueryClient();
 
 	/**
 	 * Standard form configuration:
@@ -26,14 +29,19 @@
 	 *  executes success task, and sets server errors on failure.
 	 * - onChange: Reset server errors.
 	 */
-	const form = superForm(defaults(zod(userRequestPasswordReset.schema)), {
+	const initialData = { collection_ref: collectionId, cultivar_id: cultivarId };
+	const form = superForm(defaults(initialData, zod(cultivarDelete.schema)), {
 		SPA: true,
-		validators: zod(userRequestPasswordReset.schema),
+		validators: zod(cultivarDelete.schema),
 		onUpdate({ form }) {
+			console.log(form.data);
 			if (form.valid) {
 				$mutation.mutate(form.data, {
 					onSuccess: () => {
-						succeeded = true;
+						queryClient.invalidateQueries(['cultivarCollections', [collectionId]]);
+						if (onSuccess) {
+							onSuccess();
+						}
 					},
 					onError: (error) => {
 						// @ts-ignore
@@ -49,30 +57,12 @@
 	const { form: formData, enhance } = form;
 </script>
 
-<form method="POST" autocomplete="off" use:enhance>
-	<!-- Email address -->
-	<Form.Field {form} name="email_address">
-		<Form.Control let:attrs>
-			<Form.Label
-				description={userRequestPasswordReset.schema.shape['email_address']?._def
-					.description}
-				optional={false}>Email</Form.Label
-			>
-			<Input
-				{...attrs}
-				type="email"
-				placeholder="email@example.com"
-				bind:value={$formData.email_address}
-			/>
-		</Form.Control>
-		<Form.FieldErrors serverErrors={serverErrors.errors['email_address']} />
-	</Form.Field>
-
+<form method="POST" use:enhance>
 	<!-- Submit button -->
 	<Form.Button
 		disabled={false}
 		loading={$mutation.isLoading}
-		variant="default"
-		class="mt-4 w-full">Submit</Form.Button
+		variant="destructive"
+		class="mt-4 w-full">Delete</Form.Button
 	>
 </form>

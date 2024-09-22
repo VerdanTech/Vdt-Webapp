@@ -4,16 +4,16 @@
 	import { cn } from '$lib/utils/shadcn.js';
 	import { Label } from '$lib/components/ui/label/index.js';
 
-	import Icon from '@iconify/svelte';
-	import iconIds from '$lib/assets/icons';
-	import * as Popover from '$components/ui/popover';
+	import FormInfoPopover from '$components/misc/FormInfoPopover.svelte';
 
 	type $$Props = LabelPrimitive.Props & {
 		description?: string;
+		optional?: boolean;
 	};
 
 	let className: $$Props['class'] = undefined;
 	export let description: string | undefined = undefined;
+	export let optional: boolean = false;
 	export { className as class };
 
 	const { labelAttrs } = getFormControl();
@@ -28,18 +28,10 @@
 	{...$$restProps}
 >
 	<slot {labelAttrs} />
+	{#if !optional}
+		<span class="mx-1 translate-y-[2px]">*</span>
+	{/if}
 	{#if description}
-		<Popover.Root>
-			<Popover.Trigger class="w-8">
-				<Icon
-					icon={iconIds.formFieldDescriptionIcon}
-					width="1rem"
-					class="ml-2 text-neutral-11 hover:text-neutral-10 data-[fs-error]:text-neutral-8"
-				/>
-			</Popover.Trigger>
-			<Popover.Content class="max-w-2xl">
-				{description}
-			</Popover.Content>
-		</Popover.Root>
+		<FormInfoPopover {description} />
 	{/if}
 </Label>

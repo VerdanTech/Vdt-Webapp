@@ -3,11 +3,12 @@
 	import ChevronDown from 'lucide-svelte/icons/chevron-down';
 	import { cn } from '$lib/utils/shadcn.js';
 
-	type $$Props = SelectPrimitive.TriggerProps;
+	type $$Props = SelectPrimitive.TriggerProps & { chevron: boolean | undefined };
 	type $$Events = SelectPrimitive.TriggerEvents;
 
 	let className: $$Props['class'] = undefined;
 	export { className as class };
+	export let chevron: boolean = true;
 </script>
 
 <SelectPrimitive.Trigger
@@ -21,7 +22,9 @@
 	on:keydown
 >
 	<slot {builder} />
-	<div>
-		<ChevronDown class="h-4 w-4 opacity-50" />
-	</div>
+	{#if chevron}
+		<div>
+			<ChevronDown class="h-4 w-4 opacity-50" />
+		</div>
+	{/if}
 </SelectPrimitive.Trigger>

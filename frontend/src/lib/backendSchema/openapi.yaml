@@ -5,27 +5,27 @@ components:
         expiry_time_seconds:
           type: number
       required:
-      - expiry_time_seconds
+        - expiry_time_seconds
       title: AccessInfoResult
       type: object
     AnnualLifecycleProfile:
       properties:
         first_to_last_harvest:
           oneOf:
-          - type: 'null'
-          - type: number
+            - type: 'null'
+            - type: number
         germ_to_first_harvest:
           oneOf:
-          - type: 'null'
-          - type: number
+            - type: 'null'
+            - type: number
         germ_to_transplant:
           oneOf:
-          - type: 'null'
-          - type: number
+            - type: 'null'
+            - type: number
         seed_to_germ:
           oneOf:
-          - type: 'null'
-          - type: number
+            - type: 'null'
+            - type: number
       required: []
       title: AnnualLifecycleProfile
       type: object
@@ -33,31 +33,32 @@ components:
       properties:
         first_to_last_harvest:
           oneOf:
-          - type: 'null'
-          - description: The expected amount of days the first and last harvest of
-              a plant. For plants which only have one harvest, this values is zero.
-              Must be between 0 and 120 days.
-            type: number
+            - type: 'null'
+            - description: The expected amount of days the first and last harvest of
+                a plant. For plants which only have one harvest, this values is zero.
+                Must be between 0 and 120 days.
+              type: number
         germ_to_first_harvest:
           oneOf:
-          - type: 'null'
-          - description: The expected amount of days the germination of a seed to
-              when it will be ready for a harvest. Must be between 0 and 200 days.
-            type: number
+            - type: 'null'
+            - description: The expected amount of days the germination of a seed to
+                when it will be ready for a harvest. Must be between 0 and 200 days.
+              type: number
         germ_to_transplant:
           oneOf:
-          - type: 'null'
-          - description: The expected amount of days from the germination of a seed
-              to when it will be ready for transplant. For cultivars which are not
-              able to be transplanted, this value is unused. Must be between 0 and
-              200 days.
-            type: number
+            - type: 'null'
+            - description: The expected amount of days from the germination of a seed
+                to when it will be ready for transplant. For cultivars which are not
+                able to be transplanted, this value is unused. Must be between 0 and
+                200 days.
+              type: number
         seed_to_germ:
           oneOf:
-          - type: 'null'
-          - description: The expected amount of days from starting a seed to its germination.
-              Must be between 0 and 60 days.
-            type: number
+            - type: 'null'
+            - description:
+                The expected amount of days from starting a seed to its germination.
+                Must be between 0 and 60 days.
+              type: number
       required: []
       title: AnnualLifecycleProfileUpdateCommand
       type: object
@@ -76,16 +77,16 @@ components:
       properties:
         annual_lifecycle_profile:
           oneOf:
-          - type: 'null'
-          - $ref: '#/components/schemas/AnnualLifecycleProfileUpdateCommand'
+            - type: 'null'
+            - $ref: '#/components/schemas/AnnualLifecycleProfileUpdateCommand'
         frost_date_planting_window_profile:
           oneOf:
-          - type: 'null'
-          - $ref: '#/components/schemas/FrostDatePlantingWindowProfileUpdateCommand'
+            - type: 'null'
+            - $ref: '#/components/schemas/FrostDatePlantingWindowProfileUpdateCommand'
         origin_profile:
           oneOf:
-          - type: 'null'
-          - $ref: '#/components/schemas/OriginProfileUpdateCommand'
+            - type: 'null'
+            - $ref: '#/components/schemas/OriginProfileUpdateCommand'
       required: []
       title: CultivarAttributeUpdateCommand
       type: object
@@ -98,9 +99,9 @@ components:
           type: string
         garden_ref:
           oneOf:
-          - type: 'null'
-          - format: uuid
-            type: string
+            - type: 'null'
+            - format: uuid
+              type: string
         name:
           description: The name of the collection. Must be between 3 and 50 characters
             long and contain only alphanumeric characters, spaces, hyphens, and underscores.
@@ -110,9 +111,9 @@ components:
           type: string
         parent_ref:
           oneOf:
-          - type: 'null'
-          - format: uuid
-            type: string
+            - type: 'null'
+            - format: uuid
+              type: string
         tags:
           default: []
           description: A set of metadata tags. Each tag must be at most 150 characters
@@ -129,12 +130,12 @@ components:
         visibility:
           default: private
           enum:
-          - private
-          - unlisted
-          - public
+            - private
+            - unlisted
+            - public
           type: string
       required:
-      - name
+        - name
       title: CultivarCollectionCreateCommand
       type: object
     CultivarCollectionDeleteCommand:
@@ -143,21 +144,21 @@ components:
           format: uuid
           type: string
       required:
-      - collection_ref
+        - collection_ref
       title: CultivarCollectionDeleteCommand
       type: object
     CultivarCollectionDuplicateCommand:
       properties:
         garden_ref:
           oneOf:
-          - type: 'null'
-          - format: uuid
-            type: string
+            - type: 'null'
+            - format: uuid
+              type: string
         source_collection_ref:
           format: uuid
           type: string
       required:
-      - source_collection_ref
+        - source_collection_ref
       title: CultivarCollectionDuplicateCommand
       type: object
     CultivarCollectionFullSchema:
@@ -173,8 +174,8 @@ components:
           type: string
         garden_ref:
           oneOf:
-          - type: 'null'
-          - $ref: '#/components/schemas/RefSchema'
+            - type: 'null'
+            - $ref: '#/components/schemas/RefSchema'
         id:
           format: uuid
           type: string
@@ -182,8 +183,8 @@ components:
           type: string
         parent_ref:
           oneOf:
-          - type: 'null'
-          - $ref: '#/components/schemas/RefSchema'
+            - type: 'null'
+            - $ref: '#/components/schemas/RefSchema'
         slug:
           type: string
         tags:
@@ -192,23 +193,23 @@ components:
           type: array
         user_ref:
           oneOf:
-          - type: 'null'
-          - $ref: '#/components/schemas/RefSchema'
+            - type: 'null'
+            - $ref: '#/components/schemas/RefSchema'
         visibility:
           enum:
-          - private
-          - unlisted
-          - public
+            - private
+            - unlisted
+            - public
           type: string
       required:
-      - created_at
-      - cultivars
-      - description
-      - id
-      - name
-      - slug
-      - tags
-      - visibility
+        - created_at
+        - cultivars
+        - description
+        - id
+        - name
+        - slug
+        - tags
+        - visibility
       title: CultivarCollectionFullSchema
       type: object
     CultivarCollectionGetByClientResult:
@@ -218,7 +219,7 @@ components:
             $ref: '#/components/schemas/CultivarCollectionPartialSchema'
           type: array
       required:
-      - collections
+        - collections
       title: CultivarCollectionGetByClientResult
       type: object
     CultivarCollectionGetByGardenResult:
@@ -230,8 +231,8 @@ components:
             $ref: '#/components/schemas/CultivarCollectionPartialSchema'
           type: array
       required:
-      - active_collection
-      - collections
+        - active_collection
+        - collections
       title: CultivarCollectionGetByGardenResult
       type: object
     CultivarCollectionMergeCommand:
@@ -243,8 +244,8 @@ components:
           format: uuid
           type: string
       required:
-      - source_collection_ref
-      - target_collection_ref
+        - source_collection_ref
+        - target_collection_ref
       title: CultivarCollectionMergeCommand
       type: object
     CultivarCollectionPartialSchema:
@@ -256,8 +257,8 @@ components:
           type: string
         garden_ref:
           oneOf:
-          - type: 'null'
-          - $ref: '#/components/schemas/RefSchema'
+            - type: 'null'
+            - $ref: '#/components/schemas/RefSchema'
         id:
           format: uuid
           type: string
@@ -265,8 +266,8 @@ components:
           type: string
         parent_ref:
           oneOf:
-          - type: 'null'
-          - $ref: '#/components/schemas/RefSchema'
+            - type: 'null'
+            - $ref: '#/components/schemas/RefSchema'
         slug:
           type: string
         tags:
@@ -275,22 +276,22 @@ components:
           type: array
         user_ref:
           oneOf:
-          - type: 'null'
-          - $ref: '#/components/schemas/RefSchema'
+            - type: 'null'
+            - $ref: '#/components/schemas/RefSchema'
         visibility:
           enum:
-          - private
-          - unlisted
-          - public
+            - private
+            - unlisted
+            - public
           type: string
       required:
-      - created_at
-      - description
-      - id
-      - name
-      - slug
-      - tags
-      - visibility
+        - created_at
+        - description
+        - id
+        - name
+        - slug
+        - tags
+        - visibility
       title: CultivarCollectionPartialSchema
       type: object
     CultivarCollectionUpdateCommand:
@@ -300,53 +301,55 @@ components:
           type: string
         description:
           oneOf:
-          - type: 'null'
-          - description: The description of the collection. Must be at most 1400 characters
-            maxLength: 1400
-            type: string
+            - type: 'null'
+            - description: The description of the collection. Must be at most 1400 characters
+              maxLength: 1400
+              type: string
         name:
           oneOf:
-          - type: 'null'
-          - description: The name of the collection. Must be between 3 and 50 characters
-              long and contain only alphanumeric characters, spaces, hyphens, and
-              underscores.
-            maxLength: 50
-            minLength: 3
-            pattern: '[0-9A-Za-z _-]+'
-            type: string
+            - type: 'null'
+            - description:
+                The name of the collection. Must be between 3 and 50 characters
+                long and contain only alphanumeric characters, spaces, hyphens, and
+                underscores.
+              maxLength: 50
+              minLength: 3
+              pattern: '[0-9A-Za-z _-]+'
+              type: string
         parent_ref:
           oneOf:
-          - type: 'null'
-          - format: uuid
-            type: string
+            - type: 'null'
+            - format: uuid
+              type: string
         remove_parent:
           default: false
           type: boolean
         tags:
           oneOf:
-          - type: 'null'
-          - description: A set of metadata tags. Each tag must be at most 150 characters
-              and contain only alphanumeric characters and spaces. There may be at
-              most 150 tags.
-            items:
-              description: A metadata tag. Must be at most 150 characters and contain
-                only alphanumeric characters and spaces
+            - type: 'null'
+            - description:
+                A set of metadata tags. Each tag must be at most 150 characters
+                and contain only alphanumeric characters and spaces. There may be at
+                most 150 tags.
+              items:
+                description: A metadata tag. Must be at most 150 characters and contain
+                  only alphanumeric characters and spaces
+                maxLength: 150
+                pattern: '[0-9A-Za-z ]+'
+                type: string
               maxLength: 150
-              pattern: '[0-9A-Za-z ]+'
-              type: string
-            maxLength: 150
-            type: array
+              type: array
         visibility:
           enum:
-          - private
-          - unlisted
-          - public
-          - null
+            - private
+            - unlisted
+            - public
+            - null
           type:
-          - 'null'
-          - string
+            - string
+            - 'null'
       required:
-      - collection_ref
+        - collection_ref
       title: CultivarCollectionUpdateCommand
       type: object
     CultivarCreateCommand:
@@ -356,24 +359,25 @@ components:
           type: string
         description:
           oneOf:
-          - type: 'null'
-          - description: A description of this plant species. Must be at most 1400
-              characters
-            maxLength: 1400
-            type: string
+            - type: 'null'
+            - description: A description of this plant species. Must be at most 1400
+                characters
+              maxLength: 1400
+              type: string
         key:
           oneOf:
-          - type: 'null'
-          - description: A very short abbreviation for this plant species. Must be
-              between 1 and 6 characters long and contain only alphanumeric characters.
-            maxLength: 6
-            minLength: 1
-            pattern: '[0-9A-Za-z]+'
-            type: string
+            - type: 'null'
+            - description: A very short abbreviation for this plant species. Must be
+                between 1 and 6 characters long and contain only alphanumeric characters.
+              maxLength: 6
+              minLength: 1
+              pattern: '[0-9A-Za-z]+'
+              type: string
         names:
           description: A set of common names associated with this plant species. Each
             name must be between 3 and 30 characters long and contain only alphanumeric
-            characters and spaces. There may be a maximumm of 10 names
+            characters and spaces. There must be at least 1 name and a maximum of
+            10 names
           items:
             description: A common name of this plant species. Must be between 3 and
               30 characters long and contain only alphanumeric characters, spaces,
@@ -386,19 +390,19 @@ components:
           type: array
         parent_id:
           oneOf:
-          - type: 'null'
-          - format: uuid
-            type: string
+            - type: 'null'
+            - format: uuid
+              type: string
         scientific_name:
           oneOf:
-          - type: 'null'
-          - description: The scientific name of this plant species. Must be at most
-              60 characters
-            maxLength: 60
-            type: string
+            - type: 'null'
+            - description: The scientific name of this plant species. Must be at most
+                60 characters
+              maxLength: 60
+              type: string
       required:
-      - collection_ref
-      - names
+        - collection_ref
+        - names
       title: CultivarCreateCommand
       type: object
     CultivarDeleteCommand:
@@ -410,8 +414,8 @@ components:
           format: uuid
           type: string
       required:
-      - collection_ref
-      - cultivar_id
+        - collection_ref
+        - cultivar_id
       title: CultivarDeleteCommand
       type: object
     CultivarSchema:
@@ -436,28 +440,28 @@ components:
           type: array
         parent_id:
           oneOf:
-          - type: 'null'
-          - format: uuid
-            type: string
+            - type: 'null'
+            - format: uuid
+              type: string
         scientific_name:
           type: string
       required:
-      - attributes
-      - created_at
-      - description
-      - id
-      - key
-      - name
-      - names
-      - scientific_name
+        - attributes
+        - created_at
+        - description
+        - id
+        - key
+        - name
+        - names
+        - scientific_name
       title: CultivarSchema
       type: object
     CultivarUpdateCommand:
       properties:
         attributes:
           oneOf:
-          - type: 'null'
-          - $ref: '#/components/schemas/CultivarAttributeUpdateCommand'
+            - type: 'null'
+            - $ref: '#/components/schemas/CultivarAttributeUpdateCommand'
         collection_ref:
           format: uuid
           type: string
@@ -466,74 +470,75 @@ components:
           type: string
         description:
           oneOf:
-          - type: 'null'
-          - description: A description of this plant species. Must be at most 1400
-              characters
-            maxLength: 1400
-            type: string
+            - type: 'null'
+            - description: A description of this plant species. Must be at most 1400
+                characters
+              maxLength: 1400
+              type: string
         key:
           oneOf:
-          - type: 'null'
-          - description: A very short abbreviation for this plant species. Must be
-              between 1 and 6 characters long and contain only alphanumeric characters.
-            maxLength: 6
-            minLength: 1
-            pattern: '[0-9A-Za-z]+'
-            type: string
+            - type: 'null'
+            - description: A very short abbreviation for this plant species. Must be
+                between 1 and 6 characters long and contain only alphanumeric characters.
+              maxLength: 6
+              minLength: 1
+              pattern: '[0-9A-Za-z]+'
+              type: string
         names:
           oneOf:
-          - type: 'null'
-          - description: A set of common names associated with this plant species.
-              Each name must be between 3 and 30 characters long and contain only
-              alphanumeric characters and spaces. There may be a maximumm of 10 names
-            items:
-              description: A common name of this plant species. Must be between 3
-                and 30 characters long and contain only alphanumeric characters, spaces,
-                hyphens, and underscores.
-              maxLength: 30
-              minLength: 3
-              pattern: '[0-9A-Za-z _-]+'
-              type: string
-            maxLength: 10
-            type: array
+            - type: 'null'
+            - description: A set of common names associated with this plant species.
+                Each name must be between 3 and 30 characters long and contain only
+                alphanumeric characters and spaces. There must be at least 1 name and
+                a maximum of 10 names
+              items:
+                description: A common name of this plant species. Must be between 3
+                  and 30 characters long and contain only alphanumeric characters, spaces,
+                  hyphens, and underscores.
+                maxLength: 30
+                minLength: 3
+                pattern: '[0-9A-Za-z _-]+'
+                type: string
+              maxLength: 10
+              type: array
         parent_id:
           oneOf:
-          - type: 'null'
-          - format: uuid
-            type: string
+            - type: 'null'
+            - format: uuid
+              type: string
         remove_parent:
           default: false
           type: boolean
         scientific_name:
           oneOf:
-          - type: 'null'
-          - description: The scientific name of this plant species. Must be at most
-              60 characters
-            maxLength: 60
-            type: string
+            - type: 'null'
+            - description: The scientific name of this plant species. Must be at most
+                60 characters
+              maxLength: 60
+              type: string
       required:
-      - collection_ref
-      - cultivar_id
+        - collection_ref
+        - cultivar_id
       title: CultivarUpdateCommand
       type: object
     FrostDatePlantingWindowProfile:
       properties:
         first_frost_window_close:
           oneOf:
-          - type: 'null'
-          - type: number
+            - type: 'null'
+            - type: number
         first_frost_window_open:
           oneOf:
-          - type: 'null'
-          - type: number
+            - type: 'null'
+            - type: number
         last_frost_window_close:
           oneOf:
-          - type: 'null'
-          - type: number
+            - type: 'null'
+            - type: number
         last_frost_window_open:
           oneOf:
-          - type: 'null'
-          - type: number
+            - type: 'null'
+            - type: number
       required: []
       title: FrostDatePlantingWindowProfile
       type: object
@@ -541,40 +546,40 @@ components:
       properties:
         first_frost_window_close:
           oneOf:
-          - type: 'null'
-          - description: The amount of days between the first frost and the end of
-              the planting window. Positive values indicate the window begins after
-              the first frost date. For example, a value of 15 indicates the cultivar
-              must be planted before 15 days after the first frost date. Must be between
-              -200 and 200 days.
-            type: number
+            - type: 'null'
+            - description: The amount of days between the first frost and the end of
+                the planting window. Positive values indicate the window begins after
+                the first frost date. For example, a value of 15 indicates the cultivar
+                must be planted before 15 days after the first frost date. Must be between
+                -200 and 200 days.
+              type: number
         first_frost_window_open:
           oneOf:
-          - type: 'null'
-          - description: The amount of days between the first frost and the beginning
-              of the planting window. Positive values indicate the window begins after
-              the first frost date. For example, a value of -15 indicates the cultivar
-              may be planted 15 days before the first frost date. Must be between
-              -200 and 200 days.
-            type: number
+            - type: 'null'
+            - description: The amount of days between the first frost and the beginning
+                of the planting window. Positive values indicate the window begins after
+                the first frost date. For example, a value of -15 indicates the cultivar
+                may be planted 15 days before the first frost date. Must be between
+                -200 and 200 days.
+              type: number
         last_frost_window_close:
           oneOf:
-          - type: 'null'
-          - description: The amount of days between the last frost and the end of
-              the planting window. Positive values indicate the window begins after
-              the last frost date. For example, a value of 15 indicates the cultivar
-              must be planted before 15 days after the last frost date. Must be between
-              -200 and 200 days.
-            type: number
+            - type: 'null'
+            - description: The amount of days between the last frost and the end of
+                the planting window. Positive values indicate the window begins after
+                the last frost date. For example, a value of 15 indicates the cultivar
+                must be planted before 15 days after the last frost date. Must be between
+                -200 and 200 days.
+              type: number
         last_frost_window_open:
           oneOf:
-          - type: 'null'
-          - description: The amount of days between the last frost and the beginning
-              of the planting window. Positive values indicate the window begins after
-              the last frost date. For example, a value of -15 indicates the cultivar
-              may be planted 15 days before the last frost date. Must be between -200
-              and 200 days.
-            type: number
+            - type: 'null'
+            - description: The amount of days between the last frost and the beginning
+                of the planting window. Positive values indicate the window begins after
+                the last frost date. For example, a value of -15 indicates the cultivar
+                may be planted 15 days before the last frost date. Must be between -200
+                and 200 days.
+              type: number
       required: []
       title: FrostDatePlantingWindowProfileUpdateCommand
       type: object
@@ -605,11 +610,11 @@ components:
             type: string
           type: array
       required:
-      - admin_memberships
-      - edit_memberships
-      - favorites
-      - gardens
-      - view_memberships
+        - admin_memberships
+        - edit_memberships
+        - favorites
+        - gardens
+        - view_memberships
       title: GardenAssociatedPartialsResult
       type: object
     GardenCreateCommand:
@@ -645,15 +650,16 @@ components:
           type: array
         key:
           oneOf:
-          - type: 'null'
-          - description: Must be between 4 and 16 characters long and contain only
-              alphanumeric characters and hyphens
-            maxLength: 16
-            minLength: 4
-            pattern: '[0-9A-Za-z-]+'
-            type: string
+            - type: 'null'
+            - description: Must be between 4 and 16 characters long and contain only
+                alphanumeric characters and hyphens
+              maxLength: 16
+              minLength: 4
+              pattern: '[0-9A-Za-z-]+'
+              type: string
         name:
-          description: Must be between 2 and 50 characters long and contain only alphanumeric
+          description:
+            Must be between 2 and 50 characters long and contain only alphanumeric
             characters and spaces
           maxLength: 50
           minLength: 2
@@ -674,26 +680,26 @@ components:
         visibility:
           default: private
           enum:
-          - private
-          - unlisted
-          - public
+            - private
+            - unlisted
+            - public
           type: string
       required:
-      - name
+        - name
       title: GardenCreateCommand
       type: object
     GardenFullSchema:
       properties:
         creator_ref:
           oneOf:
-          - type: 'null'
-          - $ref: '#/components/schemas/RefSchema'
+            - type: 'null'
+            - $ref: '#/components/schemas/RefSchema'
         description:
           type: string
         environment_ref:
           oneOf:
-          - type: 'null'
-          - $ref: '#/components/schemas/RefSchema'
+            - type: 'null'
+            - $ref: '#/components/schemas/RefSchema'
         expired:
           type: boolean
         id:
@@ -711,32 +717,33 @@ components:
           type: integer
         visibility:
           enum:
-          - private
-          - unlisted
-          - public
+            - private
+            - unlisted
+            - public
           type: string
       required:
-      - description
-      - expired
-      - id
-      - key
-      - memberships
-      - name
-      - num_memberships
-      - visibility
+        - description
+        - expired
+        - id
+        - key
+        - memberships
+        - name
+        - num_memberships
+        - visibility
       title: GardenFullSchema
       type: object
     GardenMembershipAcceptCommand:
       properties:
         garden_key:
-          description: Must be between 4 and 16 characters long and contain only alphanumeric
+          description:
+            Must be between 4 and 16 characters long and contain only alphanumeric
             characters and hyphens
           maxLength: 16
           minLength: 4
           pattern: '[0-9A-Za-z-]+'
           type: string
       required:
-      - garden_key
+        - garden_key
       title: GardenMembershipAcceptCommand
       type: object
     GardenMembershipCreateCommand:
@@ -781,20 +788,21 @@ components:
           maxLength: 10
           type: array
       required:
-      - garden_id
+        - garden_id
       title: GardenMembershipCreateCommand
       type: object
     GardenMembershipDeleteCommand:
       properties:
         garden_key:
-          description: Must be between 4 and 16 characters long and contain only alphanumeric
+          description:
+            Must be between 4 and 16 characters long and contain only alphanumeric
             characters and hyphens
           maxLength: 16
           minLength: 4
           pattern: '[0-9A-Za-z-]+'
           type: string
       required:
-      - garden_key
+        - garden_key
       title: GardenMembershipDeleteCommand
       type: object
     GardenMembershipFullSchema:
@@ -808,22 +816,22 @@ components:
           type: boolean
         inviter_ref:
           oneOf:
-          - type: 'null'
-          - $ref: '#/components/schemas/RefSchema'
+            - type: 'null'
+            - $ref: '#/components/schemas/RefSchema'
         role:
           enum:
-          - admin
-          - editor
-          - viewer
+            - admin
+            - editor
+            - viewer
           type: string
         user_ref:
           $ref: '#/components/schemas/RefSchema'
       required:
-      - accepted
-      - created_at
-      - favorite
-      - role
-      - user_ref
+        - accepted
+        - created_at
+        - favorite
+        - role
+        - user_ref
       title: GardenMembershipFullSchema
       type: object
     GardenMembershipRevokeCommand:
@@ -835,8 +843,8 @@ components:
           format: uuid
           type: string
       required:
-      - garden_id
-      - user_id
+        - garden_id
+        - user_id
       title: GardenMembershipRevokeCommand
       type: object
     GardenMembershipRoleChangeCommand:
@@ -846,25 +854,25 @@ components:
           type: string
         role:
           enum:
-          - admin
-          - editor
-          - viewer
+            - admin
+            - editor
+            - viewer
           type: string
         user_id:
           format: uuid
           type: string
       required:
-      - garden_id
-      - role
-      - user_id
+        - garden_id
+        - role
+        - user_id
       title: GardenMembershipRoleChangeCommand
       type: object
     GardenPartialSchema:
       properties:
         creator_ref:
           oneOf:
-          - type: 'null'
-          - $ref: '#/components/schemas/RefSchema'
+            - type: 'null'
+            - $ref: '#/components/schemas/RefSchema'
         id:
           format: uuid
           type: string
@@ -876,16 +884,16 @@ components:
           type: integer
         visibility:
           enum:
-          - private
-          - unlisted
-          - public
+            - private
+            - unlisted
+            - public
           type: string
       required:
-      - id
-      - key
-      - name
-      - num_memberships
-      - visibility
+        - id
+        - key
+        - name
+        - num_memberships
+        - visibility
       title: GardenPartialSchema
       type: object
     GardenPendingInviteSchema:
@@ -897,9 +905,9 @@ components:
         invite:
           $ref: '#/components/schemas/GardenMembershipFullSchema'
       required:
-      - expiry_countdown_hours
-      - garden
-      - invite
+        - expiry_countdown_hours
+        - garden
+        - invite
       title: GardenPendingInviteSchema
       type: object
     GardenPendingInvitesResult:
@@ -909,7 +917,7 @@ components:
             $ref: '#/components/schemas/GardenPendingInviteSchema'
           type: array
       required:
-      - pending_invites
+        - pending_invites
       title: GardenPendingInvitesResult
       type: object
     GardenUniqueKeyResult:
@@ -917,15 +925,15 @@ components:
         key:
           type: string
       required:
-      - key
+        - key
       title: GardenUniqueKeyResult
       type: object
     OriginProfile:
       properties:
         transplantable:
           oneOf:
-          - type: 'null'
-          - type: boolean
+            - type: 'null'
+            - type: boolean
       required: []
       title: OriginProfile
       type: object
@@ -933,11 +941,12 @@ components:
       properties:
         transplantable:
           oneOf:
-          - type: 'null'
-          - description: Defines whether a plant may be started as a seed in one location
-              and transplanted to another. Some plants, such as carrots, don't tolerate
-              transplants, and so must be started directly.
-            type: boolean
+            - type: 'null'
+            - description:
+                Defines whether a plant may be started as a seed in one location
+                and transplanted to another. Some plants, such as carrots, don't tolerate
+                transplants, and so must be started directly.
+              type: boolean
       required: []
       title: OriginProfileUpdateCommand
       type: object
@@ -947,7 +956,7 @@ components:
           format: uuid
           type: string
       required:
-      - id
+        - id
       title: RefSchema
       type: object
     Ref[src.cultivars.domain.models.CultivarCollection]:
@@ -956,7 +965,7 @@ components:
           format: uuid
           type: string
       required:
-      - id
+        - id
       title: Ref[CultivarCollection]
       type: object
     UserConfirmEmailConfirmationCommand:
@@ -965,7 +974,7 @@ components:
           format: uuid
           type: string
       required:
-      - key
+        - key
       title: UserConfirmEmailConfirmationCommand
       type: object
     UserConfirmPasswordResetCommand:
@@ -993,10 +1002,10 @@ components:
           format: uuid
           type: string
       required:
-      - key
-      - new_password1
-      - new_password2
-      - user_id
+        - key
+        - new_password1
+        - new_password2
+        - user_id
       title: UserConfirmPasswordResetCommand
       type: object
     UserCreateCommand:
@@ -1021,17 +1030,18 @@ components:
           pattern: ^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*\W).*$
           type: string
         username:
-          description: Must be between 3 and 50 characters long and contain only alphanumeric
+          description:
+            Must be between 3 and 50 characters long and contain only alphanumeric
             characters and underscores. Must be unique
           maxLength: 50
           minLength: 3
           pattern: ^[a-zA-Z0-9_]*$
           type: string
       required:
-      - email_address
-      - password1
-      - password2
-      - username
+        - email_address
+        - password1
+        - password2
+        - username
       title: UserCreateCommand
       type: object
     UserEmailSchema:
@@ -1043,9 +1053,9 @@ components:
         verified:
           type: boolean
       required:
-      - address
-      - primary
-      - verified
+        - address
+        - primary
+        - verified
       title: UserEmailSchema
       type: object
     UserFullSchema:
@@ -1065,11 +1075,11 @@ components:
         username:
           type: string
       required:
-      - created_at
-      - emails
-      - id
-      - is_superuser
-      - username
+        - created_at
+        - emails
+        - id
+        - is_superuser
+        - username
       title: UserFullSchema
       type: object
     UserPasswordVerificationQuery:
@@ -1086,8 +1096,8 @@ components:
           pattern: ^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*\W).*$
           type: string
       required:
-      - email_address
-      - password
+        - email_address
+        - password
       title: UserPasswordVerificationQuery
       type: object
     UserPublicSchema:
@@ -1098,8 +1108,8 @@ components:
         username:
           type: string
       required:
-      - id
-      - username
+        - id
+        - username
       title: UserPublicSchema
       type: object
     UserRequestEmailConfirmationCommand:
@@ -1108,7 +1118,7 @@ components:
           format: email
           type: string
       required:
-      - email_address
+        - email_address
       title: UserRequestEmailConfirmationCommand
       type: object
     UserRequestPasswordResetCommand:
@@ -1117,30 +1127,30 @@ components:
           format: email
           type: string
       required:
-      - email_address
+        - email_address
       title: UserRequestPasswordResetCommand
       type: object
     ValidationException:
       description: Validation Exception
       examples:
-      - detail: Bad Request
-        extra: {}
-        status_code: 400
+        - detail: Bad Request
+          extra: {}
+          status_code: 400
       properties:
         detail:
           type: string
         extra:
           anyOf:
-          - additionalProperties: {}
-            type: object
-          - items: {}
-            type: array
-          - type: 'null'
+            - additionalProperties: {}
+              type: object
+            - items: {}
+              type: array
+            - type: 'null'
         status_code:
           type: integer
       required:
-      - detail
-      - status_code
+        - detail
+        - status_code
       type: object
 externalDocs:
   description: Github Repository
@@ -1182,7 +1192,7 @@ paths:
           description: Bad request syntax or unsupported method
       summary: Cultivar collection create.
       tags:
-      - cultivars
+        - cultivars
   /cultivars/command/create_cultivar:
     post:
       deprecated: false
@@ -1210,7 +1220,7 @@ paths:
           description: Bad request syntax or unsupported method
       summary: Cultivar create.
       tags:
-      - cultivars
+        - cultivars
   /cultivars/command/delete_collection:
     post:
       deprecated: false
@@ -1238,7 +1248,7 @@ paths:
           description: Bad request syntax or unsupported method
       summary: Cultivar collection delete.
       tags:
-      - cultivars
+        - cultivars
   /cultivars/command/delete_cultivar:
     post:
       deprecated: false
@@ -1266,7 +1276,7 @@ paths:
           description: Bad request syntax or unsupported method
       summary: Cultivar delete.
       tags:
-      - cultivars
+        - cultivars
   /cultivars/command/duplicate_collection:
     post:
       deprecated: false
@@ -1295,7 +1305,7 @@ paths:
           description: Bad request syntax or unsupported method
       summary: Cultivar collection duplication.
       tags:
-      - cultivars
+        - cultivars
   /cultivars/command/merge_collection:
     post:
       deprecated: false
@@ -1324,7 +1334,7 @@ paths:
           description: Bad request syntax or unsupported method
       summary: Cultivar collection merge.
       tags:
-      - cultivars
+        - cultivars
   /cultivars/command/update_collection:
     post:
       deprecated: false
@@ -1352,7 +1362,7 @@ paths:
           description: Bad request syntax or unsupported method
       summary: Cultivar collection update.
       tags:
-      - cultivars
+        - cultivars
   /cultivars/command/update_cultivar:
     post:
       deprecated: false
@@ -1380,7 +1390,7 @@ paths:
           description: Bad request syntax or unsupported method
       summary: Cultivar update.
       tags:
-      - cultivars
+        - cultivars
   /cultivars/query/get_by_client:
     get:
       deprecated: false
@@ -1396,21 +1406,21 @@ paths:
           headers: {}
       summary: Get cultivar collections from a garden.
       tags:
-      - cultivars
+        - cultivars
   /cultivars/query/get_by_garden:
     get:
       deprecated: false
       description: Retrieves the cultivar collections associated with this garden.
       operationId: CultivarCollectionGetByGardenQueryOp
       parameters:
-      - allowEmptyValue: false
-        allowReserved: false
-        deprecated: false
-        in: query
-        name: garden_key
-        required: true
-        schema:
-          type: string
+        - allowEmptyValue: false
+          allowReserved: false
+          deprecated: false
+          in: query
+          name: garden_key
+          required: true
+          schema:
+            type: string
       responses:
         '200':
           content:
@@ -1427,24 +1437,24 @@ paths:
           description: Bad request syntax or unsupported method
       summary: Get cultivar collections from a garden.
       tags:
-      - cultivars
+        - cultivars
   /cultivars/query/get_by_ids:
     get:
       deprecated: false
       description: Retrieves the cultivar collections associated with the IDs.
       operationId: CultivarCollectionGetByIdsQueryOp
       parameters:
-      - allowEmptyValue: false
-        allowReserved: false
-        deprecated: false
-        in: query
-        name: ids
-        required: true
-        schema:
-          items:
-            format: uuid
-            type: string
-          type: array
+        - allowEmptyValue: false
+          allowReserved: false
+          deprecated: false
+          in: query
+          name: ids
+          required: true
+          schema:
+            items:
+              format: uuid
+              type: string
+            type: array
       responses:
         '200':
           content:
@@ -1463,7 +1473,7 @@ paths:
           description: Bad request syntax or unsupported method
       summary: Get cultivar collections from their IDs.
       tags:
-      - cultivars
+        - cultivars
   /gardens/command/accept_invite:
     post:
       deprecated: false
@@ -1487,7 +1497,7 @@ paths:
           description: Bad request syntax or unsupported method
       summary: Garden membership invitiation acceptance.
       tags:
-      - gardens
+        - gardens
   /gardens/command/change_role:
     post:
       deprecated: false
@@ -1511,7 +1521,7 @@ paths:
           description: Bad request syntax or unsupported method
       summary: Garden Membership role change.
       tags:
-      - gardens
+        - gardens
   /gardens/command/create:
     post:
       deprecated: false
@@ -1535,7 +1545,7 @@ paths:
           description: Bad request syntax or unsupported method
       summary: Garden creation.
       tags:
-      - gardens
+        - gardens
   /gardens/command/invite:
     post:
       deprecated: false
@@ -1559,7 +1569,7 @@ paths:
           description: Bad request syntax or unsupported method
       summary: Garden membership invitiation.
       tags:
-      - gardens
+        - gardens
   /gardens/command/leave:
     post:
       deprecated: false
@@ -1583,7 +1593,7 @@ paths:
           description: Bad request syntax or unsupported method
       summary: Garden membership deletion.
       tags:
-      - gardens
+        - gardens
   /gardens/command/revoke:
     post:
       deprecated: false
@@ -1607,7 +1617,7 @@ paths:
           description: Bad request syntax or unsupported method
       summary: Removes a user from a garden.
       tags:
-      - gardens
+        - gardens
   /gardens/query/associated_partials:
     get:
       deprecated: false
@@ -1625,21 +1635,21 @@ paths:
       summary: Returns a partial representation of all gardens that are associated
         with the client
       tags:
-      - gardens
+        - gardens
   /gardens/query/full_by_key:
     get:
       deprecated: false
       description: Returns a full representation of gardens given by a key.
       operationId: GardenFullByKeyQueryOp
       parameters:
-      - allowEmptyValue: false
-        allowReserved: false
-        deprecated: false
-        in: query
-        name: garden_key
-        required: true
-        schema:
-          type: string
+        - allowEmptyValue: false
+          allowReserved: false
+          deprecated: false
+          in: query
+          name: garden_key
+          required: true
+          schema:
+            type: string
       responses:
         '200':
           content:
@@ -1656,7 +1666,7 @@ paths:
           description: Bad request syntax or unsupported method
       summary: Returns a full representation of a garden by its key.
       tags:
-      - gardens
+        - gardens
   /gardens/query/generate_unique_key:
     get:
       deprecated: false
@@ -1672,7 +1682,7 @@ paths:
           headers: {}
       summary: Generate a new, unique garden key.
       tags:
-      - gardens
+        - gardens
   /gardens/query/most_relevant:
     get:
       deprecated: false
@@ -1680,14 +1690,14 @@ paths:
         user, ordered by relevance.
       operationId: GardenMostRelevantPartialsQueryOp
       parameters:
-      - allowEmptyValue: false
-        allowReserved: false
-        deprecated: false
-        in: query
-        name: max_gardens
-        required: true
-        schema:
-          type: integer
+        - allowEmptyValue: false
+          allowReserved: false
+          deprecated: false
+          in: query
+          name: max_gardens
+          required: true
+          schema:
+            type: integer
       responses:
         '200':
           content:
@@ -1706,7 +1716,7 @@ paths:
           description: Bad request syntax or unsupported method
       summary: Returns a partial representation of most relevant gardens to the user.
       tags:
-      - gardens
+        - gardens
   /gardens/query/partials_by_key:
     get:
       deprecated: false
@@ -1714,16 +1724,16 @@ paths:
         they exist and the client is authorized to use them.
       operationId: GardenPartialsByKeysQueryOp
       parameters:
-      - allowEmptyValue: false
-        allowReserved: false
-        deprecated: false
-        in: query
-        name: garden_keys
-        required: true
-        schema:
-          items:
-            type: string
-          type: array
+        - allowEmptyValue: false
+          allowReserved: false
+          deprecated: false
+          in: query
+          name: garden_keys
+          required: true
+          schema:
+            items:
+              type: string
+            type: array
       responses:
         '200':
           content:
@@ -1742,7 +1752,7 @@ paths:
           description: Bad request syntax or unsupported method
       summary: Returns a partial representation of gardens given by keys.
       tags:
-      - gardens
+        - gardens
   /gardens/query/pending_invites:
     get:
       deprecated: false
@@ -1759,7 +1769,7 @@ paths:
           headers: {}
       summary: Returns a set of pending garden invites
       tags:
-      - gardens
+        - gardens
   /users/auth/login:
     post:
       deprecated: false
@@ -1787,7 +1797,7 @@ paths:
           description: Bad request syntax or unsupported method
       summary: User login
       tags:
-      - users
+        - users
   /users/auth/refresh:
     post:
       deprecated: false
@@ -1803,7 +1813,7 @@ paths:
           headers: {}
       summary: User authentication refresh
       tags:
-      - users
+        - users
   /users/command/create:
     post:
       deprecated: false
@@ -1831,7 +1841,7 @@ paths:
           description: Bad request syntax or unsupported method
       summary: User registration.
       tags:
-      - users
+        - users
   /users/command/email/verification_confirm:
     post:
       deprecated: false
@@ -1859,7 +1869,7 @@ paths:
           description: Bad request syntax or unsupported method
       summary: Email confirmation.
       tags:
-      - users
+        - users
   /users/command/email/verification_request:
     post:
       deprecated: false
@@ -1887,7 +1897,7 @@ paths:
           description: Bad request syntax or unsupported method
       summary: Email confirmation request.
       tags:
-      - users
+        - users
   /users/command/password/confirm:
     post:
       deprecated: false
@@ -1915,7 +1925,7 @@ paths:
           description: Bad request syntax or unsupported method
       summary: Password reset confirm.
       tags:
-      - users
+        - users
   /users/command/password/request:
     post:
       deprecated: false
@@ -1944,7 +1954,7 @@ paths:
           description: Bad request syntax or unsupported method
       summary: Password reset request.
       tags:
-      - users
+        - users
   /users/query/client_profile:
     get:
       deprecated: false
@@ -1960,24 +1970,24 @@ paths:
           headers: {}
       summary: User client profile view.
       tags:
-      - users
+        - users
   /users/query/public_profiles:
     get:
       deprecated: false
       description: Returns the profiles of the user ids given.
       operationId: UserPublicProfilesQueryOp
       parameters:
-      - allowEmptyValue: false
-        allowReserved: false
-        deprecated: false
-        in: query
-        name: user_ids
-        required: true
-        schema:
-          items:
-            format: uuid
-            type: string
-          type: array
+        - allowEmptyValue: false
+          allowReserved: false
+          deprecated: false
+          in: query
+          name: user_ids
+          required: true
+          schema:
+            items:
+              format: uuid
+              type: string
+            type: array
       responses:
         '200':
           content:
@@ -1996,21 +2006,21 @@ paths:
           description: Bad request syntax or unsupported method
       summary: User public profiles view.
       tags:
-      - users
+        - users
   /users/query/username_exists:
     get:
       deprecated: false
       description: Returns true if the given username exists.
       operationId: UsernameExistsQueryOp
       parameters:
-      - allowEmptyValue: false
-        allowReserved: false
-        deprecated: false
-        in: query
-        name: username
-        required: true
-        schema:
-          type: string
+        - allowEmptyValue: false
+          allowReserved: false
+          deprecated: false
+          in: query
+          name: username
+          required: true
+          schema:
+            type: string
       responses:
         '200':
           content:
@@ -2027,9 +2037,9 @@ paths:
           description: Bad request syntax or unsupported method
       summary: Checks whether a username exists.
       tags:
-      - users
+        - users
 servers:
-- url: /
+  - url: /
 tags:
-- name: users
-- name: gardens
+  - name: users
+  - name: gardens

@@ -69,8 +69,9 @@
 	<Form.Field {form} name="new_password1">
 		<Form.Control let:attrs>
 			<Form.Label
-				description={userConfirmPasswordReset.schema.shape['new_password1']?._def
-					.description}>New Password</Form.Label
+				description={userConfirmPasswordReset.schema.shape.new_password1.description}
+				optional={userConfirmPasswordReset.schema.shape.new_password1.isOptional()}
+				>New Password</Form.Label
 			>
 			<Input {...attrs} type="password" bind:value={$formData.new_password1} />
 		</Form.Control>
@@ -81,8 +82,9 @@
 	<Form.Field {form} name="new_password2">
 		<Form.Control let:attrs>
 			<Form.Label
-				description={userConfirmPasswordReset.schema.shape['new_password2']?._def
-					.description}>Confirm Password</Form.Label
+				description={userConfirmPasswordReset.schema.shape.new_password2.description}
+				optoinal={userConfirmPasswordReset.schema.shape.new_password2.optional}
+				>Confirm Password</Form.Label
 			>
 			<Input {...attrs} type="password" bind:value={$formData.new_password2} />
 		</Form.Control>

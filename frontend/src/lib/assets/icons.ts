@@ -12,10 +12,17 @@ const iconIds = {
 	defaultClose: 'mdi:close',
 	caretLeftIcon: '',
 	caretRightIcon: '',
+	caretUpDownIcon: 'radix-icons:caret-sort',
 	chevronRight: 'material-symbols:chevron-right-rounded',
+	dotIcon: 'mdi:circle',
+	addIcon: 'mdi:plus-circle-outline',
 	startEditingIcon: 'material-symbols:edit-outline',
 	endEditingIcon: 'material-symbols:edit-off-outline',
 	deleteIcon: 'material-symbols:delete-outline',
+	searchIcon: 'material-symbols:search',
+	sortIcon: 'material-symbols:sort-rounded',
+	sortAlphaIcon: 'icons8:alphabetical-sorting',
+	sortReverseAlphaIcon: 'icons8:alphabetical-sorting-2',
 
 	/* Navigation and UI. */
 	gardenDrawerIcon: 'material-symbols:menu-open-rounded',

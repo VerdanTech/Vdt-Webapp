@@ -55,8 +55,9 @@
 	<!-- Email address -->
 	<Form.Field {form} name="email_address">
 		<Form.Control let:attrs>
-			<Form.Label description={userLogin.schema.shape.email_address.description}
-				>Email</Form.Label
+			<Form.Label
+				description={userLogin.schema.shape.email_address.description}
+				optional={userLogin.schema.shape.email_address.isOptional()}>Email</Form.Label
 			>
 			<Input
 				{...attrs}
@@ -71,8 +72,9 @@
 	<!-- Password -->
 	<Form.Field {form} name="password">
 		<Form.Control let:attrs>
-			<Form.Label description={userLogin.schema.shape.password.description}
-				>Password</Form.Label
+			<Form.Label
+				description={userLogin.schema.shape.password.description}
+				optional={userLogin.schema.shape.password.isOptional()}>Password</Form.Label
 			>
 			<Input {...attrs} type="password" bind:value={$formData.password} />
 		</Form.Control>
