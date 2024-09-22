@@ -53,5 +53,5 @@
 		{value ? 'True' : 'False'}
 	</span>
 {:else}
-	<span class="font-light italic text-neutral-11"> None </span>
+	<span class="font-light italic text-neutral-11 px-4 py-2"> None </span>
 {/if}

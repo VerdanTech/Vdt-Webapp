@@ -9,7 +9,7 @@
 	import { createServerErrors } from '$state/formServerErrors.svelte';
 	import TagsInput from '$components/ui/TagsInput.svelte';
 	import cultivarFields from '$lib/backendSchema/specs/cultivar';
-	import type { CultivarSchema } from '$codegen/types';
+	import type { CultivarCreateCommand, CultivarSchema } from '$codegen/types';
 	import CultivarParentCombobox from './CultivarParentCombobox.svelte';
 
 	type Props = {
@@ -35,7 +35,7 @@
 	 *  executes success task, and sets server errors on failure.
 	 * - onChange: Reset server errors.
 	 */
-	const initialData = { collection_ref: collectionId };
+	const initialData: CultivarCreateCommand = { collection_ref: collectionId, names: [] };
 	const form = superForm(defaults(initialData, zod(cultivarCreate.schema)), {
 		SPA: true,
 		validators: zod(cultivarCreate.schema),

@@ -1,30 +1,25 @@
 <script lang="ts">
-	import { melt, createTreeView, type TreeView } from '@melt-ui/svelte';
+	import { createTreeView } from '@melt-ui/svelte';
 	import {
 		getLocalTimeZone,
 		DateFormatter,
-		parseDateTime
+
 	} from '@internationalized/date';
 	import { Button } from 'bits-ui';
-	import Icon, { addIcon } from '@iconify/svelte';
+	import Icon from '@iconify/svelte';
 	import iconIds from '$lib/assets/icons';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
-	import * as Popover from '$lib/components/ui/popover';
 	import * as Collapsible from '$lib/components/ui/collapsible';
 	import * as Select from '$lib/components/ui/select';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { Textarea } from '$lib/components/ui/textarea/index.js';
-	import { Input } from '$lib/components/ui/input';
 	import { Field, Control, Label, FieldErrors, Description } from 'formsnap';
 	import cultivarFields from '$lib/backendSchema/specs/cultivar';
 	import { cultivarCollectionQuery } from '$data/cultivar/queries';
-	import InPlaceEdit from '$components/InPlaceEdit.svelte';
 	import { superForm, defaults } from 'sveltekit-superforms';
 	import { zod } from 'sveltekit-superforms/adapters';
 	import {
-		CultivarCollectionCreateCommandVisibility,
 		CultivarCollectionFullSchemaVisibility,
-		CultivarCollectionUpdateCommandVisibility
 	} from '$codegen/types';
 	import type {
 		CultivarSchema,
@@ -58,73 +53,8 @@
 	const treeView = createTreeView();
 
 	const {
-		elements: { tree, item, group },
-		helpers: { isExpanded }
+		elements: { tree },
 	} = treeView;
-
-	const collection: CultivarCollectionFullSchema = {
-		id: '1e9c7a10-29fb-482e-b657-7572fb805745',
-		description:
-			"this is the description. west coast seeds is a seed company that operaties here in british columbia. It's where I get all my seeds personally its really graet and everything thianks",
-		name: 'West Coast Seeds ',
-		slug: 'west-coast-seeds',
-		tags: ['tag1', 'tag2'],
-		visibility: CultivarCollectionFullSchemaVisibility.private,
-		created_at: '2023-09-07T15:30:00Z',
-		parent_ref: { id: 'aisroe' },
-		user_ref: { id: 'aisroe' },
-		cultivars: [
-			{
-				id: '6fec522b-9b6f-4bee-806e-ac262dd31442',
-				name: 'Lettuce',
-				names: ['Lettuce', 'The green shit'],
-				key: 'Le',
-				description:
-					'this is the description. west coast seeds is a seed company that operaties here in british columbia. Its where I get all my seeds personally its really graet and everything thianks',
-				attributes: {
-					frost_date_planting_window_profile: {
-						last_frost_window_open: 40,
-						last_frost_window_close: null,
-						first_frost_window_open: 20,
-						first_frost_window_close: 30
-					},
-					origin_profile: {
-						transplantable: true
-					},
-					annual_lifecycle_profile: {
-						seed_to_germ: null,
-						germ_to_transplant: 0,
-						germ_to_first_harvest: null,
-						first_to_last_harvest: 100
-					}
-				}
-			},
-			{
-				id: 'cb4b907e-06c8-4dc6-8e7a-e5023eca2f66',
-				name: 'Rettuce',
-				names: ['Lettuce', 'The green shit'],
-				key: 'Le',
-				description: 'Lettuce is a pretty good plant, I like making wraps with it.',
-				attributes: {
-					frost_date_planting_window_profile: {
-						last_frost_window_open: 40,
-						last_frost_window_close: null,
-						first_frost_window_open: 20,
-						first_frost_window_close: 30
-					},
-					origin_profile: {
-						transplantable: true
-					},
-					annual_lifecycle_profile: {
-						seed_to_germ: null,
-						germ_to_transplant: 0,
-						germ_to_first_harvest: null,
-						first_to_last_harvest: 100
-					}
-				}
-			}
-		] as CultivarSchema[]
-	};
 
 	/**
 	 * Standard form configuration:
@@ -154,6 +84,11 @@
 		}
 	});
 	const { form: formData, enhance } = form;
+	
+	/** Form submit function. */
+	let debounceFormSubmit = debounce(() => {
+		form.submit();
+	}, 700);
 
 	/* Defines the labels for the visibility enum options. */
 	const visibilityOptions = [
@@ -171,11 +106,6 @@
 				return visibilityOptions[2];
 		}
 	}
-
-	let debounceFormSubmit = debounce(() => {
-		form.submit();
-	}, 1000);
-
 	/**
 	 * Used to update the visibility on the superforms when it changes on the form.
 	 * Required as the value of the superform data can't be bound to the form value type.
@@ -190,6 +120,7 @@
 		}
 	}
 
+	/** Creation datetime formatter. */
 	const dateFormatter = new DateFormatter('en-US', {
 		dateStyle: 'full',
 		timeStyle: 'short',
@@ -277,7 +208,7 @@
 		<!-- Title -->
 		<div class="flex w-full flex-row items-center justify-between">
 			<div class="flex flex-row items-center overflow-hidden">
-				<h1 class="truncate text-2xl font-bold">{collection.name}</h1>
+				<h1 class="truncate text-2xl font-bold">{$collectionQuery.data[0].name}</h1>
 			</div>
 			<DropdownMenu.Root>
 				<DropdownMenu.Trigger
@@ -314,10 +245,6 @@
 						<span class="mx-2"> Merge Collection </span>
 					</DropdownMenu.Item>
 					<DropdownMenu.Item>
-						<Icon icon={iconIds.duplicateCultivarCollectionIcon} width="1.25rem" />
-						<span class="mx-2"> Duplicate Collection </span>
-					</DropdownMenu.Item>
-					<DropdownMenu.Item>
 						<Icon icon={iconIds.deleteIcon} width="1.25rem" />
 						<span class="mx-2"> Delete Collection </span>
 					</DropdownMenu.Item>
@@ -347,9 +274,9 @@
 								</div>
 								<Textarea
 									{...attrs}
-									bind:value={collection.description}
+									bind:value={$collectionQuery.data[0].description}
 									on:input={() => {
-										$formData.description = collection.description;
+										$formData.description = $collectionQuery.data[0].description;
 										debounceFormSubmit();
 									}}
 									class="mx-2 mt-2 min-h-12 rounded-lg border border-neutral-4 bg-neutral-2 p-2 text-sm text-neutral-11 data-[fs-error]:border-destructive-7 data-[fs-error]:outline-destructive-6"
@@ -364,9 +291,9 @@
 						<div
 							class="m-2 rounded-lg border border-neutral-4 bg-neutral-2 p-2 text-sm text-neutral-11"
 						>
-							{#if collection.description}
+							{#if $collectionQuery.data[0].description}
 								<p>
-									{collection.description}
+									{$collectionQuery.data[0].description}
 								</p>
 							{:else}
 								<span class="font-light italic text-neutral-10"> None </span>
@@ -410,9 +337,9 @@
 													<input
 														{...attrs}
 														type="text"
-														bind:value={collection.name}
+														bind:value={$collectionQuery.data[0].name}
 														oninput={() => {
-															$formData.name = collection.name;
+															$formData.name = $collectionQuery.data[0].name;
 															debounceFormSubmit();
 														}}
 														class="rounded-md border bg-neutral-1 px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-6 focus-visible:ring-offset-2 data-[fs-error]:border-destructive-7 data-[fs-error]:outline-destructive-6"
@@ -432,7 +359,7 @@
 											</div>
 											<span
 												class="w-auto py-2 text-right text-sm data-[fs-error]:outline-destructive-7"
-												>{collection.name}</span
+												>{$collectionQuery.data[0].name}</span
 											>
 										</div>
 									{/if}
@@ -472,7 +399,7 @@
 														required={false}
 														items={visibilityOptions}
 														onSelectedChange={onVisibilitySelectedChange}
-														selected={visibilityEnumToOption(collection.visibility)}
+														selected={visibilityEnumToOption($collectionQuery.data[0].visibility)}
 													>
 														<Select.Trigger
 															chevron={editingCollection}
@@ -512,7 +439,7 @@
 												/>
 											</div>
 											<span class="py-2 text-right text-sm"
-												>{visibilityEnumToOption(collection.visibility).label}</span
+												>{visibilityEnumToOption($collectionQuery.data[0].visibility).label}</span
 											>
 										</div>
 									{/if}
@@ -536,12 +463,12 @@
 														{@render inlineErrors('cultivar_collection_tags')}
 													</div>
 													<TagsInput
-														bind:tagsInput={collection.tags}
+														bind:tagsInput={$collectionQuery.data[0].tags}
 														maxTags={cultivarFields.cultivar_collection_tags.max_length
 															.value}
 														placeholder="Enter a tag"
 														onChange={() => {
-															$formData.tags = collection.tags;
+															$formData.tags = $collectionQuery.data[0].tags;
 															debounceFormSubmit();
 														}}
 														formAttrs={attrs}
@@ -562,8 +489,8 @@
 											<div
 												class="rounded-lg border border-neutral-4 bg-neutral-1 p-2 text-right text-sm"
 											>
-												{#if collection.tags.length > 0}
-													{#each collection.tags as tag}
+												{#if $collectionQuery.data[0].tags.length > 0}
+													{#each $collectionQuery.data[0].tags as tag}
 														<span class="first:hidden"> , </span>
 														<span>
 															{tag}
@@ -577,7 +504,7 @@
 									{/if}
 								</li>
 								<!-- Collection inheritance - inherited from. -->
-								{#if collection.parent_ref}
+								{#if $collectionQuery.data[0].parent_ref}
 									<li class="my-2 w-full">
 										<div class="flex items-center justify-between">
 											<span class="ml-2 text-sm font-light text-neutral-11"
@@ -591,7 +518,7 @@
 									</li>
 								{/if}
 								<!-- Collection creator. -->
-								{#if collection.user_ref}
+								{#if $collectionQuery.data[0].user_ref}
 									<li class="my-2 w-full">
 										<div class="flex items-center justify-between">
 											<span class="ml-2 text-sm font-light text-neutral-11"
@@ -605,14 +532,14 @@
 									</li>
 								{/if}
 								<!-- Collection created at. -->
-								{#if collection.created_at}
+								{#if $collectionQuery.data[0].created_at}
 									<li class="my-2 w-full">
 										<div class="flex items-center justify-between">
 											<span class="ml-2 text-sm font-light text-neutral-11"
 												>Created at</span
 											>
 											<span class="p-2 text-right text-sm"
-												>{dateFormatter.format(new Date(collection.created_at))}</span
+												>{dateFormatter.format(new Date($collectionQuery.data[0].created_at))}</span
 											>
 										</div>
 									</li>
@@ -639,8 +566,8 @@
 					<Dialog.Header>
 						<Dialog.Title>Add a Cultivar</Dialog.Title>
 						<CultivarCreateForm
-							collectionId={collection.id}
-							cultivars={collection.cultivars}
+							collectionId={$collectionQuery.data[0].id}
+							cultivars={$collectionQuery.data[0].cultivars}
 							onSuccess={() => {
 								cultivarCreateFormOpen = false;
 							}}
@@ -691,16 +618,12 @@
 		<!-- Tree -->
 		<ul class="overflow-none w-full" {...$tree}>
 			<!-- Cultivar tree item. -->
-			<!--
 				{#each sortedCollectionIndices ?? [] as index}
-				bind:cultivar={$collectionQuery.data[0].cultivars[index]}
-			-->
-			{#each collection.cultivars as cultivar, index}
 				<li class="w-full">
 					<CultivarTree
-						{treeView}
-						collectionId={collection.id}
-						bind:cultivar={collection.cultivars[index]}
+					{treeView}
+					collectionId={$collectionQuery.data[0].id}
+					bind:cultivar={$collectionQuery.data[0].cultivars[index]}
 						editing={editingCollection}
 					/>
 				</li>
