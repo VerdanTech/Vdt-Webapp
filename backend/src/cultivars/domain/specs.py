@@ -100,9 +100,11 @@ descriptions: SpecDescriptions = {
         ),
     },
     "cultivar_collection_visibility": {
-        "field": ("Public collections may be viewed by anyone and are publicly searchable. "
-                  "Unlisted collections may be viewed by anyone with the link. "
-                  "Private collections may only be owned by the creator, or by those in the garden if it is located within one.")
+        "field": (
+            "Public collections may be viewed by anyone and are publicly searchable. "
+            "Unlisted collections may be viewed by anyone with the link. "
+            "Private collections may only be owned by the creator, or by those in the garden if it is located within one."
+        )
     },
     "cultivar_collection_tag": {
         Specs.MAX_LENGTH: f"Must be at most {values['cultivar_collection_tag'][Specs.MAX_LENGTH]} characters",

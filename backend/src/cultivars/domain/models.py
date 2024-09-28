@@ -59,7 +59,6 @@ class Cultivar(Entity):
     @property
     def attributes(self) -> CultivarAttributeSet:
         return self._attributes
-    
 
 
 @root_entity_transform

@@ -61,6 +61,21 @@ components:
       required: []
       title: AnnualLifecycleProfileUpdateCommand
       type: object
+    Coordinate:
+      properties:
+        x:
+          type: number
+        y:
+          type: number
+        z:
+          oneOf:
+          - type: 'null'
+          - type: number
+      required:
+      - x
+      - y
+      title: Coordinate
+      type: object
     CultivarAttributeSet:
       properties:
         annual_lifecycle_profile:
@@ -343,8 +358,8 @@ components:
           - public
           - null
           type:
-          - string
           - 'null'
+          - string
       required:
       - collection_ref
       title: CultivarCollectionUpdateCommand
@@ -517,6 +532,18 @@ components:
       - collection_ref
       - cultivar_id
       title: CultivarUpdateCommand
+      type: object
+    EllipseAttributes:
+      properties:
+        height:
+          oneOf:
+          - type: 'null'
+          - type: number
+        width:
+          type: number
+      required:
+      - width
+      title: EllipseAttributes
       type: object
     FrostDatePlantingWindowProfile:
       properties:
@@ -922,6 +949,64 @@ components:
       - key
       title: GardenUniqueKeyResult
       type: object
+    GeometrySchema:
+      properties:
+        attributes:
+          oneOf:
+          - $ref: '#/components/schemas/PolygonAttributes'
+          - $ref: '#/components/schemas/LinesAttributes'
+          - $ref: '#/components/schemas/EllipseAttributes'
+        position:
+          $ref: '#/components/schemas/Coordinate'
+        type:
+          enum:
+          - polygon
+          - ellipse
+          - lines
+          type: string
+      required:
+      - attributes
+      - position
+      - type
+      title: GeometrySchema
+      type: object
+    LinesAttributes:
+      properties:
+        coordinates:
+          items:
+            $ref: '#/components/schemas/Coordinate'
+          type: array
+      required:
+      - coordinates
+      title: LinesAttributes
+      type: object
+    LocationHistorySchema:
+      properties:
+        locations:
+          items:
+            $ref: '#/components/schemas/LocationSchema'
+          type: array
+      required:
+      - locations
+      title: LocationHistorySchema
+      type: object
+    LocationSchema:
+      properties:
+        position:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/Coordinate'
+        time:
+          oneOf:
+          - type: 'null'
+          - format: date-time
+            type: string
+        workspace_ref:
+          $ref: '#/components/schemas/RefSchema'
+      required:
+      - workspace_ref
+      title: LocationSchema
+      type: object
     OriginProfile:
       properties:
         transplantable:
@@ -942,6 +1027,47 @@ components:
             type: boolean
       required: []
       title: OriginProfileUpdateCommand
+      type: object
+    PlantingAreaSchema:
+      properties:
+        depth:
+          oneOf:
+          - type: 'null'
+          - type: number
+        description:
+          type: string
+        geometry:
+          $ref: '#/components/schemas/GeometrySchema'
+        location_history:
+          $ref: '#/components/schemas/LocationHistorySchema'
+        movable:
+          type: boolean
+        name:
+          type: string
+      required:
+      - description
+      - geometry
+      - location_history
+      - movable
+      - name
+      title: PlantingAreaSchema
+      type: object
+    PolygonAttributes:
+      properties:
+        hole_polygons:
+          items:
+            items:
+              $ref: '#/components/schemas/Coordinate'
+            type: array
+          type: array
+        shell_coordinates:
+          items:
+            $ref: '#/components/schemas/Coordinate'
+          type: array
+      required:
+      - hole_polygons
+      - shell_coordinates
+      title: PolygonAttributes
       type: object
     RefSchema:
       properties:
@@ -1143,6 +1269,28 @@ components:
       required:
       - detail
       - status_code
+      type: object
+    WorkspaceSchema:
+      properties:
+        description:
+          type: string
+        garden_ref:
+          $ref: '#/components/schemas/RefSchema'
+        name:
+          type: string
+        planting_areas:
+          items:
+            $ref: '#/components/schemas/PlantingAreaSchema'
+          type: array
+        slug:
+          type: string
+      required:
+      - description
+      - garden_ref
+      - name
+      - planting_areas
+      - slug
+      title: WorkspaceSchema
       type: object
 externalDocs:
   description: Github Repository
@@ -2030,6 +2178,39 @@ paths:
       summary: Checks whether a username exists.
       tags:
       - users
+  /workspaces/query/get_by_garden:
+    get:
+      deprecated: false
+      description: Retrieves the workspaces associated with this garden.
+      operationId: WorkspaceGetByBardenQueryOp
+      parameters:
+      - allowEmptyValue: false
+        allowReserved: false
+        deprecated: false
+        in: query
+        name: garden_key
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/WorkspaceSchema'
+                type: array
+          description: Request fulfilled, document follows
+          headers: {}
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationException'
+          description: Bad request syntax or unsupported method
+      summary: Get workspaces from a garden.
+      tags:
+      - workspaces
 servers:
 - url: /
 tags:

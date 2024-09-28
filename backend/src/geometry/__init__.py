@@ -1,1 +1,1 @@
-from .interface import Coordinate, GeometricHistory, Geometry
+from .domain.models import Coordinate, GeometricHistory, Geometry

@@ -25,7 +25,9 @@ class CultivarAttributeSet(Value):
     Acts as a container for sets of CultivarAttributeProfiles.
     """
 
-    frost_date_planting_window_profile: FrostDatePlantingWindowProfile = FrostDatePlantingWindowProfile()
+    frost_date_planting_window_profile: FrostDatePlantingWindowProfile = (
+        FrostDatePlantingWindowProfile()
+    )
     origin_profile: OriginProfile = OriginProfile()
     annual_lifecycle_profile: AnnualLifecycleProfile = AnnualLifecycleProfile()
 

@@ -3,6 +3,7 @@ from datetime import datetime
 
 # External Libraries
 from attrs import field
+from src.geometry.domain import Coordinate, Geometry
 
 # VerdanTech Source
 from src.common.domain import (
@@ -14,42 +15,35 @@ from src.common.domain import (
     root_entity_transform,
     value_transform,
 )
-from src.environment.domain import Environment
 from src.garden.domain import Garden
-from src.geometry.interface import Coordinate, Geometry
-
-
-@root_entity_transform
-class Workspace(RootEntity):
-    garden_ref: Ref[Garden]  # type: ignore
-    name: str  # type: ignore
-    planting_areas: set["PlantingArea"] = field(factory=set)
-    environment_ref: Ref[Environment] | None = None
 
 
 @value_transform
 class Location(Value):
-    workspace_ref: Ref[Workspace]
+    workspace_ref: Ref["Workspace"]
     position: Coordinate | None
     time: datetime | None
 
 
 @value_transform
 class LocationHistory(Value):
-    locations: set[Location] = field(factory=set)
-
-    @property
-    def undefined(self) -> bool:
-        """
-        Returns:
-            bool: True if the Location has no defined locations.
-        """
-        return not self.locations
+    locations: list[Location] = field(factory=list)
 
 
 @entity_transform
 class PlantingArea(Entity):
+    name: str  # type: ignore
     geometry: Geometry  # type: ignore
     location_history: LocationHistory = LocationHistory()
+    description: str = ""
+    depth: float | None = None
     movable: bool = False
-    environment_ref: Ref[Environment] | None = None
+
+
+@root_entity_transform
+class Workspace(RootEntity):
+    garden_ref: Ref[Garden]  # type: ignore
+    name: str  # type: ignore
+    slug: str  # type: ignore
+    description: str = ""
+    planting_areas: list[PlantingArea] = field(factory=list)
