@@ -5,6 +5,7 @@ from datetime import datetime
 from attrs import field
 
 # VerdanTech Source
+from backend.src.geometry.domain.models import GeometricHistory
 from src.common.domain import (
     Entity,
     Ref,
@@ -66,10 +67,11 @@ class PlantingArea(Entity):
 
     Attributes:
         name (str): A descriptive name for the planting area.
-        geometry (Geometry): The shape of the planting area.
-        location_history (LocationHistory): The location history
-            of the planting area. For non-movable areas, this will
-            be a single location.
+        geometry (GeometricHistory): The shape of the planting area 
+            through time.
+        location_history (LocationHistory): The location of the 
+            planting area through time. 
+            For non-movable areas, this will be a single location.
         depth (float | None): The physical depth of the planting area.
             May be used to determine volume.
         movable (bool): Whether or not the planting area can be moved.
@@ -77,7 +79,7 @@ class PlantingArea(Entity):
     """
 
     name: str  # type: ignore
-    geometry: Geometry  # type: ignore
+    geometries: GeometricHistory = GeometricHistory()
     location_history: LocationHistory = LocationHistory()
     depth: float | None = None
     movable: bool = False

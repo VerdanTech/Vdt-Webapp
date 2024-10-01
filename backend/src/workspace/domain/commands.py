@@ -10,6 +10,7 @@ from src import settings
 from src.common.adapters.utils.spec_manager import SpecManager, Specs
 from src.common.domain import Command
 from src.garden.domain.commands import GardenKey
+from src.geometry.domain import commands as geometry_commands
 
 from .specs import specs
 
@@ -120,6 +121,7 @@ class PlantingAreaCreateCommand(Command):
     workspace_ref: uuid.UUID
     name: PlantingAreaName
     description: PlantingAreaDescription | None = None
+    geometry: geometry_commands.GeometryHistoryPointCreateUpdateCommand
 
 
 class PlantingAreaUpdateCommand(Command):
@@ -131,6 +133,7 @@ class PlantingAreaUpdateCommand(Command):
     planting_area_id: uuid.UUID
     name: PlantingAreaName | None = None
     description: PlantingAreaDescription | None = None
+    geometries: geometry_commands.GeometricHistoryCreateUpdateCommand
 
 
 class PlantingAreaDeleteCommand(Command):

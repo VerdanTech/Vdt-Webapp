@@ -37,10 +37,11 @@ class LinesAttributes(Value):
 @value_transform
 class Geometry(Value):
     type: GeometryTypeEnum
-    position: Coordinate
     polygon_attributes: PolygonAttributes | None = None
     lines_attributes: LinesAttributes | None = None
     ellipse_attributes: EllipseAttributes | None = None
+    scale_factor: float = 1
+    nulled: bool = False
 
     @property
     def attributes(self) -> PolygonAttributes | LinesAttributes | EllipseAttributes:
@@ -50,7 +51,7 @@ class Geometry(Value):
 @value_transform
 class GeometryHistoryPoint(Value):
     geometry: Geometry
-    time: datetime | None
+    time: datetime | None = None
 
 
 @value_transform
