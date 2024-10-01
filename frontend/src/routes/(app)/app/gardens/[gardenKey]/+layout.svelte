@@ -9,7 +9,7 @@
 		if (activeGardenKey.value != $page.params.gardenKey) {
 			activeGardenKey.value = $page.params.gardenKey;
 		}
-	})
+	});
 
 	let { children } = $props();
 </script>

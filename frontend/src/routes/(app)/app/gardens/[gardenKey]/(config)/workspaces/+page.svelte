@@ -9,7 +9,7 @@
 			activeWorkspace.value.activeWorkspaceId = null;
 			activeWorkspace.value.editing = false;
 		}
-	})
+	});
 </script>
 
 <svelte:head>

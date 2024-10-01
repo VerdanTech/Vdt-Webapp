@@ -1028,6 +1028,44 @@ components:
       required: []
       title: OriginProfileUpdateCommand
       type: object
+    PlantingAreaCreateCommand:
+      properties:
+        description:
+          oneOf:
+          - type: 'null'
+          - description: A description of this planting area. Must be at most 700
+              characters
+            maxLength: 700
+            type: string
+        name:
+          description: A descriptive name for this planting area. Must be between
+            3 and 30 characters long and contain only alphanumeric characters, spaces,
+            hyphens, and underscores.
+          maxLength: 30
+          minLength: 3
+          pattern: '[0-9A-Za-z _-]+'
+          type: string
+        workspace_ref:
+          format: uuid
+          type: string
+      required:
+      - name
+      - workspace_ref
+      title: PlantingAreaCreateCommand
+      type: object
+    PlantingAreaDeleteCommand:
+      properties:
+        planting_area_id:
+          format: uuid
+          type: string
+        workspace_ref:
+          format: uuid
+          type: string
+      required:
+      - planting_area_id
+      - workspace_ref
+      title: PlantingAreaDeleteCommand
+      type: object
     PlantingAreaSchema:
       properties:
         depth:
@@ -1055,6 +1093,36 @@ components:
       - movable
       - name
       title: PlantingAreaSchema
+      type: object
+    PlantingAreaUpdateCommand:
+      properties:
+        description:
+          oneOf:
+          - type: 'null'
+          - description: A description of this planting area. Must be at most 700
+              characters
+            maxLength: 700
+            type: string
+        name:
+          oneOf:
+          - type: 'null'
+          - description: A descriptive name for this planting area. Must be between
+              3 and 30 characters long and contain only alphanumeric characters, spaces,
+              hyphens, and underscores.
+            maxLength: 30
+            minLength: 3
+            pattern: '[0-9A-Za-z _-]+'
+            type: string
+        planting_area_id:
+          format: uuid
+          type: string
+        workspace_ref:
+          format: uuid
+          type: string
+      required:
+      - planting_area_id
+      - workspace_ref
+      title: PlantingAreaUpdateCommand
       type: object
     PolygonAttributes:
       properties:
@@ -1265,6 +1333,43 @@ components:
       - detail
       - status_code
       type: object
+    WorkspaceCreateCommand:
+      properties:
+        description:
+          oneOf:
+          - type: 'null'
+          - description: A description of this workspace. Must be at most 700 characters
+            maxLength: 700
+            type: string
+        garden_key:
+          description: Must be between 4 and 16 characters long and contain only alphanumeric
+            characters and hyphens
+          maxLength: 16
+          minLength: 4
+          pattern: '[0-9A-Za-z-]+'
+          type: string
+        name:
+          description: A descriptive name for this workspace. Must be between 3 and
+            30 characters long and contain only alphanumeric characters, spaces, hyphens,
+            and underscores.
+          maxLength: 30
+          minLength: 3
+          pattern: '[0-9A-Za-z _-]+'
+          type: string
+      required:
+      - garden_key
+      - name
+      title: WorkspaceCreateCommand
+      type: object
+    WorkspaceDeleteCommand:
+      properties:
+        workspace_ref:
+          format: uuid
+          type: string
+      required:
+      - workspace_ref
+      title: WorkspaceDeleteCommand
+      type: object
     WorkspaceFullSchema:
       properties:
         description:
@@ -1308,6 +1413,31 @@ components:
       - name
       - slug
       title: WorkspacePartialSchema
+      type: object
+    WorkspaceUpdateCommand:
+      properties:
+        description:
+          oneOf:
+          - type: 'null'
+          - description: A description of this workspace. Must be at most 700 characters
+            maxLength: 700
+            type: string
+        name:
+          oneOf:
+          - type: 'null'
+          - description: A descriptive name for this workspace. Must be between 3
+              and 30 characters long and contain only alphanumeric characters, spaces,
+              hyphens, and underscores.
+            maxLength: 30
+            minLength: 3
+            pattern: '[0-9A-Za-z _-]+'
+            type: string
+        workspace_ref:
+          format: uuid
+          type: string
+      required:
+      - workspace_ref
+      title: WorkspaceUpdateCommand
       type: object
 externalDocs:
   description: Github Repository
@@ -2195,6 +2325,174 @@ paths:
       summary: Checks whether a username exists.
       tags:
       - users
+  /workspaces/command/create_planting_area:
+    post:
+      deprecated: false
+      description: Creates a new planting area on the workspace.
+      operationId: PlantingAreaCreateCommandOp
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PlantingAreaCreateCommand'
+        required: true
+      responses:
+        '201':
+          content:
+            text/plain:
+              schema:
+                type: string
+          description: Document created, URL follows
+          headers: {}
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationException'
+          description: Bad request syntax or unsupported method
+      summary: Planting area create.
+      tags:
+      - workspaces
+  /workspaces/command/create_workspace:
+    post:
+      deprecated: false
+      description: Creates a new workspace on the garden.
+      operationId: WorkspaceCreateCommandOp
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WorkspaceCreateCommand'
+        required: true
+      responses:
+        '201':
+          content:
+            text/plain:
+              schema:
+                type: string
+          description: Document created, URL follows
+          headers: {}
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationException'
+          description: Bad request syntax or unsupported method
+      summary: Workspace create.
+      tags:
+      - workspaces
+  /workspaces/command/delete_planting_area:
+    post:
+      deprecated: false
+      description: Deletes a given planting area from a workspace.
+      operationId: PlantingAreaDeleteCommandOp
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PlantingAreaDeleteCommand'
+        required: true
+      responses:
+        '201':
+          content:
+            text/plain:
+              schema:
+                type: string
+          description: Document created, URL follows
+          headers: {}
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationException'
+          description: Bad request syntax or unsupported method
+      summary: Planting area delete.
+      tags:
+      - workspaces
+  /workspaces/command/delete_workspace:
+    post:
+      deprecated: false
+      description: Deletes a given workspace from a garden.
+      operationId: WorkspaceDeleteCommandOp
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WorkspaceDeleteCommand'
+        required: true
+      responses:
+        '201':
+          content:
+            text/plain:
+              schema:
+                type: string
+          description: Document created, URL follows
+          headers: {}
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationException'
+          description: Bad request syntax or unsupported method
+      summary: Workspace delete.
+      tags:
+      - workspaces
+  /workspaces/command/update_planting_area:
+    post:
+      deprecated: false
+      description: Sets the given attributes onto the planting area.
+      operationId: PlantingAreaUpdateCommandOp
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PlantingAreaUpdateCommand'
+        required: true
+      responses:
+        '201':
+          content:
+            text/plain:
+              schema:
+                type: string
+          description: Document created, URL follows
+          headers: {}
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationException'
+          description: Bad request syntax or unsupported method
+      summary: Planting area update.
+      tags:
+      - workspaces
+  /workspaces/command/update_workspace:
+    post:
+      deprecated: false
+      description: Sets the given attributes onto the workspace.
+      operationId: WorkspaceUpdateCommandOp
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WorkspaceUpdateCommand'
+        required: true
+      responses:
+        '201':
+          content:
+            text/plain:
+              schema:
+                type: string
+          description: Document created, URL follows
+          headers: {}
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationException'
+          description: Bad request syntax or unsupported method
+      summary: Workspace update.
+      tags:
+      - workspaces
   /workspaces/query/get_full:
     get:
       deprecated: false

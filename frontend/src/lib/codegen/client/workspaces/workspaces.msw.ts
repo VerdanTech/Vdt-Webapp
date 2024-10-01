@@ -16,6 +16,24 @@ import type {
 	WorkspacePartialSchema
 } from '../../types';
 
+export const getPlantingAreaCreateCommandOpResponseMock = (): string =>
+	faker.word.sample();
+
+export const getWorkspaceCreateCommandOpResponseMock = (): string =>
+	faker.word.sample();
+
+export const getPlantingAreaDeleteCommandOpResponseMock = (): string =>
+	faker.word.sample();
+
+export const getWorkspaceDeleteCommandOpResponseMock = (): string =>
+	faker.word.sample();
+
+export const getPlantingAreaUpdateCommandOpResponseMock = (): string =>
+	faker.word.sample();
+
+export const getWorkspaceUpdateCommandOpResponseMock = (): string =>
+	faker.word.sample();
+
 export const getWorkspaceGetFullQueryOpResponsePolygonAttributesMock = (
 	overrideResponse: Partial<PolygonAttributes> = {}
 ): PolygonAttributes => ({
@@ -191,6 +209,78 @@ export const getWorkspaceGetPartialsQueryOpResponseMock =
 			})
 		);
 
+export const getPlantingAreaCreateCommandOpMockHandler = () => {
+	return http.post('*/workspaces/command/create_planting_area', async () => {
+		await delay(1000);
+		return new HttpResponse(getPlantingAreaCreateCommandOpResponseMock(), {
+			status: 201,
+			headers: {
+				'Content-Type': 'text/plain'
+			}
+		});
+	});
+};
+
+export const getWorkspaceCreateCommandOpMockHandler = () => {
+	return http.post('*/workspaces/command/create_workspace', async () => {
+		await delay(1000);
+		return new HttpResponse(getWorkspaceCreateCommandOpResponseMock(), {
+			status: 201,
+			headers: {
+				'Content-Type': 'text/plain'
+			}
+		});
+	});
+};
+
+export const getPlantingAreaDeleteCommandOpMockHandler = () => {
+	return http.post('*/workspaces/command/delete_planting_area', async () => {
+		await delay(1000);
+		return new HttpResponse(getPlantingAreaDeleteCommandOpResponseMock(), {
+			status: 201,
+			headers: {
+				'Content-Type': 'text/plain'
+			}
+		});
+	});
+};
+
+export const getWorkspaceDeleteCommandOpMockHandler = () => {
+	return http.post('*/workspaces/command/delete_workspace', async () => {
+		await delay(1000);
+		return new HttpResponse(getWorkspaceDeleteCommandOpResponseMock(), {
+			status: 201,
+			headers: {
+				'Content-Type': 'text/plain'
+			}
+		});
+	});
+};
+
+export const getPlantingAreaUpdateCommandOpMockHandler = () => {
+	return http.post('*/workspaces/command/update_planting_area', async () => {
+		await delay(1000);
+		return new HttpResponse(getPlantingAreaUpdateCommandOpResponseMock(), {
+			status: 201,
+			headers: {
+				'Content-Type': 'text/plain'
+			}
+		});
+	});
+};
+
+export const getWorkspaceUpdateCommandOpMockHandler = () => {
+	return http.post('*/workspaces/command/update_workspace', async () => {
+		await delay(1000);
+		return new HttpResponse(getWorkspaceUpdateCommandOpResponseMock(), {
+			status: 201,
+			headers: {
+				'Content-Type': 'text/plain'
+			}
+		});
+	});
+};
+
 export const getWorkspaceGetFullQueryOpMockHandler = (
 	overrideResponse?:
 		| WorkspaceFullSchema
@@ -245,6 +335,12 @@ export const getWorkspaceGetPartialsQueryOpMockHandler = (
 	});
 };
 export const getWorkspacesMock = () => [
+	getPlantingAreaCreateCommandOpMockHandler(),
+	getWorkspaceCreateCommandOpMockHandler(),
+	getPlantingAreaDeleteCommandOpMockHandler(),
+	getWorkspaceDeleteCommandOpMockHandler(),
+	getPlantingAreaUpdateCommandOpMockHandler(),
+	getWorkspaceUpdateCommandOpMockHandler(),
 	getWorkspaceGetFullQueryOpMockHandler(),
 	getWorkspaceGetPartialsQueryOpMockHandler()
 ];
