@@ -1,12 +1,15 @@
 <script>
 	import { page } from '$app/stores';
+	import { onMount } from 'svelte';
 	import GardenContext from './GardenContext.svelte';
 	import activeGardenKey from '$state/activeGarden.svelte';
 
-	/** Update the active garden upon loading a new garden. */
-	if (activeGardenKey.value != $page.params.gardenKey) {
-		activeGardenKey.value = $page.params.gardenKey;
-	}
+	onMount(() => {
+		/** Update the active garden upon loading a new garden. */
+		if (activeGardenKey.value != $page.params.gardenKey) {
+			activeGardenKey.value = $page.params.gardenKey;
+		}
+	})
 
 	let { children } = $props();
 </script>

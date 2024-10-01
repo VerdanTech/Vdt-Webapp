@@ -20,6 +20,7 @@ const iconIds = {
 	endEditingIcon: 'material-symbols:edit-off-outline',
 	deleteIcon: 'material-symbols:delete-outline',
 	searchIcon: 'material-symbols:search',
+	listIcon: 'material-symbols:list-rounded',
 	sortIcon: 'material-symbols:sort-rounded',
 	sortAlphaIcon: 'icons8:alphabetical-sorting',
 	sortReverseAlphaIcon: 'icons8:alphabetical-sorting-2',
@@ -65,6 +66,9 @@ const iconIds = {
 	gardensCreateIcon: 'mdi:plus-circle-outline',
 	gardensDiscoverIcon: 'ic:round-travel-explore',
 	gardensInviteIcon: 'material-symbols:mail-outline',
+
+	/* Workspaces */
+	plantingAreaIcon: 'fluent:plant-cattail-24-regular',
 
 	/* Verdagraph */
 	verdagraphPointerSelectIcon: 'mdi:cursor-default-outline',

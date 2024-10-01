@@ -5,10 +5,10 @@
  * Backend API of the VerdanTech software project.
  * OpenAPI spec version: 0.1.0
  */
-import type { RefSrcCultivarsDomainModelsCultivarCollection } from './refSrcCultivarsDomainModelsCultivarCollection';
+import type { RefSchema } from './refSchema';
 import type { CultivarCollectionPartialSchema } from './cultivarCollectionPartialSchema';
 
 export interface CultivarCollectionGetByGardenResult {
-	active_collection: RefSrcCultivarsDomainModelsCultivarCollection;
+	active_collection: RefSchema;
 	collections: CultivarCollectionPartialSchema[];
 }

@@ -6,6 +6,4 @@
  * OpenAPI spec version: 0.1.0
  */
 
-export interface RefSrcCultivarsDomainModelsCultivarCollection {
-	id: string;
-}
+export type CoordinateZ = null | number;

@@ -1,5 +1,6 @@
 # Standard Library
 from datetime import datetime
+from uuid import UUID
 
 # External Libraries
 from svcs import Container
@@ -7,14 +8,7 @@ from svcs import Container
 # VerdanTech Source
 from src.common.ops.queries import Query, QueryResult, RefSchema, query_result_transform
 from src.garden.domain.commands import GardenKey
-from src.geometry.domain import (
-    Coordinate,
-    EllipseAttributes,
-    Geometry,
-    GeometryTypeEnum,
-    LinesAttributes,
-    PolygonAttributes,
-)
+from src.geometry.domain import Coordinate
 from src.geometry.ops.queries import GeometrySchema
 from src.user.domain import User
 from src.workspace.domain import Location, LocationHistory, PlantingArea, Workspace
@@ -38,6 +32,7 @@ class LocationHistorySchema(QueryResult[LocationHistory]):
 
 @query_result_transform
 class PlantingAreaSchema(QueryResult[PlantingArea]):
+    id: UUID
     name: str
     geometry: GeometrySchema
     location_history: LocationHistorySchema
@@ -47,7 +42,16 @@ class PlantingAreaSchema(QueryResult[PlantingArea]):
 
 
 @query_result_transform
-class WorkspaceSchema(QueryResult[Workspace]):
+class WorkspacePartialSchema(QueryResult[Workspace]):
+    id: UUID
+    garden_ref: RefSchema
+    name: str
+    slug: str
+
+
+@query_result_transform
+class WorkspaceFullSchema(QueryResult[Workspace]):
+    id: UUID
     garden_ref: RefSchema
     name: str
     slug: str
@@ -60,8 +64,13 @@ class WorkspaceSchema(QueryResult[Workspace]):
 # ======================================
 
 
-class WorkspaceGetByBardenQuery(Query):
+class WorkspaceGetPartialsQuery(Query):
     garden_key: GardenKey
+
+
+class WorkspaceGetFullQuery(Query):
+    garden_key: GardenKey
+    workspace_slug: str  # TODO: Change to Pydantic object
 
 
 # ======================================
@@ -69,21 +78,40 @@ class WorkspaceGetByBardenQuery(Query):
 # ======================================
 
 
-async def get_by_garden(
-    query: WorkspaceGetByBardenQuery,
+async def get_partials(
+    query: WorkspaceGetPartialsQuery,
     svcs_container: Container,
     client: User | None,
-) -> list[WorkspaceSchema]:
+) -> list[WorkspacePartialSchema]:
     """
     Retrieves the workspaces that
     are associated with a garden.
 
     Args:
-        query (WorkspaceGetByBardenQuery): the query.
+        query (WorkspaceGetPartialsQuery): the query.
         svcs_container (Container): service locator.
         client (User): the client user.
 
     Returns:
-        list[WorkspaceSchema]: the workspaces associated with the garden.
+        list[WorkspacePartialSchema]: the workspaces associated with the garden.
+    """
+    ...
+
+
+async def get_full(
+    query: WorkspaceGetFullQuery,
+    svcs_container: Container,
+    client: User | None,
+) -> WorkspaceFullSchema:
+    """
+    Retrieves a workspace full schema.
+
+    Args:
+        query (WorkspaceGetFullQuery): the query.
+        svcs_container (Container): service locator.
+        client (User): the client user.
+
+    Returns:
+        WorkspaceFullSchema: a full representation of the workspace.
     """
     ...

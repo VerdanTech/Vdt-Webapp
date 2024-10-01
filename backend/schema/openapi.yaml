@@ -239,7 +239,7 @@ components:
     CultivarCollectionGetByGardenResult:
       properties:
         active_collection:
-          $ref: '#/components/schemas/Ref[src.cultivars.domain.models.CultivarCollection]'
+          $ref: '#/components/schemas/RefSchema'
         collections:
           items:
             $ref: '#/components/schemas/CultivarCollectionPartialSchema'
@@ -1038,6 +1038,9 @@ components:
           type: string
         geometry:
           $ref: '#/components/schemas/GeometrySchema'
+        id:
+          format: uuid
+          type: string
         location_history:
           $ref: '#/components/schemas/LocationHistorySchema'
         movable:
@@ -1047,6 +1050,7 @@ components:
       required:
       - description
       - geometry
+      - id
       - location_history
       - movable
       - name
@@ -1077,15 +1081,6 @@ components:
       required:
       - id
       title: RefSchema
-      type: object
-    Ref[src.cultivars.domain.models.CultivarCollection]:
-      properties:
-        id:
-          format: uuid
-          type: string
-      required:
-      - id
-      title: Ref[CultivarCollection]
       type: object
     UserConfirmEmailConfirmationCommand:
       properties:
@@ -1270,12 +1265,15 @@ components:
       - detail
       - status_code
       type: object
-    WorkspaceSchema:
+    WorkspaceFullSchema:
       properties:
         description:
           type: string
         garden_ref:
           $ref: '#/components/schemas/RefSchema'
+        id:
+          format: uuid
+          type: string
         name:
           type: string
         planting_areas:
@@ -1287,10 +1285,29 @@ components:
       required:
       - description
       - garden_ref
+      - id
       - name
       - planting_areas
       - slug
-      title: WorkspaceSchema
+      title: WorkspaceFullSchema
+      type: object
+    WorkspacePartialSchema:
+      properties:
+        garden_ref:
+          $ref: '#/components/schemas/RefSchema'
+        id:
+          format: uuid
+          type: string
+        name:
+          type: string
+        slug:
+          type: string
+      required:
+      - garden_ref
+      - id
+      - name
+      - slug
+      title: WorkspacePartialSchema
       type: object
 externalDocs:
   description: Github Repository
@@ -2178,11 +2195,50 @@ paths:
       summary: Checks whether a username exists.
       tags:
       - users
-  /workspaces/query/get_by_garden:
+  /workspaces/query/get_full:
+    get:
+      deprecated: false
+      description: Retrieves a full workspace schema.
+      operationId: WorkspaceGetFullQueryOp
+      parameters:
+      - allowEmptyValue: false
+        allowReserved: false
+        deprecated: false
+        in: query
+        name: garden_key
+        required: true
+        schema:
+          type: string
+      - allowEmptyValue: false
+        allowReserved: false
+        deprecated: false
+        in: query
+        name: workspace_slug
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkspaceFullSchema'
+          description: Request fulfilled, document follows
+          headers: {}
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationException'
+          description: Bad request syntax or unsupported method
+      summary: Get a full workspace schema.
+      tags:
+      - workspaces
+  /workspaces/query/get_partials:
     get:
       deprecated: false
       description: Retrieves the workspaces associated with this garden.
-      operationId: WorkspaceGetByBardenQueryOp
+      operationId: WorkspaceGetPartialsQueryOp
       parameters:
       - allowEmptyValue: false
         allowReserved: false
@@ -2198,7 +2254,7 @@ paths:
             application/json:
               schema:
                 items:
-                  $ref: '#/components/schemas/WorkspaceSchema'
+                  $ref: '#/components/schemas/WorkspacePartialSchema'
                 type: array
           description: Request fulfilled, document follows
           headers: {}
