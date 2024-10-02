@@ -1,4 +1,6 @@
 from datetime import datetime
+from typing import Annotated
+from pydantic import Field
 # VerdanTech Source
 from src.common.domain import Command
 from .enums import GeometryTypeEnum
@@ -7,6 +9,18 @@ from .enums import GeometryTypeEnum
 # Fields
 # ======================================
 
+CoordinateX = Annotated[
+    str,
+    # Note: Field used only for annotation, to allow custom error messages.
+    Field(
+        description=specs.descriptions["workspace_name"]["field"],
+        json_schema_extra={
+            "min_length": specs.values["workspace_name"][Specs.MIN_LENGTH],
+            "max_length": specs.values["workspace_name"][Specs.MAX_LENGTH],
+            "pattern": specs.values["workspace_name"][Specs.PATTERN],
+        },
+    ),
+]
 
 # ======================================
 # Commands
@@ -18,9 +32,7 @@ class CoordinateCreateUpdateCommand(Command):
     z: float | None = None
 
 class PolygonAttributesCreateUpdateCommand(Command):
-    shell_coordinates: list[CoordinateCreateUpdateCommand]
-    hole_polygons: list[list[CoordinateCreateUpdateCommand]]
-
+    coordinates: list[CoordinateCreateUpdateCommand]
 
 class EllipseAttributesCreateUpdateCommand(Command):
     width: float

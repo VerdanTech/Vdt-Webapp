@@ -76,6 +76,21 @@ components:
       - y
       title: Coordinate
       type: object
+    CoordinateCreateUpdateCommand:
+      properties:
+        x:
+          type: number
+        y:
+          type: number
+        z:
+          oneOf:
+          - type: 'null'
+          - type: number
+      required:
+      - x
+      - y
+      title: CoordinateCreateUpdateCommand
+      type: object
     CultivarAttributeSet:
       properties:
         annual_lifecycle_profile:
@@ -358,8 +373,8 @@ components:
           - public
           - null
           type:
-          - 'null'
           - string
+          - 'null'
       required:
       - collection_ref
       title: CultivarCollectionUpdateCommand
@@ -544,6 +559,18 @@ components:
       required:
       - width
       title: EllipseAttributes
+      type: object
+    EllipseAttributesCreateUpdateCommand:
+      properties:
+        height:
+          oneOf:
+          - type: 'null'
+          - type: number
+        width:
+          type: number
+      required:
+      - width
+      title: EllipseAttributesCreateUpdateCommand
       type: object
     FrostDatePlantingWindowProfile:
       properties:
@@ -949,6 +976,57 @@ components:
       - key
       title: GardenUniqueKeyResult
       type: object
+    GeometricHistoryCreateUpdateCommand:
+      properties:
+        geometries:
+          items:
+            $ref: '#/components/schemas/GeometryHistoryPointCreateUpdateCommand'
+          type: array
+      required:
+      - geometries
+      title: GeometricHistoryCreateUpdateCommand
+      type: object
+    GeometryCreateUpdateCommand:
+      properties:
+        ellipse_attributes:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/LinesAttributesCreateUpdateCommand'
+        lines_attributes:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/EllipseAttributesCreateUpdateCommand'
+        polygon_attributes:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/PolygonAttributesCreateUpdateCommand'
+        scale_factor:
+          oneOf:
+          - type: 'null'
+          - type: number
+        type:
+          enum:
+          - polygon
+          - ellipse
+          - lines
+          type: string
+      required:
+      - type
+      title: GeometryCreateUpdateCommand
+      type: object
+    GeometryHistoryPointCreateUpdateCommand:
+      properties:
+        geometry:
+          $ref: '#/components/schemas/GeometryCreateUpdateCommand'
+        time:
+          oneOf:
+          - type: 'null'
+          - format: date-time
+            type: string
+      required:
+      - geometry
+      title: GeometryHistoryPointCreateUpdateCommand
+      type: object
     GeometrySchema:
       properties:
         attributes:
@@ -979,6 +1057,16 @@ components:
       required:
       - coordinates
       title: LinesAttributes
+      type: object
+    LinesAttributesCreateUpdateCommand:
+      properties:
+        coordinates:
+          items:
+            $ref: '#/components/schemas/CoordinateCreateUpdateCommand'
+          type: array
+      required:
+      - coordinates
+      title: LinesAttributesCreateUpdateCommand
       type: object
     LocationHistorySchema:
       properties:
@@ -1037,6 +1125,8 @@ components:
               characters
             maxLength: 700
             type: string
+        geometry:
+          $ref: '#/components/schemas/GeometryHistoryPointCreateUpdateCommand'
         name:
           description: A descriptive name for this planting area. Must be between
             3 and 30 characters long and contain only alphanumeric characters, spaces,
@@ -1049,6 +1139,7 @@ components:
           format: uuid
           type: string
       required:
+      - geometry
       - name
       - workspace_ref
       title: PlantingAreaCreateCommand
@@ -1103,6 +1194,8 @@ components:
               characters
             maxLength: 700
             type: string
+        geometries:
+          $ref: '#/components/schemas/GeometricHistoryCreateUpdateCommand'
         name:
           oneOf:
           - type: 'null'
@@ -1120,6 +1213,7 @@ components:
           format: uuid
           type: string
       required:
+      - geometries
       - planting_area_id
       - workspace_ref
       title: PlantingAreaUpdateCommand
@@ -1140,6 +1234,23 @@ components:
       - hole_polygons
       - shell_coordinates
       title: PolygonAttributes
+      type: object
+    PolygonAttributesCreateUpdateCommand:
+      properties:
+        hole_polygons:
+          items:
+            items:
+              $ref: '#/components/schemas/CoordinateCreateUpdateCommand'
+            type: array
+          type: array
+        shell_coordinates:
+          items:
+            $ref: '#/components/schemas/CoordinateCreateUpdateCommand'
+          type: array
+      required:
+      - hole_polygons
+      - shell_coordinates
+      title: PolygonAttributesCreateUpdateCommand
       type: object
     RefSchema:
       properties:

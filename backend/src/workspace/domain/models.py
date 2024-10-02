@@ -5,7 +5,6 @@ from datetime import datetime
 from attrs import field
 
 # VerdanTech Source
-from backend.src.geometry.domain.models import GeometricHistory
 from src.common.domain import (
     Entity,
     Ref,
@@ -16,7 +15,7 @@ from src.common.domain import (
     value_transform,
 )
 from src.garden.domain import Garden
-from src.geometry.domain import Coordinate, Geometry
+from src.geometry.domain import Coordinate, GeometricHistory
 
 
 @value_transform
