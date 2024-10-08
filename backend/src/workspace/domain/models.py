@@ -66,10 +66,10 @@ class PlantingArea(Entity):
 
     Attributes:
         name (str): A descriptive name for the planting area.
-        geometry (GeometricHistory): The shape of the planting area 
+        geometry (GeometricHistory): The shape of the planting area
             through time.
-        location_history (LocationHistory): The location of the 
-            planting area through time. 
+        location_history (LocationHistory): The location of the
+            planting area through time.
             For non-movable areas, this will be a single location.
         depth (float | None): The physical depth of the planting area.
             May be used to determine volume.

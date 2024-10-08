@@ -6,10 +6,12 @@
  * OpenAPI spec version: 0.1.0
  */
 import type { PlantingAreaUpdateCommandDescription } from './plantingAreaUpdateCommandDescription';
+import type { GeometricHistoryCreateUpdateCommand } from './geometricHistoryCreateUpdateCommand';
 import type { PlantingAreaUpdateCommandName } from './plantingAreaUpdateCommandName';
 
 export interface PlantingAreaUpdateCommand {
 	description?: PlantingAreaUpdateCommandDescription;
+	geometries: GeometricHistoryCreateUpdateCommand;
 	name?: PlantingAreaUpdateCommandName;
 	planting_area_id: string;
 	workspace_ref: string;

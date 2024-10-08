@@ -6,9 +6,11 @@
  * OpenAPI spec version: 0.1.0
  */
 import type { PlantingAreaCreateCommandDescription } from './plantingAreaCreateCommandDescription';
+import type { GeometryHistoryPointCreateUpdateCommand } from './geometryHistoryPointCreateUpdateCommand';
 
 export interface PlantingAreaCreateCommand {
 	description?: PlantingAreaCreateCommandDescription;
+	geometry: GeometryHistoryPointCreateUpdateCommand;
 	/**
 	 * A descriptive name for this planting area. Must be between 3 and 30 characters long and contain only alphanumeric characters, spaces, hyphens, and underscores.
 	 * @minLength 3

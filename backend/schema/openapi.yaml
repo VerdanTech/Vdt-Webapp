@@ -373,8 +373,8 @@ components:
           - public
           - null
           type:
-          - string
           - 'null'
+          - string
       required:
       - collection_ref
       title: CultivarCollectionUpdateCommand
@@ -1000,12 +1000,17 @@ components:
           oneOf:
           - type: 'null'
           - $ref: '#/components/schemas/PolygonAttributesCreateUpdateCommand'
+        rectangle_attributes:
+          oneOf:
+          - type: 'null'
+          - $ref: '#/components/schemas/RectangleAttributesCreateUpdateCommand'
         scale_factor:
           oneOf:
           - type: 'null'
           - type: number
         type:
           enum:
+          - rectangle
           - polygon
           - ellipse
           - lines
@@ -1038,6 +1043,7 @@ components:
           $ref: '#/components/schemas/Coordinate'
         type:
           enum:
+          - rectangle
           - polygon
           - ellipse
           - lines
@@ -1237,20 +1243,25 @@ components:
       type: object
     PolygonAttributesCreateUpdateCommand:
       properties:
-        hole_polygons:
-          items:
-            items:
-              $ref: '#/components/schemas/CoordinateCreateUpdateCommand'
-            type: array
-          type: array
-        shell_coordinates:
+        coordinates:
           items:
             $ref: '#/components/schemas/CoordinateCreateUpdateCommand'
           type: array
       required:
-      - hole_polygons
-      - shell_coordinates
+      - coordinates
       title: PolygonAttributesCreateUpdateCommand
+      type: object
+    RectangleAttributesCreateUpdateCommand:
+      properties:
+        height:
+          oneOf:
+          - type: 'null'
+          - type: number
+        width:
+          type: number
+      required:
+      - width
+      title: RectangleAttributesCreateUpdateCommand
       type: object
     RefSchema:
       properties:

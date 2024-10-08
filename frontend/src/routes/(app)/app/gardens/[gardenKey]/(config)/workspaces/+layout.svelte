@@ -25,6 +25,7 @@
 <Menubar.Root
 	class="justify-center border-0 border-b border-neutral-8 md:justify-start"
 >
+	<!-- Workspaces Menu -->
 	<Menubar.Menu>
 		<Menubar.Trigger>Workspaces</Menubar.Trigger>
 		<Menubar.Content>
@@ -58,6 +59,15 @@
 	</Menubar.Menu>
 
 	{#if activeWorkspace.value.activeWorkspaceId}
+
+		<!-- Select Menu -->
+		<Menubar.Menu>
+			<Menubar.Trigger>Select</Menubar.Trigger>
+			<Menubar.Content>
+			</Menubar.Content>
+		</Menubar.Menu>
+
+		<!-- Edit Menu -->
 		<Menubar.Menu>
 			<Menubar.Trigger>Edit</Menubar.Trigger>
 			<Menubar.Content>
@@ -74,6 +84,22 @@
 							class="mr-2 text-neutral-11"
 						/>
 						<span> End Editing </span>
+					</Menubar.Item>
+					<Menubar.Item class="flex items-center justify-start">
+						<Icon
+							icon={iconIds.verdagraphTranslateIcon}
+							width="1.25rem"
+							class="mr-2 text-neutral-11"
+						/>
+						<span> Translate </span>
+					</Menubar.Item>
+					<Menubar.Item class="flex items-center justify-start">
+						<Icon
+							icon={iconIds.deleteIcon}
+							width="1.25rem"
+							class="mr-2 text-neutral-11"
+						/>
+						<span> Delete </span>
 					</Menubar.Item>
 				{:else}
 					<Menubar.Item
@@ -92,6 +118,8 @@
 				{/if}
 			</Menubar.Content>
 		</Menubar.Menu>
+
+		<!-- Add Menu -->
 		<Menubar.Menu>
 			<Menubar.Trigger>Add</Menubar.Trigger>
 			<Menubar.Content>
@@ -105,6 +133,27 @@
 				</Menubar.Item>
 			</Menubar.Content>
 		</Menubar.Menu>
+
+	<!-- View Menu -->
+	<Menubar.Menu>
+		<Menubar.Trigger>View</Menubar.Trigger>
+		<Menubar.Content>
+			<Menubar.Group>
+				<Menubar.CheckboxItem bind:checked={activeWorkspace.value.treeEnabled}>
+					<div class="flex w-full items-center justify-between">
+						<span> Tree </span>
+						<Icon icon={iconIds.verdagraphTreeIcon} width="1rem" />
+					</div>
+				</Menubar.CheckboxItem>
+				<Menubar.CheckboxItem bind:checked={activeWorkspace.value.layoutEnabled}>
+					<div class="flex w-full items-center justify-between">
+						<span> Layout </span>
+						<Icon icon={iconIds.verdagraphLayoutIcon} width="1rem" />
+					</div>
+				</Menubar.CheckboxItem>
+			</Menubar.Group>
+		</Menubar.Content>
+	</Menubar.Menu>
 	{/if}
 </Menubar.Root>
 

@@ -166,7 +166,12 @@ export const getWorkspaceGetFullQueryOpResponseMock = (
 					undefined
 				])
 			},
-			type: faker.helpers.arrayElement(['polygon', 'ellipse', 'lines'] as const)
+			type: faker.helpers.arrayElement([
+				'rectangle',
+				'polygon',
+				'ellipse',
+				'lines'
+			] as const)
 		},
 		id: faker.string.uuid(),
 		location_history: {

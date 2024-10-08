@@ -52,5 +52,5 @@ export const workspaceFieldSchemas = {
 			workspaceFields.planting_area_description.max_length.value,
 			workspaceFields.planting_area_description.max_length.message
 		)
-		.describe(workspaceFields.planting_area_description.description),
+		.describe(workspaceFields.planting_area_description.description)
 };

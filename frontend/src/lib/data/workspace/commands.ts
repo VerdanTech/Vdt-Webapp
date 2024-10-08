@@ -1,13 +1,23 @@
 import { z as zod } from 'zod';
 import { useMutation } from '@sveltestack/svelte-query';
 import type {
-WorkspaceCreateCommand, WorkspaceUpdateCommand, WorkspaceDeleteCommand, PlantingAreaCreateCommand, PlantingAreaUpdateCommand, PlantingAreaDeleteCommand
+	WorkspaceCreateCommand,
+	WorkspaceUpdateCommand,
+	WorkspaceDeleteCommand,
+	PlantingAreaCreateCommand,
+	PlantingAreaUpdateCommand,
+	PlantingAreaDeleteCommand
 } from '$codegen/types';
 import {
-	workspaceCreateCommandOp, workspaceDeleteCommandOp, workspaceUpdateCommandOp, plantingAreaCreateCommandOp, plantingAreaUpdateCommandOp, plantingAreaDeleteCommandOp
+	workspaceCreateCommandOp,
+	workspaceDeleteCommandOp,
+	workspaceUpdateCommandOp,
+	plantingAreaCreateCommandOp,
+	plantingAreaUpdateCommandOp,
+	plantingAreaDeleteCommandOp
 } from '$codegen';
 import { workspaceFieldSchemas } from './schemas';
-import { gardenFieldSchemas } from '$lib/data/garden/schemas'
+import { gardenFieldSchemas } from '$lib/data/garden/schemas';
 
 /** Creates a new workspace in a garden. */
 export const workspaceCreate = {
@@ -40,7 +50,7 @@ export const workspaceUpdate = {
 /** Deletes a workspace. */
 export const workspaceDelete = {
 	schema: zod.object({
-		workspace_ref: zod.string().uuid(),
+		workspace_ref: zod.string().uuid()
 	}),
 	mutation: () => {
 		return useMutation(function (data: WorkspaceDeleteCommand) {
@@ -82,7 +92,7 @@ export const plantingAreaUpdate = {
 export const plantingAreaDelete = {
 	schema: zod.object({
 		workspace_ref: zod.string().uuid(),
-		planting_area_id: zod.string().uuid(),
+		planting_area_id: zod.string().uuid()
 	}),
 	mutation: () => {
 		return useMutation(function (data: PlantingAreaDeleteCommand) {

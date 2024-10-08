@@ -6,9 +6,4 @@
  * OpenAPI spec version: 0.1.0
  */
 
-export enum GeometrySchemaType {
-	rectangle = 'rectangle',
-	polygon = 'polygon',
-	ellipse = 'ellipse',
-	lines = 'lines'
-}
+export type EllipseAttributesCreateUpdateCommandHeight = null | number;
