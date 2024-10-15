@@ -5,6 +5,7 @@
 	import * as Menubar from '$components/ui/menubar';
 	import type { WorkspacePartialSchema } from '$codegen/types';
 	import activeWorkspace from './activeWorkspace.svelte';
+	import forms from './forms.svelte';
 
 	let { children } = $props();
 
@@ -85,7 +86,7 @@
 						/>
 						<span> End Editing </span>
 					</Menubar.Item>
-					<Menubar.Item class="flex items-center justify-start">
+					<Menubar.Item class="flex items-center justify-start" on:click={() => {forms.activateForm('translate')}}>
 						<Icon
 							icon={iconIds.verdagraphTranslateIcon}
 							width="1.25rem"
@@ -120,10 +121,11 @@
 		</Menubar.Menu>
 
 		<!-- Add Menu -->
+		{#if activeWorkspace.value.editing}
 		<Menubar.Menu>
 			<Menubar.Trigger>Add</Menubar.Trigger>
 			<Menubar.Content>
-				<Menubar.Item class="flex items-center justify-between">
+				<Menubar.Item class="flex items-center justify-between" on:click={() => {forms.activateForm('addPlantingArea')}}>
 					<Icon
 						icon={iconIds.plantingAreaIcon}
 						width="1.25rem"
@@ -133,6 +135,7 @@
 				</Menubar.Item>
 			</Menubar.Content>
 		</Menubar.Menu>
+		{/if}
 
 	<!-- View Menu -->
 	<Menubar.Menu>
