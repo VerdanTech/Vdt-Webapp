@@ -62,6 +62,36 @@ components:
       required: []
       title: AnnualLifecycleProfileUpdateCommand
       type: object
+    Coordinate:
+      properties:
+        x:
+          type: number
+        y:
+          type: number
+        z:
+          oneOf:
+            - type: 'null'
+            - type: number
+      required:
+        - x
+        - y
+      title: Coordinate
+      type: object
+    CoordinateCreateUpdateCommand:
+      properties:
+        x:
+          type: number
+        y:
+          type: number
+        z:
+          oneOf:
+            - type: 'null'
+            - type: number
+      required:
+        - x
+        - y
+      title: CoordinateCreateUpdateCommand
+      type: object
     CultivarAttributeSet:
       properties:
         annual_lifecycle_profile:
@@ -225,7 +255,7 @@ components:
     CultivarCollectionGetByGardenResult:
       properties:
         active_collection:
-          $ref: '#/components/schemas/Ref[src.cultivars.domain.models.CultivarCollection]'
+          $ref: '#/components/schemas/RefSchema'
         collections:
           items:
             $ref: '#/components/schemas/CultivarCollectionPartialSchema'
@@ -346,8 +376,8 @@ components:
             - public
             - null
           type:
-            - string
             - 'null'
+            - string
       required:
         - collection_ref
       title: CultivarCollectionUpdateCommand
@@ -520,6 +550,30 @@ components:
         - collection_ref
         - cultivar_id
       title: CultivarUpdateCommand
+      type: object
+    EllipseAttributes:
+      properties:
+        height:
+          oneOf:
+            - type: 'null'
+            - type: number
+        width:
+          type: number
+      required:
+        - width
+      title: EllipseAttributes
+      type: object
+    EllipseAttributesCreateUpdateCommand:
+      properties:
+        height:
+          oneOf:
+            - type: 'null'
+            - type: number
+        width:
+          type: number
+      required:
+        - width
+      title: EllipseAttributesCreateUpdateCommand
       type: object
     FrostDatePlantingWindowProfile:
       properties:
@@ -928,6 +982,161 @@ components:
         - key
       title: GardenUniqueKeyResult
       type: object
+    GeometricHistoryCreateUpdateCommand:
+      properties:
+        geometries:
+          items:
+            $ref: '#/components/schemas/GeometricHistoryPointCreateUpdateCommand'
+          type: array
+      required:
+        - geometries
+      title: GeometricHistoryCreateUpdateCommand
+      type: object
+    GeometricHistoryPointCreateUpdateCommand:
+      properties:
+        geometry:
+          $ref: '#/components/schemas/GeometryCreateUpdateCommand'
+        time:
+          oneOf:
+            - type: 'null'
+            - format: date-time
+              type: string
+      required:
+        - geometry
+      title: GeometricHistoryPointCreateUpdateCommand
+      type: object
+    GeometricHistoryPointSchema:
+      properties:
+        geometry:
+          $ref: '#/components/schemas/GeometrySchema'
+        time:
+          oneOf:
+            - type: 'null'
+            - format: date-time
+              type: string
+      required:
+        - geometry
+      title: GeometricHistoryPointSchema
+      type: object
+    GeometricHistorySchema:
+      properties:
+        geometries:
+          items:
+            $ref: '#/components/schemas/GeometricHistoryPointSchema'
+          type: array
+      required:
+        - geometries
+      title: GeometricHistorySchema
+      type: object
+    GeometryCreateUpdateCommand:
+      properties:
+        ellipse_attributes:
+          oneOf:
+            - type: 'null'
+            - $ref: '#/components/schemas/LinesAttributesCreateUpdateCommand'
+        lines_attributes:
+          oneOf:
+            - type: 'null'
+            - $ref: '#/components/schemas/EllipseAttributesCreateUpdateCommand'
+        polygon_attributes:
+          oneOf:
+            - type: 'null'
+            - $ref: '#/components/schemas/PolygonAttributesCreateUpdateCommand'
+        rectangle_attributes:
+          oneOf:
+            - type: 'null'
+            - $ref: '#/components/schemas/RectangleAttributesCreateUpdateCommand'
+        scale_factor:
+          oneOf:
+            - type: 'null'
+            - type: number
+        type:
+          enum:
+            - rectangle
+            - polygon
+            - ellipse
+            - lines
+          type: string
+      required:
+        - type
+      title: GeometryCreateUpdateCommand
+      type: object
+    GeometrySchema:
+      properties:
+        attributes:
+          oneOf:
+            - $ref: '#/components/schemas/RectangleAttributes'
+            - $ref: '#/components/schemas/PolygonAttributes'
+            - $ref: '#/components/schemas/LinesAttributes'
+            - $ref: '#/components/schemas/EllipseAttributes'
+        nulled:
+          type: boolean
+        rotation:
+          type: number
+        scale_factor:
+          type: number
+        type:
+          enum:
+            - rectangle
+            - polygon
+            - ellipse
+            - lines
+          type: string
+      required:
+        - attributes
+        - nulled
+        - rotation
+        - scale_factor
+        - type
+      title: GeometrySchema
+      type: object
+    LinesAttributes:
+      properties:
+        coordinates:
+          items:
+            $ref: '#/components/schemas/Coordinate'
+          type: array
+      required:
+        - coordinates
+      title: LinesAttributes
+      type: object
+    LinesAttributesCreateUpdateCommand:
+      properties:
+        coordinates:
+          items:
+            $ref: '#/components/schemas/CoordinateCreateUpdateCommand'
+          type: array
+      required:
+        - coordinates
+      title: LinesAttributesCreateUpdateCommand
+      type: object
+    LocationHistorySchema:
+      properties:
+        locations:
+          items:
+            $ref: '#/components/schemas/LocationSchema'
+          type: array
+      required:
+        - locations
+      title: LocationHistorySchema
+      type: object
+    LocationSchema:
+      properties:
+        position:
+          oneOf:
+            - type: 'null'
+            - $ref: '#/components/schemas/Coordinate'
+        time:
+          oneOf:
+            - type: 'null'
+            - format: date-time
+              type: string
+        workspace_ref:
+          $ref: '#/components/schemas/RefSchema'
+      required:
+        - workspace_ref
+      title: LocationSchema
+      type: object
     OriginProfile:
       properties:
         transplantable:
@@ -950,6 +1159,159 @@ components:
       required: []
       title: OriginProfileUpdateCommand
       type: object
+    PlantingAreaCreateCommand:
+      properties:
+        description:
+          oneOf:
+            - type: 'null'
+            - description: A description of this planting area. Must be at most 700
+                characters
+              maxLength: 700
+              type: string
+        geometry:
+          $ref: '#/components/schemas/GeometricHistoryPointCreateUpdateCommand'
+        name:
+          description: A descriptive name for this planting area. Must be between
+            3 and 30 characters long and contain only alphanumeric characters, spaces,
+            hyphens, and underscores.
+          maxLength: 30
+          minLength: 3
+          pattern: '[0-9A-Za-z _-]+'
+          type: string
+        workspace_ref:
+          format: uuid
+          type: string
+      required:
+        - geometry
+        - name
+        - workspace_ref
+      title: PlantingAreaCreateCommand
+      type: object
+    PlantingAreaDeleteCommand:
+      properties:
+        planting_area_id:
+          format: uuid
+          type: string
+        workspace_ref:
+          format: uuid
+          type: string
+      required:
+        - planting_area_id
+        - workspace_ref
+      title: PlantingAreaDeleteCommand
+      type: object
+    PlantingAreaSchema:
+      properties:
+        depth:
+          oneOf:
+            - type: 'null'
+            - type: number
+        description:
+          type: string
+        geometries:
+          $ref: '#/components/schemas/GeometricHistorySchema'
+        id:
+          format: uuid
+          type: string
+        location_history:
+          $ref: '#/components/schemas/LocationHistorySchema'
+        movable:
+          type: boolean
+        name:
+          type: string
+      required:
+        - description
+        - geometries
+        - id
+        - location_history
+        - movable
+        - name
+      title: PlantingAreaSchema
+      type: object
+    PlantingAreaUpdateCommand:
+      properties:
+        description:
+          oneOf:
+            - type: 'null'
+            - description: A description of this planting area. Must be at most 700
+                characters
+              maxLength: 700
+              type: string
+        geometries:
+          $ref: '#/components/schemas/GeometricHistoryCreateUpdateCommand'
+        name:
+          oneOf:
+            - type: 'null'
+            - description: A descriptive name for this planting area. Must be between
+                3 and 30 characters long and contain only alphanumeric characters, spaces,
+                hyphens, and underscores.
+              maxLength: 30
+              minLength: 3
+              pattern: '[0-9A-Za-z _-]+'
+              type: string
+        planting_area_id:
+          format: uuid
+          type: string
+        workspace_ref:
+          format: uuid
+          type: string
+      required:
+        - geometries
+        - planting_area_id
+        - workspace_ref
+      title: PlantingAreaUpdateCommand
+      type: object
+    PolygonAttributes:
+      properties:
+        hole_polygons:
+          items:
+            items:
+              $ref: '#/components/schemas/Coordinate'
+            type: array
+          type: array
+        shell_coordinates:
+          items:
+            $ref: '#/components/schemas/Coordinate'
+          type: array
+      required:
+        - hole_polygons
+        - shell_coordinates
+      title: PolygonAttributes
+      type: object
+    PolygonAttributesCreateUpdateCommand:
+      properties:
+        coordinates:
+          items:
+            $ref: '#/components/schemas/CoordinateCreateUpdateCommand'
+          type: array
+      required:
+        - coordinates
+      title: PolygonAttributesCreateUpdateCommand
+      type: object
+    RectangleAttributes:
+      properties:
+        height:
+          oneOf:
+            - type: 'null'
+            - type: number
+        width:
+          type: number
+      required:
+        - width
+      title: RectangleAttributes
+      type: object
+    RectangleAttributesCreateUpdateCommand:
+      properties:
+        height:
+          oneOf:
+            - type: 'null'
+            - type: number
+        width:
+          type: number
+      required:
+        - width
+      title: RectangleAttributesCreateUpdateCommand
+      type: object
     RefSchema:
       properties:
         id:
@@ -958,15 +1320,6 @@ components:
       required:
         - id
       title: RefSchema
-      type: object
-    Ref[src.cultivars.domain.models.CultivarCollection]:
-      properties:
-        id:
-          format: uuid
-          type: string
-      required:
-        - id
-      title: Ref[CultivarCollection]
       type: object
     UserConfirmEmailConfirmationCommand:
       properties:
@@ -1151,6 +1504,113 @@ components:
       required:
         - detail
         - status_code
+      type: object
+    WorkspaceCreateCommand:
+      properties:
+        description:
+          oneOf:
+            - type: 'null'
+            - description: A description of this workspace. Must be at most 700 characters
+              maxLength: 700
+              type: string
+        garden_key:
+          description:
+            Must be between 4 and 16 characters long and contain only alphanumeric
+            characters and hyphens
+          maxLength: 16
+          minLength: 4
+          pattern: '[0-9A-Za-z-]+'
+          type: string
+        name:
+          description: A descriptive name for this workspace. Must be between 3 and
+            30 characters long and contain only alphanumeric characters, spaces, hyphens,
+            and underscores.
+          maxLength: 30
+          minLength: 3
+          pattern: '[0-9A-Za-z _-]+'
+          type: string
+      required:
+        - garden_key
+        - name
+      title: WorkspaceCreateCommand
+      type: object
+    WorkspaceDeleteCommand:
+      properties:
+        workspace_ref:
+          format: uuid
+          type: string
+      required:
+        - workspace_ref
+      title: WorkspaceDeleteCommand
+      type: object
+    WorkspaceFullSchema:
+      properties:
+        description:
+          type: string
+        garden_ref:
+          $ref: '#/components/schemas/RefSchema'
+        id:
+          format: uuid
+          type: string
+        name:
+          type: string
+        planting_areas:
+          items:
+            $ref: '#/components/schemas/PlantingAreaSchema'
+          type: array
+        slug:
+          type: string
+      required:
+        - description
+        - garden_ref
+        - id
+        - name
+        - planting_areas
+        - slug
+      title: WorkspaceFullSchema
+      type: object
+    WorkspacePartialSchema:
+      properties:
+        garden_ref:
+          $ref: '#/components/schemas/RefSchema'
+        id:
+          format: uuid
+          type: string
+        name:
+          type: string
+        slug:
+          type: string
+      required:
+        - garden_ref
+        - id
+        - name
+        - slug
+      title: WorkspacePartialSchema
+      type: object
+    WorkspaceUpdateCommand:
+      properties:
+        description:
+          oneOf:
+            - type: 'null'
+            - description: A description of this workspace. Must be at most 700 characters
+              maxLength: 700
+              type: string
+        name:
+          oneOf:
+            - type: 'null'
+            - description: A descriptive name for this workspace. Must be between 3
+                and 30 characters long and contain only alphanumeric characters, spaces,
+                hyphens, and underscores.
+              maxLength: 30
+              minLength: 3
+              pattern: '[0-9A-Za-z _-]+'
+              type: string
+        workspace_ref:
+          format: uuid
+          type: string
+      required:
+        - workspace_ref
+      title: WorkspaceUpdateCommand
       type: object
 externalDocs:
   description: Github Repository
@@ -2038,6 +2498,246 @@ paths:
       summary: Checks whether a username exists.
       tags:
         - users
+  /workspaces/command/create_planting_area:
+    post:
+      deprecated: false
+      description: Creates a new planting area on the workspace.
+      operationId: PlantingAreaCreateCommandOp
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PlantingAreaCreateCommand'
+        required: true
+      responses:
+        '201':
+          content:
+            text/plain:
+              schema:
+                type: string
+          description: Document created, URL follows
+          headers: {}
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationException'
+          description: Bad request syntax or unsupported method
+      summary: Planting area create.
+      tags:
+        - workspaces
+  /workspaces/command/create_workspace:
+    post:
+      deprecated: false
+      description: Creates a new workspace on the garden.
+      operationId: WorkspaceCreateCommandOp
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WorkspaceCreateCommand'
+        required: true
+      responses:
+        '201':
+          content:
+            text/plain:
+              schema:
+                type: string
+          description: Document created, URL follows
+          headers: {}
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationException'
+          description: Bad request syntax or unsupported method
+      summary: Workspace create.
+      tags:
+        - workspaces
+  /workspaces/command/delete_planting_area:
+    post:
+      deprecated: false
+      description: Deletes a given planting area from a workspace.
+      operationId: PlantingAreaDeleteCommandOp
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PlantingAreaDeleteCommand'
+        required: true
+      responses:
+        '201':
+          content:
+            text/plain:
+              schema:
+                type: string
+          description: Document created, URL follows
+          headers: {}
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationException'
+          description: Bad request syntax or unsupported method
+      summary: Planting area delete.
+      tags:
+        - workspaces
+  /workspaces/command/delete_workspace:
+    post:
+      deprecated: false
+      description: Deletes a given workspace from a garden.
+      operationId: WorkspaceDeleteCommandOp
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WorkspaceDeleteCommand'
+        required: true
+      responses:
+        '201':
+          content:
+            text/plain:
+              schema:
+                type: string
+          description: Document created, URL follows
+          headers: {}
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationException'
+          description: Bad request syntax or unsupported method
+      summary: Workspace delete.
+      tags:
+        - workspaces
+  /workspaces/command/update_planting_area:
+    post:
+      deprecated: false
+      description: Sets the given attributes onto the planting area.
+      operationId: PlantingAreaUpdateCommandOp
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PlantingAreaUpdateCommand'
+        required: true
+      responses:
+        '201':
+          content:
+            text/plain:
+              schema:
+                type: string
+          description: Document created, URL follows
+          headers: {}
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationException'
+          description: Bad request syntax or unsupported method
+      summary: Planting area update.
+      tags:
+        - workspaces
+  /workspaces/command/update_workspace:
+    post:
+      deprecated: false
+      description: Sets the given attributes onto the workspace.
+      operationId: WorkspaceUpdateCommandOp
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WorkspaceUpdateCommand'
+        required: true
+      responses:
+        '201':
+          content:
+            text/plain:
+              schema:
+                type: string
+          description: Document created, URL follows
+          headers: {}
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationException'
+          description: Bad request syntax or unsupported method
+      summary: Workspace update.
+      tags:
+        - workspaces
+  /workspaces/query/get_full:
+    get:
+      deprecated: false
+      description: Retrieves a full workspace schema.
+      operationId: WorkspaceGetFullQueryOp
+      parameters:
+        - allowEmptyValue: false
+          allowReserved: false
+          deprecated: false
+          in: query
+          name: garden_key
+          required: true
+          schema:
+            type: string
+        - allowEmptyValue: false
+          allowReserved: false
+          deprecated: false
+          in: query
+          name: workspace_slug
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkspaceFullSchema'
+          description: Request fulfilled, document follows
+          headers: {}
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationException'
+          description: Bad request syntax or unsupported method
+      summary: Get a full workspace schema.
+      tags:
+        - workspaces
+  /workspaces/query/get_partials:
+    get:
+      deprecated: false
+      description: Retrieves the workspaces associated with this garden.
+      operationId: WorkspaceGetPartialsQueryOp
+      parameters:
+        - allowEmptyValue: false
+          allowReserved: false
+          deprecated: false
+          in: query
+          name: garden_key
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/WorkspacePartialSchema'
+                type: array
+          description: Request fulfilled, document follows
+          headers: {}
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationException'
+          description: Bad request syntax or unsupported method
+      summary: Get workspaces from a garden.
+      tags:
+        - workspaces
 servers:
   - url: /
 tags:

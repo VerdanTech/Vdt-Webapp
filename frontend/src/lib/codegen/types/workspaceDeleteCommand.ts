@@ -6,6 +6,6 @@
  * OpenAPI spec version: 0.1.0
  */
 
-export interface RefSrcCultivarsDomainModelsCultivarCollection {
-	id: string;
+export interface WorkspaceDeleteCommand {
+	workspace_ref: string;
 }

@@ -67,7 +67,7 @@ class CultivarCollectionFullSchema(QueryResult[CultivarCollection]):
 @query_result_transform
 class CultivarCollectionGetByGardenResult(QueryResult[None]):
     collections: set[CultivarCollectionPartialSchema]
-    active_collection: Ref[CultivarCollection]
+    active_collection: RefSchema
 
 
 @query_result_transform

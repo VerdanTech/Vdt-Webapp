@@ -27,7 +27,7 @@
 				<!-- Content Panes group-->
 				<Resizable.PaneGroup
 					direction={viewSettings.value.contentPaneDirection}
-					autoSaveId={'contentPaneState'}
+					autoSaveId={'verdagraphContentPaneState'}
 				>
 					{#if viewSettings.value.layoutEnabled}
 						<Resizable.Pane

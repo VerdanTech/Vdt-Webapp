@@ -26,5 +26,5 @@
 		{value}
 	</span>
 {:else}
-	<span class="font-light italic text-neutral-11 px-4 py-2"> None </span>
+	<span class="px-4 py-2 font-light italic text-neutral-11"> None </span>
 {/if}

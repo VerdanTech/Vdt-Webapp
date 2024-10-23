@@ -1,10 +1,6 @@
 <script lang="ts">
 	import { createTreeView } from '@melt-ui/svelte';
-	import {
-		getLocalTimeZone,
-		DateFormatter,
-
-	} from '@internationalized/date';
+	import { getLocalTimeZone, DateFormatter } from '@internationalized/date';
 	import { Button } from 'bits-ui';
 	import Icon from '@iconify/svelte';
 	import iconIds from '$lib/assets/icons';
@@ -18,9 +14,7 @@
 	import { cultivarCollectionQuery } from '$data/cultivar/queries';
 	import { superForm, defaults } from 'sveltekit-superforms';
 	import { zod } from 'sveltekit-superforms/adapters';
-	import {
-		CultivarCollectionFullSchemaVisibility,
-	} from '$codegen/types';
+	import { CultivarCollectionFullSchemaVisibility } from '$codegen/types';
 	import type {
 		CultivarSchema,
 		CultivarCollectionFullSchema,
@@ -53,7 +47,7 @@
 	const treeView = createTreeView();
 
 	const {
-		elements: { tree },
+		elements: { tree }
 	} = treeView;
 
 	/**
@@ -84,7 +78,7 @@
 		}
 	});
 	const { form: formData, enhance } = form;
-	
+
 	/** Form submit function. */
 	let debounceFormSubmit = debounce(() => {
 		form.submit();
@@ -399,7 +393,9 @@
 														required={false}
 														items={visibilityOptions}
 														onSelectedChange={onVisibilitySelectedChange}
-														selected={visibilityEnumToOption($collectionQuery.data[0].visibility)}
+														selected={visibilityEnumToOption(
+															$collectionQuery.data[0].visibility
+														)}
 													>
 														<Select.Trigger
 															chevron={editingCollection}
@@ -439,7 +435,8 @@
 												/>
 											</div>
 											<span class="py-2 text-right text-sm"
-												>{visibilityEnumToOption($collectionQuery.data[0].visibility).label}</span
+												>{visibilityEnumToOption($collectionQuery.data[0].visibility)
+													.label}</span
 											>
 										</div>
 									{/if}
@@ -539,7 +536,9 @@
 												>Created at</span
 											>
 											<span class="p-2 text-right text-sm"
-												>{dateFormatter.format(new Date($collectionQuery.data[0].created_at))}</span
+												>{dateFormatter.format(
+													new Date($collectionQuery.data[0].created_at)
+												)}</span
 											>
 										</div>
 									</li>
@@ -618,12 +617,12 @@
 		<!-- Tree -->
 		<ul class="overflow-none w-full" {...$tree}>
 			<!-- Cultivar tree item. -->
-				{#each sortedCollectionIndices ?? [] as index}
+			{#each sortedCollectionIndices ?? [] as index}
 				<li class="w-full">
 					<CultivarTree
-					{treeView}
-					collectionId={$collectionQuery.data[0].id}
-					bind:cultivar={$collectionQuery.data[0].cultivars[index]}
+						{treeView}
+						collectionId={$collectionQuery.data[0].id}
+						bind:cultivar={$collectionQuery.data[0].cultivars[index]}
 						editing={editingCollection}
 					/>
 				</li>

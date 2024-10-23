@@ -35,7 +35,10 @@
 	 *  executes success task, and sets server errors on failure.
 	 * - onChange: Reset server errors.
 	 */
-	const initialData: CultivarCreateCommand = { collection_ref: collectionId, names: [] };
+	const initialData: CultivarCreateCommand = {
+		collection_ref: collectionId,
+		names: []
+	};
 	const form = superForm(defaults(initialData, zod(cultivarCreate.schema)), {
 		SPA: true,
 		validators: zod(cultivarCreate.schema),

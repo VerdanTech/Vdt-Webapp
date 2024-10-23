@@ -3,7 +3,7 @@ import uuid
 from typing import Annotated
 
 # External Libraries
-from pydantic import AfterValidator, BeforeValidator, Field
+from pydantic import AfterValidator, BeforeValidator, Field, field_validator
 
 # VerdanTech Source
 from src import settings
@@ -169,6 +169,14 @@ class CultivarCreateCommand(Command):
     description: CultivarDescription | None = None
     parent_id: uuid.UUID | None = None
 
+    @field_validator("names")
+    @classmethod
+    def names_banned(cls, value: list[str]) -> list[str]:
+        for name in value:
+            if isinstance(value, str) and name.lower() in banned_fields:
+                raise ValueError("Denied: matches a reserved name or is offensive")
+        return value
+
 
 class CultivarUpdateCommand(Command):
     """
@@ -185,6 +193,14 @@ class CultivarUpdateCommand(Command):
     remove_parent: bool = False
     """If true, the parent_ref will be deleted regardless of the update value."""
     attributes: CultivarAttributeUpdateCommand | None = None
+
+    @field_validator("names")
+    @classmethod
+    def names_banned(cls, value: list[str]) -> list[str]:
+        for name in value:
+            if isinstance(value, str) and name.lower() in banned_fields:
+                raise ValueError("Denied: matches a reserved name or is offensive")
+        return value
 
 
 class CultivarDeleteCommand(Command):
@@ -210,6 +226,13 @@ class CultivarCollectionCreateCommand(Command):
     parent_ref: uuid.UUID | None = None
     garden_ref: uuid.UUID | None = None
 
+    @field_validator("name")
+    @classmethod
+    def names_banned(cls, value: str) -> str:
+        if isinstance(value, str) and value.lower() in banned_fields:
+            raise ValueError("Denied: matches a reserved name or is offensive")
+        return value
+
 
 class CultivarCollectionUpdateCommand(Command):
     """
@@ -224,6 +247,13 @@ class CultivarCollectionUpdateCommand(Command):
     parent_ref: uuid.UUID | None = None
     remove_parent: bool = False
     """If true, the parent_ref will be deleted regardless of the update value."""
+
+    @field_validator("name")
+    @classmethod
+    def names_banned(cls, value: str) -> str:
+        if isinstance(value, str) and value.lower() in banned_fields:
+            raise ValueError("Denied: matches a reserved name or is offensive")
+        return value
 
 
 class CultivarCollectionDeleteCommand(Command):

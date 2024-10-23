@@ -242,8 +242,9 @@ if __name__ == "__main__":
     from src.cultivars.domain.specs import specs as cultivar_specs
     from src.garden.domain.specs import specs as garden_specs
     from src.user.domain.specs import specs as user_specs
+    from src.workspace.domain.specs import specs as workspace_specs
 
-    specs = [garden_specs, user_specs, cultivar_specs]
+    specs = [garden_specs, user_specs, cultivar_specs, workspace_specs]
 
     output_dir = "./schema/specs/"
     os.makedirs(output_dir, exist_ok=True)
