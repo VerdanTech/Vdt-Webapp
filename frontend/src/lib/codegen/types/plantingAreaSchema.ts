@@ -6,13 +6,13 @@
  * OpenAPI spec version: 0.1.0
  */
 import type { PlantingAreaSchemaDepth } from './plantingAreaSchemaDepth';
-import type { GeometrySchema } from './geometrySchema';
+import type { GeometricHistorySchema } from './geometricHistorySchema';
 import type { LocationHistorySchema } from './locationHistorySchema';
 
 export interface PlantingAreaSchema {
 	depth?: PlantingAreaSchemaDepth;
 	description: string;
-	geometry: GeometrySchema;
+	geometries: GeometricHistorySchema;
 	id: string;
 	location_history: LocationHistorySchema;
 	movable: boolean;

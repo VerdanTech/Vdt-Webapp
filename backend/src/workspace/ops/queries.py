@@ -9,7 +9,7 @@ from svcs import Container
 from src.common.ops.queries import Query, QueryResult, RefSchema, query_result_transform
 from src.garden.domain.commands import GardenKey
 from src.geometry.domain import Coordinate
-from src.geometry.ops.queries import GeometrySchema
+from src.geometry.ops.queries import GeometricHistorySchema
 from src.user.domain import User
 from src.workspace.domain import Location, LocationHistory, PlantingArea, Workspace
 
@@ -34,7 +34,7 @@ class LocationHistorySchema(QueryResult[LocationHistory]):
 class PlantingAreaSchema(QueryResult[PlantingArea]):
     id: UUID
     name: str
-    geometry: GeometrySchema
+    geometries: GeometricHistorySchema
     location_history: LocationHistorySchema
     description: str
     depth: float | None

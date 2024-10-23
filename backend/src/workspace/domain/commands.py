@@ -121,7 +121,7 @@ class PlantingAreaCreateCommand(Command):
     workspace_ref: uuid.UUID
     name: PlantingAreaName
     description: PlantingAreaDescription | None = None
-    geometry: geometry_commands.GeometryHistoryPointCreateUpdateCommand
+    geometry: geometry_commands.GeometricHistoryPointCreateUpdateCommand
 
 
 class PlantingAreaUpdateCommand(Command):

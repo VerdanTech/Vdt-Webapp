@@ -6,11 +6,17 @@ import * as Resizable from '$components/ui/resizable';
 type ActiveWorkspaceState = {
 	activeWorkspaceId: string | null /** The ID of the active workspace. */;
 	editing: boolean /** The editing state. */;
-	treeEnabled: boolean /** Whether the tree pane is open. */
-	layoutEnabled: boolean /** Wether the layout pane is open. */
-	contentPaneDirection: Resizable.Direction; /** Controls the orientation between the content panes. */
+	treeEnabled: boolean /** Whether the tree pane is open. */;
+	layoutEnabled: boolean /** Wether the layout pane is open. */;
+	contentPaneDirection: Resizable.Direction /** Controls the orientation between the content panes. */;
 };
-let _rune: ActiveWorkspaceState = $state({ activeWorkspaceId: null, editing: false, treeEnabled: true, layoutEnabled: true, contentPaneDirection: 'horizontal' });
+let _rune: ActiveWorkspaceState = $state({
+	activeWorkspaceId: null,
+	editing: false,
+	treeEnabled: true,
+	layoutEnabled: true,
+	contentPaneDirection: 'horizontal'
+});
 
 /* Exported state methods. */
 export const activeWorkspace = {
@@ -25,8 +31,3 @@ export const activeWorkspace = {
 	}
 };
 export default activeWorkspace;
-
-
-
-
-

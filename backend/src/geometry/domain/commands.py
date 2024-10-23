@@ -52,10 +52,10 @@ class GeometryCreateUpdateCommand(Command):
     scale_factor: float | None = None
 
 
-class GeometryHistoryPointCreateUpdateCommand(Command):
+class GeometricHistoryPointCreateUpdateCommand(Command):
     geometry: GeometryCreateUpdateCommand
     time: datetime | None = None
 
 
 class GeometricHistoryCreateUpdateCommand(Command):
-    geometries: list[GeometryHistoryPointCreateUpdateCommand]
+    geometries: list[GeometricHistoryPointCreateUpdateCommand]

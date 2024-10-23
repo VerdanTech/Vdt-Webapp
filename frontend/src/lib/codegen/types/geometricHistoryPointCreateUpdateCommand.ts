@@ -6,9 +6,9 @@
  * OpenAPI spec version: 0.1.0
  */
 import type { GeometryCreateUpdateCommand } from './geometryCreateUpdateCommand';
-import type { GeometryHistoryPointCreateUpdateCommandTime } from './geometryHistoryPointCreateUpdateCommandTime';
+import type { GeometricHistoryPointCreateUpdateCommandTime } from './geometricHistoryPointCreateUpdateCommandTime';
 
-export interface GeometryHistoryPointCreateUpdateCommand {
+export interface GeometricHistoryPointCreateUpdateCommand {
 	geometry: GeometryCreateUpdateCommand;
-	time?: GeometryHistoryPointCreateUpdateCommandTime;
+	time?: GeometricHistoryPointCreateUpdateCommandTime;
 }

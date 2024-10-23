@@ -5,5 +5,5 @@ from .models import (
     GeometricHistory,
     Geometry,
     LinesAttributes,
-    PolygonAttributes,
+    PolygonAttributes, RectangleAttributes
 )

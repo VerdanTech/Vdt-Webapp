@@ -59,11 +59,11 @@ class Geometry(Value):
 
 
 @value_transform
-class GeometryHistoryPoint(Value):
+class GeometricHistoryPoint(Value):
     geometry: Geometry
     time: datetime | None = None
 
 
 @value_transform
 class GeometricHistory(Value):
-    geometries: list[GeometryHistoryPoint] = field(factory=list)
+    geometries: list[GeometricHistoryPoint] = field(factory=list)

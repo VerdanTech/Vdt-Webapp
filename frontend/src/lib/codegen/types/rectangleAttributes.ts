@@ -5,5 +5,9 @@
  * Backend API of the VerdanTech software project.
  * OpenAPI spec version: 0.1.0
  */
+import type { RectangleAttributesHeight } from './rectangleAttributesHeight';
 
-export type GeometryHistoryPointCreateUpdateCommandTime = null | string;
+export interface RectangleAttributes {
+	height?: RectangleAttributesHeight;
+	width: number;
+}

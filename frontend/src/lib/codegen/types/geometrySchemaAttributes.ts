@@ -5,11 +5,13 @@
  * Backend API of the VerdanTech software project.
  * OpenAPI spec version: 0.1.0
  */
+import type { RectangleAttributes } from './rectangleAttributes';
 import type { PolygonAttributes } from './polygonAttributes';
 import type { LinesAttributes } from './linesAttributes';
 import type { EllipseAttributes } from './ellipseAttributes';
 
 export type GeometrySchemaAttributes =
+	| RectangleAttributes
 	| PolygonAttributes
 	| LinesAttributes
 	| EllipseAttributes;

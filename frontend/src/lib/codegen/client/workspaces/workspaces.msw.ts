@@ -12,6 +12,7 @@ import type {
 	EllipseAttributes,
 	LinesAttributes,
 	PolygonAttributes,
+	RectangleAttributes,
 	WorkspaceFullSchema,
 	WorkspacePartialSchema
 } from '../../types';
@@ -33,6 +34,22 @@ export const getPlantingAreaUpdateCommandOpResponseMock = (): string =>
 
 export const getWorkspaceUpdateCommandOpResponseMock = (): string =>
 	faker.word.sample();
+
+export const getWorkspaceGetFullQueryOpResponseRectangleAttributesMock = (
+	overrideResponse: Partial<RectangleAttributes> = {}
+): RectangleAttributes => ({
+	...{
+		height: faker.helpers.arrayElement([
+			faker.helpers.arrayElement([
+				null,
+				faker.number.int({ min: undefined, max: undefined })
+			]),
+			undefined
+		]),
+		width: faker.number.int({ min: undefined, max: undefined })
+	},
+	...overrideResponse
+});
 
 export const getWorkspaceGetFullQueryOpResponsePolygonAttributesMock = (
 	overrideResponse: Partial<PolygonAttributes> = {}
@@ -149,29 +166,36 @@ export const getWorkspaceGetFullQueryOpResponseMock = (
 			undefined
 		]),
 		description: faker.word.sample(),
-		geometry: {
-			attributes: faker.helpers.arrayElement([
-				{ ...getWorkspaceGetFullQueryOpResponsePolygonAttributesMock() },
-				{ ...getWorkspaceGetFullQueryOpResponseLinesAttributesMock() },
-				{ ...getWorkspaceGetFullQueryOpResponseEllipseAttributesMock() }
-			]),
-			position: {
-				x: faker.number.int({ min: undefined, max: undefined }),
-				y: faker.number.int({ min: undefined, max: undefined }),
-				z: faker.helpers.arrayElement([
+		geometries: {
+			geometries: Array.from(
+				{ length: faker.number.int({ min: 1, max: 10 }) },
+				(_, i) => i + 1
+			).map(() => ({
+				geometry: {
+					attributes: faker.helpers.arrayElement([
+						{ ...getWorkspaceGetFullQueryOpResponseRectangleAttributesMock() },
+						{ ...getWorkspaceGetFullQueryOpResponsePolygonAttributesMock() },
+						{ ...getWorkspaceGetFullQueryOpResponseLinesAttributesMock() },
+						{ ...getWorkspaceGetFullQueryOpResponseEllipseAttributesMock() }
+					]),
+					nulled: faker.datatype.boolean(),
+					rotation: faker.number.int({ min: undefined, max: undefined }),
+					scale_factor: faker.number.int({ min: undefined, max: undefined }),
+					type: faker.helpers.arrayElement([
+						'rectangle',
+						'polygon',
+						'ellipse',
+						'lines'
+					] as const)
+				},
+				time: faker.helpers.arrayElement([
 					faker.helpers.arrayElement([
 						null,
-						faker.number.int({ min: undefined, max: undefined })
+						`${faker.date.past().toISOString().split('.')[0]}Z`
 					]),
 					undefined
 				])
-			},
-			type: faker.helpers.arrayElement([
-				'rectangle',
-				'polygon',
-				'ellipse',
-				'lines'
-			] as const)
+			}))
 		},
 		id: faker.string.uuid(),
 		location_history: {

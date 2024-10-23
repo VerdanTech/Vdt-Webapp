@@ -6,11 +6,12 @@
  * OpenAPI spec version: 0.1.0
  */
 import type { GeometrySchemaAttributes } from './geometrySchemaAttributes';
-import type { Coordinate } from './coordinate';
 import type { GeometrySchemaType } from './geometrySchemaType';
 
 export interface GeometrySchema {
 	attributes: GeometrySchemaAttributes;
-	position: Coordinate;
+	nulled: boolean;
+	rotation: number;
+	scale_factor: number;
 	type: GeometrySchemaType;
 }

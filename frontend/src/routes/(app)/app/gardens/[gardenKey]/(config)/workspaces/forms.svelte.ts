@@ -2,9 +2,7 @@ import type { Component } from 'svelte';
 import AddPlantingAreaForm from './forms/AddPlantingAreaForm.svelte';
 import TranslateForm from './forms/TranslateForm.svelte';
 
-export type WorkspaceEditorFormType =
-	| 'addPlantingArea'
-	| 'translate'
+export type WorkspaceEditorFormType = 'addPlantingArea' | 'translate';
 
 type FormAttributeType = {
 	id: WorkspaceEditorFormType;
@@ -14,7 +12,7 @@ type FormAttributeType = {
 
 const formAttributes: FormAttributeType[] = [
 	{ id: 'addPlantingArea', label: 'Add Planting Area', content: AddPlantingAreaForm },
-	{ id: 'translate', label: 'Translate', content: TranslateForm },
+	{ id: 'translate', label: 'Translate', content: TranslateForm }
 ];
 
 /** Runes */

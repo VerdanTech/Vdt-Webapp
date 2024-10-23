@@ -5,8 +5,8 @@
  * Backend API of the VerdanTech software project.
  * OpenAPI spec version: 0.1.0
  */
-import type { GeometryHistoryPointCreateUpdateCommand } from './geometryHistoryPointCreateUpdateCommand';
+import type { GeometricHistoryPointCreateUpdateCommand } from './geometricHistoryPointCreateUpdateCommand';
 
 export interface GeometricHistoryCreateUpdateCommand {
-	geometries: GeometryHistoryPointCreateUpdateCommand[];
+	geometries: GeometricHistoryPointCreateUpdateCommand[];
 }
