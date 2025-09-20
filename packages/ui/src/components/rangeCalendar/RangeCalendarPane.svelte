@@ -1,6 +1,7 @@
 <script lang="ts">
 	import Icon from '@iconify/svelte';
 	import { type DateValue } from '@internationalized/date';
+	import { Popover } from '$core';
 
 	import iconIds from '$assets/icons';
 	import { calculateDeltaDays } from '$components/timeline/utils';
@@ -121,7 +122,7 @@
 				></div>
 
 				<!-- Info popups. -->
-				<div class="flex h-full w-full">
+				<div class="relative flex h-full w-full">
 					{#each item.item.infoPoints || [] as infoPoint}
 						{@const infoPointLeft = calculateInfoPointLeft(
 							item.item.startDate,
@@ -132,13 +133,13 @@
 						<div
 							style:left="{infoPointLeft}%"
 							style:width="{sectionWidthPx}px"
-							class="relative flex h-full items-center"
+							class="absolute flex h-full items-center"
 						>
 							{#snippet infoPointIcon(icon?: string)}
 								{#if icon}
 									<Icon
 										color={item.item.borderColor}
-										width="1.25rem"
+										width="1.4rem"
 										{icon}
 										class="mx-auto"
 									/>
@@ -146,20 +147,27 @@
 									<span
 										style:background-color={item.item.itemColor}
 										style:border-color={item.item.borderColor}
-										class="mx-auto h-4 w-4 rounded-lg border"
+										class="mx-auto h-5 w-5 rounded-lg border"
 									></span>
 								{/if}
 							{/snippet}
 
 							{#if infoPoint.popup}
-								<div></div>
+								<Popover.Root>
+									<Popover.Trigger>
+										{@render infoPointIcon(infoPoint.icon)}		
+									</Popover.Trigger>
+									<Popover.Content>
+										<infoPoint.popup></infoPoint.popup>
+									</Popover.Content>
+								</Popover.Root>
 							{:else}
 								{@render infoPointIcon(infoPoint.icon)}
 							{/if}
 
 							<span
 								style:text-decoration-color={item.item.borderColor}
-								class="text-neutral-12 hover: absolute ml-[30px] w-64 truncate text-xs underline underline-offset-[5px]"
+								class="text-neutral-12 text-md absolute ml-[40px] w-64 truncate text-xs underline underline-offset-[5px]"
 								>{infoPoint.label}</span
 							>
 						</div>

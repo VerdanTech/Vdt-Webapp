@@ -1,4 +1,6 @@
 <script lang="ts">
+	import type { PlantingArea } from '@vdg-webapp/models';
+
 	import {
 		Canvas,
 		Gridlines,
@@ -7,15 +9,14 @@
 		TransformControls
 	} from '$components';
 
-	import { toolbox } from '../tools';
-	import { getVerdagraphContext } from '../verdagraphContext.svelte';
+	import { getVerdagraphContext } from './verdagraphContext.svelte';
 
 	const verdagraphContext = getVerdagraphContext();
 
 	type Props = {
-		plantingAreaIds: string[];
+		plantingAreas: PlantingArea[];
 	};
-	let { plantingAreaIds }: Props = $props();
+	let { plantingAreas }: Props = $props();
 
 	const canvasContext = verdagraphContext.layoutCanvasContext;
 	const canvasId = canvasContext.canvasId;
@@ -29,5 +30,14 @@
 <Canvas {canvasId} {overlay}>
 	<Gridlines {canvasId} />
 
-	<PlantingAreas {canvasId} {plantingAreaLayerId}></PlantingAreas>
+	<PlantingAreas {canvasId} {plantingAreaLayerId}>
+		{#each plantingAreas as plantingArea}
+			<StaticPlantingAreaContainer
+				{plantingArea}
+				{plantingAreaLayerId}
+				canvasContext={verdagraphContext.layoutCanvasContext}
+				timelineSelection={verdagraphContext.timeline}
+			/>
+		{/each}
+	</PlantingAreas>
 </Canvas>

@@ -1,7 +1,7 @@
 import { type Entity, type QueryResult, Schema as S, or } from '@triplit/client';
 
 import { CultivarAttributes } from '../cultivars/attributes/index.js';
-import { environmentSchema } from '../environments/schema.js';
+import { cultivarSchema } from '../cultivars/schema.js';
 
 /**
  *
@@ -21,7 +21,7 @@ export const HarvestQualityEnumOptions = [
 ] as const;
 
 export const plantSchema = S.Collections({
-	...environmentSchema,
+	...cultivarSchema,
 	/** Harvest schema. */
 	harvests: {
 		schema: S.Schema({

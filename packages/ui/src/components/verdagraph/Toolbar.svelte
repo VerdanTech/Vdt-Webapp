@@ -90,9 +90,16 @@
 			<!-- Content pane toggles. -->
 			<Menubar.Group>
 				<Menubar.CheckboxItem
-					bind:checked={verdagraphContext.layoutEnabled}
-					disabled={!verdagraphContext.treeEnabled &&
-						!verdagraphContext.calendarEnabled}
+					checked={verdagraphContext.paneSettings.isEnabled('layout')}
+					onCheckedChange={(newVal) => {
+						if (newVal) {
+							verdagraphContext.paneSettings.enable('layout');
+						} else {
+							verdagraphContext.paneSettings.disable('layout');
+						}
+					}}
+					disabled={!verdagraphContext.paneSettings.isEnabled('tree') &&
+						!verdagraphContext.paneSettings.isEnabled('calendar')}
 				>
 					<div class="flex w-full items-center justify-between">
 						<span> Layout </span>
@@ -100,8 +107,16 @@
 					</div>
 				</Menubar.CheckboxItem>
 				<Menubar.CheckboxItem
-					bind:checked={verdagraphContext.calendarEnabled}
-					disabled={!verdagraphContext.treeEnabled && !verdagraphContext.layoutEnabled}
+					checked={verdagraphContext.paneSettings.isEnabled('calendar')}
+					onCheckedChange={(newVal) => {
+						if (newVal) {
+							verdagraphContext.paneSettings.enable('calendar');
+						} else {
+							verdagraphContext.paneSettings.disable('calendar');
+						}
+					}}
+					disabled={!verdagraphContext.paneSettings.isEnabled('tree') &&
+						!verdagraphContext.paneSettings.isEnabled('layout')}
 				>
 					<div class="flex w-full items-center justify-between">
 						<span> Calendar </span>
@@ -109,9 +124,16 @@
 					</div>
 				</Menubar.CheckboxItem>
 				<Menubar.CheckboxItem
-					bind:checked={verdagraphContext.treeEnabled}
-					disabled={!verdagraphContext.layoutEnabled &&
-						!verdagraphContext.calendarEnabled}
+					checked={verdagraphContext.paneSettings.isEnabled('tree')}
+					onCheckedChange={(newVal) => {
+						if (newVal) {
+							verdagraphContext.paneSettings.enable('tree');
+						} else {
+							verdagraphContext.paneSettings.disable('tree');
+						}
+					}}
+					disabled={!verdagraphContext.paneSettings.isEnabled('layout') &&
+						!verdagraphContext.paneSettings.isEnabled('calendar')}
 				>
 					<div class="flex w-full items-center justify-between">
 						<span> Tree </span>
@@ -122,7 +144,7 @@
 				<Menubar.Sub>
 					<Menubar.SubTrigger>Direction</Menubar.SubTrigger>
 					<Menubar.SubContent>
-						<Menubar.RadioGroup bind:value={verdagraphContext.contentPaneDirection}>
+						<Menubar.RadioGroup bind:value={verdagraphContext.paneSettings.direction}>
 							<Menubar.RadioItem value="horizontal">Horizontal</Menubar.RadioItem>
 							<Menubar.RadioItem value="vertical">Vertical</Menubar.RadioItem>
 						</Menubar.RadioGroup>

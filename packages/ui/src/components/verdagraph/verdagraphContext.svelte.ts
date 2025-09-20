@@ -1,7 +1,11 @@
 import { mode } from 'mode-watcher';
 import { getContext, setContext } from 'svelte';
 
-import { type CanvasContext, createCanvasContext } from '$components';
+import {
+	type CanvasContext,
+	createCanvasContext,
+	createSelectionManager
+} from '$components';
 import { createTimelineSelection } from '$components';
 import { createPaneSettings, isMobile } from '$state';
 
@@ -29,6 +33,8 @@ function createVerdagraphContext() {
 	);
 	/** Timeline. */
 	const timeline = createTimelineSelection();
+	/** Selected entities. */
+	const selections = createSelectionManager(['plantingArea']);
 
 	/** Canvas context. */
 	setContext(
@@ -44,7 +50,8 @@ function createVerdagraphContext() {
 
 		/** Setters. */
 		paneSettings,
-		timeline
+		timeline,
+		selections
 	};
 }
 export type VerdagraphContext = ReturnType<typeof createVerdagraphContext>;

@@ -35,10 +35,10 @@ export const cultivarSchema = S.Collections({
 			visibility: S.String({ enum: [...CultivarCollectionVisibilityEnumOptions] }),
 
 			/** If defined, the collection is owned by a user. */
-			userId: S.String(),
+			userId: S.String({ nullable: true, default: null }),
 
 			/** If defined, the colletcion is owned by a garden. Overrides user ownership. */
-			gardenId: S.String(),
+			gardenId: S.String({ nullable: true, default: null }),
 
 			/** Optional description. */
 			description: S.String({ default: '' }),

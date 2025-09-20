@@ -23,7 +23,7 @@ export const CultivarAttributesUpdateCommandSchema = z.object({
 	annualLifeCycle: AnnualLifeCycle.AnnualLifecycleUpdateCommandSchema.optional(),
 	frostDatePlantingWindows:
 		FrostDatePlantingWindows.FrostDatePlantingWindowsUpdateCommandSchema.optional(),
-	osrigin: Origin.OriginUpdateCommandSchema.optional()
+	origin: Origin.OriginUpdateCommandSchema.optional()
 });
 export type CultivarAttributesUpdateCommand = z.infer<
 	typeof CultivarAttributesUpdateCommandSchema

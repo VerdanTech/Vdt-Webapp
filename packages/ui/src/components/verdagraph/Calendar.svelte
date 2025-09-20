@@ -6,7 +6,8 @@
 	import { RangeCalendar, createCalendarContext } from '$components';
 	import { getColor } from '$utils';
 
-	import { getVerdagraphContext } from '../verdagraphContext.svelte';
+	import { getVerdagraphContext } from './verdagraphContext.svelte';
+	import TestComponent from './TestComponent.svelte';
 
 	const verdagraphContext = getVerdagraphContext();
 	const calendarContext = createCalendarContext(verdagraphContext.timeline, [
@@ -19,27 +20,27 @@
 						id: '1',
 						label: 'Tomato',
 						description: 'Garden - Planting Window',
-						startDate: new CalendarDate(2025, 2, 10),
-						endDate: new CalendarDate(2025, 7, 30),
+						startDate: new CalendarDate(2025, 5, 10),
+						endDate: new CalendarDate(2025, 12, 30),
 						fillColor: getColor('tomato', 4, mode.current),
 						borderColor: getColor('tomato', 7, mode.current),
 						itemColor: getColor('tomato', 5, mode.current),
 						infoPoints: [
 							{
 								label: 'this is really a mf label yes haha',
-								date: new CalendarDate(2025, 2, 11),
-								icon: iconIds.cultivarsIcon
+								date: new CalendarDate(2025, 8, 25),
+								icon: iconIds.cultivarsIcon,
+								popup: TestComponent
 							},
-							{ label: 'also a label', date: new CalendarDate(2025, 2, 18) },
-							{ label: 'also a label', date: new CalendarDate(2025, 2, 18) }
+							{ label: 'also a label', date: new CalendarDate(2025, 8, 18) },
 						]
 					},
 					{
 						id: '2',
 						label: 'Lettuce',
 						description: 'Planting Windows',
-						startDate: new CalendarDate(2025, 2, 20),
-						endDate: new CalendarDate(2025, 8, 30),
+						startDate: new CalendarDate(2025, 5, 20),
+						endDate: new CalendarDate(2025, 12, 30),
 						fillColor: getColor('grass', 4, mode.current),
 						borderColor: getColor('grass', 7, mode.current),
 						itemColor: getColor('grass', 5, mode.current),
@@ -48,8 +49,8 @@
 								id: '2a',
 								label: 'Lettuce',
 								description: 'Garden - Planting Window',
-								startDate: new CalendarDate(2025, 2, 20),
-								endDate: new CalendarDate(2025, 4, 28),
+								startDate: new CalendarDate(2025, 5, 20),
+								endDate: new CalendarDate(2025, 12, 28),
 								fillColor: getColor('green', 4, mode.current),
 								borderColor: getColor('green', 7, mode.current),
 								itemColor: getColor('green', 5, mode.current)

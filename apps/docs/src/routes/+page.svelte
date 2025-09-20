@@ -121,7 +121,10 @@
 				</div>
 
 				<div class="mt-4 flex flex-col gap-4">
-					<Button.Root variant="secondary" href={env.NEWSLETTER_URL} class="w-full text-wrap"
+					<Button.Root
+						variant="secondary"
+						href={env.NEWSLETTER_URL}
+						class="w-full text-wrap"
 						>Join the newsletter for new features and progress updates</Button.Root
 					>
 				</div>

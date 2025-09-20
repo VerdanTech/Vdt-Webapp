@@ -1,39 +1,74 @@
 <script lang="ts">
+	import { useQuery } from '@triplit/svelte';
+
 	import { TabToolbox, TimelineSelector } from '$components';
 	import { Resizable } from '$core';
+	import { getControllerContext } from '$state';
 
+	import Calendar from './Calendar.svelte';
+	import Layout from './Layout.svelte';
 	import Toolbar from './Toolbar.svelte';
-	import Calendar from './calendar/Calendar.svelte';
-	import Layout from './layout/Layout.svelte';
+	import Tree from './Tree.svelte';
 	import { toolbox } from './tools/index';
-	import Tree from './tree/Tree.svelte';
-	import { setVerdagraphContext } from './verdagraphContext.svelte';
+	import { getVerdagraphContext } from './verdagraphContext.svelte';
 
-	const verdagraphContext = setVerdagraphContext();
+	type Props = {
+		gardenId: string;
+	};
+	let { gardenId }: Props = $props();
+
+	/** Contexts. */
+	const controller = getControllerContext();
+	const verdagraphContext = getVerdagraphContext();
+
+	/** Queries. */
+	let workspacesInGardenQuery = $derived(
+		useQuery(
+			controller.triplit,
+			controller.triplit.query('workspaces').Where(['gardenId', '=', gardenId])
+		)
+	);
+	const workspacesInGarden = $derived(workspacesInGardenQuery.results || []);
+
+	const plantingAreasQuery = $derived(
+		useQuery(
+			controller.triplit,
+			controller.triplit
+				.query('plantingAreas')
+				.Where('gardenId', '=', gardenId)
+				.Include('geometry', (rel) => rel('geometry').Include('linesCoordinates'))
+				.Include('locationHistory', (rel) =>
+					rel('locationHistory').Include('locations')
+				)
+		)
+	);
+	const plantingAreas = $derived(plantingAreasQuery.results || []);
 
 	/** Force a re-render of the PaneGroup if the direction is changed. */
 	let initialized = $state(true);
 	$effect(() => {
-		if (verdagraphContext.contentPaneDirection) {
+		if (verdagraphContext.paneSettings.direction) {
 			initialized = false;
 			initialized = true;
 		}
 	});
 </script>
 
-<div class="bg-neutral-1 flex h-full flex-col">
-	<Toolbar />
+<div class="relative flex h-full w-full flex-col">
+	<div class="absolute top-0 h-8 w-full">
+		<Toolbar />
+	</div>
 
-	<div class="overflow-none grow">
+	<div class="absolute bottom-24 top-8 w-full grow overflow-hidden">
 		{#if initialized}
-			<Resizable.PaneGroup direction={verdagraphContext.contentPaneDirection}>
-				{#if verdagraphContext.layoutEnabled}
+			<Resizable.PaneGroup direction={verdagraphContext.paneSettings.direction}>
+				{#if verdagraphContext.paneSettings.isEnabled('layout')}
 					<Resizable.Pane defaultSize={30} minSize={5} order={0}>
-						<Layout />
+						<Layout {plantingAreas} />
 					</Resizable.Pane>
 					<Resizable.Handle withHandle={false} />
 				{/if}
-				{#if verdagraphContext.calendarEnabled}
+				{#if verdagraphContext.paneSettings.isEnabled('calendar')}
 					<Resizable.Pane defaultSize={30} minSize={5} order={1}>
 						<Calendar />
 					</Resizable.Pane>
@@ -45,7 +80,7 @@
 					</Resizable.Pane>
 					<Resizable.Handle withHandle={false} />
 				{/if}
-				{#if verdagraphContext.treeEnabled}
+				{#if verdagraphContext.paneSettings.isEnabled('tree')}
 					<Resizable.Pane defaultSize={25} minSize={5} order={3}>
 						<Tree />
 					</Resizable.Pane>
@@ -53,8 +88,7 @@
 			</Resizable.PaneGroup>
 		{/if}
 	</div>
-
-	<div class="bottom-0 h-24">
+	<div class="absolute bottom-0 h-24 w-full">
 		<TimelineSelector selection={verdagraphContext.timeline} />
 	</div>
 </div>
