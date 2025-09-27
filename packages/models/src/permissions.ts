@@ -13,7 +13,10 @@ const permissions = Object.freeze({
 	WorkspaceCreate: 'ADMIN',
 	WorkspaceUpdate: 'ADMIN',
 	WorkspaceEdit: 'EDITOR',
-	PlantingAreaCreate: 'EDITOR'
+	PlantingAreaCreate: 'EDITOR',
+
+	/** Plants. */
+	PlantsCreate: 'EDITOR'
 } satisfies Record<string, GardenRole>);
 export type ActionType = keyof typeof permissions;
 

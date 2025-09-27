@@ -34,5 +34,6 @@ const verdagraphTools: ToolAttributes<VerdagraphToolIds> = [
 	{ id: 'layoutConfig', label: 'Layout Config', ToolComponent: LayoutConfigForm }
 ];
 
-const toolbox = createToolbox(verdagraphTools);
-export default toolbox;
+export function verdagraphToolbox() {
+	return createToolbox(verdagraphTools);
+}

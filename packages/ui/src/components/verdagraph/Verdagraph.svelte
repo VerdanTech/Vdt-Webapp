@@ -9,8 +9,8 @@
 	import Layout from './Layout.svelte';
 	import Toolbar from './Toolbar.svelte';
 	import Tree from './Tree.svelte';
-	import { toolbox } from './tools/index';
 	import { getVerdagraphContext } from './verdagraphContext.svelte';
+	import { onMount } from 'svelte';
 
 	type Props = {
 		gardenId: string;
@@ -43,6 +43,7 @@
 		)
 	);
 	const plantingAreas = $derived(plantingAreasQuery.results || []);
+	const plants = $derived([])
 
 	/** Force a re-render of the PaneGroup if the direction is changed. */
 	let initialized = $state(true);
@@ -52,6 +53,10 @@
 			initialized = true;
 		}
 	});
+
+	onMount(() => {
+		
+	})
 </script>
 
 <div class="relative flex h-full w-full flex-col">
@@ -63,10 +68,12 @@
 		{#if initialized}
 			<Resizable.PaneGroup direction={verdagraphContext.paneSettings.direction}>
 				{#if verdagraphContext.paneSettings.isEnabled('layout')}
-					<Resizable.Pane defaultSize={30} minSize={5} order={0}>
-						<Layout {plantingAreas} />
-					</Resizable.Pane>
-					<Resizable.Handle withHandle={false} />
+				{#each verdagraphContext.selections.get('workspace') as workspaceId}
+				<Resizable.Pane defaultSize={30} minSize={5} order={0}>
+					<Layout {workspaceId} {plantingAreas} {plants} />
+				</Resizable.Pane>
+				<Resizable.Handle withHandle={false} />
+				{/each}
 				{/if}
 				{#if verdagraphContext.paneSettings.isEnabled('calendar')}
 					<Resizable.Pane defaultSize={30} minSize={5} order={1}>
@@ -74,9 +81,9 @@
 					</Resizable.Pane>
 					<Resizable.Handle withHandle={false} />
 				{/if}
-				{#if toolbox.isActive}
+				{#if verdagraphContext.toolbox.isActive}
 					<Resizable.Pane defaultSize={15} minSize={5} order={2}>
-						<TabToolbox {toolbox} />
+						<TabToolbox toolbox={verdagraphContext.toolbox} />
 					</Resizable.Pane>
 					<Resizable.Handle withHandle={false} />
 				{/if}

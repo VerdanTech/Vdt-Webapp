@@ -42,7 +42,8 @@
 
 		const location = historySelect(
 			plantingArea.locationHistory.locations,
-			workspaceContext.timelineSelection.focusUtc
+			workspaceContext.timelineSelection.focusUtc,
+			false
 		);
 		if (location && location.workspaceId === workspaceContext.id) {
 			return { x: location.x, y: location.y };
@@ -100,7 +101,7 @@ area in the workspace editor, ie., editable
 {#if plantingArea && plantingArea.geometry}
 	<PlantingAreaComponent
 		{canvasId}
-		{plantingAreaLayerId}
+		layerId={plantingAreaLayerId}
 		name={plantingArea.name}
 		showName={true}
 		{position}

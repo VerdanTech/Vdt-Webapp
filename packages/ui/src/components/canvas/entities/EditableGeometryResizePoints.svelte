@@ -65,8 +65,8 @@
 		switch (geometry.type) {
 			case 'RECTANGLE': {
 				/**
-				 * If the index is even,
-				 * calculate the new width and height.
+				 * If the index is even, this is a corner point.
+				 * Calculate the new width and height.
 				 */
 				if (index % 2 === 0) {
 					const newLength = Math.abs(resizePoints[index].x()) * 2;
@@ -82,8 +82,8 @@
 					);
 
 					/**
-					 * If the index is odd,
-					 * calculate the new width or height
+					 * If the index is odd, this is a side point.
+					 * Calculate the new width or height depending on the side,
 					 * and constrain movement to an axis.
 					 */
 				} else {
@@ -126,8 +126,8 @@
 
 			case 'ELLIPSE': {
 				/**
-				 * If the index is even (top/bottom point),
-				 * calculate the new width and
+				 * If the index is even, this is a top or bottom point.
+				 * Calculate the new width and
 				 * constrain movement to the Y axis.
 				 */
 				if (index % 2 === 0) {
@@ -139,8 +139,8 @@
 					);
 
 					/**
-					 * If the index is odd (side point),
-					 * calculate the new length and
+					 * If the index is odd, this is a side point.
+					 * Calculate the new length and
 					 * constrain movement to the X axis.
 					 */
 				} else {

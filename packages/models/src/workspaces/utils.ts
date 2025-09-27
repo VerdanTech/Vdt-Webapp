@@ -23,9 +23,34 @@ export function isSameDay(date1: Date, date2: Date): boolean {
  * the next item.
  * @param items a list of items to search. Assumed to be unsorted.
  * @param date The date at which to retrieve the item at.
+ * @param returnOriginalReferences If true, this function will return
+ * a reference to the item in the list passed as an argument.
+ * Using this reference will modify the original list.
  * @returns The item at the given date.
  */
 export function historySelect<T extends { date: Date }>(
+	items: Array<T>,
+	date: Date,
+	returnOriginalReferences: boolean
+): T | null {
+	if (returnOriginalReferences) {
+		return historySelectReference(items, date);
+	} else {
+		return historySelectCopy(items, date);
+	}
+}
+
+/**
+ * Given a history, usually a geometric or location history,
+ * return the item at a given date.
+ * The date need not be the exact date of an item, an item
+ * is considered valid at a given date as long as it is before
+ * the next item.
+ * @param items a list of items to search. Assumed to be unsorted.
+ * @param date The date at which to retrieve the item at.
+ * @returns The item at the given date.
+ */
+export function historySelectCopy<T extends { date: Date }>(
 	items: Array<T>,
 	date: Date
 ): T | null {
@@ -55,6 +80,59 @@ export function historySelect<T extends { date: Date }>(
 
 		if (time >= currentTime && time < nextTime) {
 			return sortedItems[i];
+		}
+	}
+
+	/** Fallback to null. */
+	return null;
+}
+
+/**
+ * Given a history, usually a geometric or location history,
+ * return the item at a given date.
+ * The date need not be the exact date of an item, an item
+ * is considered valid at a given date as long as it is before
+ * the next item.
+ * This variant returns the actual item reference from the
+ * original array so callers can mutate the returned object.
+ * @param items a list of items to search. Assumed to be unsorted.
+ * @param date The date at which to retrieve the item at.
+ * @returns The item at the given date (reference into items) or null.
+ */
+export function historySelectReference<T extends { date: Date }>(
+	items: Array<T>,
+	date: Date
+): T | null {
+	if (items.length === 0) {
+		return null;
+	}
+
+	const time = date.getTime();
+
+	/** Build an array of indices and sort those indices by item date ascending.
+	 *  Sorting indices preserves original item references. */
+	const indices = [...items.keys()].sort(
+		(a, b) => items[a].date.getTime() - items[b].date.getTime()
+	);
+
+	/** If the requested date is before the earliest item, return null. */
+	if (time < items[indices[0]].date.getTime()) {
+		return null;
+	}
+
+	/** If the requested date is after the latest item, return the latest item (original reference). */
+	if (time >= items[indices[indices.length - 1]].date.getTime()) {
+		return items[indices[indices.length - 1]];
+	}
+
+	/** Find the item where the date falls between it and the next. */
+	for (let i = 0; i < indices.length - 1; i++) {
+		const current = items[indices[i]];
+		const currentTime = current.date.getTime();
+		const nextTime = items[indices[i + 1]].date.getTime();
+
+		if (time >= currentTime && time < nextTime) {
+			return current;
 		}
 	}
 

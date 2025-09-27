@@ -4,7 +4,6 @@
 	import { iconIds } from '$assets';
 	import { Menubar } from '$core';
 
-	import { toolbox } from './tools';
 	import { getVerdagraphContext } from './verdagraphContext.svelte';
 
 	const verdagraphContext = getVerdagraphContext();
@@ -31,13 +30,13 @@
 		<Menubar.Trigger>Edit</Menubar.Trigger>
 		<Menubar.Content>
 			{@render menuButton('Add', iconIds.verdagraphAddIcon, () =>
-				toolbox.activate('plantsCreate')
+				verdagraphContext.toolbox.activate('plantsCreate')
 			)}
 			{@render menuButton('Translate', iconIds.verdagraphTranslateIcon, () =>
-				toolbox.activate('translate')
+				verdagraphContext.toolbox.activate('translate')
 			)}
 			{@render menuButton('Delete', iconIds.verdagraphDeleteIcon, () =>
-				toolbox.activate('delete')
+				verdagraphContext.toolbox.activate('delete')
 			)}
 		</Menubar.Content>
 	</Menubar.Menu>
@@ -47,22 +46,22 @@
 		<Menubar.Trigger>Observe</Menubar.Trigger>
 		<Menubar.Content>
 			{@render menuButton('Seed', iconIds.verdagraphRecordSeedIcon, () =>
-				toolbox.activate('observe')
+				verdagraphContext.toolbox.activate('observe')
 			)}
 			{@render menuButton('Germination', iconIds.verdagraphRecorcGerminationicon, () =>
-				toolbox.activate('observe')
+				verdagraphContext.toolbox.activate('observe')
 			)}
 			{@render menuButton('Harvest', iconIds.verdagraphRecordHarvestIcon, () =>
-				toolbox.activate('observe')
+				verdagraphContext.toolbox.activate('observe')
 			)}
 			{@render menuButton('Expire', iconIds.verdagraphRecordExpireIcon, () =>
-				toolbox.activate('observe')
+				verdagraphContext.toolbox.activate('observe')
 			)}
 			{@render menuButton('Transplant', iconIds.verdagraphRecordTransplantIcon, () =>
-				toolbox.activate('observe')
+				verdagraphContext.toolbox.activate('observe')
 			)}
 			{@render menuButton('Note', iconIds.verdagraphRecordNoteIcon, () =>
-				toolbox.activate('observe')
+				verdagraphContext.toolbox.activate('observe')
 			)}
 		</Menubar.Content>
 	</Menubar.Menu>
@@ -72,13 +71,13 @@
 		<Menubar.Trigger>Tools</Menubar.Trigger>
 		<Menubar.Content>
 			{@render menuButton('Groups', iconIds.verdagraphGroupIcon, () =>
-				toolbox.activate('groups')
+				verdagraphContext.toolbox.activate('groups')
 			)}
 			{@render menuButton('Patterns', iconIds.verdagraphPatternsIcon, () =>
-				toolbox.activate('patterns')
+				verdagraphContext.toolbox.activate('patterns')
 			)}
 			{@render menuButton('Generators', iconIds.verdagraphGeneratorsIcon, () =>
-				toolbox.activate('generators')
+				verdagraphContext.toolbox.activate('generators')
 			)}
 		</Menubar.Content>
 	</Menubar.Menu>
@@ -156,7 +155,7 @@
 
 			<Menubar.Item
 				onclick={() => {
-					toolbox.activate('layoutConfig');
+					verdagraphContext.toolbox.activate('layoutConfig');
 				}}
 			>
 				Layout Config

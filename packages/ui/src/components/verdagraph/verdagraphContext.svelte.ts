@@ -1,5 +1,14 @@
 import { mode } from 'mode-watcher';
 import { getContext, setContext } from 'svelte';
+import { defaults, superForm } from 'sveltekit-superforms';
+import { zod } from 'sveltekit-superforms/adapters';
+
+import {
+	CONTROLLER_CONTEXT_ID,
+	type ControllerContext,
+	PlantsCreateCommandSchema,
+	plantsCreate
+} from '@vdg-webapp/models';
 
 import {
 	type CanvasContext,
@@ -8,6 +17,9 @@ import {
 } from '$components';
 import { createTimelineSelection } from '$components';
 import { createPaneSettings, isMobile } from '$state';
+import createCommandHandler from '$state/commandHandler.svelte';
+
+import { verdagraphToolbox } from './tools';
 
 const verdagraphContextId = 'verdagraphEditorContext';
 const verdagraphLayoutCanvasContextId = 'verdagraphLayoutCanvas';
@@ -26,21 +38,45 @@ const defaultContentPaneDirection = isMobile() ? 'vertical' : 'horizontal';
  * Holds context for the verdagraph.
  */
 function createVerdagraphContext() {
+	/** Controller reference. */
+	const controller = getContext<ControllerContext>(CONTROLLER_CONTEXT_ID);
+
 	const paneSettings = createPaneSettings<['tree', 'calendar', 'layout']>(
 		'verdagraphPaneSettings',
 		defaultTreeEnabled ? ['tree', 'calendar', 'layout'] : ['calendar', 'layout'],
 		defaultContentPaneDirection
 	);
+	const toolbox = verdagraphToolbox();
 	/** Timeline. */
 	const timeline = createTimelineSelection();
 	/** Selected entities. */
-	const selections = createSelectionManager(['plantingArea']);
+	const selections = createSelectionManager(['workspace', 'plantingArea']);
 
 	/** Canvas context. */
 	setContext(
 		verdagraphLayoutCanvasContextId,
 		createCanvasContext(verdagraphLayoutCanvasContextId, 'id', mode)
 	);
+
+	/** Forms. */
+	const plantsCreateHandler = createCommandHandler(plantsCreate, {
+		onSuccess: () => {
+			toolbox.deactivate('plantsCreate');
+		}
+	});
+	const plantsCreateSuperform = superForm(defaults(zod(PlantsCreateCommandSchema)), {
+		SPA: true,
+		dataType: 'json',
+		validators: zod(PlantsCreateCommandSchema),
+		onUpdate({ form }) {
+			if (form.valid) {
+				plantsCreateHandler.execute(form.data, controller);
+			}
+		},
+		onChange() {
+			plantsCreateHandler.reset();
+		}
+	});
 
 	return {
 		/* Getters. */
@@ -51,7 +87,12 @@ function createVerdagraphContext() {
 		/** Setters. */
 		paneSettings,
 		timeline,
-		selections
+		selections,
+		toolbox,
+		plantsCreateForm: {
+			handler: plantsCreateHandler,
+			form: plantsCreateSuperform
+		}
 	};
 }
 export type VerdagraphContext = ReturnType<typeof createVerdagraphContext>;

@@ -18,22 +18,26 @@
 	type Props = {
 		/** The ID of the canvas. */
 		canvasId: string;
-		/** The ID of the layer which holds the planting areas. */
-		plantingAreaLayerId: string;
+		/** The ID of the layer which holds the shape. */
+		layerId: string;
 		/** Name of the planting area. Can be disabled */
 		name: string;
 		showName: boolean;
-		/** The current position of the planting area in the workspace, in model quantity (meters). */
+		/** The current position of the shape in the workspace, in model quantity (meters). */
 		position: Vector2d | null;
-		/** The geometry of the planting area. */
+		/** The geometry of the shape. */
 		geometry: Omit<Geometry, 'id' | 'gardenId' | 'linesCoordinateIds' | 'date'>;
-		/** If true, the planting area may be moved and resized. */
+		/** If true, the shape may be moved and resized. */
 		editable: boolean;
-		/** If true, the planting area is selected. */
+		/** If true, the shape is selected. */
 		selected: boolean;
+		/** Styles. */
+		strokeColor: string;
+		fillColor: string;
+		nameTextFillColor: string;
+		strokeWidth: number;
+		/** Constant to add to the label's position. */
 		labelTranslate?: Vector2d;
-		/** The grid attributes of the planting area. */
-		grid?: { numRows: number; numCols: number };
 		/** Called when the position is moved in the canvas. */
 		onTranslate?: (
 			/** The new position, in canvas quantity (pixels). */
@@ -48,20 +52,23 @@
 			/** If true, the transform has ended.*/
 			transformOver: boolean
 		) => void;
-		/** Called when the planting area is clicked. */
+		/** Called when the shape is clicked. */
 		onClick?: () => void;
 	};
 	let {
 		canvasId,
-		plantingAreaLayerId,
+		layerId,
 		name,
 		showName = true,
 		position,
 		geometry,
 		editable,
 		selected,
+		strokeColor,
+		fillColor,
+		nameTextFillColor,
+		strokeWidth,
 		labelTranslate = { x: 0, y: 0 },
-		// grid,
 		onTranslate,
 		onTransform: onTransformContainer,
 		onClick
@@ -72,12 +79,12 @@
 
 	/** Retrieve canvas and initialize Konva constructs. */
 	const canvas = getContext<CanvasContext>(canvasId);
-	const layer = canvas.container.getLayer(plantingAreaLayerId);
+	const layer = canvas.container.getLayer(layerId);
 	const group: Konva.Group = new Konva.Group({ draggable: editable });
 	layer.add(group);
 
 	/** Shapes. */
-	let plantingAreaShape: SupportedShape | null = null;
+	let shape: SupportedShape | null = null;
 	let nameText = new Konva.Text({
 		fontFamily: 'sans',
 		fontSize: 15,
@@ -94,39 +101,18 @@
 	 */
 	let previousGeometryType = geometry.type;
 
-	/**
-	 * Shape config settings.
-	 */
-	let strokeColor = $derived(
-		selected
-			? getColor('accent', 8, canvas.mode.current)
-			: getColor('brown', 10, canvas.mode.current)
-	);
-	$inspect(canvas.mode.current);
-	let fillColor = $derived(
-		selected
-			? getColor('accent', 5, canvas.mode.current)
-			: getColor('brown', 3, canvas.mode.current)
-	);
-	let strokeWidth = $derived(selected ? 3 : 2);
-	let nameTextFillColor = $derived(
-		selected
-			? getColor('accent', 11, canvas.mode.current)
-			: getColor('brown', 11, canvas.mode.current)
-	);
-
 	/** Update shapes upon geometry change. */
 	$effect(() => {
 		/** If the geometry type has changed or the shape hasn't been initialized, initialize. */
-		if (geometry.type !== previousGeometryType || !plantingAreaShape) {
-			plantingAreaShape?.destroy();
-			plantingAreaShape = getClosedShape(canvas, geometry, {
+		if (geometry.type !== previousGeometryType || !shape) {
+			shape?.destroy();
+			shape = getClosedShape(canvas, geometry, {
 				stroke: strokeColor,
 				fill: fillColor,
 				strokeWidth: strokeWidth
 			});
-			if (plantingAreaShape) {
-				group.add(plantingAreaShape);
+			if (shape) {
+				group.add(shape);
 				group.rotation(geometry.rotation);
 				nameText.y(
 					canvas.transform.canvasYPos(getGeometryHeight(geometry) + labelTranslate.y)
@@ -136,7 +122,7 @@
 
 			/** Otherwise, update the existing shape.*/
 		} else {
-			updateShape(canvas, geometry, plantingAreaShape);
+			updateShape(canvas, geometry, shape);
 			nameText.y(
 				canvas.transform.canvasYPos(getGeometryHeight(geometry) + labelTranslate.y)
 			);
@@ -161,9 +147,9 @@
 
 	/** Update color on selection change. */
 	$effect(() => {
-		plantingAreaShape?.fill(fillColor);
-		plantingAreaShape?.stroke(strokeColor);
-		plantingAreaShape?.strokeWidth(strokeWidth);
+		shape?.fill(fillColor);
+		shape?.stroke(strokeColor);
+		shape?.strokeWidth(strokeWidth);
 		nameText.fill(nameTextFillColor);
 	});
 
@@ -178,10 +164,10 @@
 	$effect(() => {
 		if (editable) {
 			group.draggable(true);
-			plantingAreaShape?.on('mouseover', () => {
+			shape?.on('mouseover', () => {
 				document.body.style.cursor = 'move';
 			});
-			plantingAreaShape?.on('mouseout', () => {
+			shape?.on('mouseout', () => {
 				canvas.selectionGroup.setDocumentCursor();
 			});
 			group.on('dragmove', () => {
@@ -211,8 +197,8 @@
 	 * the shape before the geometry is updated in Triplit.
 	 */
 	function onTransform(newGeometry: GeometryUpdateCommand, transformOver: boolean) {
-		if (plantingAreaShape) {
-			updateShape(canvas, newGeometry, plantingAreaShape);
+		if (shape) {
+			updateShape(canvas, newGeometry, shape);
 		}
 		if (onTransformContainer) {
 			onTransformContainer(newGeometry, transformOver);

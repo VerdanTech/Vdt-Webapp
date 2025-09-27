@@ -1,26 +1,31 @@
 <script lang="ts">
-	import type { PlantingArea } from '@vdg-webapp/models';
+	import type { Plant, PlantingArea } from '@vdg-webapp/models';
 
 	import {
 		Canvas,
 		Gridlines,
 		PlantingAreas,
+		PlantsContainer,
 		StaticPlantingAreaContainer,
 		TransformControls
 	} from '$components';
 
+	import CreatePlantsContainer from './CreatePlantsContainer.svelte';
 	import { getVerdagraphContext } from './verdagraphContext.svelte';
 
 	const verdagraphContext = getVerdagraphContext();
 
 	type Props = {
 		plantingAreas: PlantingArea[];
+		plants: Plant[];
+		workspaceId: string;
 	};
-	let { plantingAreas }: Props = $props();
+	let { plantingAreas, plants, workspaceId }: Props = $props();
 
 	const canvasContext = verdagraphContext.layoutCanvasContext;
 	const canvasId = canvasContext.canvasId;
 	const plantingAreaLayerId = 'plantingAreas';
+	const plantLayerId = 'plants';
 </script>
 
 {#snippet overlay()}
@@ -40,4 +45,8 @@
 			/>
 		{/each}
 	</PlantingAreas>
+
+	<PlantsContainer {canvasId} {plantLayerId}>
+		<CreatePlantsContainer {workspaceId} {plantLayerId}></CreatePlantsContainer>
+	</PlantsContainer>
 </Canvas>

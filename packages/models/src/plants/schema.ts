@@ -36,13 +36,6 @@ export const plantSchema = S.Collections({
 			/** The mass of the harvest in kilograms. */
 			mass: S.Optional(S.Number()),
 
-			/**
-			 * The number of units. This may differ in meaning depending on the plant.
-			 * For example, for carrots, it could mean the number of roots.
-			 * For lettuce, it could mean the number of leaves.
-			 */
-			units: S.Optional(S.Number()),
-
 			/** The quality of the harvest. */
 			quality: S.Optional(S.String({ enum: [...HarvestQualityEnumOptions] })),
 

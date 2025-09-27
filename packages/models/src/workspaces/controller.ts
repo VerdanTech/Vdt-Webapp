@@ -3,6 +3,7 @@ import { AppError } from '../errors.js';
 import {
 	type Geometry,
 	type GeometryCreateCommand,
+	GeometryHistoryCreateCommand,
 	type GeometryUpdateCommand,
 	type LocationCreateCommand,
 	type LocationHistory,
@@ -201,6 +202,13 @@ export async function geometryHistoryExtend(
 	await ctx.triplit.transact(async (transaction) => {
 		await geometryCreate(geometryHistory.gardenId, latestGeometry, transaction);
 	});
+}
+
+export async function geometryHistoryCreate(
+	data: GeometryHistoryCreateCommand,
+	ctx: ControllerContext
+) {
+	//const geometries =
 }
 
 /**

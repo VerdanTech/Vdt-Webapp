@@ -277,18 +277,18 @@ export default function seed(): BulkInsert<typeof schema> {
 		],
 		cultivarCollections: [
 			{
-				id: "collection1",
+				id: 'collection1',
 				gardenId: gardenId,
-				name: "West Coast Seeds",
-				slug: "west-coast-seeds",
-				visibility: "HIDDEN",
+				name: 'West Coast Seeds',
+				slug: 'west-coast-seeds',
+				visibility: 'HIDDEN'
 			}
 		],
 		cultivars: [
 			{
-				collectionId: "collection1",
-				names: new Set(["Lettuce"]),
-				abbreviation: "Le",
+				collectionId: 'collection1',
+				names: new Set(['Lettuce']),
+				abbreviation: 'Le',
 				attributes: {
 					annualLifeCycle: {
 						sowToGerm: 10,
@@ -300,7 +300,7 @@ export default function seed(): BulkInsert<typeof schema> {
 						firstFrostWindowOpen: 60,
 						firstFrostWindowClose: 60,
 						lastFrostWindowOpen: 60,
-						lastFrostWindowClose: 60,
+						lastFrostWindowClose: 60
 					},
 					origin: {
 						transplantable: true

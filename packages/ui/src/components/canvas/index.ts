@@ -2,7 +2,7 @@ import Root from './Canvas.svelte';
 import Gridlines from './Gridlines.svelte';
 import TransformControls from './TransformControls.svelte';
 
-export * from './workspace';
+export * from './entities';
 export { Root as Canvas, Gridlines, TransformControls };
 export * from './state';
 /**

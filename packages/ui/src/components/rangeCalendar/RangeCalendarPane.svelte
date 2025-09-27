@@ -1,10 +1,10 @@
 <script lang="ts">
 	import Icon from '@iconify/svelte';
 	import { type DateValue } from '@internationalized/date';
-	import { Popover } from '$core';
 
 	import iconIds from '$assets/icons';
 	import { calculateDeltaDays } from '$components/timeline/utils';
+	import { Popover } from '$core';
 	import { ScrollArea } from '$core/scroll-area/index.js';
 	import { cn } from '$utils';
 
@@ -155,7 +155,7 @@
 							{#if infoPoint.popup}
 								<Popover.Root>
 									<Popover.Trigger>
-										{@render infoPointIcon(infoPoint.icon)}		
+										{@render infoPointIcon(infoPoint.icon)}
 									</Popover.Trigger>
 									<Popover.Content>
 										<infoPoint.popup></infoPoint.popup>

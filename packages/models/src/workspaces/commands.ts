@@ -146,6 +146,17 @@ export const LocationCreateCommandSchema = z.object({
 export type LocationCreateCommand = z.infer<typeof LocationCreateCommandSchema>;
 
 /**
+ * Creates a location history.
+ */
+export const LocationHistoryCreateCommandSchema = z.object({
+	gardenId: z.string(),
+	locations: z.array(LocationCreateCommandSchema)
+});
+export type LocationHistoryCreateCommand = z.infer<
+	typeof LocationHistoryCreateCommandSchema
+>;
+
+/**
  * Updates a location history.
  */
 export const LocationHistoryUpdateCommandSchema = z.object({
@@ -215,6 +226,17 @@ export const GeometryUpdateCommandSchema = z.object({
 	delete: z.boolean().optional()
 });
 export type GeometryUpdateCommand = z.infer<typeof GeometryUpdateCommandSchema>;
+
+/**
+ * Creates a geometry history.
+ */
+export const GeometryHistoryCreateCommandSchema = z.object({
+	gardenId: z.string(),
+	geometries: z.array(GeometryCreateCommandSchema)
+});
+export type GeometryHistoryCreateCommand = z.infer<
+	typeof GeometryHistoryCreateCommandSchema
+>;
 
 /**
  * Create a new workspace.

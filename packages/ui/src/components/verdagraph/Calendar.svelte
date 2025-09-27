@@ -6,8 +6,8 @@
 	import { RangeCalendar, createCalendarContext } from '$components';
 	import { getColor } from '$utils';
 
-	import { getVerdagraphContext } from './verdagraphContext.svelte';
 	import TestComponent from './TestComponent.svelte';
+	import { getVerdagraphContext } from './verdagraphContext.svelte';
 
 	const verdagraphContext = getVerdagraphContext();
 	const calendarContext = createCalendarContext(verdagraphContext.timeline, [
@@ -32,7 +32,7 @@
 								icon: iconIds.cultivarsIcon,
 								popup: TestComponent
 							},
-							{ label: 'also a label', date: new CalendarDate(2025, 8, 18) },
+							{ label: 'also a label', date: new CalendarDate(2025, 8, 18) }
 						]
 					},
 					{
