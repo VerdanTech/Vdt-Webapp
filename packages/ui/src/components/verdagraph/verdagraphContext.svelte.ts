@@ -34,10 +34,14 @@ const defaultTreeEnabled = isMobile() ? true : true;
 /** Organize content panes vertically on narrow screens. */
 const defaultContentPaneDirection = isMobile() ? 'vertical' : 'horizontal';
 
+export type VerdagraphContextParams = {
+	defaultSelectedWorkspaceId: string;
+};
+
 /**
  * Holds context for the verdagraph.
  */
-function createVerdagraphContext() {
+function createVerdagraphContext(params: VerdagraphContextParams) {
 	/** Controller reference. */
 	const controller = getContext<ControllerContext>(CONTROLLER_CONTEXT_ID);
 
@@ -51,6 +55,7 @@ function createVerdagraphContext() {
 	const timeline = createTimelineSelection();
 	/** Selected entities. */
 	const selections = createSelectionManager(['workspace', 'plantingArea']);
+	selections.select('workspace', params.defaultSelectedWorkspaceId);
 
 	/** Canvas context. */
 	setContext(
@@ -97,8 +102,8 @@ function createVerdagraphContext() {
 }
 export type VerdagraphContext = ReturnType<typeof createVerdagraphContext>;
 
-export function setVerdagraphContext() {
-	return setContext(verdagraphContextId, createVerdagraphContext());
+export function setVerdagraphContext(params: VerdagraphContextParams) {
+	return setContext(verdagraphContextId, createVerdagraphContext(params));
 }
 
 export function getVerdagraphContext() {

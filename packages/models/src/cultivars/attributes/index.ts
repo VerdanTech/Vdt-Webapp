@@ -19,12 +19,14 @@ export const CultivarAttributes = S.Record({
 	origin: S.Optional(Origin.OriginProfile)
 });
 
-export const CultivarAttributesUpdateCommandSchema = z.object({
-	annualLifeCycle: AnnualLifeCycle.AnnualLifecycleUpdateCommandSchema.optional(),
-	frostDatePlantingWindows:
-		FrostDatePlantingWindows.FrostDatePlantingWindowsUpdateCommandSchema.optional(),
-	origin: Origin.OriginUpdateCommandSchema.optional()
-});
+export const CultivarAttributesUpdateCommandSchema = z
+	.object({
+		annualLifeCycle: AnnualLifeCycle.AnnualLifecycleUpdateCommandSchema.optional(),
+		frostDatePlantingWindows:
+			FrostDatePlantingWindows.FrostDatePlantingWindowsUpdateCommandSchema.optional(),
+		origin: Origin.OriginUpdateCommandSchema.optional()
+	})
+	.describe('Contains all cultivar attributes');
 export type CultivarAttributesUpdateCommand = z.infer<
 	typeof CultivarAttributesUpdateCommandSchema
 >;

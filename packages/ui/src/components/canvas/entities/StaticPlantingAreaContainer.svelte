@@ -10,13 +10,12 @@
 	} from '$components';
 
 	type Props = {
-		plantingAreaLayerId: string;
+		layerId: string;
 		plantingArea: PlantingArea;
 		canvasContext: CanvasContext;
 		timelineSelection: TimelineSelection;
 	};
-	let { plantingAreaLayerId, plantingArea, canvasContext, timelineSelection }: Props =
-		$props();
+	let { layerId, plantingArea, canvasContext, timelineSelection }: Props = $props();
 
 	/** Contexts. */
 	const canvasId = canvasContext.canvasId;
@@ -32,7 +31,8 @@
 
 		const location = historySelect(
 			plantingArea.locationHistory.locations,
-			timelineSelection.focusUtc
+			timelineSelection.focusUtc,
+			false
 		);
 		if (location) {
 			return { x: location.x, y: location.y };
@@ -50,7 +50,7 @@ area in the workspace editor, ie., editable
 {#if plantingArea && plantingArea.geometry}
 	<PlantingAreaComponent
 		{canvasId}
-		{plantingAreaLayerId}
+		{layerId}
 		name={plantingArea.name}
 		showName={true}
 		{position}

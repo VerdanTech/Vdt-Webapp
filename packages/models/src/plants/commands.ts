@@ -1,4 +1,4 @@
-import z from 'zod';
+import z, { string } from 'zod';
 
 import { commonFields } from '../commands.js';
 import { CultivarAttributesUpdateCommandSchema } from '../cultivars/attributes/index.js';
@@ -11,11 +11,11 @@ import { HarvestQualityEnumOptions, OriginEnumOptions } from './schema.js';
 /** Field specifications. */
 
 /** Harvests. */
-const harvestDateSchema = z.date()
-const harvestMassSchema = z.number()
-const harvestUnitsSchema = z.number()
-const harvestQualitySchema = z.enum(HarvestQualityEnumOptions)
-const harvestDescriptionSchema = z.string()
+const harvestDateSchema = z.date();
+const harvestMassSchema = z.number();
+const harvestUnitsSchema = z.number();
+const harvestQualitySchema = z.enum(HarvestQualityEnumOptions);
+const harvestDescriptionSchema = z.string();
 
 /** Lifespans. */
 const lifespanOriginSchema = z.enum(OriginEnumOptions).describe(
@@ -27,11 +27,11 @@ const lifespanOriginSchema = z.enum(OriginEnumOptions).describe(
         seedlingToTransplant: A seedling is transplanted directly \
         into the area it will reach maturity in.'
 );
-const LifespanDateSchema = z.date()
+const LifespanDateSchema = z.date();
 
 /** Plants. */
-const plantCultivarNameSchema = z.string()
-const plantCultivarAttributesSchema = CultivarAttributesUpdateCommandSchema
+const plantCultivarNameSchema = z.string();
+const plantCultivarAttributesSchema = CultivarAttributesUpdateCommandSchema;
 const plantAggregateSchema = z
 	.boolean()
 	.describe(
@@ -40,30 +40,51 @@ const plantAggregateSchema = z
 
 /** PlantGroups. */
 export const plantFields = {
-	harvestDateSchema, harvestMassSchema, harvestUnitsSchema, harvestQualitySchema, harvestDescriptionSchema, lifespanOriginSchema, 
-	LifespanDateSchema, plantCultivarNameSchema, plantCultivarAttributesSchema, plantAggregateSchema
-}
+	harvestDateSchema,
+	harvestMassSchema,
+	harvestUnitsSchema,
+	harvestQualitySchema,
+	harvestDescriptionSchema,
+	lifespanOriginSchema,
+	LifespanDateSchema,
+	plantCultivarNameSchema,
+	plantCultivarAttributesSchema,
+	plantAggregateSchema
+};
 
 /** Commands. */
-export const PlantsCreateFormModeOptions = ['SINGLE', 'GROUP', 'PATTERN', 'COMBINED'] as const;
-export type PlantsCreateFormMode = (typeof PlantsCreateFormModeOptions)[number]
+export const PlantsCreateFormModeOptions = [
+	'SINGLE',
+	'GROUP',
+	'PATTERN',
+	'COMBINED'
+] as const;
+export type PlantsCreateFormMode = (typeof PlantsCreateFormModeOptions)[number];
 
 /**
  * Adds a plant to the model.
  */
-const PlantsCreateCommandSinglePlant = z.object({
-	cultivarName: z.string(),
-	origin: lifespanOriginSchema,
-	locationHistory: LocationHistoryCreateCommandSchema,
-	geometryHistory: GeometryHistoryCreateCommandSchema,
+export const plantsCreateCommandSinglePlantSchema = z.object({
+	cultivarName: plantCultivarNameSchema.default('undefined'),
+	origin: lifespanOriginSchema.default('DIRECT_SEED'),
+	locationHistory: LocationHistoryCreateCommandSchema.default({
+		gardenId: '',
+		locations: []
+	}),
+	geometryHistory: GeometryHistoryCreateCommandSchema.default({
+		gardenId: '',
+		geometries: []
+	}),
 	cultivarOverride: CultivarAttributesUpdateCommandSchema,
-	aggregate: plantAggregateSchema
+	aggregate: plantAggregateSchema.default(false)
 });
 
-export const plantsCreateFormModeSchema = z.enum(PlantsCreateFormModeOptions)
+export const plantsCreateFormModeSchema = z
+	.enum(PlantsCreateFormModeOptions)
+	.default('SINGLE');
 export const PlantsCreateCommandSchema = z.object({
 	gardenId: z.string(),
-	mode: plantsCreateFormModeSchema,
-	plants: z.array(PlantsCreateCommandSinglePlant)
+	mode: plantsCreateFormModeSchema.default('SINGLE'),
+	plants: z.array(plantsCreateCommandSinglePlantSchema)
 });
 export type PlantsCreateCommand = z.infer<typeof PlantsCreateCommandSchema>;

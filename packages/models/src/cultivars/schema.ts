@@ -44,7 +44,9 @@ export const cultivarSchema = S.Collections({
 			description: S.String({ default: '' }),
 
 			/** Optional parent collection to derive attributes from. */
-			parentId: S.String({ nullable: true, default: null })
+			parentId: S.String({ nullable: true, default: null }),
+
+			createdAt: S.Date({ default: S.Default.now() })
 		}),
 		relationships: {
 			user: S.RelationById('profiles', 'userId'),
@@ -140,7 +142,9 @@ export const cultivarSchema = S.Collections({
 			parentId: S.String({ nullable: true, default: null }),
 
 			/** Attributes which define this cultivar. */
-			attributes: CultivarAttributes
+			attributes: CultivarAttributes,
+
+			createdAt: S.Date({ default: S.Default.now() })
 		}),
 		relationships: {
 			collection: S.RelationById('cultivarCollections', '$collectionId'),

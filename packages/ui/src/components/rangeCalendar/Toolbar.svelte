@@ -9,7 +9,7 @@
 	type Props = {
 		context: CalendarContext<any>;
 	};
-	let { context }: Props = $props();
+	let { context = $bindable() }: Props = $props();
 
 	const viewSelectOptions: { value: ViewPanesOptions; label: string }[] = [
 		{ value: 'plants', label: 'Plants' },

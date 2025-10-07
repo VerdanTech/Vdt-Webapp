@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { useQuery } from '@triplit/svelte';
+	import { onMount } from 'svelte';
 
 	import { TabToolbox, TimelineSelector } from '$components';
 	import { Resizable } from '$core';
@@ -9,17 +10,20 @@
 	import Layout from './Layout.svelte';
 	import Toolbar from './Toolbar.svelte';
 	import Tree from './Tree.svelte';
-	import { getVerdagraphContext } from './verdagraphContext.svelte';
-	import { onMount } from 'svelte';
+	import {
+		type VerdagraphContextParams,
+		setVerdagraphContext
+	} from './verdagraphContext.svelte';
 
 	type Props = {
 		gardenId: string;
+		contextParams: VerdagraphContextParams;
 	};
-	let { gardenId }: Props = $props();
+	let { gardenId, contextParams }: Props = $props();
 
 	/** Contexts. */
 	const controller = getControllerContext();
-	const verdagraphContext = getVerdagraphContext();
+	const verdagraphContext = setVerdagraphContext(contextParams);
 
 	/** Queries. */
 	let workspacesInGardenQuery = $derived(
@@ -43,7 +47,7 @@
 		)
 	);
 	const plantingAreas = $derived(plantingAreasQuery.results || []);
-	const plants = $derived([])
+	const plants = $derived([]);
 
 	/** Force a re-render of the PaneGroup if the direction is changed. */
 	let initialized = $state(true);
@@ -54,9 +58,7 @@
 		}
 	});
 
-	onMount(() => {
-		
-	})
+	onMount(() => {});
 </script>
 
 <div class="relative flex h-full w-full flex-col">
@@ -68,12 +70,17 @@
 		{#if initialized}
 			<Resizable.PaneGroup direction={verdagraphContext.paneSettings.direction}>
 				{#if verdagraphContext.paneSettings.isEnabled('layout')}
-				{#each verdagraphContext.selections.get('workspace') as workspaceId}
-				<Resizable.Pane defaultSize={30} minSize={5} order={0}>
-					<Layout {workspaceId} {plantingAreas} {plants} />
-				</Resizable.Pane>
-				<Resizable.Handle withHandle={false} />
-				{/each}
+					<!-- TODO: Make one layout per selected workspace. -->
+					{@const workspaceId = verdagraphContext.selections
+						.get('workspace')
+						.values()
+						.next().value}
+					{#if workspaceId}
+						<Resizable.Pane defaultSize={30} minSize={5} order={0}>
+							<Layout {workspaceId} {plantingAreas} {plants} />
+						</Resizable.Pane>
+						<Resizable.Handle withHandle={false} />
+					{/if}
 				{/if}
 				{#if verdagraphContext.paneSettings.isEnabled('calendar')}
 					<Resizable.Pane defaultSize={30} minSize={5} order={1}>

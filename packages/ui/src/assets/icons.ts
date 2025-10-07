@@ -9,6 +9,7 @@ const iconIds = {
 	formFieldDescriptionIcon: 'material-symbols:info-outline-rounded',
 	errorIcon: 'material-symbols:error-outline-rounded',
 	checkmarkIcon: 'carbon:checkmark-filled',
+	checkmarkIconUnfilled: 'famicons:checkmark-sharp',
 	defaultSpinnerIcon: 'humbleicons:spinner-earring',
 	defaultRefreshIcon: 'material-symbols:refresh-rounded',
 	defaultClose: 'mdi:close',
