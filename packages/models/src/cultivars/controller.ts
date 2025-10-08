@@ -2,42 +2,76 @@ import { type ControllerContext } from '../controller.js';
 import { AppError } from '../errors.js';
 import {
 	type Cultivar,
-	type GeometryCreateCommand,
-	GeometryHistoryCreateCommand,
-	type GeometryUpdateCommand,
-	type LocationCreateCommand,
-	type LocationHistory,
-	type LocationHistoryUpdateCommand,
-	type LocationUpdateCommand,
-	type PlantingAreaCreateCommand,
-	type PlantingAreaUpdateCommand,
-	type TriplitTransaction,
-	type Workspace,
-	type WorkspaceCreateCommand,
-	type WorkspaceUpdateCommand,
-	historySelectDay
+	type CultivarCollection,
 } from '../index.js';
-import { slugify } from '../utils/index.js';
+import { mergeAttributes } from '../utils/index.js';
 
-//export async function getCultivarNamesInGarden(gardenId: string, ctx: ControllerContext): Promise<string[]> {
+type GetCultivarNamesInGardenReturnType = {
+	cultivarName: string;
+	collection: CultivarCollection;
+};
+export async function getCultivarNamesInGarden(
+	gardenId: string,
+	ctx: ControllerContext
+): Promise<GetCultivarNamesInGardenReturnType[]> {
+	/** Get the most recent cultivar collection in the garden. */
+	const gardenCollection = await ctx.triplit.fetchOne(
+		ctx.triplit
+			.query('cultivarCollections')
+			.Where(['gardenId', '=', gardenId])
+			.Order('createdAt', 'DESC')
+	);
+	if (gardenCollection == null) {
+		return [];
+	}
 
-//}
+	/** Collect parent collection if it exists. */
+	let collections: CultivarCollection[] = [];
+	if (!gardenCollection.parentId) {
+		collections = [gardenCollection];
+	} else {
+		const parentCollection = await ctx.triplit.fetchById(
+			'cultivarCollections',
+			gardenCollection.parentId
+		);
+		if (parentCollection) {
+			collections = [gardenCollection, parentCollection];
+		} else {
+			collections = [gardenCollection];
+		}
+	}
+
+	/** Query cultivars. */
+	let result: GetCultivarNamesInGardenReturnType[] = [];
+	for (const collection of collections) {
+		let cultivars = await ctx.triplit.fetch(
+			ctx.triplit.query('cultivars').Id(collection.id)
+		);
+		for (const cultivar of cultivars) {
+			const cultivarName = cultivar.names.values().next().value;
+			if (!cultivarName) continue;
+			result.push({ cultivarName, collection });
+		}
+	}
+
+	return result;
+}
 
 /**
  * Retrieves a cultivar given a cultivar name.
- * 
+ *
  * Matches the cultivar name against like names, searching
  * through all collections owned by the garden plus their
  * parent collections.
- * 
+ *
  * If multiple cultivars are matched from different collections,
  * cultivars from child collections are preferred.
- * 
+ *
  * If multiple cultivars are matched from the same collection,
  * the newest of the cultivars is returned.
- * 
+ *
  * Cultivars are resolved to inherit parent attributes.
- * 
+ *
  * @param gardenId The ID of the garden to search.
  * @param cultivarName The cultivar namen to match.
  * @param max_cultivar_inheritance_depth The maximum
@@ -89,7 +123,7 @@ export async function resolveCultivarName(
 			ctx
 		);
 
-	/** Determine the cultivar collection with the highest priority. */
+	/** Gather matched collections. */
 	const matchedCollectionIds = new Set(
 		matchedCultivars.map((cultivar) => cultivar.collectionId)
 	);
@@ -165,5 +199,9 @@ async function resolveCultivar(
 	}
 
 	/** Merge all cultivar values, letting children override parents. */
-	return cultivar;
+	let result = cultivars[cultivars.length - 1];
+	for (let i = cultivars.length - 2; i >= 0; i--) {
+		result = mergeAttributes(result, cultivars[i]);
+	}
+	return result;
 }
