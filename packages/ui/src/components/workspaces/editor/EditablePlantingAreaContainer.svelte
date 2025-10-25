@@ -13,7 +13,7 @@
 	import { getControllerContext } from '$state';
 	import createCommandHandler from '$state/commandHandler.svelte';
 
-	import { getWorkspaceContext } from './workspaceContext.svelte';
+	import { getWorkspaceContext } from '../../../state/context/workspacesContext.svelte';
 
 	type Props = {
 		plantingAreaLayerId: string;

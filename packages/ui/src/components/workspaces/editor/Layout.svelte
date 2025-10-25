@@ -3,9 +3,9 @@
 
 	import { Canvas, Gridlines, PlantingAreas, TransformControls } from '$components';
 
+	import { getWorkspaceContext } from '../../../state/context/workspacesContext.svelte';
 	import CreatePlantingAreaContainer from './CreatePlantingAreaContainer.svelte';
 	import EditablePlantingAreaContainer from './EditablePlantingAreaContainer.svelte';
-	import { getWorkspaceContext } from './workspaceContext.svelte';
 
 	type Props = {
 		plantingAreas: PlantingArea[];

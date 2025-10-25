@@ -5,10 +5,10 @@
 	import { Resizable } from '$core';
 	import { getControllerContext } from '$state';
 
+	import { getWorkspaceContext } from '../../../state/context/workspacesContext.svelte';
 	import Layout from './Layout.svelte';
 	import Toolbar from './Toolbar.svelte';
 	import Tree from './Tree';
-	import { getWorkspaceContext } from './workspaceContext.svelte';
 
 	type Props = {
 		gardenId: string;

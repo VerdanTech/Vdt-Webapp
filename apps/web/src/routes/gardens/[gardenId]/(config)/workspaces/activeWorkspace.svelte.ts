@@ -23,7 +23,7 @@ import toolbox from './tools';
 function createWorkspaceEditorContext() {
 	/** The ID of the active workspace. */
 	let activeWorkspaceId: string | null = $state(null);
-	let activeWorkspace = createWorkspaceContext();
+	let activeWorkspace = createWorkspaceEditorContext();
 
 	/**
 	 * Resets the context to a null state.
@@ -56,10 +56,10 @@ function createWorkspaceEditorContext() {
 		setWorkspace
 	};
 }
-export type WorkspaceContext = ReturnType<typeof createWorkspaceContext>;
+export type WorkspaceContext = ReturnType<typeof createWorkspaceEditorContext>;
 
 export function setWorkspaceContext() {
-	return setContext(workspaceContextId, createWorkspaceContext());
+	return setContext(workspaceContextId, createWorkspaceEditorContext());
 }
 
 export function getWorkspaceContext() {

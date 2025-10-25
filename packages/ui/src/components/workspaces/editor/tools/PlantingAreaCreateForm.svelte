@@ -10,7 +10,7 @@
 	import { Button, Form, Input, Separator, Textarea } from '$core';
 	import { getSettingsContext } from '$state';
 
-	import { getWorkspaceContext } from '../workspaceContext.svelte';
+	import { getWorkspaceContext } from '../../../../state/context/workspacesContext.svelte';
 
 	const settings = getSettingsContext();
 	const workspaceContext = getWorkspaceContext();

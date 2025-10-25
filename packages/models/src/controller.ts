@@ -14,6 +14,11 @@ type TriplitClient = TriplitClientBase<typeof schema>;
 
 export const CONTROLLER_CONTEXT_ID = 'TriplitController';
 
+export type ControllerContextParams = {
+	triplit: TriplitClient;
+	getClient: (triplit: TriplitClient) => Promise<User | null>;
+};
+
 /**
  * Controller class: singleton interface to the data layer.
  * Passed to controller functions to provide configurable behaviour.
@@ -21,12 +26,8 @@ export const CONTROLLER_CONTEXT_ID = 'TriplitController';
  * @param getClient A function for returning an authenticated user.
  * @returns ControllerContext.
  */
-export function createController(
-	triplit: TriplitClient,
-	getClient: (triplit: TriplitClient) => Promise<User | null>,
-	disablePermissions: boolean = false
-) {
-	const gardenQuery = triplit.query('gardens').Id('$query.id');
+export function createController(params: ControllerContextParams) {
+	const gardenQuery = params.triplit.query('gardens').Id('$query.id');
 	/**
 	 * Fetches the client's Account and Profile objects.
 	 * If the client fails to authenticate, an access refresh is attempted.
@@ -35,7 +36,7 @@ export function createController(
 	 */
 	async function getClientOrError(): Promise<User> {
 		/** Return the client if authenticated. */
-		const client = await getClient(triplit);
+		const client = await params.getClient(params.triplit);
 		if (client) {
 			return client;
 		}
@@ -64,7 +65,7 @@ export function createController(
 		const client = await getClientOrError();
 
 		/** Retrieve garden. */
-		const garden = await triplit.fetchOne(gardenQuery.Vars({ id: gardenId }));
+		const garden = await params.triplit.fetchOne(gardenQuery.Vars({ id: gardenId }));
 		if (garden == null) {
 			throw new AppError('Garden key does not exist.', {
 				nonFormErrors: ['Garden key does not exist.']
@@ -83,9 +84,8 @@ export function createController(
 	}
 
 	return {
-		triplit,
-		getClient,
-		disablePermissions,
+		triplit: params.triplit,
+		getClient: params.getClient,
 		getClientOrError,
 		requireRole
 	};

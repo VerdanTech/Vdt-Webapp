@@ -7,9 +7,9 @@
 
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
-	import { getGardenContext } from '$state/gardenContext.svelte';
+	import { getGardenContext } from '$state/context/gardenContext.svelte';
 
-	import { getWorkspaceContext } from './workspaceContext.svelte';
+	import { getWorkspaceContext } from '../../../state/context/workspacesContext.svelte';
 
 	type Props = {
 		workspaces: Workspace[];

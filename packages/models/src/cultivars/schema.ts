@@ -40,6 +40,9 @@ export const cultivarSchema = S.Collections({
 			/** If defined, the colletcion is owned by a garden. Overrides user ownership. */
 			gardenId: S.String({ nullable: true, default: null }),
 
+			/** Optional priority flag used to decide between collections in a garden. */
+			priority: S.Number({ default: 0 }),
+
 			/** Optional description. */
 			description: S.String({ default: '' }),
 

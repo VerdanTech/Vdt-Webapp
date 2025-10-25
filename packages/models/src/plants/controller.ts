@@ -41,3 +41,5 @@ export async function plantsCreate(data: PlantsCreateCommand, ctx: ControllerCon
 			break;
 	}
 }
+
+function generateDefaultGeometryHistory() {}

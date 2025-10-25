@@ -3,7 +3,7 @@
 	import { Select } from '$core';
 
 	// import { UnitAwareInput } from '$components/units/';
-	import { getWorkspaceContext } from '../workspaceContext.svelte';
+	import { getWorkspaceContext } from '../../../../state/context/workspacesContext.svelte';
 
 	const workspaceContext = getWorkspaceContext();
 	const layoutCanvas = workspaceContext.layoutCanvasContext;

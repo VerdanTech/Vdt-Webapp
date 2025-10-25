@@ -41,7 +41,7 @@ export type VerdagraphContextParams = {
 /**
  * Holds context for the verdagraph.
  */
-function createVerdagraphContext(params: VerdagraphContextParams) {
+export function createVerdagraphContext(params: VerdagraphContextParams) {
 	/** Controller reference. */
 	const controller = getContext<ControllerContext>(CONTROLLER_CONTEXT_ID);
 

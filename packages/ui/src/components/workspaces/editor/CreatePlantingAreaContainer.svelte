@@ -5,7 +5,7 @@
 
 	import { PlantingArea } from '$components';
 
-	import { getWorkspaceContext } from './workspaceContext.svelte';
+	import { getWorkspaceContext } from '../../../state/context/workspacesContext.svelte';
 
 	type Props = {
 		plantingAreaLayerId: string;

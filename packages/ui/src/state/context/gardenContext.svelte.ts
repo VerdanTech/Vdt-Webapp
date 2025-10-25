@@ -53,10 +53,6 @@ export function createGardenContext(controller: ControllerContext) {
 	 * @returns If true, the user is authorized.
 	 */
 	function authorize(action: ActionType): boolean {
-		if (controller.disablePermissions) {
-			return true;
-		}
-
 		/** False for a null garden or user role. */
 		if (id === null || role === null) {
 			return false;

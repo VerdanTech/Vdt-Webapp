@@ -24,12 +24,17 @@
 		Textarea
 	} from '$core';
 	import { buttonVariants } from '$core/button/button.svelte';
-	import { getSettingsContext } from '$state';
+	import { getControllerContext, getSettingsContext } from '$state';
 	import { cn } from '$utils';
 
 	import { getVerdagraphContext } from '../verdagraphContext.svelte';
+	import { useQuery } from '@triplit/svelte';
 
+	import { getCultivarContext } from '$state/context/cultivarContext';
+
+	const controller = getControllerContext()
 	const verdagraphContext = getVerdagraphContext();
+	const cultivarContext = getCultivarContext();
 	const form = verdagraphContext.plantsCreateForm.form;
 	const handler = verdagraphContext.plantsCreateForm.handler;
 	const { form: formData, enhance } = form;
@@ -37,6 +42,7 @@
 	let plant = $derived($formData.plants[0] || null);
 
 	const cultivarNames: { value: string }[] = [{ value: 'one' }, { value: 'two' }];
+	let cultivarNames = $derived(useQuery(controller.triplit, controller.triplit.query('cultivars').Include(['name']).Where()))
 
 	let cultivarNameComboboxOpen = $state(false);
 

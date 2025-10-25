@@ -38,7 +38,7 @@ const defaultContentPaneDirection = isMobile() ? 'vertical' : 'horizontal';
 /**
  * Holds context for a workspace editor.
  */
-export function createWorkspaceContext(id: string) {
+export function createWorkspaceEditorContext(id: string) {
 	/** Controller reference. */
 	const controller = getContext<ControllerContext>(CONTROLLER_CONTEXT_ID);
 
@@ -120,10 +120,10 @@ export function createWorkspaceContext(id: string) {
 		reset
 	};
 }
-export type WorkspaceContext = ReturnType<typeof createWorkspaceContext>;
+export type WorkspaceContext = ReturnType<typeof createWorkspaceEditorContext>;
 
 export function setWorkspaceContext(id: string) {
-	return setContext(workspaceContextKey, createWorkspaceContext(id));
+	return setContext(workspaceContextKey, createWorkspaceEditorContext(id));
 }
 
 export function getWorkspaceContext() {

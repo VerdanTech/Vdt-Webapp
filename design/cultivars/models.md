@@ -76,6 +76,10 @@ A CultivarCollection may inherit its attributes from another collection. If it d
 
 CultivarCollections are connected to either a user or a garden. If both user and garden are defined, the garden is the entity which owns the colletion.
 
+## priority
+
+If the cultivar collection is in a garden, this defines its relation to other collections in the garden. Collections with higher numbers will override those with lower numbers. If two collections have the same nunmber the newest one is used.
+
 # Cultivar
 
 A cultivar is a container for attributes which describe a type of plant.
@@ -90,7 +94,7 @@ A short, few character representation. Used for visual representation of plants 
 
 ## parent
 
-Similar to a CultivarCollection, a Cultivar can define a parent from which it inherits attributes from. The constraint is that this parent must be a Cultivar in the same CultivarCollection. This allows describing varieties of plants.
+Similar to a CultivarCollection, a Cultivar can define a parent from which it inherits attributes from. The constraint is that this parent must be a Cultivar in the same CultivarCollection or in the parent collection(s). This allows describing varieties of plants.
 
 ## profiles
 
@@ -119,3 +123,14 @@ A planting window defines a period of time within an environment that a cultivar
 The origin refers to the method used to create plants.
 
 - transplantable: Defines whether a plant may be started as a seed in one location and transplanted to another. Some plants, such as carrots, don't tolerate transplants, and so must be started directly.
+
+## Cultivar Name Resolution
+
+Ultimately, all cultivars in a garden, through the garden collections and parent collections, as well as cultivars which inherit from eachother, get boiled down to a set of cultivar names that is the set of attributes that give plants behavior. Resolution happens via the following process:
+
+1. All cultivar collections in a garden are retrieved.
+2. If more than one collection is retrieved, filter to the collection with the highest priority.
+3. Recursively, all parent collections of the selected garden collection and parent collections of parent collections are retrieved.
+4. Retrieve all cultivars in all retrieved collections with names that match the target name.
+5. Select the cultivar from the most child collection. Prefer newer cultivars and child cultivars over parents.
+6. Merge selected cultivar with parents of all cultivars.
