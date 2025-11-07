@@ -14,23 +14,23 @@
 	import { EditableTree, createEditableTree, toTreeId } from '$components';
 	import { plantingAreaTreeItem } from '$components';
 	import { ScrollArea } from '$core';
-	import { getControllerContext } from '$state';
+	import { getAppContext } from '$state';
 	import createCommandHandler from '$state/commandHandler.svelte';
 
-	import { getWorkspaceContext } from '../../../../state/context/workspacesContext.svelte';
+	import { getWorkspaceEditorContext } from '../workspaceEditorContext.svelte';
 
 	type Props = {
 		plantingAreas: PlantingArea[];
-		workspacesInGarden: Pick<Workspace, 'id' | 'name'>[];
+		workspaces: Pick<Workspace, 'id' | 'name'>[];
 	};
-	let { plantingAreas = [], workspacesInGarden = [] }: Props = $props();
+	let { plantingAreas = [], workspaces = [] }: Props = $props();
 
 	/** The types of entities in the tree whose selections must be synchronized. */
 	type TreeEntities = 'plantingArea';
 
 	/** Workspace context. */
-	const controller = getControllerContext();
-	const workspaceContext = getWorkspaceContext();
+	const ctx = getAppContext();
+	const workspaceEditor = getWorkspaceEditorContext();
 
 	/** Stores errors of the tree fields. */
 	const fieldErrors: FieldErrors = $state({});
@@ -55,23 +55,23 @@
 	let items = $derived(
 		plantingAreas.map((plantingArea) => {
 			return plantingAreaTreeItem(
-				{ plantingArea, workspaces: workspacesInGarden },
+				{ plantingArea, workspaces },
 				{
 					fieldErrors,
 					plantingAreaUpdateHandler: (id, data) => {
-						plantingAreaUpdateCommandHandler.execute(id, data, controller);
+						plantingAreaUpdateCommandHandler.execute(id, data, ctx.controller);
 					},
 					geometryUpdateHandler: (id, data) => {
-						geometryUpdateCommandHandler.execute(id, data, controller);
+						geometryUpdateCommandHandler.execute(id, data, ctx.controller);
 					},
 					locationUpdateHandler: (id, data) => {
-						locationUpdateCommandHandler.execute(id, data, controller);
+						locationUpdateCommandHandler.execute(id, data, ctx.controller);
 					},
 					locationHistoryExtendHandler: (id) => {
 						locationHistoryExtendCommandHandler.execute(
 							id,
-							{ date: workspaceContext.timelineSelection.focusUtc },
-							controller
+							{ date: workspaceEditor.timelineSelection.focusUtc },
+							ctx.controller
 						);
 					}
 				}
@@ -84,16 +84,16 @@
 		/** Synchronize changes in the tree selection with the workspace context. */
 		plantingArea: {
 			add: (id: string) => {
-				workspaceContext.selections.select('plantingArea', id);
+				workspaceEditor.selections.select('plantingArea', id);
 			},
 			remove: (id: string) => {
-				workspaceContext.selections.deselect('plantingArea', id);
+				workspaceEditor.selections.deselect('plantingArea', id);
 			}
 		}
 	});
 
 	/** Synchronize changes in the workspace context selection with the tree selection. */
-	workspaceContext.selections.addSelectionChangeHandler(
+	workspaceEditor.selections.addSelectionChangeHandler(
 		'plantingArea',
 		(addedIds, removedIds) => {
 			addedIds.forEach((id) => {
@@ -110,5 +110,5 @@
 {#if plantingAreas.length === 0}
 	<span class="p-2 italic"> No planting areas. </span>
 {:else}
-	<EditableTree {editableTree} {fieldErrors} editing={workspaceContext.editing} />
+	<EditableTree {editableTree} {fieldErrors} editing={workspaceEditor.editing} />
 {/if}

@@ -3,9 +3,7 @@
 
 	import type { Geometry, GeometryUpdateCommand } from '@vdg-webapp/models';
 
-	import { PlantingArea } from '$components';
-
-	import { getWorkspaceContext } from '../../../state/context/workspacesContext.svelte';
+	import { PlantingArea, getWorkspaceEditorContext } from '$components';
 
 	type Props = {
 		plantingAreaLayerId: string;
@@ -13,9 +11,9 @@
 	let { plantingAreaLayerId }: Props = $props();
 
 	/** Contexts.*/
-	const workspaceContext = getWorkspaceContext();
-	const canvas = workspaceContext.layoutCanvasContext;
-	const { form: formData } = workspaceContext.plantingAreaCreateForm.form;
+	const workspaceEditor = getWorkspaceEditorContext();
+	const canvas = workspaceEditor.layoutCanvasContext;
+	const { form: formData } = workspaceEditor.plantingAreaCreateForm.form;
 
 	function onTranslate(newPos: Vector2d) {
 		$formData.location.coordinate = {
@@ -62,7 +60,7 @@ creation tool is active.
 -->
 <PlantingArea
 	canvasId={canvas.canvasId}
-	{plantingAreaLayerId}
+	layerId={plantingAreaLayerId}
 	name={$formData.name}
 	showName={true}
 	position={$formData.location.coordinate}

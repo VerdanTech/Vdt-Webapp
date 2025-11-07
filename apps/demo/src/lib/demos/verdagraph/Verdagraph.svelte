@@ -1,17 +1,7 @@
 <script lang="ts">
-	import { getContext } from 'svelte';
+	import { Verdagraph } from '@vdg-webapp/ui';
 
-	import { CONTROLLER_CONTEXT_ID, type ControllerContext } from '@vdg-webapp/models';
-	import { Verdagraph, setGardenContext } from '@vdg-webapp/ui';
-
-	import { gardenId, workspaceId } from './seed';
-
-	const controller = getContext<ControllerContext>(CONTROLLER_CONTEXT_ID);
-	const garden = setGardenContext(controller);
-	garden.id = gardenId;
+	import { workspaceId } from './seed';
 </script>
 
-<Verdagraph
-	gardenId={garden.id}
-	contextParams={{ defaultSelectedWorkspaceId: workspaceId }}
-/>
+<Verdagraph contextParams={{ defaultSelectedWorkspaceId: workspaceId }} />

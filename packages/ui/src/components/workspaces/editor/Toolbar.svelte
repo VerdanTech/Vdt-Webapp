@@ -7,9 +7,9 @@
 
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
-	import { getGardenContext } from '$state/context/gardenContext.svelte';
+	import { getAppContext } from '$state';
 
-	import { getWorkspaceContext } from '../../../state/context/workspacesContext.svelte';
+	import { getWorkspaceEditorContext } from './workspaceEditorContext.svelte';
 
 	type Props = {
 		workspaces: Workspace[];
@@ -26,14 +26,15 @@
 	/** Maximum amount of workspaces displayed in the dropdown. */
 	const workspacesDropdownMaxItems = 10;
 
+	/** Contexts. */
+	const ctx = getAppContext();
+	const workspaceEditor = getWorkspaceEditorContext();
+
 	const selectedPlantingAreas = $derived(
 		plantingAreas.filter((plantingArea) =>
-			workspaceContext.selections.has('plantingArea', plantingArea.id)
+			workspaceEditor.selections.has('plantingArea', plantingArea.id)
 		)
 	);
-
-	const gardenContext = getGardenContext();
-	const workspaceContext = getWorkspaceContext();
 </script>
 
 <!-- Workspaces toolbar -->
@@ -73,7 +74,7 @@
 						</Button.Root>
 					</Menubar.Item>
 				</Menubar.Group>
-				{#if gardenContext.authorize('WorkspaceCreate')}
+				{#if ctx.garden.authorize('WorkspaceCreate')}
 					<Menubar.Separator />
 					<Menubar.Item>
 						<Button.Root
@@ -90,7 +91,7 @@
 	{/if}
 
 	<!-- Workspace specific content. -->
-	{#if workspaceContext.id}
+	{#if workspaceEditor.id}
 		<!-- Select menu. -->
 		<Menubar.Menu>
 			<Menubar.Trigger>Select</Menubar.Trigger>
@@ -128,7 +129,7 @@
 								</span>
 								<Button.Root
 									onclick={() => {
-										workspaceContext.selections.deselect(
+										workspaceEditor.selections.deselect(
 											'plantingArea',
 											plantingArea.id
 										);
@@ -148,16 +149,16 @@
 		</Menubar.Menu>
 
 		<!-- Edit Menu -->
-		{#if gardenContext.authorize('WorkspaceEdit')}
+		{#if ctx.garden.authorize('WorkspaceEdit')}
 			<Menubar.Menu>
 				<Menubar.Trigger>Edit</Menubar.Trigger>
 				<Menubar.Content>
-					{#if workspaceContext.editing}
+					{#if workspaceEditor.editing}
 						<Menubar.Item>
 							<Button.Root
 								class="flex h-full w-full items-center justify-start"
 								onclick={() => {
-									workspaceContext.editing = false;
+									workspaceEditor.editing = false;
 								}}
 							>
 								<Icon
@@ -172,7 +173,7 @@
 							<Button.Root
 								class="flex h-full w-full items-center justify-start"
 								onclick={() => {
-									workspaceContext.toolbox.activate('translate');
+									workspaceEditor.toolbox.activate('translate');
 								}}
 							>
 								<Icon
@@ -196,7 +197,7 @@
 							<Button.Root
 								class="flex h-full w-full items-center justify-start"
 								onclick={() => {
-									workspaceContext.editing = true;
+									workspaceEditor.editing = true;
 								}}
 							>
 								<Icon
@@ -213,7 +214,7 @@
 		{/if}
 
 		<!-- Add Menu -->
-		{#if workspaceContext.editing}
+		{#if workspaceEditor.editing}
 			<Menubar.Menu>
 				<Menubar.Trigger>Add</Menubar.Trigger>
 				<Menubar.Content>
@@ -221,7 +222,7 @@
 						<Button.Root
 							class="flex h-full w-full items-center justify-between"
 							onclick={() => {
-								workspaceContext.toolbox.activate('plantingAreaCreate');
+								workspaceEditor.toolbox.activate('plantingAreaCreate');
 							}}
 						>
 							<Icon
@@ -243,15 +244,15 @@
 				<!-- Content pane toggles. -->
 				<Menubar.Group>
 					<Menubar.CheckboxItem
-						checked={workspaceContext.paneSettings.isEnabled('tree')}
+						checked={workspaceEditor.paneSettings.isEnabled('tree')}
 						onCheckedChange={(newVal) => {
 							if (newVal) {
-								workspaceContext.paneSettings.enable('tree');
+								workspaceEditor.paneSettings.enable('tree');
 							} else {
-								workspaceContext.paneSettings.disable('tree');
+								workspaceEditor.paneSettings.disable('tree');
 							}
 						}}
-						disabled={!workspaceContext.paneSettings.isEnabled('layout')}
+						disabled={!workspaceEditor.paneSettings.isEnabled('layout')}
 					>
 						<div class="flex w-full items-center justify-between">
 							<span> Tree </span>
@@ -259,15 +260,15 @@
 						</div>
 					</Menubar.CheckboxItem>
 					<Menubar.CheckboxItem
-						checked={workspaceContext.paneSettings.isEnabled('layout')}
+						checked={workspaceEditor.paneSettings.isEnabled('layout')}
 						onCheckedChange={(newVal) => {
 							if (newVal) {
-								workspaceContext.paneSettings.enable('layout');
+								workspaceEditor.paneSettings.enable('layout');
 							} else {
-								workspaceContext.paneSettings.disable('layout');
+								workspaceEditor.paneSettings.disable('layout');
 							}
 						}}
-						disabled={!workspaceContext.paneSettings.isEnabled('tree')}
+						disabled={!workspaceEditor.paneSettings.isEnabled('tree')}
 					>
 						<div class="flex w-full items-center justify-between">
 							<span> Layout </span>
@@ -275,13 +276,11 @@
 						</div>
 					</Menubar.CheckboxItem>
 					<!-- Content pane direction. -->
-					{#if workspaceContext.paneSettings.isEnabled('layout') && workspaceContext.paneSettings.isEnabled('tree')}
+					{#if workspaceEditor.paneSettings.isEnabled('layout') && workspaceEditor.paneSettings.isEnabled('tree')}
 						<Menubar.Sub>
 							<Menubar.SubTrigger>Direction</Menubar.SubTrigger>
 							<Menubar.SubContent>
-								<Menubar.RadioGroup
-									bind:value={workspaceContext.paneSettings.direction}
-								>
+								<Menubar.RadioGroup bind:value={workspaceEditor.paneSettings.direction}>
 									<Menubar.RadioItem value="horizontal">Horizontal</Menubar.RadioItem>
 									<Menubar.RadioItem value="vertical">Vertical</Menubar.RadioItem>
 								</Menubar.RadioGroup>
@@ -294,7 +293,7 @@
 
 				<Menubar.Item
 					onclick={() => {
-						workspaceContext.toolbox.activate('layoutConfig');
+						workspaceEditor.toolbox.activate('layoutConfig');
 					}}
 				>
 					Layout Config

@@ -3,17 +3,17 @@
 
 	import { Canvas, Gridlines, PlantingAreas, TransformControls } from '$components';
 
-	import { getWorkspaceContext } from '../../../state/context/workspacesContext.svelte';
 	import CreatePlantingAreaContainer from './CreatePlantingAreaContainer.svelte';
 	import EditablePlantingAreaContainer from './EditablePlantingAreaContainer.svelte';
+	import { getWorkspaceEditorContext } from './workspaceEditorContext.svelte';
 
 	type Props = {
 		plantingAreas: PlantingArea[];
 	};
 	let { plantingAreas }: Props = $props();
 
-	const workspaceContext = getWorkspaceContext();
-	const canvasContext = workspaceContext.layoutCanvasContext;
+	const worskpaceEditor = getWorkspaceEditorContext();
+	const canvasContext = worskpaceEditor.layoutCanvasContext;
 	const canvasId = canvasContext.canvasId;
 	const plantingAreaLayerId = 'plantingAreas';
 </script>
@@ -26,7 +26,7 @@
 	<Gridlines {canvasId} />
 
 	<PlantingAreas {canvasId} {plantingAreaLayerId}>
-		{#if workspaceContext.toolbox.isToolActive('plantingAreaCreate')}
+		{#if worskpaceEditor.toolbox.isToolActive('plantingAreaCreate')}
 			<CreatePlantingAreaContainer {plantingAreaLayerId} />
 		{/if}
 

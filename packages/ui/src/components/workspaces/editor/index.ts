@@ -1,2 +1,2 @@
 export { default as WorkspaceEditor } from './WorkspaceEditor.svelte';
-export * from '../../../state/context/workspacesContext.svelte';
+export * from './workspaceEditorContext.svelte';

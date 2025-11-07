@@ -1,10 +1,9 @@
 <script lang="ts">
-	import { useQuery } from '@triplit/svelte';
 	import { onMount } from 'svelte';
 
 	import { TabToolbox, TimelineSelector } from '$components';
 	import { Resizable } from '$core';
-	import { getControllerContext } from '$state';
+	import { getAppContext } from '$state/application';
 
 	import Calendar from './Calendar.svelte';
 	import Layout from './Layout.svelte';
@@ -16,38 +15,13 @@
 	} from './verdagraphContext.svelte';
 
 	type Props = {
-		gardenId: string;
 		contextParams: VerdagraphContextParams;
 	};
-	let { gardenId, contextParams }: Props = $props();
+	let { contextParams }: Props = $props();
 
 	/** Contexts. */
-	const controller = getControllerContext();
+	const ctx = getAppContext();
 	const verdagraphContext = setVerdagraphContext(contextParams);
-
-	/** Queries. */
-	let workspacesInGardenQuery = $derived(
-		useQuery(
-			controller.triplit,
-			controller.triplit.query('workspaces').Where(['gardenId', '=', gardenId])
-		)
-	);
-	const workspacesInGarden = $derived(workspacesInGardenQuery.results || []);
-
-	const plantingAreasQuery = $derived(
-		useQuery(
-			controller.triplit,
-			controller.triplit
-				.query('plantingAreas')
-				.Where('gardenId', '=', gardenId)
-				.Include('geometry', (rel) => rel('geometry').Include('linesCoordinates'))
-				.Include('locationHistory', (rel) =>
-					rel('locationHistory').Include('locations')
-				)
-		)
-	);
-	const plantingAreas = $derived(plantingAreasQuery.results || []);
-	const plants = $derived([]);
 
 	/** Force a re-render of the PaneGroup if the direction is changed. */
 	let initialized = $state(true);
@@ -77,7 +51,11 @@
 						.next().value}
 					{#if workspaceId}
 						<Resizable.Pane defaultSize={30} minSize={5} order={0}>
-							<Layout {workspaceId} {plantingAreas} {plants} />
+							<Layout
+								{workspaceId}
+								plantingAreas={ctx.workspaces.plantingAreas}
+								plants={ctx.plants.plants}
+							/>
 						</Resizable.Pane>
 						<Resizable.Handle withHandle={false} />
 					{/if}

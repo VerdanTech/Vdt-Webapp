@@ -19,12 +19,37 @@ export function createPlantsContext(
 	const plantsQuery = $derived(
 		useQuery(
 			controller.triplit,
-			controller.triplit.query('plants').Where('gardenId', '=', garden.id)
+			controller.triplit
+				.query('plants')
+				.Where('gardenId', '=', garden.id)
+				.Include('expectedLifespan', (rel) =>
+					rel('expectedLifespan')
+						.Include('geometryHistory', (rel) =>
+							rel('geometryHistory').Include('geometries', (rel) =>
+								rel('geometries').Include('linesCoordinates')
+							)
+						)
+						.Include('locationHistory', (rel) =>
+							rel('locationHistory').Include('locations')
+						)
+				)
+				.Include('recordedLifespan', (rel) =>
+					rel('recordedLifespan')
+						.Include('geometryHistory', (rel) =>
+							rel('geometryHistory').Include('geometries', (rel) =>
+								rel('geometries').Include('linesCoordinates')
+							)
+						)
+						.Include('locationHistory', (rel) =>
+							rel('locationHistory').Include('locations')
+						)
+				)
 		)
 	);
+	const plants = $derived(plantsQuery.results ?? []);
 	/** The set of cultivar names used by all plants in the garden. */
 	const plantsCultivarNames = $derived(
-		new Set(plantsQuery.results?.map((plant) => plant.cultivarName) ?? [])
+		plantsQuery.results?.map((plant) => plant.cultivarName) ?? []
 	);
 	/**
 	 * Constructs a map of cultivar names included in the Plants query
@@ -57,6 +82,11 @@ export function createPlantsContext(
 		})();
 	});
 
+	/**
+	 * Retrieves a cultivar from a cultivar name.
+	 * @param cultivarName The name to retrieve.
+	 * @returns The matched cultivar with all attributes.
+	 */
 	function getCultivar(cultivarName: string): Cultivar {
 		const cultivar = plantsCultivarMap.get(cultivarName);
 		if (!cultivar) {
@@ -68,7 +98,7 @@ export function createPlantsContext(
 	}
 
 	return {
-		plantsQuery,
+		plants,
 		plantsCultivarNames,
 		getCultivar
 	};

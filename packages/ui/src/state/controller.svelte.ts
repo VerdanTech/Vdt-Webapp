@@ -5,6 +5,6 @@ import { CONTROLLER_CONTEXT_ID, type ControllerContext } from '@vdg-webapp/model
 /**
  * Retrieves the controller context.
  */
-export function getControllerContext() {
-	return getContext<ControllerContext>(CONTROLLER_CONTEXT_ID);
-}
+//export function getControllerContext() {
+//return getContext<ControllerContext>(CONTROLLER_CONTEXT_ID);
+//}

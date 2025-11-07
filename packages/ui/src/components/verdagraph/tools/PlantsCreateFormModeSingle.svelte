@@ -1,5 +1,6 @@
 <script lang="ts">
 	import Icon from '@iconify/svelte';
+	import { useQuery } from '@triplit/svelte';
 	import { useId } from 'bits-ui';
 	import { tick } from 'svelte';
 	import { toast } from 'svelte-sonner';
@@ -24,25 +25,18 @@
 		Textarea
 	} from '$core';
 	import { buttonVariants } from '$core/button/button.svelte';
-	import { getControllerContext, getSettingsContext } from '$state';
+	import { getAppContext } from '$state/application';
 	import { cn } from '$utils';
 
 	import { getVerdagraphContext } from '../verdagraphContext.svelte';
-	import { useQuery } from '@triplit/svelte';
 
-	import { getCultivarContext } from '$state/context/cultivarContext';
-
-	const controller = getControllerContext()
+	const ctx = getAppContext();
 	const verdagraphContext = getVerdagraphContext();
-	const cultivarContext = getCultivarContext();
 	const form = verdagraphContext.plantsCreateForm.form;
 	const handler = verdagraphContext.plantsCreateForm.handler;
 	const { form: formData, enhance } = form;
 
 	let plant = $derived($formData.plants[0] || null);
-
-	const cultivarNames: { value: string }[] = [{ value: 'one' }, { value: 'two' }];
-	let cultivarNames = $derived(useQuery(controller.triplit, controller.triplit.query('cultivars').Include(['name']).Where()))
 
 	let cultivarNameComboboxOpen = $state(false);
 
@@ -80,9 +74,9 @@
 						role="combobox"
 						{...props}
 					>
-						{cultivarNames.find(
-							(name) => name.value === $formData.plants[0].cultivarName
-						)?.value ?? 'Select a cultivar'}
+						{ctx.plants.plantsCultivarNames.find(
+							(name) => name === $formData.plants[0].cultivarName
+						) ?? 'Select a cultivar'}
 						<Icon
 							icon={iconIds.caretUpDownIcon}
 							width="1.5rem"
@@ -99,19 +93,19 @@
 					<Command.Input autofocus placeholder="Search cultivars..." class="h-9" />
 					<Command.Empty>No cultivar found.</Command.Empty>
 					<Command.Group value="cultivarNames">
-						{#each cultivarNames as name (name.value)}
+						{#each ctx.plants.plantsCultivarNames as name}
 							<Command.Item
-								value={name.value}
+								value={name}
 								onSelect={() => {
-									$formData.plants[0].cultivarName = name.value;
+									$formData.plants[0].cultivarName = name;
 									closeAndFocusTrigger(triggerId);
 								}}
 							>
-								{name.value}
+								{name}
 								<Icon
 									icon={iconIds.checkmarkIconUnfilled}
 									width="1.5rem"
-									class="ml-auto {name.value !== $formData.plants[0].cultivarName &&
+									class="ml-auto {name !== $formData.plants[0].cultivarName &&
 										'text-transparent'}"
 								/>
 							</Command.Item>

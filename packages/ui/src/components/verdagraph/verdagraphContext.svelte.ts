@@ -3,12 +3,7 @@ import { getContext, setContext } from 'svelte';
 import { defaults, superForm } from 'sveltekit-superforms';
 import { zod } from 'sveltekit-superforms/adapters';
 
-import {
-	CONTROLLER_CONTEXT_ID,
-	type ControllerContext,
-	PlantsCreateCommandSchema,
-	plantsCreate
-} from '@vdg-webapp/models';
+import { PlantsCreateCommandSchema, plantsCreate } from '@vdg-webapp/models';
 
 import {
 	type CanvasContext,
@@ -17,6 +12,7 @@ import {
 } from '$components';
 import { createTimelineSelection } from '$components';
 import { createPaneSettings, isMobile } from '$state';
+import { getAppContext } from '$state/application';
 import createCommandHandler from '$state/commandHandler.svelte';
 
 import { verdagraphToolbox } from './tools';
@@ -43,7 +39,7 @@ export type VerdagraphContextParams = {
  */
 export function createVerdagraphContext(params: VerdagraphContextParams) {
 	/** Controller reference. */
-	const controller = getContext<ControllerContext>(CONTROLLER_CONTEXT_ID);
+	const ctx = getAppContext();
 
 	const paneSettings = createPaneSettings<['tree', 'calendar', 'layout']>(
 		'verdagraphPaneSettings',
@@ -54,8 +50,13 @@ export function createVerdagraphContext(params: VerdagraphContextParams) {
 	/** Timeline. */
 	const timeline = createTimelineSelection();
 	/** Selected entities. */
-	const selections = createSelectionManager(['workspace', 'plantingArea']);
+	const selections = createSelectionManager(['workspace', 'plantingArea', 'plants']);
 	selections.select('workspace', params.defaultSelectedWorkspaceId);
+
+	/** Editing. */
+	const editing = $derived(
+		ctx.garden.role == 'ADMIN' || ctx.garden.role == 'EDITOR' ? true : false
+	);
 
 	/** Canvas context. */
 	setContext(
@@ -75,7 +76,7 @@ export function createVerdagraphContext(params: VerdagraphContextParams) {
 		validators: zod(PlantsCreateCommandSchema),
 		onUpdate({ form }) {
 			if (form.valid) {
-				plantsCreateHandler.execute(form.data, controller);
+				plantsCreateHandler.execute(form.data, ctx.controller);
 			}
 		},
 		onChange() {
@@ -87,6 +88,9 @@ export function createVerdagraphContext(params: VerdagraphContextParams) {
 		/* Getters. */
 		get layoutCanvasContext() {
 			return getContext<CanvasContext>(verdagraphLayoutCanvasContextId);
+		},
+		get editing() {
+			return editing;
 		},
 
 		/** Setters. */

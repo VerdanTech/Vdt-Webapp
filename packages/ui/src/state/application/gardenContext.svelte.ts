@@ -1,10 +1,7 @@
 import { useQuery } from '@triplit/svelte';
-import { getContext, setContext } from 'svelte';
 
 import { type ControllerContext, type GardenRole } from '@vdg-webapp/models';
 import { type ActionType, requiredRole as getRequiredRole } from '@vdg-webapp/models';
-
-const gardenContextKey = 'gardenContext';
 
 /**
  * Holds context for a garden,
@@ -87,11 +84,3 @@ export function createGardenContext(controller: ControllerContext) {
 	};
 }
 export type GardenContext = ReturnType<typeof createGardenContext>;
-
-export function setGardenContext(controller: ControllerContext) {
-	return setContext(gardenContextKey, createGardenContext(controller));
-}
-
-export function getGardenContext() {
-	return getContext<GardenContext>(gardenContextKey);
-}

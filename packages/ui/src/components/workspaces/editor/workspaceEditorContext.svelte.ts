@@ -4,8 +4,6 @@ import { defaults, superForm } from 'sveltekit-superforms';
 import { zod } from 'sveltekit-superforms/adapters';
 
 import {
-	CONTROLLER_CONTEXT_ID,
-	type ControllerContext,
 	PlantingAreaCreateCommandSchema,
 	plantingAreaCreate
 } from '@vdg-webapp/models';
@@ -17,7 +15,7 @@ import {
 	resetCanvasContext,
 	setCanvasContext
 } from '$components';
-import { isMobile } from '$state';
+import { getAppContext, isMobile } from '$state';
 import { createPaneSettings } from '$state';
 import createCommandHandler from '$state/commandHandler.svelte';
 
@@ -39,8 +37,7 @@ const defaultContentPaneDirection = isMobile() ? 'vertical' : 'horizontal';
  * Holds context for a workspace editor.
  */
 export function createWorkspaceEditorContext(id: string) {
-	/** Controller reference. */
-	const controller = getContext<ControllerContext>(CONTROLLER_CONTEXT_ID);
+	const ctx = getAppContext();
 
 	/** If true, the workspace is being edited by the user. */
 	let editing: boolean = $state(false);
@@ -73,7 +70,7 @@ export function createWorkspaceEditorContext(id: string) {
 			validators: zod(PlantingAreaCreateCommandSchema),
 			onUpdate({ form }) {
 				if (form.valid) {
-					plantingAreaCreateHandler.execute(form.data, controller);
+					plantingAreaCreateHandler.execute(form.data, ctx.controller);
 				}
 			},
 			onChange() {
@@ -122,10 +119,10 @@ export function createWorkspaceEditorContext(id: string) {
 }
 export type WorkspaceContext = ReturnType<typeof createWorkspaceEditorContext>;
 
-export function setWorkspaceContext(id: string) {
+export function setWorkspaceEditorContext(id: string) {
 	return setContext(workspaceContextKey, createWorkspaceEditorContext(id));
 }
 
-export function getWorkspaceContext() {
+export function getWorkspaceEditorContext() {
 	return getContext<WorkspaceContext>(workspaceContextKey);
 }

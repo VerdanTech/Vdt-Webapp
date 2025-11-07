@@ -8,26 +8,26 @@
 	import { iconIds } from '$assets';
 	import { CoordinateInput, GeometrySelect, UnitAwareInput } from '$components';
 	import { Button, Form, Input, Separator, Textarea } from '$core';
-	import { getSettingsContext } from '$state';
+	import { getAppContext } from '$state';
 
-	import { getWorkspaceContext } from '../../../../state/context/workspacesContext.svelte';
+	import { getWorkspaceEditorContext } from '../workspaceEditorContext.svelte';
 
-	const settings = getSettingsContext();
-	const workspaceContext = getWorkspaceContext();
-	const form = workspaceContext.plantingAreaCreateForm.form;
-	const handler = workspaceContext.plantingAreaCreateForm.handler;
+	const ctx = getAppContext();
+	const workspaceEditor = getWorkspaceEditorContext();
+	const form = workspaceEditor.plantingAreaCreateForm.form;
+	const handler = workspaceEditor.plantingAreaCreateForm.handler;
 	const { form: formData, enhance } = form;
 
 	$effect(() => {
-		if (!workspaceContext.id) {
+		if (!workspaceEditor.id) {
 			toast.error('Error retrieving workspace context.');
 			throw new AppError('Error retrieving workspace context.');
 		}
 
 		$formData.gardenId = page.params.gardenId;
-		$formData.workspaceId = workspaceContext.id;
-		$formData.geometry.date = workspaceContext.timelineSelection.focusUtc;
-		$formData.location.date = workspaceContext.timelineSelection.focusUtc;
+		$formData.workspaceId = workspaceEditor.id;
+		$formData.geometry.date = workspaceEditor.timelineSelection.focusUtc;
+		$formData.location.date = workspaceEditor.timelineSelection.focusUtc;
 	});
 </script>
 
@@ -75,7 +75,7 @@
 				>
 				<CoordinateInput
 					{...props}
-					initialUnitSystem={settings.units['distance']}
+					initialUnitSystem={ctx.settings.units['distance']}
 					bind:x={$formData.location.coordinate.x}
 					bind:y={$formData.location.coordinate.y}
 				/>
@@ -138,7 +138,7 @@
 							{...props}
 							min={0}
 							quantityType="distance"
-							initialUnitSystem={settings.units['distance']}
+							initialUnitSystem={ctx.settings.units['distance']}
 							bind:value={$formData.geometry.rectangleLength}
 						/>
 					{/snippet}
@@ -160,7 +160,7 @@
 							{...props}
 							min={0}
 							quantityType="distance"
-							initialUnitSystem={settings.units['distance']}
+							initialUnitSystem={ctx.settings.units['distance']}
 							bind:value={$formData.geometry.rectangleWidth}
 						/>
 					{/snippet}
@@ -205,7 +205,7 @@
 							{...props}
 							min={0}
 							quantityType="distance"
-							initialUnitSystem={settings.units['distance']}
+							initialUnitSystem={ctx.settings.units['distance']}
 							bind:value={$formData.geometry.polygonRadius}
 						/>
 					{/snippet}
@@ -229,7 +229,7 @@
 							{...props}
 							min={0}
 							quantityType="distance"
-							initialUnitSystem={settings.units['distance']}
+							initialUnitSystem={ctx.settings.units['distance']}
 							bind:value={$formData.geometry.ellipseLength}
 						/>
 					{/snippet}
@@ -251,7 +251,7 @@
 							{...props}
 							min={0}
 							quantityType="distance"
-							initialUnitSystem={settings.units['distance']}
+							initialUnitSystem={ctx.settings.units['distance']}
 							bind:value={$formData.geometry.ellipseWidth}
 						/>
 					{/snippet}
@@ -275,7 +275,7 @@
 							>
 							<CoordinateInput
 								{...props}
-								initialUnitSystem={settings.units['distance']}
+								initialUnitSystem={ctx.settings.units['distance']}
 								bind:x={$formData.geometry.linesCoordinates[index].x}
 								bind:y={$formData.geometry.linesCoordinates[index].y}
 							/>
@@ -325,7 +325,7 @@
 						{...props}
 						min={0}
 						quantityType="distance"
-						initialUnitSystem={settings.units['distance']}
+						initialUnitSystem={ctx.settings.units['distance']}
 						bind:value={$formData.depth}
 					/>
 				{/snippet}

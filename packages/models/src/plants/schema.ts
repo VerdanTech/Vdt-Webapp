@@ -2,6 +2,7 @@ import { type Entity, type QueryResult, Schema as S, or } from '@triplit/client'
 
 import { CultivarAttributes } from '../cultivars/attributes/index.js';
 import { cultivarSchema } from '../cultivars/schema.js';
+import { GeometryHistory, LocationHistory } from '../workspaces/schema.js';
 
 /**
  *
@@ -30,6 +31,9 @@ export const plantSchema = S.Collections({
 			/** Garden the entity is located within - required for access control. */
 			gardenId: S.String(),
 
+			/** Lifespans which are included in the harvest. */
+			lifespanIds: S.Set(S.String(), { default: S.Default.Set.empty() }),
+
 			/** The date of the harvest. */
 			date: S.Date(),
 
@@ -43,7 +47,8 @@ export const plantSchema = S.Collections({
 			description: S.String({ default: '' })
 		}),
 		relationships: {
-			garden: S.RelationById('gardens', '$gardenId')
+			garden: S.RelationById('gardens', '$gardenId'),
+			lifespans: S.RelationMany('lifespans', { where: [['id', 'in', '$lifespanIds']] })
 		},
 		permissions: {
 			anon: {
@@ -131,10 +136,7 @@ export const plantSchema = S.Collections({
 				 * For example, includes the dates a berry bush has begun vegetative growth again.
 				 */
 				growthDates: S.Optional(S.Set(S.Date()))
-			}),
-
-			/** A set of harvests over the lifespan. */
-			harvestIds: S.Set(S.String())
+			})
 		}),
 		relationships: {
 			garden: S.RelationById('gardens', '$gardenId'),
@@ -343,12 +345,12 @@ export const plantSchema = S.Collections({
 	}
 });
 export type Harvest = Entity<typeof plantSchema, 'harvests'>;
-export type Lifespan = Entity<typeof plantSchema, 'lifespans'>;
-export type Plant = QueryResult<
-	typeof plantSchema,
-	{
-		collectionName: 'plants';
-		include: { expectedLifespan: true; recordedLifespan: true };
-	}
->;
+export type Lifespan = Entity<typeof plantSchema, 'lifespans'> & {
+	locationHistory: LocationHistory | null;
+	geometryHistory: GeometryHistory | null;
+};
+export type Plant = Entity<typeof plantSchema, 'plants'> & {
+	expectedLifespan: Lifespan | null;
+	recordedLifespan: Lifespan | null;
+};
 export type PlantGroup = Entity<typeof plantSchema, 'plantGroups'>;

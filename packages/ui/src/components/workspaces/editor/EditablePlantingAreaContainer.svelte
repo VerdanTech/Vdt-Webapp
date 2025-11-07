@@ -10,10 +10,10 @@
 	} from '@vdg-webapp/models';
 
 	import { PlantingArea as PlantingAreaComponent } from '$components';
-	import { getControllerContext } from '$state';
+	import { getAppContext } from '$state';
 	import createCommandHandler from '$state/commandHandler.svelte';
 
-	import { getWorkspaceContext } from '../../../state/context/workspacesContext.svelte';
+	import { getWorkspaceEditorContext } from './workspaceEditorContext.svelte';
 
 	type Props = {
 		plantingAreaLayerId: string;
@@ -22,9 +22,9 @@
 	let { plantingAreaLayerId, plantingArea }: Props = $props();
 
 	/** Contexts. */
-	const controller = getControllerContext();
-	const workspaceContext = getWorkspaceContext();
-	const canvasContext = workspaceContext.layoutCanvasContext;
+	const ctx = getAppContext();
+	const workspaceEditor = getWorkspaceEditorContext();
+	const canvasContext = workspaceEditor.layoutCanvasContext;
 	const canvasId = canvasContext.canvasId;
 
 	/** Handlers. */
@@ -42,10 +42,10 @@
 
 		const location = historySelect(
 			plantingArea.locationHistory.locations,
-			workspaceContext.timelineSelection.focusUtc,
+			workspaceEditor.timelineSelection.focusUtc,
 			false
 		);
-		if (location && location.workspaceId === workspaceContext.id) {
+		if (location && location.workspaceId === workspaceEditor.id) {
 			return { x: location.x, y: location.y };
 		} else {
 			return null;
@@ -54,32 +54,32 @@
 
 	/** Editable only if editing is enabled and a new planting area isn't being created. */
 	let editable: boolean = $derived(
-		workspaceContext.editing &&
-			!workspaceContext.toolbox.isToolActive('plantingAreaCreate')
+		workspaceEditor.editing &&
+			!workspaceEditor.toolbox.isToolActive('plantingAreaCreate')
 	);
 
 	/** Selected if included in the list of selected IDs. */
 	let selected: boolean = $derived(
-		workspaceContext.selections.has('plantingArea', plantingArea.id)
+		workspaceEditor.selections.has('plantingArea', plantingArea.id)
 	);
 
 	/** Update the location history on translation. */
 	function onTranslate(newPos: Vector2d) {
-		if (!plantingArea || !workspaceContext.id) {
+		if (!plantingArea || !workspaceEditor.id) {
 			return;
 		}
 
 		translateCommandHandler.execute(
 			{
 				id: plantingArea.locationHistoryId,
-				workspaceId: workspaceContext.id,
+				workspaceId: workspaceEditor.id,
 				coordinate: {
 					x: canvasContext.transform.modelXPos(newPos.x),
 					y: canvasContext.transform.modelYPos(newPos.y)
 				},
-				date: workspaceContext.timelineSelection.focusUtc
+				date: workspaceEditor.timelineSelection.focusUtc
 			},
-			controller
+			ctx.controller
 		);
 	}
 
@@ -89,7 +89,11 @@
 			return;
 		}
 
-		transformCommandHandler.execute(plantingArea.geometryId, newGeometry, controller);
+		transformCommandHandler.execute(
+			plantingArea.geometryId,
+			newGeometry,
+			ctx.controller
+		);
 	}
 </script>
 
@@ -111,10 +115,10 @@ area in the workspace editor, ie., editable
 		{onTranslate}
 		{onTransform}
 		onClick={() => {
-			if (workspaceContext.toolbox.isToolActive('plantingAreaCreate')) {
+			if (workspaceEditor.toolbox.isToolActive('plantingAreaCreate')) {
 				return;
 			}
-			workspaceContext.selections.select('plantingArea', plantingArea.id);
+			workspaceEditor.selections.select('plantingArea', plantingArea.id);
 		}}
 	/>
 {/if}

@@ -1,10 +1,11 @@
 import { getContext, setContext } from 'svelte';
 
-import { createController } from '@vdg-webapp/models';
+import { type ControllerContextParams, createController } from '@vdg-webapp/models';
 
-import { type ControllerContextParams } from '../../../../models/src/controller';
 import { createCultivarContext } from './cultivarContext';
 import { createGardenContext } from './gardenContext.svelte';
+import { createPlantsContext } from './plantsContext';
+import { createSettingsContext } from './userSettings.svelte';
 import { createWorkspacesContext } from './workspacesContext.svelte';
 
 const appContextKey = 'appContext';
@@ -12,6 +13,16 @@ const appContextKey = 'appContext';
 /**
  * Holds all relevant sub-context objects.
  */
+/* 
+export type AppContext = {
+	controller: ControllerContext;
+	settings: SettingsContext
+	garden: GardenContext;
+	cultivars: CultivarContext;
+	workspaces: WorkspacesContext;
+	plants: PlantsContext;
+};
+*/
 
 /**
  * Controller class: singleton interface to the data layer.
@@ -20,22 +31,20 @@ const appContextKey = 'appContext';
  * @returns ControllerContext.
  */
 export function createAppContext(controllerParams: ControllerContextParams) {
-	const controller = setContext(
-		'controllerContext',
-		createController(controllerParams)
-	);
-	const garden = setContext('gardenContext', createGardenContext(controller));
-	const cultivars = setContext(
-		'cultivarsContext',
-		createCultivarContext(controller, garden)
-	);
-	const workspaces = setContext('workspacesContext', createWorkspacesContext());
+	const controller = createController(controllerParams);
+	const settings = createSettingsContext();
+	const garden = createGardenContext(controller);
+	const cultivars = createCultivarContext(controller, garden);
+	const workspaces = createWorkspacesContext(controller, garden);
+	const plants = createPlantsContext(controller, garden);
 
 	return {
 		controller,
+		settings,
 		garden,
 		cultivars,
-		workspaces
+		workspaces,
+		plants
 	};
 }
 export type AppContext = ReturnType<typeof createAppContext>;

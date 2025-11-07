@@ -1,6 +1,7 @@
+import { seed } from '$lib/seeds';
+
 import type { Demo } from '../types';
 import Verdagraph from './Verdagraph.svelte';
-import seed from './seed';
 
 export const verdagraphDemo: Demo = {
 	id: 'verdagraph',

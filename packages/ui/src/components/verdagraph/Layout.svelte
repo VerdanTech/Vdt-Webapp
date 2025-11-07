@@ -11,6 +11,7 @@
 	} from '$components';
 
 	import CreatePlantsContainer from './CreatePlantsContainer.svelte';
+	import EditablePlantContainer from './EditablePlantContainer.svelte';
 	import { getVerdagraphContext } from './verdagraphContext.svelte';
 
 	const verdagraphContext = getVerdagraphContext();
@@ -48,5 +49,9 @@
 
 	<PlantsContainer {canvasId} {plantLayerId}>
 		<CreatePlantsContainer {workspaceId} {plantLayerId}></CreatePlantsContainer>
+
+		{#each plants as plant}
+			<EditablePlantContainer {plant} {plantLayerId} />
+		{/each}
 	</PlantsContainer>
 </Canvas>

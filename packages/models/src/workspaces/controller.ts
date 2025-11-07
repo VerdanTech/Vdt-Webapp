@@ -4,6 +4,7 @@ import {
 	type Geometry,
 	type GeometryCreateCommand,
 	GeometryHistoryCreateCommand,
+	type GeometryHistoryUpdateCommand,
 	type GeometryUpdateCommand,
 	type LocationCreateCommand,
 	type LocationHistory,
@@ -209,6 +210,50 @@ export async function geometryHistoryCreate(
 	ctx: ControllerContext
 ) {
 	//const geometries =
+}
+
+/**
+ * Updates a geometry history with a new geometry.
+ * If a geometry already exists in this location history
+ * at the same day at the given date, that geometry is updated.
+ * If not, a new geometry is created.
+ * @param data The history update command.
+ */
+export async function geometryHistoryUpdate(
+	data: GeometryHistoryUpdateCommand,
+	ctx: ControllerContext
+) {
+	const geometryHistory = await ctx.triplit.fetchOne(
+		ctx.triplit.query('geometryHistories').Id(data.id).Include('geometries')
+	);
+	if (!geometryHistory) {
+		throw new AppError('Geometry history does not exist.', {
+			nonFormErrors: ['Failed to update object geometry.']
+		});
+	}
+
+	/** If a geometry already exists at the given day, update it. */
+	const existingGeometry = historySelectDay(geometryHistory.geometries, data.date);
+	if (existingGeometry) {
+		await geometryUpdate(existingGeometry.id, data.geometry, ctx);
+
+		/** If no geometry exists, create a new one. */
+	} else {
+		await ctx.triplit.transact(async (transaction) => {
+			const geometry = await geometryCreate(
+				geometryHistory.gardenId,
+				data.geometry,
+				transaction
+			);
+			await transaction.update(
+				'geometryHistories',
+				geometryHistory.id,
+				(geometryHistory) => {
+					geometryHistory.geometryIds.add(geometry.id);
+				}
+			);
+		});
+	}
 }
 
 /**

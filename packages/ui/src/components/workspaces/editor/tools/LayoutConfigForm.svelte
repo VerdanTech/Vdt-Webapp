@@ -1,12 +1,11 @@
 <script lang="ts">
 	import { FormInfoPopover } from '$components';
+	// import { UnitAwareInput } from '$components/units/';
+	import { getWorkspaceEditorContext } from '$components';
 	import { Select } from '$core';
 
-	// import { UnitAwareInput } from '$components/units/';
-	import { getWorkspaceContext } from '../../../../state/context/workspacesContext.svelte';
-
-	const workspaceContext = getWorkspaceContext();
-	const layoutCanvas = workspaceContext.layoutCanvasContext;
+	const workspaceEditor = getWorkspaceEditorContext();
+	const layoutCanvas = workspaceEditor.layoutCanvasContext;
 
 	const buttonsPositionOptions = [
 		{ value: 'tl', label: 'Top Left' },

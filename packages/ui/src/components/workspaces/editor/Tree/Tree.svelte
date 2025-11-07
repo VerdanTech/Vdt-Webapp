@@ -7,9 +7,9 @@
 
 	type Props = {
 		plantingAreas: PlantingArea[];
-		workspacesInGarden: Pick<Workspace, 'id' | 'name'>[];
+		workspaces: Pick<Workspace, 'id' | 'name'>[];
 	};
-	let { plantingAreas, workspacesInGarden }: Props = $props();
+	let { plantingAreas, workspaces }: Props = $props();
 </script>
 
 <Tabs.Root value="plantingAreas" class="bg-neutral-1 flex h-full flex-col">
@@ -22,7 +22,7 @@
 	</Tabs.List>
 	<Tabs.Content value="plantingAreas">
 		<ScrollArea.Root class="w-full px-2">
-			<PlantingAreaTree {plantingAreas} {workspacesInGarden} />
+			<PlantingAreaTree {plantingAreas} {workspaces} />
 		</ScrollArea.Root>
 	</Tabs.Content>
 </Tabs.Root>

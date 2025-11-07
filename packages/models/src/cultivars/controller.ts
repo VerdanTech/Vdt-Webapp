@@ -91,7 +91,7 @@ export async function resolveCultivarName(
 				ctx.triplit
 					.query('cultivars')
 					.Where('collectionId', '=', currentBranch.collection.id)
-					.Where(['names', 'like', cultivarName])
+					.Where(['names', 'has', cultivarName])
 					.Select(['id', 'createdAt'])
 			);
 			if (matchedCultivars) {

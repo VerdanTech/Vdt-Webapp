@@ -239,6 +239,18 @@ export type GeometryHistoryCreateCommand = z.infer<
 >;
 
 /**
+ * Updates a geometry history.
+ */
+export const GeometryHistoryUpdateCommandSchema = z.object({
+	id: z.string(),
+	geometry: GeometryCreateCommandSchema,
+	date: geometryDateSchema
+});
+export type GeometryHistoryUpdateCommand = z.infer<
+	typeof GeometryHistoryUpdateCommandSchema
+>;
+
+/**
  * Create a new workspace.
  */
 export const WorkspaceCreateCommandSchema = z.object({

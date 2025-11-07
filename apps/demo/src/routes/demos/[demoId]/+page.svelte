@@ -1,14 +1,9 @@
 <script lang="ts">
 	import { TriplitClient } from '@triplit/client';
-	import { onMount, setContext } from 'svelte';
+	import { onMount } from 'svelte';
 
-	import {
-		CONTROLLER_CONTEXT_ID,
-		createController,
-		roles,
-		schema
-	} from '@vdg-webapp/models';
-	import { setSettingsContext } from '@vdg-webapp/ui';
+	import { roles, schema } from '@vdg-webapp/models';
+	import { setAppContext } from '@vdg-webapp/ui';
 
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
@@ -31,11 +26,9 @@
 	async function getClient() {
 		return { account: user.account, profile: user.profile };
 	}
-	const controller = createController(triplit, getClient, true);
 
-	/** Set settings context and controller context. */
-	setContext(CONTROLLER_CONTEXT_ID, controller);
-	setSettingsContext();
+	/** Set app context. */
+	setAppContext({ triplit, getClient });
 
 	/** Initialize the data according to the seed file. */
 	onMount(async () => {
