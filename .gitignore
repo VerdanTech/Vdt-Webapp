@@ -4,6 +4,7 @@ node_modules
 .output
 .vercel
 /build
+dist
 
 # OS
 .DS_Store
