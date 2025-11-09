@@ -71,7 +71,6 @@
 			? getColor('lime', 8, canvas.mode.current)
 			: getColor('green', 10, canvas.mode.current)
 	);
-	$inspect(canvas.mode.current);
 	let fillColor = $derived(
 		selected
 			? getColor('lime', 5, canvas.mode.current)

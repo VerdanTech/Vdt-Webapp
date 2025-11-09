@@ -11,6 +11,7 @@
 		plantingAreas: PlantingArea[];
 	};
 	let { plantingAreas }: Props = $props();
+	$inspect(plantingAreas);
 
 	const worskpaceEditor = getWorkspaceEditorContext();
 	const canvasContext = worskpaceEditor.layoutCanvasContext;

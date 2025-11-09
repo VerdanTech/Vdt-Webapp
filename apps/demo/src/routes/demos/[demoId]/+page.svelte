@@ -8,7 +8,7 @@
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
 	import { type Demo, demos } from '$demos';
-	import { user } from '$lib/seeds/user';
+	import { garden, user } from '$lib/seeds';
 
 	/** Find the demo that is active. */
 	const demo = demos.find((demo) => demo.id === page.params.demoId);
@@ -29,11 +29,11 @@
 	}
 
 	/** Set app context. */
-	const ctx = setAppContext({ triplit, getClient });
-	const gdnCtx = getContext('garden');
-	ctx.garden.id = 'garden';
-
-	$inspect(gdnCtx);
+	const ctx = setAppContext(
+		{ triplit, getClient },
+		{ accountIdOverride: user.account.id }
+	);
+	ctx.garden.id = garden.id;
 
 	/** Initialize the data according to the seed file. */
 	onMount(async () => {

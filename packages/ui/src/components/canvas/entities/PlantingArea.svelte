@@ -72,7 +72,6 @@
 			? getColor('accent', 8, canvas.mode.current)
 			: getColor('brown', 10, canvas.mode.current)
 	);
-	$inspect(canvas.mode.current);
 	let fillColor = $derived(
 		selected
 			? getColor('accent', 5, canvas.mode.current)

@@ -19,7 +19,6 @@
 	/** Contexts. */
 	const ctx = getAppContext();
 	const workspaceEditor = setWorkspaceEditorContext(id);
-	const workspaces = getContext('workspaces');
 
 	/** Force a re-render of the PaneGroup if the direction is changed. */
 	let initialized = $state(true);
@@ -28,15 +27,6 @@
 			initialized = false;
 			initialized = true;
 		}
-	});
-
-	console.log('planting areas');
-	$effect(() => {
-		console.log(ctx.workspaces.plantingAreas);
-	});
-	console.log('role');
-	$effect(() => {
-		console.log(ctx.garden.role);
 	});
 </script>
 

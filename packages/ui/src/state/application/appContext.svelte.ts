@@ -2,6 +2,7 @@ import { getContext, setContext } from 'svelte';
 
 import { type ControllerContextParams, createController } from '@vdg-webapp/models';
 
+import { type ClientContextParams, createClientContext } from './client.svelte';
 import { createCultivarContext } from './cultivarContext.svelte';
 import { createGardenContext } from './gardenContext.svelte';
 import { createPlantsContext } from './plantsContext.svelte';
@@ -30,10 +31,14 @@ export type AppContext = {
  * @param controllerParams Parameters for the controller context.
  * @returns ControllerContext.
  */
-export function createAppContext(controllerParams: ControllerContextParams) {
+export function createAppContext(
+	controllerParams: ControllerContextParams,
+	clientParams?: ClientContextParams
+) {
 	const controller = setContext('controller', createController(controllerParams));
+	const client = setContext('client', createClientContext(controller, clientParams));
 	const settings = setContext('settings', createSettingsContext());
-	const garden = setContext('garden', createGardenContext(controller));
+	const garden = setContext('garden', createGardenContext(controller, client));
 	const cultivars = setContext('cultivars', createCultivarContext(controller, garden));
 	const workspaces = setContext(
 		'workspaces',
@@ -52,8 +57,11 @@ export function createAppContext(controllerParams: ControllerContextParams) {
 }
 export type AppContext = ReturnType<typeof createAppContext>;
 
-export function setAppContext(controllerParams: ControllerContextParams) {
-	return setContext(appContextKey, createAppContext(controllerParams));
+export function setAppContext(
+	controllerParams: ControllerContextParams,
+	clientParams?: ClientContextParams
+) {
+	return setContext(appContextKey, createAppContext(controllerParams, clientParams));
 }
 
 export function getAppContext() {

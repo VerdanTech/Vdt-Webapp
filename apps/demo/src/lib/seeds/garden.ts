@@ -5,7 +5,7 @@ import { type Garden, schema } from '@vdg-webapp/models';
 import { user } from './user';
 
 export const garden: Garden = {
-	id: 'gardenId',
+	id: 'garden',
 	name: 'Garden',
 	visibility: 'PUBLIC',
 	isActive: true,
