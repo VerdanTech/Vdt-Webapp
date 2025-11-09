@@ -9,6 +9,7 @@ import { type ActionType, requiredRole as getRequiredRole } from '@vdg-webapp/mo
  * level of permissions.
  */
 export function createGardenContext(controller: ControllerContext) {
+	console.log(controller.triplit);
 	let id = $state('');
 	const clientQuery = $derived(
 		useQuery(
@@ -19,6 +20,7 @@ export function createGardenContext(controller: ControllerContext) {
 	const gardenQuery = $derived(
 		useQuery(controller.triplit, controller.triplit.query('gardens').Id(id))
 	);
+	$inspect(gardenQuery);
 	const role: GardenRole | null = $derived.by(() => {
 		if (
 			!clientQuery.results ||

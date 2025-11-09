@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { useQuery } from '@triplit/svelte';
+	import { getContext } from 'svelte';
 
 	import { TabToolbox, TimelineSelector } from '$components';
 	import { Resizable } from '$core';
@@ -8,16 +8,18 @@
 	import Layout from './Layout.svelte';
 	import Toolbar from './Toolbar.svelte';
 	import Tree from './Tree';
-	import { getWorkspaceEditorContext } from './workspaceEditorContext.svelte';
+	import { setWorkspaceEditorContext } from './workspaceEditorContext.svelte';
 
 	type Props = {
+		id: string;
 		includeWorkspacesMenu: boolean;
 	};
-	let { includeWorkspacesMenu = true }: Props = $props();
+	let { id, includeWorkspacesMenu = true }: Props = $props();
 
 	/** Contexts. */
 	const ctx = getAppContext();
-	const workspaceEditor = getWorkspaceEditorContext();
+	const workspaceEditor = setWorkspaceEditorContext(id);
+	const workspaces = getContext('workspaces');
 
 	/** Force a re-render of the PaneGroup if the direction is changed. */
 	let initialized = $state(true);
@@ -26,6 +28,15 @@
 			initialized = false;
 			initialized = true;
 		}
+	});
+
+	console.log('planting areas');
+	$effect(() => {
+		console.log(ctx.workspaces.plantingAreas);
+	});
+	console.log('role');
+	$effect(() => {
+		console.log(ctx.garden.role);
 	});
 </script>
 

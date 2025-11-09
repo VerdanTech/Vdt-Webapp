@@ -8,40 +8,46 @@ import plantingAreasSeed from './plantingAreas';
 import userSeed from './user';
 import workspacesSeed from './workspace';
 
+const seeds: Array<() => Record<string, unknown[]>> = [
+	userSeed,
+	gardenSeed,
+	workspacesSeed,
+	plantingAreasSeed,
+	cultivarsSeed
+];
+
 export function seed(): BulkInsert<typeof schema> {
-	const seeds = [
-		userSeed,
-		gardenSeed,
-		workspacesSeed,
-		plantingAreasSeed,
-		cultivarsSeed
-	];
-	const result: BulkInsert<typeof schema> = {};
+	let result: BulkInsert<typeof schema> = {};
 	for (const seed of seeds) {
-		mergeSeeds(result, seed());
+		result = mergeSeeds(result, seed());
 	}
 	return result;
 }
 
+/**
+ * @returns the two bulk inserts merged, with all like
+ * keys forming the sum of the individual list values.
+ */
 export function mergeSeeds(
-	a: BulkInsert<typeof schema>,
-	b: BulkInsert<typeof schema>
-): BulkInsert<typeof schema> {
-	const result: BulkInsert<typeof schema> = {};
-	const keys = new Set<string>([...Object.keys(a || {}), ...Object.keys(b || {})]);
+	seedA: Record<string, unknown[]>,
+	seedB: Record<string, unknown[]>
+): Record<string, unknown[]> {
+	const result: Record<string, unknown[]> = {};
 
-	for (const k of keys) {
-		const va = [k];
-		const vb = [k];
+	// Copy all from seedA
+	for (const key of Object.keys(seedA)) {
+		const val = seedA[key];
+		result[key] = Array.isArray(val) ? val : [];
+	}
 
-		const isArrayA = Array.isArray(va);
-		const isArrayB = Array.isArray(vb);
-
-		if (isArrayA || isArrayB) {
-			const left = isArrayA ? va.slice() : va === undefined ? [] : [va];
-			const right = isArrayB ? vb.slice() : vb === undefined ? [] : [vb];
-			// @ts-expect-error too lazy for proper types in this func
-			result[k] = left.concat(right);
+	// Merge/append from seedB
+	for (const key of Object.keys(seedB)) {
+		const val = seedB[key];
+		if (!Array.isArray(val)) continue;
+		if (key in result) {
+			result[key] = result[key].concat(val);
+		} else {
+			result[key] = val;
 		}
 	}
 

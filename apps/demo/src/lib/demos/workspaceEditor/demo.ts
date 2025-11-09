@@ -1,6 +1,7 @@
+import { seed } from '$lib/seeds';
+
 import type { Demo } from '../types';
 import WorkspaceEditor from './WorkspaceEditor.svelte';
-import seed from './seed';
 
 export const workspaceDemo: Demo = {
 	id: 'workspace-editor',

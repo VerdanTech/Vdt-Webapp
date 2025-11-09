@@ -32,6 +32,13 @@ export function createWorkspacesContext(
 	);
 	const plantingAreas = $derived(plantingAreasQuery.results ?? []);
 
-	return { workspaces, plantingAreas };
+	return {
+		get workspaces() {
+			return workspaces;
+		},
+		get plantingAreas() {
+			return plantingAreas;
+		}
+	};
 }
 export type WorkspacesContext = ReturnType<typeof createWorkspacesContext>;

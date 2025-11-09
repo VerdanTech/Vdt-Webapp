@@ -5,7 +5,7 @@
 	"scripts": {
 		"dev": "svelte-kit sync && svelte-package --watch --input=src",
 		"build": "svelte-kit sync && svelte-package --input=src",
-		"lint": "eslint .",
+		"lint": "eslint . --fix",
 		"check-types": "svelte-check --tsconfig ./tsconfig.json"
 	},
 	"files": [

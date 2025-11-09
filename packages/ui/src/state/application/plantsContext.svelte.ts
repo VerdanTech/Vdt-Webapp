@@ -98,8 +98,12 @@ export function createPlantsContext(
 	}
 
 	return {
-		plants,
-		plantsCultivarNames,
+		get plants() {
+			return plants;
+		},
+		get plantsCultivarNames() {
+			return plantsCultivarNames;
+		},
 		getCultivar
 	};
 }

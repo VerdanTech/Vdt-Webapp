@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { Verdagraph } from '@vdg-webapp/ui';
 
-	import { workspaceId } from './seed';
+	import { workspace } from '$lib/seeds/workspace';
 </script>
 
-<Verdagraph contextParams={{ defaultSelectedWorkspaceId: workspaceId }} />
+<Verdagraph contextParams={{ defaultSelectedWorkspaceId: workspace.id }} />

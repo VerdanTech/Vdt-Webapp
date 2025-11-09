@@ -1,13 +1,14 @@
 <script lang="ts">
 	import { TriplitClient } from '@triplit/client';
-	import { onMount } from 'svelte';
+	import { getContext, onMount } from 'svelte';
 
 	import { roles, schema } from '@vdg-webapp/models';
 	import { setAppContext } from '@vdg-webapp/ui';
 
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
-	import { type Demo, demos, user } from '$demos';
+	import { type Demo, demos } from '$demos';
+	import { user } from '$lib/seeds/user';
 
 	/** Find the demo that is active. */
 	const demo = demos.find((demo) => demo.id === page.params.demoId);
@@ -28,7 +29,11 @@
 	}
 
 	/** Set app context. */
-	setAppContext({ triplit, getClient });
+	const ctx = setAppContext({ triplit, getClient });
+	const gdnCtx = getContext('garden');
+	ctx.garden.id = 'garden';
+
+	$inspect(gdnCtx);
 
 	/** Initialize the data according to the seed file. */
 	onMount(async () => {

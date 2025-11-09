@@ -1,1 +1,1 @@
-export * from './appContext';
+export * from './appContext.svelte';

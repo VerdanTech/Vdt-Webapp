@@ -46,10 +46,13 @@ export function createCultivarContext(
 	const cultivarNames = $derived(new Set(cultivarsNamesQuery.results ?? []));
 
 	return {
+		get cultivarNames() {
+			return cultivarNames;
+		},
+
 		gardenCollectionQuery,
 		parentCollectionQuery,
-		cultivarsNamesQuery,
-		cultivarNames
+		cultivarsNamesQuery
 	};
 }
 export type CultivarContext = ReturnType<typeof createCultivarContext>;

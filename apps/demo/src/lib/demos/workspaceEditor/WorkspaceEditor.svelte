@@ -2,4 +2,4 @@
 	import { WorkspaceEditor } from '@vdg-webapp/ui';
 </script>
 
-<WorkspaceEditor includeWorkspacesMenu={false} />
+<WorkspaceEditor id={'workspace'} includeWorkspacesMenu={false} />

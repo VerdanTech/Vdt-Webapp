@@ -8,7 +8,8 @@
 	"scripts": {
 		"dev": "TRIPLIT_JWT_SECRET=secret npx triplit dev --seed=triplit/seeds/seed.ts",
 		"build": "tsc",
-		"seed": "triplit seed"
+		"seed": "triplit seed",
+		"lint": "eslint . --fix"
 	},
 	"devDependencies": {
 		"@vdg-webapp/eslint-config": "workspace:*",

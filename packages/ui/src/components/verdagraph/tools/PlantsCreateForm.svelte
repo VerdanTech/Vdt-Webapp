@@ -1,24 +1,18 @@
 <script lang="ts">
-	import Icon from '@iconify/svelte';
 	import { toast } from 'svelte-sonner';
 
 	import {
 		AppError,
 		type PlantsCreateFormMode,
-		plantFields,
 		plantsCreateFormModeSchema
 	} from '@vdg-webapp/models';
 
 	import { page } from '$app/state';
-	import { iconIds } from '$assets';
-	import { CoordinateInput, GeometrySelect, UnitAwareInput } from '$components';
-	import { Button, Form, Input, Select, Separator, Textarea } from '$core';
-	import { getSettingsContext } from '$state';
+	import { Form, Select } from '$core';
 
 	import { getVerdagraphContext } from '../verdagraphContext.svelte';
 	import PlantsCreateFormModeSingle from './PlantsCreateFormModeSingle.svelte';
 
-	const settings = getSettingsContext();
 	const verdagraphContext = getVerdagraphContext();
 	const form = verdagraphContext.plantsCreateForm.form;
 	const handler = verdagraphContext.plantsCreateForm.handler;

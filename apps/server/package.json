@@ -5,7 +5,8 @@
 	"type": "module",
 	"scripts": {
 		"dev": "tsx watch src/app.ts",
-		"schema": "tsx generate-openapi.ts; cp openapi.json ../frontend/server.json"
+		"schema": "tsx generate-openapi.ts; cp openapi.json ../frontend/server.json",
+		"lint": "eslint . --fix"
 	},
 	"dependencies": {
 		"@vdg-webapp/models": "workspace:*",
