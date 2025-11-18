@@ -1,7 +1,6 @@
 import { useQuery } from '@triplit/svelte';
 
-import { type ControllerContext, type GardenRole } from '@vdg-webapp/models';
-import { type ActionType, requiredRole as getRequiredRole } from '@vdg-webapp/models';
+import { type ControllerContext } from '@vdg-webapp/models';
 
 export type ClientContextParams = {
 	accountIdOverride?: string;
@@ -50,7 +49,7 @@ export function createClientContext(
 			return account;
 		},
 		get profile() {
-			return account.profile;
+			return account?.profile;
 		}
 	};
 }

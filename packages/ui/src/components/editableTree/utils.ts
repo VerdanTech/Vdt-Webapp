@@ -2,7 +2,8 @@ import { type ZodType } from 'zod';
 
 import { AppError, type FieldErrors, validateField } from '@vdg-webapp/models';
 
-const TREE_ID_DELIMITER = '/~';
+const TREE_ENTITY_ID_DELIMITER = '/~';
+const TREE_FIELD_DELIMITER = '/~';
 
 /**
  * Every item in the tree needs a unique ID.
@@ -10,7 +11,7 @@ const TREE_ID_DELIMITER = '/~';
  * state with the app's selection state, we need
  * to be able to tell when an item is associated
  * with a particular entity, ex., when the user
- * selects the Name field on a PlantingArea,
+ * selects the Name field on a PlantingArea tree item,
  * we want to be able to add that PlantingArea to the
  * selection.
  */
@@ -26,7 +27,7 @@ export function toTreeBaseId<EntityTypeT extends string>(
 	entityType: EntityTypeT,
 	entityId: string
 ): string {
-	return `${entityType}${TREE_ID_DELIMITER}${entityId}`;
+	return `${entityType}${TREE_ENTITY_ID_DELIMITER}${entityId}`;
 }
 
 /**
@@ -36,7 +37,7 @@ export function toTreeBaseId<EntityTypeT extends string>(
  * @returns The Tree item id.
  */
 export function toTreeId(baseId: string, field: string): string {
-	return `${baseId}${TREE_ID_DELIMITER}${field}`;
+	return `${baseId}${TREE_FIELD_DELIMITER}${field}`;
 }
 
 /**
@@ -48,7 +49,7 @@ export function toTreeId(baseId: string, field: string): string {
 export function fromTreeId<EntityTypeT extends string>(
 	id: string
 ): { entityType: EntityTypeT; entityId: string; field?: string } {
-	const parts = id.split(TREE_ID_DELIMITER);
+	const parts = id.split(TREE_ENTITY_ID_DELIMITER);
 	if (parts.length < 2 || parts.length > 3) {
 		throw new AppError(`Invalid Tree ID format: ${id}`);
 	}

@@ -1,7 +1,7 @@
 import {
 	type FieldErrors,
-	type PlantingArea,
-	type PlantingAreaUpdateCommand,
+	type Plant,
+	type PlantUpdateCommand,
 	workspaceFields
 } from '@vdg-webapp/models';
 
@@ -23,27 +23,50 @@ import {
 	type LocationUpdateHandler
 } from './locations';
 
-export type PlantingAreaUpdateHandler = (
-	id: string,
-	data: PlantingAreaUpdateCommand
-) => void;
+export type PlantUpdateHandler = (id: string, data: PlantUpdateCommand) => void;
 
-export function plantingAreaTreeItem(
-	value: { plantingArea: PlantingArea; workspaces: { id: string; name: string }[] },
+export function plantTreeItem(
+	value: { plant: Plant; workspaces: { id: string; name: string }[] },
 	ctx: {
-		plantingAreaUpdateHandler: PlantingAreaUpdateHandler;
+		plantUpdateHandler: PlantUpdateHandler;
 		geometryUpdateHandler: GeometryUpdateHandler;
 		locationUpdateHandler: LocationUpdateHandler;
 		locationHistoryExtendHandler: LocationHistoryExtendHandler;
 		fieldErrors: FieldErrors;
 	}
 ): Item {
-	const baseId = toTreeBaseId('plantingArea', value.plantingArea.id);
-	const geometryId = toTreeId(baseId, 'geometry');
-	const locationHistoryId = toTreeId(baseId, 'locationHistory');
-	const nameId = toTreeId(baseId, 'name');
-	const descriptionId = toTreeId(baseId, 'description');
-	const depthId = toTreeId(baseId, 'depth');
+	const baseId = toTreeBaseId('plant', value.plant.id);
+	const cultivarNameId = toTreeId(baseId, 'cultivarName');
+	const quantityId = toTreeId(baseId, 'quantity');
+	const attributesId = toTreeId(baseId, 'attributes');
+
+	const geometryItem = geometryTreeItem(
+		toTreeId(baseId, 'geometry'),
+		{ geometry: value.plantingArea.geometry, index: 0 },
+		{
+			includeIndex: false,
+			includeDate: false,
+			includeDelete: false,
+			includeLinesClosed: false
+		},
+		{
+			updateHandler: ctx.geometryUpdateHandler,
+			fieldErrors: ctx.fieldErrors
+		}
+	);
+
+	const locationHistoryItem = locationHistoryTreeItem(
+		baseId,
+		{
+			locationHistory: value.plantingArea.locationHistory,
+			workspaces: value.workspaces
+		},
+		{
+			locationUpdateHandler: ctx.locationUpdateHandler,
+			onLocationHistoryExtend: ctx.locationHistoryExtendHandler,
+			fieldErrors: ctx.fieldErrors
+		}
+	);
 
 	const nameItem: Item = {
 		id: nameId,
@@ -88,34 +111,6 @@ export function plantingAreaTreeItem(
 			});
 		}
 	};
-
-	const geometryItem = geometryTreeItem(
-		geometryId,
-		{ geometry: value.plantingArea.geometry, index: 0 },
-		{
-			includeIndex: false,
-			includeDate: false,
-			includeDelete: false,
-			includeLinesClosed: false
-		},
-		{
-			updateHandler: ctx.geometryUpdateHandler,
-			fieldErrors: ctx.fieldErrors
-		}
-	);
-
-	const locationHistoryItem = locationHistoryTreeItem(
-		locationHistoryId,
-		{
-			locationHistory: value.plantingArea.locationHistory,
-			workspaces: value.workspaces
-		},
-		{
-			locationUpdateHandler: ctx.locationUpdateHandler,
-			onLocationHistoryExtend: ctx.locationHistoryExtendHandler,
-			fieldErrors: ctx.fieldErrors
-		}
-	);
 
 	const depthItem: Item = {
 		id: depthId,

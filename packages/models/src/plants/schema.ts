@@ -216,8 +216,8 @@ export const plantSchema = S.Collections({
 			/** Lifespan attributes populated by observations of users. */
 			recordedLifespanId: S.String(),
 
-			/** If true, this plant entity represents multiple distinct plants which are managed together. */
-			aggregate: S.Boolean({ default: false })
+			/** The number of distinct plants which are managed together in this plant instance. */
+			quantity: S.Number({ default: 1 })
 		}),
 		relationships: {
 			garden: S.RelationById('gardens', '$gardenId'),
@@ -344,6 +344,7 @@ export const plantSchema = S.Collections({
 		}
 	}
 });
+export type Origin = (typeof OriginEnumOptions)[number];
 export type Harvest = Entity<typeof plantSchema, 'harvests'>;
 export type Lifespan = Entity<typeof plantSchema, 'lifespans'> & {
 	locationHistory: LocationHistory | null;
@@ -354,3 +355,9 @@ export type Plant = Entity<typeof plantSchema, 'plants'> & {
 	recordedLifespan: Lifespan | null;
 };
 export type PlantGroup = Entity<typeof plantSchema, 'plantGroups'>;
+
+export const OriginEnumLabels: Record<Origin, string> = {
+	DIRECT_SEED: 'Direct Seed',
+	SEEDLING_TO_TRANSPLANT: 'Seedling to Transplant',
+	SEED_TO_TRANSPLANT: 'Seed to Transplant'
+};

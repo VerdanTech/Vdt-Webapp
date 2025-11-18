@@ -25,40 +25,38 @@ import {
 } from '..';
 
 export type GeometryUpdateHandler = (id: string, data: GeometryUpdateCommand) => void;
-
+export type GeometryTreeItemOptions = {
+	includeIndex: boolean;
+	includeDelete: boolean;
+	includeDate: boolean;
+	includeLinesClosed: boolean;
+};
 /**
  * Constructs an editable tree item for a geometry.
- * @param parentId The base ID of the parent tree item.
+ * @param itemId The item ID of the returned tree item.
  * @param value Data required to construct the items.
  * @param options Options for how to construct the tree items.
  * @param ctx Tree context.
  * @returns The tree items that represent the geometry.
  */
 export function geometryTreeItem(
-	parentId: string,
+	itemId: string,
 	value: { geometry: Geometry | null | undefined; index: number },
-	options: {
-		includeIndex: boolean;
-		includeDelete: boolean;
-		includeDate: boolean;
-		includeLinesClosed: boolean;
-	},
+	options: GeometryTreeItemOptions,
 	ctx: { updateHandler: GeometryUpdateHandler; fieldErrors: FieldErrors }
 ): Item {
-	const geometryBaseId = parentId + `${value.index}/`;
-
 	if (!value.geometry) {
 		return {
-			id: geometryBaseId,
+			id: itemId,
 			label: 'Failed to resolve geometry.'
 		};
 	}
 
-	const typeId = geometryBaseId + 'type';
-	const dateId = geometryBaseId + 'date';
-	const scaleFactorId = geometryBaseId + 'scaleFactor';
-	const rotationId = geometryBaseId + 'rotation';
-	const deleteId = geometryBaseId + 'delete';
+	const typeId = toTreeId(itemId, 'type');
+	const dateId = toTreeId(itemId, 'date');
+	const scaleFactorId = toTreeId(itemId, 'scaleFactor');
+	const rotationId = toTreeId(itemId, 'rotation');
+	const deleteId = toTreeId(itemId, 'delete');
 
 	const dateItem: Item = {
 		id: dateId,
@@ -164,8 +162,8 @@ export function geometryTreeItem(
 	let attributesItems: Item[] = [];
 	switch (value.geometry.type) {
 		case 'RECTANGLE': {
-			const rectangleLengthId = geometryBaseId + 'rectangleLength';
-			const rectangleWidthId = geometryBaseId + 'rectangleWidth';
+			const rectangleLengthId = toTreeId(itemId, 'rectangleLength');
+			const rectangleWidthId = toTreeId(itemId, 'rectangleWidth');
 
 			attributesItems = [
 				{
@@ -215,8 +213,8 @@ export function geometryTreeItem(
 		}
 
 		case 'POLYGON': {
-			const polygonNumSidesId = geometryBaseId + 'polygonNumSides';
-			const polygonRadiusId = geometryBaseId + 'polygonRadius';
+			const polygonNumSidesId = toTreeId(itemId, 'polygonNumSides');
+			const polygonRadiusId = toTreeId(itemId, 'polygonRadius');
 
 			attributesItems = [
 				{
@@ -266,8 +264,8 @@ export function geometryTreeItem(
 		}
 
 		case 'ELLIPSE': {
-			const ellipseLengthId = geometryBaseId + 'ellipseLength';
-			const ellipseWidthId = geometryBaseId + 'ellipseWidth';
+			const ellipseLengthId = toTreeId(itemId, 'ellipseLength');
+			const ellipseWidthId = toTreeId(itemId, 'ellipseWidth');
 
 			attributesItems = [
 				{
@@ -317,9 +315,9 @@ export function geometryTreeItem(
 		}
 
 		case 'LINES': {
-			const linesCoordinatesId = geometryBaseId + 'linesCoordinates';
-			const linesAddCoordinateId = geometryBaseId + 'linesAddCoordinate';
-			const linesClosedId = geometryBaseId + 'linesClosed';
+			const linesCoordinatesId = toTreeId(itemId, 'linesCoordinates');
+			const linesAddCoordinateId = toTreeId(itemId, 'linesAddCoordinate');
+			const linesClosedId = toTreeId(itemId, 'linesClosed');
 
 			/**
 			 * The approach taken to coordinate items is this:
@@ -329,9 +327,9 @@ export function geometryTreeItem(
 			 */
 			const coordinateItems: Item[] = value.geometry.linesCoordinates.map(
 				(coordinate, index) => {
-					const coordinateId = geometryBaseId + `linesCoordinate${index}`;
-					const positionId = coordinateId + '/position';
-					const deleteId = coordinateId + `/delete`;
+					const coordinateId = toTreeId(itemId, `linesCoordinates[${index}]`);
+					const positionId = toTreeId(itemId, 'position');
+					const deleteId = toTreeId(itemId, `delete`);
 
 					const positionItem: Item = {
 						id: positionId,
@@ -477,55 +475,51 @@ export function geometryTreeItem(
 		? `Geometry ${value.index + 1}`
 		: 'Geometry';
 	return {
-		id: geometryBaseId,
+		id: itemId,
 		label: geometryLabel,
 		children: children
 	};
 }
 
+export type GeometryHistoryExtendHandler = (id: string) => void;
 /**
  * Constructs a tree item for a geometry history.
- * @param baseId The base ID of the parent tree item.
+ * @param itemId The item ID of the returned tree item.
  * @param value Data required to construct the items.
  * @param options Options for how to construct the tree items.
  * @param ctx Tree context.
  * @returns The tree item.
  */
 export function geometryHistoryTreeItem(
-	baseId: string,
+	itemId: string,
 	value: {
 		geometryHistory: GeometryHistory | null;
 	},
 	options: {
-		includeLinesClosed: boolean;
+		geometryItemOptions: GeometryTreeItemOptions;
 	},
 	ctx: {
 		geometryUpdateHandler: GeometryUpdateHandler;
-		onGeometryHistoryExtend: () => void;
+		geometryHistoryExtendHandler: GeometryHistoryExtendHandler;
 		fieldErrors: FieldErrors;
 	}
 ): Item {
-	const geometryHistoryBaseId = toTreeId(baseId, 'geometries');
-
 	if (!value.geometryHistory) {
 		return {
-			id: geometryHistoryBaseId,
+			id: itemId,
 			label: 'Failed to resolve geometries.'
 		};
 	}
 
-	const addGeometryId = toTreeId(baseId, 'geometryAdd');
+	const addGeometryId = toTreeId(itemId, 'geometryAdd');
 
 	const geometryItems = value.geometryHistory.geometries.map((geometry, index) => {
+		const geometryId = toTreeId(itemId, `geometries[${index}]`);
+
 		return geometryTreeItem(
-			geometryHistoryBaseId,
+			geometryId,
 			{ geometry, index },
-			{
-				includeIndex: true,
-				includeDate: true,
-				includeDelete: true,
-				includeLinesClosed: options.includeLinesClosed
-			},
+			options.geometryItemOptions,
 			{ updateHandler: ctx.geometryUpdateHandler, fieldErrors: ctx.fieldErrors }
 		);
 	});
@@ -541,12 +535,14 @@ export function geometryHistoryTreeItem(
 		 * button has been pressed, so no need for data.
 		 */
 		onChange: () => {
-			ctx.onGeometryHistoryExtend();
+			if (value.geometryHistory) {
+				ctx.geometryHistoryExtendHandler(value.geometryHistory.id);
+			}
 		}
 	};
 
 	return {
-		id: geometryHistoryBaseId,
+		id: itemId,
 		label: 'Geometries',
 		children: [...geometryItems, addGeometryItem]
 	};

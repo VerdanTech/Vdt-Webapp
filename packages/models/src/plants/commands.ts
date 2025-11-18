@@ -7,6 +7,7 @@ import {
 	LocationHistoryCreateCommandSchema
 } from '../workspaces/commands.js';
 import { HarvestQualityEnumOptions, OriginEnumOptions } from './schema.js';
+import { cultivarFields } from '../cultivars/commands.js';
 
 /** Field specifications. */
 
@@ -27,16 +28,23 @@ const lifespanOriginSchema = z.enum(OriginEnumOptions).describe(
         seedlingToTransplant: A seedling is transplanted directly \
         into the area it will reach maturity in.'
 );
-const LifespanDateSchema = z.date();
+const lifespanDateSchema = z.date();
+const lifespanDatesSchema = z.object({
+	seedDate: lifespanDateSchema.describe('The date at which the plant is seeded.'),
+	germDate: lifespanDateSchema.describe('The date at which the seed germinated.'),
+	expiryDate: lifespanDateSchema.describe('The date at which the plant is removed from the space.'),
+	dormancyDates: z.array(lifespanDateSchema).describe(''),
+	growthDates: z.array(lifespanDateSchema).describe('')
+})
 
 /** Plants. */
 const plantCultivarNameSchema = z.string();
 const plantCultivarAttributesSchema = CultivarAttributesUpdateCommandSchema;
-const plantAggregateSchema = z
-	.boolean()
+const plantQuantitySchema = z
+	.number()
 	.describe(
-		'If true, this plant entity represents multiple distinct plants which are managed as one.'
-	);
+		'The number of distinct plants this plant entity represents.'
+	).default(1);
 
 /** PlantGroups. */
 export const plantFields = {
@@ -49,7 +57,7 @@ export const plantFields = {
 	LifespanDateSchema,
 	plantCultivarNameSchema,
 	plantCultivarAttributesSchema,
-	plantAggregateSchema
+	plantQuantitySchema
 };
 
 /** Commands. */
@@ -76,7 +84,7 @@ export const plantsCreateCommandSinglePlantSchema = z.object({
 		geometries: []
 	}),
 	cultivarOverride: CultivarAttributesUpdateCommandSchema,
-	aggregate: plantAggregateSchema.default(false)
+	quantity: plantQuantitySchema
 });
 
 export const plantsCreateFormModeSchema = z
@@ -88,3 +96,17 @@ export const PlantsCreateCommandSchema = z.object({
 	plants: z.array(plantsCreateCommandSinglePlantSchema)
 });
 export type PlantsCreateCommand = z.infer<typeof PlantsCreateCommandSchema>;
+
+
+export const PlantUpdateCommandSchema = z.object({
+	plantId: z.string(),
+	cultivarName: cultivarFields.cultivarNameSchema,
+	quantity: plantQuantitySchema
+})
+
+
+export const LifespanUpdateCommandSchema = z.object({
+	lifespanId: z.string(),
+	origin: lifespanOriginSchema.optional(),
+	dates: 
+})
