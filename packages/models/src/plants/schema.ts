@@ -13,6 +13,15 @@ export const OriginEnumOptions = [
 	'SEEDLING_TO_TRANSPLANT'
 ] as const;
 
+export const LifespanDatesOptions = [
+	'SEED',
+	'GERMINATION',
+	'MATURE',
+	'DORMANCY',
+	'GROWTH',
+	'EXPIRY',
+] as const
+
 export const HarvestQualityEnumOptions = [
 	'COMPOST',
 	'LOW',
@@ -99,6 +108,75 @@ export const plantSchema = S.Collections({
 			}
 		}
 	},
+	/** Lifespan date schema. */
+	lifespanDates: {
+		schema: S.Schema({
+			id: S.Id(),
+
+			/** Garden the entity is located within - required for access control. */
+			gardenId: S.String(),
+
+			/** Type of date that the value represents. */
+			dateId: S.String(),
+
+			/** Date value. */
+			value: S.Date(),
+
+			/** Optional unstructured data. */
+			extra: S.Optional(S.Json({})),
+		}),
+		relationships: {
+			garden: S.RelationById('gardens', '$gardenId'),
+		},
+		permissions: {
+			anon: {
+				read: {
+					/** Allow anonymous reads if the garden is not hidden. */
+					filter: [['garden.visibility', '!=', 'HIDDEN']]
+				}
+			},
+			user: {
+				read: {
+					/** Allow reads if the garden is not hidden or the user is a member. */
+					filter: [
+						or([
+							['garden.visibility', '!=', 'HIDDEN'],
+							['garden.adminIds', 'has', '$role.profileId'],
+							['garden.editorIds', 'has', '$role.profileId'],
+							['garden.viewerIds', 'has', '$role.profileId']
+						])
+					]
+				},
+				insert: {
+					/** Allow new lifespan dates to be created by admins and editors. */
+					filter: [
+						or([
+							['garden.adminIds', 'has', '$role.profileId'],
+							['garden.editorIds', 'has', '$role.profileId']
+						])
+					]
+				},
+				update: {
+					/** Restrict lifespan date updates to admins and editors. */
+					filter: [
+						or([
+							['garden.adminIds', 'has', '$role.profileId'],
+							['garden.editorIds', 'has', '$role.profileId']
+						])
+					]
+				},
+				delete: {
+					/** Restrict lifespan date deletes to admins and editors. */
+					filter: [
+						or([
+							['garden.adminIds', 'has', '$role.profileId'],
+							['garden.editorIds', 'has', '$role.profileId']
+						])
+					]
+				}
+			}
+		}
+	},
 	/** Lifespan schema. */
 	lifespans: {
 		schema: S.Schema({
@@ -118,24 +196,7 @@ export const plantSchema = S.Collections({
 
 			/** The dates of the lifespan. */
 			dates: S.Record({
-				/** The date at which the plant is seeded. */
-				seedDate: S.Optional(S.Date()),
-				/** The date at which the seed germinated. */
-				germDate: S.Optional(S.Date()),
-				/** The date at which the plant is removed from the space. */
-				expiryDate: S.Optional(S.Date()),
-				/**
-				 * This is defined only for biennial or perennial plants.
-				 * A set of dates which the plant became dormant until the following year.
-				 * For example, includes the dates a berry bush has stopped producing fruit and vegetation.
-				 */
-				dormancyDates: S.Optional(S.Set(S.Date())),
-				/**
-				 * This is defined only for biennial or perennial plants.
-				 * A set of dates which the plant exited dormancy for the year.
-				 * For example, includes the dates a berry bush has begun vegetative growth again.
-				 */
-				growthDates: S.Optional(S.Set(S.Date()))
+
 			})
 		}),
 		relationships: {
