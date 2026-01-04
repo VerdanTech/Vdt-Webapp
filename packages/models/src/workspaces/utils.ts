@@ -16,11 +16,10 @@ export function isSameDay(date1: Date, date2: Date): boolean {
 }
 
 /**
- * Given a history, usually a geometric or location history,
+ * Given a history, ex. a geometric or location history,
  * return the item at a given date.
- * The date need not be the exact date of an item, an item
- * is considered valid at a given date as long as it is before
- * the next item.
+ * Matching: The date need not be the exact date of an item, an item
+ * is matched at a given date as long as it is before the next item.
  * @param items a list of items to search. Assumed to be unsorted.
  * @param date The date at which to retrieve the item at.
  * @param returnOriginalReferences If true, this function will return
@@ -41,11 +40,10 @@ export function historySelect<T extends { date: Date }>(
 }
 
 /**
- * Given a history, usually a geometric or location history,
+ * Given a history, ex. a geometric or location history,
  * return the item at a given date.
- * The date need not be the exact date of an item, an item
- * is considered valid at a given date as long as it is before
- * the next item.
+ * Matching: The date need not be the exact date of an item, an item
+ * is matched at a given date as long as it is before the next item.
  * @param items a list of items to search. Assumed to be unsorted.
  * @param date The date at which to retrieve the item at.
  * @returns The item at the given date.
@@ -141,7 +139,7 @@ export function historySelectReference<T extends { date: Date }>(
 }
 
 /**
- * Given a history, usually a geometric or location history,
+ * Given a history, ex. a geometric or location history,
  * return the item at a given date.
  * An item will only be returned if one exists at the same
  * day as the given date.
@@ -154,6 +152,28 @@ export function historySelectDay<T extends { date: Date }>(
 	date: Date
 ): T | null {
 	return [...items].find((item) => isSameDay(item.date, date)) || null;
+}
+
+/**
+ * Given a history, ex. a geometric or location history,
+ * find the two items with the lowest and highest date.
+ * @param items a list of items to search. Assumed to be unsorted.
+ * @returns The items at the minimum and maximum dates.
+ */
+export function historyGetRange<T extends { date: Date }>(
+	items: Array<T> | null | undefined
+): { min: T; max: T } | null {
+	if (!items || items.length === 0) {
+		return null;
+	}
+
+	return items.reduce(
+		(acc, current) => ({
+			min: current.date < acc.min.date ? current : acc.min,
+			max: current.date > acc.max.date ? current : acc.max
+		}),
+		{ min: items[0], max: items[0] }
+	);
 }
 
 /**

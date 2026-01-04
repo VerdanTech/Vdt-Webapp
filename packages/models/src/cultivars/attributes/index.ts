@@ -2,17 +2,20 @@ import { Schema as S } from '@triplit/client';
 import { z } from 'zod';
 
 import * as AnnualLifeCycle from './annualLifeCycle/index.js';
+import * as Color from './color/index.js';
 import * as FrostDatePlantingWindows from './frostDatePlantingWindows/index.js';
 import * as Origin from './origin/index.js';
 
 export const attributesSchemas = {
 	...AnnualLifeCycle.fields,
+	...Color,
 	...FrostDatePlantingWindows.fields,
 	...Origin.fields
 };
 
 export const CultivarAttributes = S.Record({
 	annualLifeCycle: S.Optional(AnnualLifeCycle.AnnualLifeCycleProfile),
+	color: S.Optional(Color.ColorProfile),
 	frostDatePlantingWindows: S.Optional(
 		FrostDatePlantingWindows.FrostDatePlantingWindowsProfile
 	),
@@ -22,6 +25,7 @@ export const CultivarAttributes = S.Record({
 export const CultivarAttributesUpdateCommandSchema = z
 	.object({
 		annualLifeCycle: AnnualLifeCycle.AnnualLifecycleUpdateCommandSchema.optional(),
+		color: Color.ColorUpdateCommandSchema.optional(),
 		frostDatePlantingWindows:
 			FrostDatePlantingWindows.FrostDatePlantingWindowsUpdateCommandSchema.optional(),
 		origin: Origin.OriginUpdateCommandSchema.optional()

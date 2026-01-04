@@ -2,21 +2,14 @@ import z, { string } from 'zod';
 
 import { commonFields } from '../commands.js';
 import { CultivarAttributesUpdateCommandSchema } from '../cultivars/attributes/index.js';
+import { cultivarFields } from '../cultivars/commands.js';
 import {
 	GeometryHistoryCreateCommandSchema,
 	LocationHistoryCreateCommandSchema
 } from '../workspaces/commands.js';
-import { HarvestQualityEnumOptions, OriginEnumOptions } from './schema.js';
-import { cultivarFields } from '../cultivars/commands.js';
+import { OriginEnumOptions } from './schema.js';
 
 /** Field specifications. */
-
-/** Harvests. */
-const harvestDateSchema = z.date();
-const harvestMassSchema = z.number();
-const harvestUnitsSchema = z.number();
-const harvestQualitySchema = z.enum(HarvestQualityEnumOptions);
-const harvestDescriptionSchema = z.string();
 
 /** Lifespans. */
 const lifespanOriginSchema = z.enum(OriginEnumOptions).describe(
@@ -24,7 +17,7 @@ const lifespanOriginSchema = z.enum(OriginEnumOptions).describe(
         Options are: directSeed: A seed is sown directly \
         into the area it will reach maturity in. \
         seedToTransplant: A seed is sown in one area and \
-        then transplanted into the area it will reach maturity cin. \
+        then transplanted into the area it will reach maturity in. \
         seedlingToTransplant: A seedling is transplanted directly \
         into the area it will reach maturity in.'
 );
@@ -32,29 +25,26 @@ const lifespanDateSchema = z.date();
 const lifespanDatesSchema = z.object({
 	seedDate: lifespanDateSchema.describe('The date at which the plant is seeded.'),
 	germDate: lifespanDateSchema.describe('The date at which the seed germinated.'),
-	expiryDate: lifespanDateSchema.describe('The date at which the plant is removed from the space.'),
+	expiryDate: lifespanDateSchema.describe(
+		'The date at which the plant is removed from the space.'
+	),
 	dormancyDates: z.array(lifespanDateSchema).describe(''),
 	growthDates: z.array(lifespanDateSchema).describe('')
-})
+});
 
 /** Plants. */
 const plantCultivarNameSchema = z.string();
 const plantCultivarAttributesSchema = CultivarAttributesUpdateCommandSchema;
 const plantQuantitySchema = z
 	.number()
-	.describe(
-		'The number of distinct plants this plant entity represents.'
-	).default(1);
+	.describe('The number of distinct plants this plant entity represents.')
+	.default(1);
 
 /** PlantGroups. */
 export const plantFields = {
-	harvestDateSchema,
-	harvestMassSchema,
-	harvestUnitsSchema,
-	harvestQualitySchema,
-	harvestDescriptionSchema,
 	lifespanOriginSchema,
-	LifespanDateSchema,
+	lifespanDateSchema,
+	lifespanDatesSchema,
 	plantCultivarNameSchema,
 	plantCultivarAttributesSchema,
 	plantQuantitySchema
@@ -97,16 +87,14 @@ export const PlantsCreateCommandSchema = z.object({
 });
 export type PlantsCreateCommand = z.infer<typeof PlantsCreateCommandSchema>;
 
-
 export const PlantUpdateCommandSchema = z.object({
 	plantId: z.string(),
 	cultivarName: cultivarFields.cultivarNameSchema,
 	quantity: plantQuantitySchema
-})
-
+});
 
 export const LifespanUpdateCommandSchema = z.object({
 	lifespanId: z.string(),
-	origin: lifespanOriginSchema.optional(),
-	dates: 
-})
+	origin: lifespanOriginSchema.optional()
+	//dates:
+});

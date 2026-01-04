@@ -15,6 +15,10 @@
 		pane: CalendarPaneContext;
 	};
 	let { context, pane }: Props = $props();
+
+	/** 0-1 percentage that the section label takes of the section height. */
+	const LABEL_SECTION_HEIGHT_PORTION = 0.4;
+
 	/**
 	 * Calculates the leftpoint of a section, in %.
 	 * @param sectionIndex The index of the section from
@@ -37,16 +41,6 @@
 				(context.container.numSections + 1)) *
 			100
 		);
-	}
-
-	function itemDepthToTopMargin(depth: number) {
-		if (depth == 0) {
-			return 'mt-6';
-		} else if (depth == 1) {
-			return 'mt-2';
-		} else {
-			return 'mt-1';
-		}
 	}
 
 	function calculateInfoPointLeft(
@@ -79,18 +73,26 @@
 			<!-- Item row. -->
 			<div
 				style:left="{itemLeft}%"
-				style:height="{context.container.sectionHeight}px"
+				style:height="{item.item.labelOnly
+					? context.container.sectionHeight * LABEL_SECTION_HEIGHT_PORTION
+					: context.container.sectionHeight}px"
 				style:width="{itemWidth}%"
 				style:background-color={item.item.fillColor}
 				style:border-color={item.item.borderColor}
 				class={cn(
 					'relative flex flex-col rounded-sm border-2',
-					roundedStart ? 'rounded-l-none' : '',
-					itemDepthToTopMargin(depth)
+					item.expanded
+						? `mb-${item.item.bottomMarginChild !== undefined ? item.item.bottomMarginChild : item.item.bottomMargin}`
+						: `mb-${item.item.bottomMargin}`,
+					roundedStart ? 'rounded-l-none' : ''
 				)}
 			>
 				<!-- Top row - label-->
-				<div class="flex h-[40%] w-full items-center">
+				<div
+					class="flex w-full items-center {item.item.labelOnly
+						? 'h-[100%]'
+						: `h-[${LABEL_SECTION_HEIGHT_PORTION * 100}%]`}"
+				>
 					<span class="text-neutral-12 sticky left-0 flex items-center text-xs">
 						<!-- Label. -->
 						<span class="text-neutral-12 ml-2">
@@ -115,65 +117,68 @@
 					</span>
 				</div>
 
-				<!-- Seperator. -->
-				<div
-					style:background-color={item.item.borderColor}
-					class="h-[1px] w-full"
-				></div>
+				{#if item.item.labelOnly == false}
+					<!-- Seperator. -->
+					<div
+						style:background-color={item.item.borderColor}
+						class="h-[1px] w-full"
+					></div>
 
-				<!-- Info popups. -->
-				<div class="relative flex h-full w-full">
-					{#each item.item.infoPoints || [] as infoPoint}
-						{@const infoPointLeft = calculateInfoPointLeft(
-							item.item.startDate,
-							item.item.endDate,
-							infoPoint.date
-						)}
+					<!-- Info popups. -->
+					<div class="relative flex h-full w-full">
+						{#each item.item.infoPoints || [] as infoPoint}
+							{@const infoPointLeft = calculateInfoPointLeft(
+								item.item.startDate,
+								item.item.endDate,
+								infoPoint.date
+							)}
 
-						<div
-							style:left="{infoPointLeft}%"
-							style:width="{sectionWidthPx}px"
-							class="absolute flex h-full items-center"
-						>
-							{#snippet infoPointIcon(icon?: string)}
-								{#if icon}
-									<Icon
-										color={item.item.borderColor}
-										width="1.4rem"
-										{icon}
-										class="mx-auto"
-									/>
-								{:else}
-									<span
-										style:background-color={item.item.itemColor}
-										style:border-color={item.item.borderColor}
-										class="mx-auto h-5 w-5 rounded-lg border"
-									></span>
-								{/if}
-							{/snippet}
-
-							{#if infoPoint.popup}
-								<Popover.Root>
-									<Popover.Trigger>
-										{@render infoPointIcon(infoPoint.icon)}
-									</Popover.Trigger>
-									<Popover.Content>
-										<infoPoint.popup></infoPoint.popup>
-									</Popover.Content>
-								</Popover.Root>
-							{:else}
-								{@render infoPointIcon(infoPoint.icon)}
-							{/if}
-
-							<span
-								style:text-decoration-color={item.item.borderColor}
-								class="text-neutral-12 text-md absolute ml-[40px] w-64 truncate text-xs underline underline-offset-[5px]"
-								>{infoPoint.label}</span
+							<div
+								style:left="{infoPointLeft}%"
+								style:width="{sectionWidthPx}px"
+								class="absolute flex h-full items-center"
 							>
-						</div>
-					{/each}
-				</div>
+								{#snippet infoPointIcon(icon?: string)}
+									{#if icon}
+										<Icon
+											color={item.item.borderColor}
+											width="1.4rem"
+											{icon}
+											class="mx-auto"
+										/>
+									{:else}
+										<span
+											style:background-color={item.item.itemColor}
+											style:border-color={item.item.borderColor}
+											class="mx-auto h-5 w-5 rounded-lg border"
+										></span>
+									{/if}
+								{/snippet}
+
+								{#if infoPoint.popup}
+									<Popover.Root>
+										<Popover.Trigger>
+											{@render infoPointIcon(infoPoint.icon)}
+										</Popover.Trigger>
+										<Popover.Content>
+											<infoPoint.popup></infoPoint.popup>
+										</Popover.Content>
+									</Popover.Root>
+								{:else}
+									{@render infoPointIcon(infoPoint.icon)}
+								{/if}
+
+								<span
+									style:text-decoration-color={item.item.borderColor}
+									class="text-neutral-12 text-md absolute ml-[40px] w-64 truncate text-xs underline underline-offset-[5px]"
+									>{infoPoint.label}</span
+								>
+							</div>
+						{/each}
+					</div>
+				{/if}
 			</div>
+
 			{#if item.children?.length}
 				<ul
 					{...pane.tree.group}
@@ -198,7 +203,7 @@
 			></div>
 		{/each}
 
-		<ul {...pane.tree.root}>
+		<ul {...pane.tree.root} class="pt-2">
 			{@render calendarItems(pane.tree.children)}
 		</ul>
 	</div>

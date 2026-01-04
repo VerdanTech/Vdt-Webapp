@@ -1,6 +1,6 @@
 import { type Entity, type QueryResult, Schema as S, or } from '@triplit/client';
 
-import { gardenSchema } from '../gardens/index.js';
+import { observationSchema } from '../observations/index.js';
 
 /**
  * Specifies a type of geometry.
@@ -19,7 +19,7 @@ export const GeometryTypeEnumOptions = [
 ] as const;
 
 export const workspaceSchema = S.Collections({
-	...gardenSchema,
+	...observationSchema,
 	/** Coordinate schema. */
 	coordinates: {
 		schema: S.Schema({

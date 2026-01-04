@@ -1,9 +1,7 @@
 import { z } from 'zod';
 
 /** Field specifications. */
-const colorSchema = z
-	.string()
-	.describe("May be a hex value of one of Radix UI's colors");
+const colorSchema = z.string().describe('May be a hex value');
 export const fields = {
 	colorSchema
 };

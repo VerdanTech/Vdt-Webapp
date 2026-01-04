@@ -1,8 +1,11 @@
-import { type Entity, type QueryResult, Schema as S, or } from '@triplit/client';
+import { type Entity, Schema as S, or } from '@triplit/client';
 
 import { CultivarAttributes } from '../cultivars/attributes/index.js';
-import { cultivarSchema } from '../cultivars/schema.js';
+import { type Cultivar, cultivarSchema } from '../cultivars/schema.js';
+import { type Environment } from '../environments/schema.js';
+import { type DateRange } from '../time/utils.js';
 import { GeometryHistory, LocationHistory } from '../workspaces/schema.js';
+import { PlantObservation } from './observations.js';
 
 /**
  *
@@ -13,170 +16,8 @@ export const OriginEnumOptions = [
 	'SEEDLING_TO_TRANSPLANT'
 ] as const;
 
-export const LifespanDatesOptions = [
-	'SEED',
-	'GERMINATION',
-	'MATURE',
-	'DORMANCY',
-	'GROWTH',
-	'EXPIRY',
-] as const
-
-export const HarvestQualityEnumOptions = [
-	'COMPOST',
-	'LOW',
-	'MEDIUM',
-	'HIGH',
-	'PERFECT'
-] as const;
-
 export const plantSchema = S.Collections({
 	...cultivarSchema,
-	/** Harvest schema. */
-	harvests: {
-		schema: S.Schema({
-			id: S.Id(),
-
-			/** Garden the entity is located within - required for access control. */
-			gardenId: S.String(),
-
-			/** Lifespans which are included in the harvest. */
-			lifespanIds: S.Set(S.String(), { default: S.Default.Set.empty() }),
-
-			/** The date of the harvest. */
-			date: S.Date(),
-
-			/** The mass of the harvest in kilograms. */
-			mass: S.Optional(S.Number()),
-
-			/** The quality of the harvest. */
-			quality: S.Optional(S.String({ enum: [...HarvestQualityEnumOptions] })),
-
-			/** Optional description. */
-			description: S.String({ default: '' })
-		}),
-		relationships: {
-			garden: S.RelationById('gardens', '$gardenId'),
-			lifespans: S.RelationMany('lifespans', { where: [['id', 'in', '$lifespanIds']] })
-		},
-		permissions: {
-			anon: {
-				read: {
-					/** Allow anonymous reads if the garden is not hidden. */
-					filter: [['garden.visibility', '!=', 'HIDDEN']]
-				}
-			},
-			user: {
-				read: {
-					/** Allow reads if the garden is not hidden or the user is a member. */
-					filter: [
-						or([
-							['garden.visibility', '!=', 'HIDDEN'],
-							['garden.adminIds', 'has', '$role.profileId'],
-							['garden.editorIds', 'has', '$role.profileId'],
-							['garden.viewerIds', 'has', '$role.profileId']
-						])
-					]
-				},
-				insert: {
-					/** Allow new harvests to be created by admins and editors. */
-					filter: [
-						or([
-							['garden.adminIds', 'has', '$role.profileId'],
-							['garden.editorIds', 'has', '$role.profileId']
-						])
-					]
-				},
-				update: {
-					/** Restrict harvest updates to admins and editors. */
-					filter: [
-						or([
-							['garden.adminIds', 'has', '$role.profileId'],
-							['garden.editorIds', 'has', '$role.profileId']
-						])
-					]
-				},
-				delete: {
-					/** Restrict harvest deletes to admins and editors. */
-					filter: [
-						or([
-							['garden.adminIds', 'has', '$role.profileId'],
-							['garden.editorIds', 'has', '$role.profileId']
-						])
-					]
-				}
-			}
-		}
-	},
-	/** Lifespan date schema. */
-	lifespanDates: {
-		schema: S.Schema({
-			id: S.Id(),
-
-			/** Garden the entity is located within - required for access control. */
-			gardenId: S.String(),
-
-			/** Type of date that the value represents. */
-			dateId: S.String(),
-
-			/** Date value. */
-			value: S.Date(),
-
-			/** Optional unstructured data. */
-			extra: S.Optional(S.Json({})),
-		}),
-		relationships: {
-			garden: S.RelationById('gardens', '$gardenId'),
-		},
-		permissions: {
-			anon: {
-				read: {
-					/** Allow anonymous reads if the garden is not hidden. */
-					filter: [['garden.visibility', '!=', 'HIDDEN']]
-				}
-			},
-			user: {
-				read: {
-					/** Allow reads if the garden is not hidden or the user is a member. */
-					filter: [
-						or([
-							['garden.visibility', '!=', 'HIDDEN'],
-							['garden.adminIds', 'has', '$role.profileId'],
-							['garden.editorIds', 'has', '$role.profileId'],
-							['garden.viewerIds', 'has', '$role.profileId']
-						])
-					]
-				},
-				insert: {
-					/** Allow new lifespan dates to be created by admins and editors. */
-					filter: [
-						or([
-							['garden.adminIds', 'has', '$role.profileId'],
-							['garden.editorIds', 'has', '$role.profileId']
-						])
-					]
-				},
-				update: {
-					/** Restrict lifespan date updates to admins and editors. */
-					filter: [
-						or([
-							['garden.adminIds', 'has', '$role.profileId'],
-							['garden.editorIds', 'has', '$role.profileId']
-						])
-					]
-				},
-				delete: {
-					/** Restrict lifespan date deletes to admins and editors. */
-					filter: [
-						or([
-							['garden.adminIds', 'has', '$role.profileId'],
-							['garden.editorIds', 'has', '$role.profileId']
-						])
-					]
-				}
-			}
-		}
-	},
 	/** Lifespan schema. */
 	lifespans: {
 		schema: S.Schema({
@@ -191,19 +32,16 @@ export const plantSchema = S.Collections({
 			/** The geometries of the lifespan. */
 			geometryHistoryId: S.Optional(S.String()),
 
-			/** The locations of the lifespan& */
-			locationHistoryId: S.Optional(S.String()),
-
-			/** The dates of the lifespan. */
-			dates: S.Record({
-
-			})
+			/** The locations of the lifespan. */
+			locationHistoryId: S.Optional(S.String())
 		}),
 		relationships: {
 			garden: S.RelationById('gardens', '$gardenId'),
 			geometryHistory: S.RelationById('geometryHistories', '$geometryHistoryId'),
 			locationHistory: S.RelationById('locationHistories', '$locationHistoryId'),
-			harvests: S.RelationMany('harvests', { where: [['id', 'in', '$harvestIds']] })
+			observations: S.RelationMany('observations', {
+				where: [['entityIds', 'has', '$id']]
+			})
 		},
 		permissions: {
 			anon: {
@@ -406,10 +244,10 @@ export const plantSchema = S.Collections({
 	}
 });
 export type Origin = (typeof OriginEnumOptions)[number];
-export type Harvest = Entity<typeof plantSchema, 'harvests'>;
 export type Lifespan = Entity<typeof plantSchema, 'lifespans'> & {
 	locationHistory: LocationHistory | null;
 	geometryHistory: GeometryHistory | null;
+	observations: PlantObservation[] | null;
 };
 export type Plant = Entity<typeof plantSchema, 'plants'> & {
 	expectedLifespan: Lifespan | null;
@@ -421,4 +259,11 @@ export const OriginEnumLabels: Record<Origin, string> = {
 	DIRECT_SEED: 'Direct Seed',
 	SEEDLING_TO_TRANSPLANT: 'Seedling to Transplant',
 	SEED_TO_TRANSPLANT: 'Seed to Transplant'
+};
+
+export type PlantingWindow = {
+	cultivarName: string;
+	cultivar: Cultivar;
+	environment: Environment;
+	windows: Array<DateRange>;
 };
