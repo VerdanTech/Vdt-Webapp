@@ -18,6 +18,7 @@ const DEFAULT_SECTION_HEIGHT = 64;
 type CalendarPaneSpec = {
 	entityType: string;
 	items: () => CalendarItem[];
+	defaultExpanded?: boolean
 };
 
 /**
@@ -139,9 +140,13 @@ export function createCalendarPaneContext(spec: CalendarPaneSpec) {
 	const tree = new Tree({
 		items: spec.items,
 		expandOnClick: true,
-		multiple: true
+		multiple: true,
 		//onSelectedChange: onSelectedChangeHandler
 	});
+
+	if (spec.defaultExpanded) {
+		tree.expand()
+	}
 
 	return {
 		/** Getters. */

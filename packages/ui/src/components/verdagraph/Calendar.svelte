@@ -149,12 +149,12 @@
 
 	const verdagraphContext = getVerdagraphContext();
 	const calendarContext = createCalendarContext(verdagraphContext.timeline, [
-		{ entityType: 'plants', items: () => plantItems },
+		{ entityType: 'plants', items: () => plantItems, defaultExpanded: true },
 		{
 			entityType: 'plantingWindows',
-			items: () => plantingWindowItems
+			items: () => plantingWindowItems, defaultExpanded: true 
 		},
-		{ entityType: 'actions', items: () => [] }
+		{ entityType: 'actions', items: () => [], defaultExpanded: true  }
 	]);
 </script>
 

@@ -81,6 +81,7 @@
 				style:border-color={item.item.borderColor}
 				class={cn(
 					'relative flex flex-col rounded-sm border-2',
+					item.expanded ? item.item.itemStyleExpanded || '' : item.item.itemStyleCollapsed || '',
 					item.expanded
 						? `mb-${item.item.bottomMarginChild !== undefined ? item.item.bottomMarginChild : item.item.bottomMargin}`
 						: `mb-${item.item.bottomMargin}`,

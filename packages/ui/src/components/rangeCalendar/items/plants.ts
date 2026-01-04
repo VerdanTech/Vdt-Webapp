@@ -51,7 +51,8 @@ export function plantCalendarItem(value: {
 		fillColor,
 		borderColor,
 		itemColor,
-		bottomMargin: 0
+		bottomMargin: 0,
+		itemStyleCollapsed: 'rounded-none border-t-0'
 	};
 	const recordedLifespanItem: CalendarItem = {
 		id: value.plant.recordedLifespan.id,
@@ -63,7 +64,8 @@ export function plantCalendarItem(value: {
 		fillColor,
 		borderColor,
 		itemColor,
-		bottomMargin: 4
+		bottomMargin: 4,
+		itemStyleCollapsed: 'rounded-l-none rounded-r-none rounded-b-sm border-t-0'
 	};
 
 	return {
@@ -78,6 +80,7 @@ export function plantCalendarItem(value: {
 		borderColor,
 		itemColor,
 		bottomMargin: 4,
-		bottomMarginChild: 0
+		bottomMarginChild: 0,
+		itemStyleExpanded: 'rounded-b-none'
 	};
 }

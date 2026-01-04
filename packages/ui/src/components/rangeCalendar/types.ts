@@ -23,7 +23,7 @@ export type CalendarItem = TreeItem & {
 	startDate: DateValue;
 	/** End date the item is rendered at. Inclusive. */
 	endDate: DateValue;
-	/** Colors of the item. */
+	/** Colors of the item. TODO: change to match naming in cultivar attributes. */
 	fillColor: string;
 	borderColor: string;
 	itemColor: string;
@@ -31,8 +31,10 @@ export type CalendarItem = TreeItem & {
 	bottomMargin: number;
 	/** The number of pixels for the bottom margin when the item is expanded. */
 	bottomMarginChild?: number;
-	/** Whether to round and allow border for item sides. */
-	//border?: 'full' | 'top' | 'bottom' | 'middle' ;
+	/** Classes to apply to the item when collapsed. */
+	itemStyleCollapsed?: string;
+	/** Classes to apply to the item when expanded. */
+	itemStyleExpanded?: string;
 	/** Info points located on the item. */
 	infoPoints?: CalendarItemInfoPoint[];
 	/** Optional children displayed under this one as a collapsible. */
