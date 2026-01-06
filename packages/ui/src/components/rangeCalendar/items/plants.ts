@@ -5,7 +5,8 @@ import { type Cultivar, type Plant, historyGetRange } from '@vdg-webapp/models';
 
 import { getColor } from '$utils';
 
-import type { CalendarItem } from '../types';
+import { PlantObservationLabels } from '../../../../../models/dist/plants/observations';
+import type { CalendarItem, CalendarItemInfoPoint } from '../types';
 
 const defaultBaseColor = getColor('grass', 6, mode.current);
 const defaultBorderColor = getColor('grass', 11, mode.current);
@@ -41,6 +42,13 @@ export function plantCalendarItem(value: {
 		value.cultivar.attributes.color?.outlineColor || defaultBorderColor;
 	const itemColor = value.cultivar.attributes.color?.textColor || defaultItemColor;
 
+	const expectedLifespanInfoPoints: CalendarItemInfoPoint[] =
+		value.plant.expectedLifespan.observations?.map((observation) => {
+			return {
+				label: PlantObservationLabels[observation.type] ?? 'Unknown Observation',
+				date: fromDate(observation.date, getLocalTimeZone())
+			};
+		}) ?? [];
 	const expectedLifespanItem: CalendarItem = {
 		id: value.plant.expectedLifespan.id,
 		label: 'Expected',
@@ -52,7 +60,8 @@ export function plantCalendarItem(value: {
 		borderColor,
 		itemColor,
 		bottomMargin: 0,
-		itemStyleCollapsed: 'rounded-none border-t-0'
+		itemStyleCollapsed: 'rounded-none border-t-0',
+		infoPoints: expectedLifespanInfoPoints
 	};
 	const recordedLifespanItem: CalendarItem = {
 		id: value.plant.recordedLifespan.id,
@@ -65,7 +74,7 @@ export function plantCalendarItem(value: {
 		borderColor,
 		itemColor,
 		bottomMargin: 4,
-		itemStyleCollapsed: 'rounded-l-none rounded-r-none rounded-b-sm border-t-0'
+		itemStyleCollapsed: 'rounded-t-none border-t-0'
 	};
 
 	return {

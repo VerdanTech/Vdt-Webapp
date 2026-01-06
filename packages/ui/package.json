@@ -33,7 +33,7 @@
 		"@internationalized/date": "^3.8.2",
 		"@lucide/svelte": "^0.510.0",
 		"@melt-ui/pp": "^0.3.2",
-		"@melt-ui/svelte": "^0.83.0",
+		"@melt-ui/svelte": "^0.86.6",
 		"@radix-ui/colors": "^3.0.0",
 		"@sveltejs/adapter-auto": "^3.3.1",
 		"@sveltejs/kit": "^2.21.4",
@@ -83,6 +83,6 @@
 		"@triplit/svelte": "^1.0.43",
 		"@vdg-webapp/models": "workspace:*",
 		"konva": "^9.3.20",
-		"melt": "^0.14.1"
+		"melt": "^0.44.0"
 	}
 }

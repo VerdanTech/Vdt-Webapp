@@ -8,9 +8,9 @@ import { getColor } from '$utils';
 import { getBoundingDateRange } from '../../../../../models/src/time/utils';
 import type { CalendarItem } from '../types';
 
-const defaultBaseColor =getColor('grass', 6, mode.current);
-const defaultBorderColor =getColor('grass', 11, mode.current);
-const defaultItemColor =getColor('grass', 8, mode.current);
+const defaultBaseColor = getColor('grass', 6, mode.current);
+const defaultBorderColor = getColor('grass', 11, mode.current);
+const defaultItemColor = getColor('grass', 8, mode.current);
 
 export function plantingWindowCalendarItem(value: {
 	plantingWindow: PlantingWindow;

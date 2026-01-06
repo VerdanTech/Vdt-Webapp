@@ -44,13 +44,11 @@ See the [documentation](https://verdagraph.org) for background on this repositor
 This repository is a monorepo using [Turbo](https://turborepo.com/) on top of PNPM and contains the following components:
 
 - `packages` This folder contains all reusable library code. It contains the following packages:
-
   - `typescript-config`, `eslint-config`, `tailwind-config` Common configuration files.
   - `models` Contains the database schemas, validation logic, and associated business logic for the domain models of the application.
   - `ui` Contains all reusable components used across the other projects.
 
 - `apps` This folder contains the following applications:
-
   - `docs` The landing page and documentation site.
   - `demo` A minimal version of the client application for demonstrating functionality.
   - `web` The client application.

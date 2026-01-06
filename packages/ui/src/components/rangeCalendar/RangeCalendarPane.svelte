@@ -107,7 +107,7 @@
 								width="1.25rem"
 								class={cn('text-neutral-9 mx-1', item.expanded ? 'rotate-90' : '')}
 							/>
-						{:else}
+						{:else if item.item.description}
 							<span class="bg-neutral-10 mx-2 h-[3px] w-[3px] rounded-lg"></span>
 						{/if}
 
@@ -122,7 +122,7 @@
 					<!-- Seperator. -->
 					<div
 						style:background-color={item.item.borderColor}
-						class="h-[1px] w-full"
+						class="h-[1px] w-full opacity-60"
 					></div>
 
 					<!-- Info popups. -->

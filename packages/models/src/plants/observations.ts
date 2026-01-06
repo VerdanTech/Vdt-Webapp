@@ -99,3 +99,22 @@ export type PlantObservation =
 	| PlantDormancyEnterObservation
 	| PlantDormancyExitObservation
 	| PlantFlowerObservation;
+
+export type PlantObservationId =
+	| PlantSeedObservationId
+	| PlantGermObservationId
+	| PlantHarvestObservationId
+	| PlantExpiryObservationId
+	| PlantDormancyEnterObservationId
+	| PlantDormancyExitObservationId
+	| PlantFlowerObservationId;
+
+export const PlantObservationLabels: Record<PlantObservationId, string> = {
+	'plant-seed': 'Seed',
+	'plant-germ': 'Germination',
+	'plant-harvest': 'Harvest',
+	'plant-expiry': 'Expiry',
+	'plant-dormancy-enter': 'Dormancy',
+	'plant-growth-enter': 'Growth',
+	'plant-flower': 'Flower'
+};
