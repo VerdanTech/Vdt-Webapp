@@ -262,8 +262,21 @@ export const OriginEnumLabels: Record<Origin, string> = {
 };
 
 export type PlantingWindow = {
+	range: DateRange;
+	/**
+	 * A number from 0-1, where 0 indicates a plant should not be planted under any circumstances
+	 * and a 1 indicates the optimal conditions for planting.
+	 */
+	suitability: number;
+};
+
+export type CultivarPlantingWindow = {
 	cultivarName: string;
 	cultivar: Cultivar;
 	environment: Environment;
-	windows: Array<DateRange>;
+	/**
+	 * All suitability outside of defined ranges is set to 0.
+	 * Overlap of ranges is invalid.
+	 */
+	windows: Array<PlantingWindow>;
 };

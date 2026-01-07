@@ -1,11 +1,10 @@
 import { fromDate, getLocalTimeZone } from '@internationalized/date';
 import { mode } from 'mode-watcher';
 
-import { type PlantingWindow } from '@vdg-webapp/models';
+import { type PlantingWindow, getBoundingDateRange } from '@vdg-webapp/models';
 
 import { getColor } from '$utils';
 
-import { getBoundingDateRange } from '../../../../../models/src/time/utils';
 import type { CalendarItem } from '../types';
 
 const defaultBaseColor = getColor('grass', 6, mode.current);

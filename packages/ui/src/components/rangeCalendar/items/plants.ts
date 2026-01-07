@@ -1,11 +1,15 @@
 import { fromDate, getLocalTimeZone } from '@internationalized/date';
 import { mode } from 'mode-watcher';
 
-import { type Cultivar, type Plant, historyGetRange } from '@vdg-webapp/models';
+import {
+	type Cultivar,
+	type Plant,
+	PlantObservationLabels,
+	historyGetRange
+} from '@vdg-webapp/models';
 
 import { getColor } from '$utils';
 
-import { PlantObservationLabels } from '../../../../../models/dist/plants/observations';
 import type { CalendarItem, CalendarItemInfoPoint } from '../types';
 
 const defaultBaseColor = getColor('grass', 6, mode.current);

@@ -4,9 +4,13 @@ import { type Component } from 'svelte';
 
 /** Describes an indicator with custom popup located on a calendar item. */
 export type CalendarItemInfoPoint = {
+	/** Label, visible beside info point. */
 	label: string;
+	/** Date of the point. */
 	date: DateValue;
+	/** Icon to display. Defaults to a circle. */
 	icon?: string;
+	/** Optional popup component. */
 	popup?: Component;
 };
 

@@ -96,7 +96,8 @@
 				>
 					<span class="text-neutral-12 sticky left-0 flex items-center text-xs">
 						<!-- Label. -->
-						<span class="text-neutral-12 ml-2">
+						<span 
+						class="text-neutral-12 ml-2 px-2 py-0.5 rounded-md border">
 							{item.item.label}
 						</span>
 
@@ -170,8 +171,9 @@
 								{/if}
 
 								<span
-									style:text-decoration-color={item.item.borderColor}
-									class="text-neutral-12 text-md absolute ml-[40px] w-64 truncate text-xs underline underline-offset-[5px]"
+									style:background-color={item.item.itemColor}
+									style:border-color={item.item.borderColor}
+									class="text-neutral-12 absolute ml-[30px] md:ml-[40px] w-auto px-2 py-0.5 rounded-md border truncate text-xs"
 									>{infoPoint.label}</span
 								>
 							</div>
