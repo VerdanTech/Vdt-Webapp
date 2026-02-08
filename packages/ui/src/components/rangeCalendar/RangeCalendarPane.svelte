@@ -97,7 +97,7 @@
 					<span class="text-neutral-12 sticky left-0 flex items-center text-xs">
 						<!-- Label. -->
 						<span 
-						class="text-neutral-12 ml-2 px-2 py-0.5 rounded-md border">
+						class="text-neutral-12 ml-2 px-2 py-0.5 rounded-md">
 							{item.item.label}
 						</span>
 
@@ -149,21 +149,21 @@
 											class="mx-auto"
 										/>
 									{:else}
-										<span
+										<div
 											style:background-color={item.item.itemColor}
 											style:border-color={item.item.borderColor}
 											class="mx-auto h-5 w-5 rounded-lg border"
-										></span>
+										></div>
 									{/if}
 								{/snippet}
 
 								{#if infoPoint.popup}
 									<Popover.Root>
-										<Popover.Trigger>
+										<Popover.Trigger class="w-full">
 											{@render infoPointIcon(infoPoint.icon)}
 										</Popover.Trigger>
 										<Popover.Content>
-											<infoPoint.popup></infoPoint.popup>
+											<infoPoint.popup {...infoPoint.popupProps} />
 										</Popover.Content>
 									</Popover.Root>
 								{:else}

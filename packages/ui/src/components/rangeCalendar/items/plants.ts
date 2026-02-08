@@ -4,13 +4,16 @@ import { mode } from 'mode-watcher';
 import {
 	type Cultivar,
 	type Plant,
+	type PlantObservation,
 	PlantObservationLabels,
 	historyGetRange
 } from '@vdg-webapp/models';
 
+
 import { getColor } from '$utils';
 
-import type { CalendarItem, CalendarItemInfoPoint } from '../types';
+import { type CalendarItem, type CalendarItemInfoPoint, createInfoPoint } from '../types';
+import { PlantObservationPopupContentComponents } from './infoPoints/observations/index';
 
 const defaultBaseColor = getColor('grass', 6, mode.current);
 const defaultBorderColor = getColor('grass', 11, mode.current);
@@ -46,12 +49,17 @@ export function plantCalendarItem(value: {
 		value.cultivar.attributes.color?.outlineColor || defaultBorderColor;
 	const itemColor = value.cultivar.attributes.color?.textColor || defaultItemColor;
 
-	const expectedLifespanInfoPoints: CalendarItemInfoPoint[] =
+	const expectedLifespanInfoPoints: CalendarItemInfoPoint<{observation: PlantObservation}>[] =
 		value.plant.expectedLifespan.observations?.map((observation) => {
-			return {
-				label: PlantObservationLabels[observation.type] ?? 'Unknown Observation',
-				date: fromDate(observation.date, getLocalTimeZone())
-			};
+			const label = PlantObservationLabels[observation.type] ?? 'Unknown Observation'
+			return createInfoPoint({
+				label: label,
+				date: fromDate(observation.date, getLocalTimeZone()),
+				popup: PlantObservationPopupContentComponents[observation.type] ?? undefined,
+				popupProps: {
+					observation,
+				}
+			});
 		}) ?? [];
 	const expectedLifespanItem: CalendarItem = {
 		id: value.plant.expectedLifespan.id,
@@ -67,6 +75,14 @@ export function plantCalendarItem(value: {
 		itemStyleCollapsed: 'rounded-none border-t-0',
 		infoPoints: expectedLifespanInfoPoints
 	};
+	const recordedLifespanInfoPoints: CalendarItemInfoPoint<{observation: PlantObservation}>[] =
+		value.plant.recordedLifespan.observations?.map((observation) => {
+			return {
+				label: PlantObservationLabels[observation.type] ?? 'Unknown Observation',
+				date: fromDate(observation.date, getLocalTimeZone()),
+				//popup: ObservationInfopoint
+			};
+		}) ?? [];
 	const recordedLifespanItem: CalendarItem = {
 		id: value.plant.recordedLifespan.id,
 		label: 'Recorded',
@@ -78,7 +94,8 @@ export function plantCalendarItem(value: {
 		borderColor,
 		itemColor,
 		bottomMargin: 4,
-		itemStyleCollapsed: 'rounded-t-none border-t-0'
+		itemStyleCollapsed: 'rounded-t-none border-t-0',
+		infoPoints: recordedLifespanInfoPoints
 	};
 
 	return {

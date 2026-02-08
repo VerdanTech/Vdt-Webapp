@@ -2,7 +2,7 @@
 	import { CalendarDate } from '@internationalized/date';
 	import { mode } from 'mode-watcher';
 
-	import type { Cultivar, Plant, PlantingWindow } from '@vdg-webapp/models';
+	import type { Cultivar, CultivarPlantingWindow, Plant, PlantingWindow } from '@vdg-webapp/models';
 
 	import { iconIds } from '$assets';
 	import { RangeCalendar, createCalendarContext } from '$components';
@@ -109,7 +109,7 @@
 			}
 		}
 	];
-	const windows: PlantingWindow[] = [
+	const windows: CultivarPlantingWindow[] = [
 		{
 			cultivarName: 'tomato',
 			cultivar: {
@@ -130,7 +130,11 @@
 				inherit: false,
 				attributes: {}
 			},
-			windows: [{ start: new Date(2026, 0, 1), end: new Date(2026, 0, 6) }]
+			windows: [
+				{
+					range: { start: new Date(2026, 0, 1), end: new Date(2026, 0, 6) }, suitability: 1
+				}
+			]
 		}
 	];
 
