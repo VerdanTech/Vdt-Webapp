@@ -2,12 +2,14 @@ import { type DateValue } from '@internationalized/date';
 import { type TreeItem } from 'melt/builders';
 import { type Component } from 'svelte';
 
-/** 
- * Describes an indicator with custom popup located on a calendar item. 
+/**
+ * Describes an indicator with custom popup located on a calendar item.
  * Any is necessary to allow us to pass anything to our popup components.
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type CalendarItemInfoPoint<TProps extends Record<string, any> = Record<string, any>> = {
+export type CalendarItemInfoPoint<
+	TProps extends Record<string, any> = Record<string, any>
+> = {
 	/** Label, visible beside info point. */
 	label: string;
 	/** Date of the point. */
@@ -20,8 +22,10 @@ export type CalendarItemInfoPoint<TProps extends Record<string, any> = Record<st
 };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function createInfoPoint<T extends Record<string, any> >(point: CalendarItemInfoPoint<T>) {
-    return point;
+export function createInfoPoint<T extends Record<string, any>>(
+	point: CalendarItemInfoPoint<T>
+) {
+	return point;
 }
 
 /** Describes a row on the calendar. */

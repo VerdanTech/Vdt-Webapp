@@ -4,6 +4,7 @@ import { type ControllerContext, resolveCultivar } from '@vdg-webapp/models';
 import { AppError, type Cultivar } from '@vdg-webapp/models';
 
 import type { GardenContext } from './gardenContext.svelte';
+import type { TimelineContext } from './timelineContext.svelte';
 
 const MAX_CULTIVAR_COLLECTION_INHERITANCE_DEPTH = 16;
 const MAX_CULTIVAR_INHERITANCE_DEPTH = 16;
@@ -13,15 +14,18 @@ const MAX_CULTIVAR_INHERITANCE_DEPTH = 16;
  */
 export function createPlantsContext(
 	controller: ControllerContext,
+	timeline: TimelineContext,
 	garden: GardenContext
 ) {
-	/** Queries all plants in the garden. */
+	/** Queries all plants in the garden and within the selected timeline. */
 	const plantsQuery = $derived(
 		useQuery(
 			controller.triplit,
 			controller.triplit
 				.query('plants')
 				.Where('gardenId', '=', garden.id)
+				.Where('beginDate', '>=', timeline.beginSelection)
+				.Where('endDate', '<=', timeline.endSelection)
 				.Include('expectedLifespan', (rel) =>
 					rel('expectedLifespan')
 						.Include('geometryHistory', (rel) =>

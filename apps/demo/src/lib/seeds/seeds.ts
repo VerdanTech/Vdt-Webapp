@@ -3,6 +3,7 @@ import { type BulkInsert } from '@triplit/client';
 import { schema } from '@vdg-webapp/models';
 
 import cultivarsSeed from './cultivars';
+import environmentSeed from './environments';
 import gardenSeed from './garden';
 import plantingAreasSeed from './plantingAreas';
 import userSeed from './user';
@@ -11,6 +12,7 @@ import workspacesSeed from './workspace';
 const seeds: Array<() => Record<string, unknown[]>> = [
 	userSeed,
 	gardenSeed,
+	environmentSeed,
 	workspacesSeed,
 	plantingAreasSeed,
 	cultivarsSeed

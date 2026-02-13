@@ -8,9 +8,7 @@ import { commonFields } from '../commands.js';
 //const workspaceNameSchema = commonFields.nameSchema.describe(
 //    'Name of the workspace. Must be unique within a garden.'
 //);
-export const observationFields = {
-    
-};
+export const observationFields = {};
 
 /** Commands. */
 
@@ -18,9 +16,9 @@ export const observationFields = {
  * Update an observation's date.
  */
 export const ObservationUpdateCommandSchema = z.object({
-    id: z.string(),
-    entityIds: z.set(z.string()).optional(),
-    date: z.date().optional(),
-    data: z.record(z.string(), z.any()).optional()
-})
+	id: z.string(),
+	entityIds: z.set(z.string()).optional(),
+	date: z.date().optional(),
+	data: z.record(z.string(), z.any()).optional()
+});
 export type ObservationUpdateCommand = z.infer<typeof ObservationUpdateCommandSchema>;

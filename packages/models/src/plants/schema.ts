@@ -115,6 +115,16 @@ export const plantSchema = S.Collections({
 			/** Lifespan attributes populated by observations of users. */
 			recordedLifespanId: S.String(),
 
+			/**
+			 * Range of dates which encapsulates all dates applicable to this plant.
+			 * This data is denormalized and must be updated alongside the update of
+			 * plant Lifespans.
+			 * This is necessary in order to not rely on complex query logic of what
+			 * time range a plant exists in.
+			 */
+			beginDate: S.Date(),
+			endDate: S.Date(),
+
 			/** The number of distinct plants which are managed together in this plant instance. */
 			quantity: S.Number({ default: 1 })
 		}),

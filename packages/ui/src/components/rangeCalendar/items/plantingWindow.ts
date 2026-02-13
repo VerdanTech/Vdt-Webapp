@@ -14,11 +14,11 @@ const defaultItemColor = getColor('grass', 8, mode.current);
 export function plantingWindowCalendarItem(value: {
 	plantingWindow: CultivarPlantingWindow;
 }): CalendarItem | null {
-	const ranges = value.plantingWindow.windows.map(window => window.range) ?? []
+	const ranges = value.plantingWindow.windows.map((window) => window.range) ?? [];
 	if (!ranges) {
 		return null;
 	}
-	console.log(ranges)
+	console.log(ranges);
 	const totalRange = getBoundingDateRange(ranges);
 	if (!totalRange) {
 		return null;

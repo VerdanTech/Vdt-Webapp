@@ -3,14 +3,13 @@ import { Schema as S } from '@triplit/client';
 import { GeometryTypeEnumOptions } from '../../../workspaces/schema.js';
 
 /** Schema. */
-export const PlantExpectedGeometryProfile = S.Record({
-	geometryType: S.String({ enum: GeometryTypeEnumOptions }),
-	peakSize: S.Number(),
-	seedScaleFactor: S.Number(),
-	seedlingScaleFactor: S.Number(),
-	firstHarvestScaleFactor: S.Number(),
-	lastHarvestScaleFactor: S.Number(),
-	expiryScaleFactor: S.Number(),
-	exitDormancyScaleFactor: S.Number(),
-	enterDormancyScaleFactor: S.Number()
+export const ExpectedGeometryProfile = S.Record({
+	geometryType: S.Optional(S.String({ enum: GeometryTypeEnumOptions })),
+	peakSize: S.Optional(S.Number()),
+	seedlingScaleFactor: S.Optional(S.Number()),
+	firstHarvestScaleFactor: S.Optional(S.Number()),
+	lastHarvestScaleFactor: S.Optional(S.Number()),
+	expiryScaleFactor: S.Optional(S.Number()),
+	exitDormancyScaleFactor: S.Optional(S.Number()),
+	enterDormancyScaleFactor: S.Optional(S.Number())
 });

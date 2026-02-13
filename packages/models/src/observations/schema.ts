@@ -1,6 +1,7 @@
 import { type Entity, Schema as S, or } from '@triplit/client';
 
 import { gardenSchema } from '../gardens/schema.js';
+import { ObservationIds } from './ids.js';
 
 export const observationSchema = S.Collections({
 	...gardenSchema,
@@ -13,7 +14,7 @@ export const observationSchema = S.Collections({
 			gardenId: S.String(),
 
 			/** Type of observation - plant/harvest, environment/air_temperature, etc.. */
-			type: S.String(),
+			type: S.String({ enum: [...ObservationIds] }),
 
 			/** IDs of the primary entities which the observation applies to. */
 			entityIds: S.Set(S.String(), { default: S.Default.Set }),
@@ -78,7 +79,6 @@ export const observationSchema = S.Collections({
 	}
 });
 export type GenericObservation = Entity<typeof observationSchema, 'observations'>;
-export type Observation<TId, TData> = Omit<GenericObservation, 'type' | 'data'> & {
-	type: TId;
+export type Observation<TData> = Omit<GenericObservation, 'data'> & {
 	data: TData;
 };

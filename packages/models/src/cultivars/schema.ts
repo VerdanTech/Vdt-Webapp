@@ -205,7 +205,7 @@ export const cultivarSchema = S.Collections({
 					/**
 					 * Allow cultivars to be deleted:
 					 * if the garden is defined, the user must be an admin in the garden.
-					 * Otherwise, the user can deleted their own collections.
+					 * Otherwise, the user can delete their own collections.
 					 */
 					filter: [
 						or([

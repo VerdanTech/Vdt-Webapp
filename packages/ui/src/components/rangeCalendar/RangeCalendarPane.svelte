@@ -7,6 +7,7 @@
 	import { Popover } from '$core';
 	import { ScrollArea } from '$core/scroll-area/index.js';
 	import { cn } from '$utils';
+	import * as Tooltip from '$core/tooltip';
 
 	import { type CalendarContext, type CalendarPaneContext } from './context.svelte';
 
@@ -157,25 +158,24 @@
 									{/if}
 								{/snippet}
 
-								{#if infoPoint.popup}
+							<Tooltip.Root>
+								<Tooltip.Trigger class="w-full">
+									{#if infoPoint.popup}
 									<Popover.Root>
 										<Popover.Trigger class="w-full">
 											{@render infoPointIcon(infoPoint.icon)}
 										</Popover.Trigger>
-										<Popover.Content>
-											<infoPoint.popup {...infoPoint.popupProps} />
-										</Popover.Content>
-									</Popover.Root>
+									<Popover.Content>
+										<infoPoint.popup {...infoPoint.popupProps} />
+									</Popover.Content>
+								</Popover.Root>
 								{:else}
-									{@render infoPointIcon(infoPoint.icon)}
+								{@render infoPointIcon(infoPoint.icon)}
 								{/if}
-
-								<span
-									style:background-color={item.item.itemColor}
-									style:border-color={item.item.borderColor}
-									class="text-neutral-12 absolute ml-[30px] md:ml-[40px] w-auto px-2 py-0.5 rounded-md border truncate text-xs"
-									>{infoPoint.label}</span
-								>
+							</Tooltip.Trigger>
+							<Tooltip.Content>{infoPoint.label}
+							</Tooltip.Content>
+						</Tooltip.Root>
 							</div>
 						{/each}
 					</div>

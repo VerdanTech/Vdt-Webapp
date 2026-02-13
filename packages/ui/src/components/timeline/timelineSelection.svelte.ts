@@ -1,16 +1,15 @@
 import {
 	type DateDuration,
 	type DateValue,
+	fromDate,
 	getLocalTimeZone,
 	today
 } from '@internationalized/date';
 
+import { type TimelineContext } from '$state/application/timelineContext.svelte';
+
 import { calculateDeltaDays, calendarDateToUtc } from './utils';
 
-/** Default offset between selected day and the upper selection range. */
-const defaultUpperSelectionOffset: DateDuration = { weeks: 3 };
-/** Default offset between selected day lower selection range. */
-const defaultLowerSelectionOffset: DateDuration = { weeks: 1 };
 /** Default offset between upper and lower selection and range displayed on the slider. */
 const defaultSliderDisplayOffset: DateDuration = {
 	weeks: 2
@@ -30,7 +29,7 @@ const translateRangeInterval = 50;
 const forwardTranslateRange = { days: 3 };
 const backwardTranslateRange = { days: -1 };
 
-export function createTimelineSelection() {
+export function createTimelineSelection(timeline: TimelineContext) {
 	/**
 	 * Selection.
 	 */
@@ -39,14 +38,26 @@ export function createTimelineSelection() {
 	/** Controls the view of the Layout. */
 	let focus: DateValue = $state(today(getLocalTimeZone()));
 	/** Day which marks the start of the timeline selection. */
-	let beginSelection: DateValue = $state(focus.subtract(defaultLowerSelectionOffset));
+	let beginSelection: DateValue = $state(
+		fromDate(timeline.beginSelection, getLocalTimeZone())
+	);
 	/** Day which marks the end of the timeline selection. */
-	let endSelection: DateValue = $state(focus.add(defaultUpperSelectionOffset));
+	let endSelection: DateValue = $state(
+		fromDate(timeline.endSelection, getLocalTimeZone())
+	);
+
+	/** Update the timeline context. */
+	$effect(() => {
+		timeline.beginSelection = beginSelection.toDate(getLocalTimeZone());
+	});
+	$effect(() => {
+		timeline.endSelection = endSelection.toDate(getLocalTimeZone());
+	});
 
 	/** Derived selection. */
 	const focusUtc: Date = $derived(calendarDateToUtc(focus));
-	const beginSelectionUtc: Date = $derived(calendarDateToUtc(beginSelection));
-	const endSelectionUtc: Date = $derived(calendarDateToUtc(endSelection));
+	//const beginSelectionUtc: Date = $derived(calendarDateToUtc(beginSelection));
+	//const endSelectionUtc: Date = $derived(calendarDateToUtc(endSelection));
 
 	/**
 	 * Slider properties.
@@ -117,11 +128,10 @@ export function createTimelineSelection() {
 			return;
 		}
 
+		timeline.reset();
 		focus = today(getLocalTimeZone());
-		beginSelection = focus.subtract(defaultLowerSelectionOffset);
-		endSelection = focus.add(defaultUpperSelectionOffset);
-		beginSlider = beginSelection.subtract(defaultSliderDisplayOffset);
-		endSlider = endSelection.add(defaultSliderDisplayOffset);
+		beginSelection = fromDate(timeline.beginSelection, getLocalTimeZone());
+		endSelection = fromDate(timeline.endSelection, getLocalTimeZone());
 	}
 
 	/**
@@ -268,12 +278,14 @@ export function createTimelineSelection() {
 		get focusUtc() {
 			return focusUtc;
 		},
+		/** 
 		get beginSelectionUtc() {
 			return beginSelectionUtc;
 		},
 		get endSelectionUtc() {
 			return endSelectionUtc;
 		},
+		*/
 		get minSliderValue() {
 			return minSliderValue;
 		},

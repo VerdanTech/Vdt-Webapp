@@ -6,6 +6,7 @@ import { type ClientContextParams, createClientContext } from './client.svelte';
 import { createCultivarContext } from './cultivarContext.svelte';
 import { createGardenContext } from './gardenContext.svelte';
 import { createPlantsContext } from './plantsContext.svelte';
+import { createTimelineContext } from './timelineContext.svelte';
 import { createSettingsContext } from './userSettings.svelte';
 import { createWorkspacesContext } from './workspacesContext.svelte';
 
@@ -38,13 +39,17 @@ export function createAppContext(
 	const controller = setContext('controller', createController(controllerParams));
 	const client = setContext('client', createClientContext(controller, clientParams));
 	const settings = setContext('settings', createSettingsContext());
+	const timeline = setContext('timeline', createTimelineContext());
 	const garden = setContext('garden', createGardenContext(controller, client));
 	const cultivars = setContext('cultivars', createCultivarContext(controller, garden));
 	const workspaces = setContext(
 		'workspaces',
 		createWorkspacesContext(controller, garden)
 	);
-	const plants = setContext('plants', createPlantsContext(controller, garden));
+	const plants = setContext(
+		'plants',
+		createPlantsContext(controller, timeline, garden)
+	);
 
 	return {
 		controller,

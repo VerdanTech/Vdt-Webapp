@@ -13,10 +13,6 @@ const peakSizeSchema = z.number().min(0, 'May not be negative.').describe(
 	For polygons, this is assumed to be the radius, forming a square.\
 	For lines, this is assumed to be a width, forming a square."
 );
-const seedScaleFactorSchema = z
-	.number()
-	.min(0, 'May not be negative.')
-	.describe('The scale factor applied to the peak size at the beginning seed stage.');
 const seedlingScaleFactorSchema = z
 	.number()
 	.min(0, 'May not be negative.')
@@ -52,7 +48,6 @@ const enterDormancyScaleFactorSchema = z
 
 export const fields = {
 	peakSizeSchema,
-	seedScaleFactorSchema,
 	seedlingScaleFactorSchema,
 	firstHarvestScaleFactorSchema,
 	lastHarvestScaleFactorSchema,
@@ -62,11 +57,10 @@ export const fields = {
 };
 
 /** Update command. */
-export const PlantExpectedGeometryUpdateCommandSchema = z
+export const ExpectedGeometryUpdateCommandSchema = z
 	.object({
 		geometryType: workspaceFields.geometryTypeSchema,
 		peakSize: peakSizeSchema,
-		seedScaleFactor: seedScaleFactorSchema,
 		seedlingScaleFactor: seedlingScaleFactorSchema,
 		firstHarvestScaleFactor: firstHarvestScaleFactorSchema,
 		lastHarvestScaleFactor: lastHarvestScaleFactorSchema,
@@ -77,6 +71,6 @@ export const PlantExpectedGeometryUpdateCommandSchema = z
 	.describe(
 		'Determines the default geometric history when defining new instances of a cultivar.'
 	);
-export type PlantExpectedGeometryUpdateCommand = z.infer<
-	typeof PlantExpectedGeometryUpdateCommandSchema
+export type ExpectedGeometryUpdateCommand = z.infer<
+	typeof ExpectedGeometryUpdateCommandSchema
 >;
