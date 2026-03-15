@@ -55,8 +55,6 @@
 	)
 	.filter((item) => item !== null)
 );
-	$inspect(ctx.plants.plants)
-	$inspect(plantItems)
 	const plantingWindowItems = $derived(
 		windows
 			.map((window) => plantingWindowCalendarItem({ plantingWindow: window }))

@@ -27,14 +27,12 @@ export function plantCalendarItem(value: {
 	cultivar: Cultivar | null;
 }): CalendarItem | null {
 	if (!value.plant.expectedLifespan || !value.plant.recordedLifespan || !value.cultivar) {
-		console.log("111")
 		return null;
 	}
 
 	const expectedRange = historyGetRange(value.plant.expectedLifespan.observations);
 	const recordedRange = historyGetRange(value.plant.recordedLifespan.observations);
 	if (!expectedRange) {
-		console.log("222")
 		return null;
 	}
 	const totalRange = expectedRange;
