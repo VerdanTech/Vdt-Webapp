@@ -6,9 +6,6 @@ import { AppError, type Cultivar } from '@vdg-webapp/models';
 import type { GardenContext } from './gardenContext.svelte';
 import type { TimelineContext } from './timelineContext.svelte';
 
-const MAX_CULTIVAR_COLLECTION_INHERITANCE_DEPTH = 16;
-const MAX_CULTIVAR_INHERITANCE_DEPTH = 16;
-
 /**
  * Holds context for a garden's plants.
  */
@@ -24,8 +21,8 @@ export function createPlantsContext(
 			controller.triplit
 				.query('plants')
 				.Where('gardenId', '=', garden.id)
-				.Where('beginDate', '>=', timeline.beginSelection)
-				.Where('endDate', '<=', timeline.endSelection)
+				//.Where('beginDate', '>=', timeline.beginSelection)
+				//.Where('endDate', '<=', timeline.endSelection)
 				.Include('expectedLifespan', (rel) =>
 					rel('expectedLifespan')
 						.Include('geometryHistory', (rel) =>
@@ -36,6 +33,7 @@ export function createPlantsContext(
 						.Include('locationHistory', (rel) =>
 							rel('locationHistory').Include('locations')
 						)
+						.Include('observations')
 				)
 				.Include('recordedLifespan', (rel) =>
 					rel('recordedLifespan')
@@ -47,6 +45,7 @@ export function createPlantsContext(
 						.Include('locationHistory', (rel) =>
 							rel('locationHistory').Include('locations')
 						)
+						.Include('observations')
 				)
 		)
 	);
@@ -58,32 +57,29 @@ export function createPlantsContext(
 	/**
 	 * Constructs a map of cultivar names included in the Plants query
 	 * to the full cultivar object and attributes.
-	 */
+	*/
 	let plantsCultivarMap: Map<string, Cultivar> = $state(new Map());
 	$effect(() => {
 		(async () => {
 			const names = Array.from(plantsCultivarNames ?? []);
-			if (names.length === 0) return new Map<string, Cultivar>();
-
+			if (names.length === 0) {
+				plantsCultivarMap = new Map<string, Cultivar>();
+				return
+			}
+			
 			const promises = names.map((name) =>
-				resolveCultivar(
-					garden.id,
-					name,
-					MAX_CULTIVAR_COLLECTION_INHERITANCE_DEPTH,
-					MAX_CULTIVAR_INHERITANCE_DEPTH,
-					controller
-				)
-			);
-
-			const results = await Promise.all(promises);
-
-			const entries = names.reduce<Array<[string, Cultivar]>>((acc, name, i) => {
-				const cultivar = results[i];
-				if (cultivar) acc.push([name, cultivar]);
-				return acc;
-			}, []);
-			plantsCultivarMap = new Map(entries);
-		})();
+				resolveCultivar(garden.id, name, controller)
+		);
+		
+		const results = await Promise.all(promises);
+		
+		const entries = names.reduce<Array<[string, Cultivar]>>((acc, name, i) => {
+			const cultivar = results[i];
+			if (cultivar) acc.push([name, cultivar]);
+			return acc;
+		}, []);
+		plantsCultivarMap = new Map(entries);
+	})();
 	});
 
 	/**
@@ -91,13 +87,8 @@ export function createPlantsContext(
 	 * @param cultivarName The name to retrieve.
 	 * @returns The matched cultivar with all attributes.
 	 */
-	function getCultivar(cultivarName: string): Cultivar {
-		const cultivar = plantsCultivarMap.get(cultivarName);
-		if (!cultivar) {
-			throw new AppError('Error retrieving plant cultivar.', {
-				nonFormErrors: ['Error retrieving plant cultivar.']
-			});
-		}
+	function getCultivar(cultivarName: string): Cultivar | null {
+		const cultivar = plantsCultivarMap.get(cultivarName) ?? null;
 		return cultivar;
 	}
 

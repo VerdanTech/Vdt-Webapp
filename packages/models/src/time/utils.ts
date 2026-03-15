@@ -17,3 +17,7 @@ export function getBoundingDateRange(ranges: DateRange[]): DateRange | null {
 		end: new Date(maxEnd)
 	};
 }
+
+export function rangesOverlap(range1: DateRange, range2: DateRange): boolean {
+	return range1.start <= range2.end && range2.start <= range1.end;
+}

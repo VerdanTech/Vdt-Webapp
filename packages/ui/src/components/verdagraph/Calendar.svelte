@@ -15,107 +15,16 @@
 	import TestComponent from './TestComponent.svelte';
 	import { getVerdagraphContext } from './verdagraphContext.svelte';
 
-	const plants: { plant: Plant; cultivar: Cultivar }[] = [
-		{
-			plant: {
-				id: 'plant1',
-				gardenId: 'garden',
-				cultivarName: 'tomato',
-				cultivarAttributes: {},
-				expectedLifespanId: '',
-				recordedLifespanId: '',
-				expectedLifespan: {
-					id: 'plant1l1',
-					gardenId: 'garden',
-					origin: 'DIRECT_SEED',
-					locationHistory: {
-						id: 'oiraent',
-						gardenId: 'gardeno',
-						workspaceIds: new Set([]),
-						locationIds: new Set([]),
-						locations: []
-					},
-					geometryHistory: {
-						id: 'rat',
-						gardenId: 'gardeno',
-						geometryIds: new Set([]),
-						geometries: []
-					},
-					observations: [
-						{
-							id: '',
-							gardenId: '',
-							type: 'plant-seed',
-							entityIds: new Set([]),
-							date: new Date(2026, 0, 1),
-							data: undefined
-						},
-						{
-							id: 'rttsrtrst',
-							gardenId: '',
-							type: 'plant-germ',
-							entityIds: new Set([]),
-							date: new Date(2026, 0, 18),
-							data: undefined
-						}
-					]
-				},
-				recordedLifespan: {
-					id: 'plant2l1',
-					gardenId: 'garden',
-					origin: 'DIRECT_SEED',
-					locationHistory: {
-						id: 'rastars',
-						gardenId: 'gardeno',
-						workspaceIds: new Set([]),
-						locationIds: new Set([]),
-						locations: []
-					},
-					geometryHistory: {
-						id: 'oiraarstrent',
-						gardenId: 'gardeno',
-						geometryIds: new Set([]),
-						geometries: []
-					},
-					observations: [
-						{
-							id: '',
-							gardenId: '',
-							type: 'plant-seed',
-							entityIds: new Set([]),
-							date: new Date(2026, 0, 1),
-							data: undefined
-						},
-						{
-							id: 'rttsrtrst',
-							gardenId: '',
-							type: 'plant-germ',
-							entityIds: new Set([]),
-							date: new Date(2026, 0, 18),
-							data: undefined
-						}
-					]
-				},
-				quantity: 1
-			},
-			cultivar: {
-				id: 'cultivar',
-				collectionId: '',
-				names: new Set([]),
-				abbreviation: 'a',
-				description: '',
-				attributes: {},
-				createdAt: new Date()
-			}
-		}
-	];
+	import { getAppContext } from '$state';
+
+	const ctx = getAppContext()
+
 	const windows: CultivarPlantingWindow[] = [
 		{
-			cultivarName: 'tomato',
 			cultivar: {
 				id: 'cultivar',
 				collectionId: '',
-				names: new Set([]),
+				name: '',
 				abbreviation: 'a',
 				description: '',
 				attributes: {},
@@ -137,14 +46,17 @@
 			]
 		}
 	];
-
 	const plantItems = $derived(
-		plants
-			.map((plant) =>
-				plantCalendarItem({ plant: plant.plant, cultivar: plant.cultivar })
-			)
-			.filter((item) => item !== null)
-	);
+		ctx.plants.plants
+		.map((plant) =>
+		{
+			return plantCalendarItem({ plant: plant, cultivar: ctx.plants.getCultivar(plant.cultivarName) })
+		}
+	)
+	.filter((item) => item !== null)
+);
+	$inspect(ctx.plants.plants)
+	$inspect(plantItems)
 	const plantingWindowItems = $derived(
 		windows
 			.map((window) => plantingWindowCalendarItem({ plantingWindow: window }))

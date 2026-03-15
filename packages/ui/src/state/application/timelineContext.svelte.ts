@@ -1,7 +1,5 @@
 import { type DateDuration, getLocalTimeZone, today } from '@internationalized/date';
 
-import { LocalStore } from '$state/localStore.svelte';
-
 /** Default offset between selected day and the upper selection range. */
 const defaultUpperSelectionOffset: DateDuration = { weeks: 3 };
 /** Default offset between selected day lower selection range. */
@@ -17,33 +15,30 @@ export function createTimelineContext() {
 	const todayDate = today(tz);
 	const startDate = todayDate.subtract(defaultLowerSelectionOffset);
 	const endDate = todayDate.add(defaultUpperSelectionOffset);
-	const beginSelection = new LocalStore<Date>(
-		'timelineBeginSelection',
-		startDate.toDate(tz)
-	);
-	const endSelection = new LocalStore<Date>('timelineEndSelection', endDate.toDate(tz));
+	let beginSelection = $state(startDate.toDate(tz))
+	let endSelection = $state(endDate.toDate(tz))
 
 	function reset() {
 		const tz = getLocalTimeZone();
 		const todayDate = today(tz);
 		const startDate = todayDate.subtract(defaultLowerSelectionOffset);
 		const endDate = todayDate.add(defaultUpperSelectionOffset);
-		beginSelection.value = startDate.toDate(tz);
-		endSelection.value = endDate.toDate(tz);
+		beginSelection = startDate.toDate(tz);
+		endSelection = endDate.toDate(tz);
 	}
 
 	return {
 		get beginSelection() {
-			return beginSelection.value;
+			return new Date(beginSelection);
 		},
 		set beginSelection(newVal) {
-			beginSelection.value = newVal;
+			beginSelection = newVal;
 		},
 		get endSelection() {
-			return endSelection.value;
+			return new Date(endSelection);
 		},
 		set endSelection(newVal) {
-			endSelection.value = newVal;
+			endSelection= newVal;
 		},
 		reset
 	};

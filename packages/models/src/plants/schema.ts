@@ -131,7 +131,7 @@ export const plantSchema = S.Collections({
 		relationships: {
 			garden: S.RelationById('gardens', '$gardenId'),
 			expectedLifespan: S.RelationById('lifespans', '$expectedLifespanId'),
-			recordedLifespan: S.RelationById('lifespans', '$recordedLifespanId')
+			recordedLifespan: S.RelationById('lifespans', '$recordedLifespanId'),
 		},
 		permissions: {
 			anon: {
@@ -269,24 +269,4 @@ export const OriginEnumLabels: Record<Origin, string> = {
 	DIRECT_SEED: 'Direct Seed',
 	SEEDLING_TO_TRANSPLANT: 'Seedling to Transplant',
 	SEED_TO_TRANSPLANT: 'Seed to Transplant'
-};
-
-export type PlantingWindow = {
-	range: DateRange;
-	/**
-	 * A number from 0-1, where 0 indicates a plant should not be planted under any circumstances
-	 * and a 1 indicates the optimal conditions for planting.
-	 */
-	suitability: number;
-};
-
-export type CultivarPlantingWindow = {
-	cultivarName: string;
-	cultivar: Cultivar;
-	environment: Environment;
-	/**
-	 * All suitability outside of defined ranges is set to 0.
-	 * Overlap of ranges is invalid.
-	 */
-	windows: Array<PlantingWindow>;
 };

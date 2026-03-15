@@ -54,6 +54,7 @@ export function createAppContext(
 	return {
 		controller,
 		settings,
+		timeline,
 		garden,
 		cultivars,
 		workspaces,

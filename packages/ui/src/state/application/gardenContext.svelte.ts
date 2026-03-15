@@ -34,8 +34,6 @@ export function createGardenContext(
 
 		return null;
 	});
-	$inspect(client.profile);
-	$inspect(role);
 
 	/**
 	 * Returns whether the user can take an action on the active garden.

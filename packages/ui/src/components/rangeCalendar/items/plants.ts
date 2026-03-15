@@ -24,15 +24,17 @@ const defaultItemColor = getColor('grass', 8, mode.current);
 
 export function plantCalendarItem(value: {
 	plant: Plant;
-	cultivar: Cultivar;
+	cultivar: Cultivar | null;
 }): CalendarItem | null {
-	if (!value.plant.expectedLifespan || !value.plant.recordedLifespan) {
+	if (!value.plant.expectedLifespan || !value.plant.recordedLifespan || !value.cultivar) {
+		console.log("111")
 		return null;
 	}
 
 	const expectedRange = historyGetRange(value.plant.expectedLifespan.observations);
 	const recordedRange = historyGetRange(value.plant.recordedLifespan.observations);
 	if (!expectedRange) {
+		console.log("222")
 		return null;
 	}
 	const totalRange = expectedRange;

@@ -2,8 +2,8 @@ import { type ZodType } from 'zod';
 
 import { AppError, type FieldErrors, validateField } from '@vdg-webapp/models';
 
-const TREE_ENTITY_ID_DELIMITER = '/~';
-const TREE_FIELD_DELIMITER = '/~';
+const TREE_ENTITY_ID_DELIMITER = '/-';
+const TREE_FIELD_DELIMITER = '/+';
 
 /**
  * Every item in the tree needs a unique ID.

@@ -29,8 +29,8 @@ import { type GenericObservation, observationUpdate } from "@vdg-webapp/models";
 	const calendarDate = $derived(fromDate(observation.date, getLocalTimeZone()))
 
 	function translateDate(duration: DateDuration) {
-		const calendarDate = fromDate(observation.date, getLocalTimeZone())
 		const newVal = calendarDate.add(duration)
+		console.log(observation.id)
 		observationUpdateHandler.execute({id: observation.id, date: toDate(newVal, getLocalTimeZone())}, ctx.controller)
 	}
 </script>
@@ -82,9 +82,8 @@ import { type GenericObservation, observationUpdate } from "@vdg-webapp/models";
 		value={calendarDate}
 		compact={false}
 		onValueChange={async (newVal) => {
-			console.log("here")
-			console.log(newVal)
 			if (newVal) {
+				console.log(newVal)
 				observationUpdateHandler.execute({id: observation.id, date: toDate(newVal, getLocalTimeZone())}, ctx.controller)
 			}
 		}}

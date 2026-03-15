@@ -48,7 +48,7 @@ export function createVerdagraphContext(params: VerdagraphContextParams) {
 	);
 	const toolbox = verdagraphToolbox();
 	/** Timeline. */
-	const timeline = createTimelineSelection();
+	const timeline = createTimelineSelection(ctx.timeline);
 	/** Selected entities. */
 	const selections = createSelectionManager(['workspace', 'plantingArea', 'plants']);
 	selections.select('workspace', params.defaultSelectedWorkspaceId);

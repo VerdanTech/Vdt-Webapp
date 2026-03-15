@@ -20,7 +20,7 @@ export default function cultivarsSeed(): BulkInsert<typeof schema> {
 		cultivars: [
 			{
 				collectionId: cultivarCollectionId,
-				names: new Set(['Lettuce']),
+				name: 'lettuce',
 				abbreviation: 'Le',
 				attributes: {
 					annualLifeCycle: {

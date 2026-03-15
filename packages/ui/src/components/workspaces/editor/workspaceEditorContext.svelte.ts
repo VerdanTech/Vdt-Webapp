@@ -54,7 +54,7 @@ export function createWorkspaceEditorContext(id: string) {
 	/** Selected entities. */
 	const selections = createSelectionManager(['plantingArea', 'environment']);
 	/** Timeline. */
-	const timelineSelection = createTimelineSelection();
+	const timelineSelection = createTimelineSelection(ctx.timeline);
 
 	/** Forms. */
 	const plantingAreaCreateHandler = createCommandHandler(plantingAreaCreate, {

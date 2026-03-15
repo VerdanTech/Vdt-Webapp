@@ -8,6 +8,7 @@ import gardenSeed from './garden';
 import plantingAreasSeed from './plantingAreas';
 import userSeed from './user';
 import workspacesSeed from './workspace';
+import plantsSeed from './plants';
 
 const seeds: Array<() => Record<string, unknown[]>> = [
 	userSeed,
@@ -15,7 +16,8 @@ const seeds: Array<() => Record<string, unknown[]>> = [
 	environmentSeed,
 	workspacesSeed,
 	plantingAreasSeed,
-	cultivarsSeed
+	cultivarsSeed,
+	plantsSeed
 ];
 
 export function seed(): BulkInsert<typeof schema> {

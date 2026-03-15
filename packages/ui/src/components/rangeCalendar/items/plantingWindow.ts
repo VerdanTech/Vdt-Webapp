@@ -18,7 +18,6 @@ export function plantingWindowCalendarItem(value: {
 	if (!ranges) {
 		return null;
 	}
-	console.log(ranges);
 	const totalRange = getBoundingDateRange(ranges);
 	if (!totalRange) {
 		return null;
@@ -35,7 +34,7 @@ export function plantingWindowCalendarItem(value: {
 
 	return {
 		id: `${value.plantingWindow.cultivar.id}|${value.plantingWindow.environment.id}`,
-		label: value.plantingWindow.cultivarName,
+		label: value.plantingWindow.cultivar.name,
 		labelOnly: false,
 		description: '',
 		startDate,

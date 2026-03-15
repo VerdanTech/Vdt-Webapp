@@ -49,12 +49,22 @@ export const cultivarSchema = S.Collections({
 			/** Optional parent collection to derive attributes from. */
 			parentId: S.String({ nullable: true, default: null }),
 
+			/**
+			 * Optional list of ancestor IDs (parent and their parent, up to fixed depth).
+			 * Note that this is denormalized data and must be maintained
+			 * upon update, to make reactive querying through Triplit easier.
+			 */
+			ancestorIds: S.Set(S.String(), { default: S.Default.Set.empty() }),
+
 			createdAt: S.Date({ default: S.Default.now() })
 		}),
 		relationships: {
 			user: S.RelationById('profiles', 'userId'),
 			garden: S.RelationById('gardens', '$gardenId'),
-			parent: S.RelationById('cultivarCollections', '$parentId')
+			parent: S.RelationById('cultivarCollections', '$parentId'),
+			ancestors: S.RelationMany('cultivarCollections', {
+				where: [['id', 'in', '$ancestorIds']]
+			})
 		},
 		permissions: {
 			anon: {
@@ -129,8 +139,8 @@ export const cultivarSchema = S.Collections({
 			/** Collection the cultivar is in. */
 			collectionId: S.String(),
 
-			/** A list of common names. Used to match plants to cultivars. */
-			names: S.Set(S.String()),
+			/** A common name. Used to match plants to cultivars. */
+			name: S.String(),
 
 			/** Shorthand. */
 			abbreviation: S.String(),

@@ -8,6 +8,7 @@ export * from './users/index.js';
 export * from './gardens/index.js';
 export * from './workspaces/index.js';
 export * from './observations/index.js';
+export * from './planner/index.js';
 export * from './cultivars/index.js';
 export * from './environments/index.js';
 export * from './plants/index.js';
