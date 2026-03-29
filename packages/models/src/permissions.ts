@@ -19,7 +19,9 @@ const permissions = Object.freeze({
 	ObservationUpdate: 'EDITOR',
 
 	/** Plants. */
-	PlantsCreate: 'EDITOR'
+	PlantsCreate: 'EDITOR',
+	PlantUpdate: 'EDITOR',
+	LifespanUpdate: 'EDITOR'
 } satisfies Record<string, GardenRole>);
 export type ActionType = keyof typeof permissions;
 

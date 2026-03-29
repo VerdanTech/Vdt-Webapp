@@ -1,4 +1,5 @@
 import { type ControllerContext } from '../controller.js';
+import { AppError } from '../errors.js';
 import { type ObservationUpdateCommand } from '../index.js';
 
 export async function observationUpdate(
@@ -8,7 +9,7 @@ export async function observationUpdate(
 	/** Retrieve client and authorize. */
 	//await ctx.requireRole(gardenId, 'ObservationUpdate');
 
-	const obs = await ctx.triplit.fetchOne(ctx.triplit.query('observations').Id(data.id))
+	const obs = await ctx.triplit.fetchOne(ctx.triplit.query('observations').Id(data.id));
 
 	/** Update the observation. */
 	await ctx.triplit.update('observations', data.id, (observation) => {
@@ -22,4 +23,18 @@ export async function observationUpdate(
 			observation.data = data.data;
 		}
 	});
+}
+
+/** Deletes an observation. */
+export async function observationDelete(id: string, ctx: ControllerContext) {
+	const observation = await ctx.triplit.fetchOne(
+		ctx.triplit.query('observations').Id(id)
+	);
+	if (!observation) {
+		throw new AppError('Observation does not exist.', {
+			nonFormErrors: ['Failed to delete observation.']
+		});
+	}
+
+	await ctx.triplit.delete('observations', id);
 }

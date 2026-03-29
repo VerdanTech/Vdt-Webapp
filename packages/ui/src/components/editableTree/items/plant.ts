@@ -2,26 +2,31 @@ import {
 	type FieldErrors,
 	type Plant,
 	type PlantUpdateCommand,
-	workspaceFields
+	plantFields
 } from '@vdg-webapp/models';
 
 import {
 	type Item,
-	TreeDistance,
+	TreeNumber,
 	TreeString,
-	TreeTextarea,
 	fieldValid,
-	geometryTreeItem,
-	locationHistoryTreeItem,
 	toTreeBaseId,
 	toTreeId
 } from '$components';
 
-import { type GeometryUpdateHandler } from './geometry';
+import {
+	type GeometryHistoryExtendHandler,
+	type GeometryUpdateHandler
+} from './geometry';
+import { type LifespanUpdateHandler, lifespanTreeItem } from './lifespan';
 import {
 	type LocationHistoryExtendHandler,
 	type LocationUpdateHandler
 } from './locations';
+import {
+	type ObservationUpdateHandler,
+	type ObservationDeleteHandler
+} from './observation';
 
 export type PlantUpdateHandler = (id: string, data: PlantUpdateCommand) => void;
 
@@ -29,123 +34,102 @@ export function plantTreeItem(
 	value: { plant: Plant; workspaces: { id: string; name: string }[] },
 	ctx: {
 		plantUpdateHandler: PlantUpdateHandler;
+		lifespanUpdateHandler: LifespanUpdateHandler;
 		geometryUpdateHandler: GeometryUpdateHandler;
 		locationUpdateHandler: LocationUpdateHandler;
 		locationHistoryExtendHandler: LocationHistoryExtendHandler;
+		geometryHistoryExtendHandler: GeometryHistoryExtendHandler;
+		observationUpdateHandler: ObservationUpdateHandler;
+		observationDeleteHandler: ObservationDeleteHandler;
 		fieldErrors: FieldErrors;
 	}
 ): Item {
 	const baseId = toTreeBaseId('plant', value.plant.id);
 	const cultivarNameId = toTreeId(baseId, 'cultivarName');
 	const quantityId = toTreeId(baseId, 'quantity');
-	const attributesId = toTreeId(baseId, 'attributes');
 
-	const geometryItem = geometryTreeItem(
-		toTreeId(baseId, 'geometry'),
-		{ geometry: value.plantingArea.geometry, index: 0 },
-		{
-			includeIndex: false,
-			includeDate: false,
-			includeDelete: false,
-			includeLinesClosed: false
-		},
-		{
-			updateHandler: ctx.geometryUpdateHandler,
-			fieldErrors: ctx.fieldErrors
-		}
-	);
-
-	const locationHistoryItem = locationHistoryTreeItem(
-		baseId,
-		{
-			locationHistory: value.plantingArea.locationHistory,
-			workspaces: value.workspaces
-		},
-		{
-			locationUpdateHandler: ctx.locationUpdateHandler,
-			onLocationHistoryExtend: ctx.locationHistoryExtendHandler,
-			fieldErrors: ctx.fieldErrors
-		}
-	);
-
-	const nameItem: Item = {
-		id: nameId,
-		label: 'Name',
-		description: workspaceFields.plantingAreaNameSchema.description,
+	const cultivarNameItem: Item = {
+		id: cultivarNameId,
+		label: 'Cultivar',
+		description: plantFields.plantCultivarNameSchema.description,
 		valueComponent: TreeString,
-		value: value.plantingArea.name,
+		value: value.plant.cultivarName,
 		onChange: (newData: string) => {
 			if (
 				!fieldValid(
-					nameId,
+					cultivarNameId,
 					newData,
-					workspaceFields.plantingAreaNameSchema,
+					plantFields.plantCultivarNameSchema,
 					ctx.fieldErrors
 				)
 			) {
 				return;
 			}
-			ctx.plantingAreaUpdateHandler(value.plantingArea.id, { name: newData });
+			ctx.plantUpdateHandler(value.plant.id, { cultivarName: newData });
 		}
 	};
 
-	const descriptionItem: Item = {
-		id: descriptionId,
-		label: 'Description',
-		description: workspaceFields.plantingAreaDescriptionSchema.description,
-		valueComponent: TreeTextarea,
-		value: value.plantingArea.description,
-		onChange: (newData: string) => {
-			if (
-				!fieldValid(
-					descriptionId,
-					newData,
-					workspaceFields.plantingAreaDescriptionSchema,
-					ctx.fieldErrors
-				)
-			) {
-				return;
-			}
-			ctx.plantingAreaUpdateHandler(value.plantingArea.id, {
-				description: newData
-			});
-		}
-	};
-
-	const depthItem: Item = {
-		id: depthId,
-		label: 'Depth',
-		description: workspaceFields.plantingAreaDepthSchema.description,
-		valueComponent: TreeDistance,
-		value: value.plantingArea.depth,
+	const quantityItem: Item = {
+		id: quantityId,
+		label: 'Quantity',
+		description: plantFields.plantQuantitySchema.description,
+		valueComponent: TreeNumber,
+		value: value.plant.quantity,
 		onChange: (newData: number) => {
 			if (
 				!fieldValid(
-					depthId,
+					quantityId,
 					newData,
-					workspaceFields.plantingAreaDepthSchema,
+					plantFields.plantQuantitySchema,
 					ctx.fieldErrors
 				)
 			) {
 				return;
 			}
-			ctx.plantingAreaUpdateHandler(value.plantingArea.id, { depth: newData });
+			ctx.plantUpdateHandler(value.plant.id, { quantity: newData });
 		}
 	};
 
+	const expectedLifespanItem = lifespanTreeItem(
+		toTreeId(baseId, 'expectedLifespan'),
+		'Expected Lifespan',
+		{ lifespan: value.plant.expectedLifespan, workspaces: value.workspaces },
+		{
+			lifespanUpdateHandler: ctx.lifespanUpdateHandler,
+			geometryUpdateHandler: ctx.geometryUpdateHandler,
+			locationUpdateHandler: ctx.locationUpdateHandler,
+			locationHistoryExtendHandler: ctx.locationHistoryExtendHandler,
+			geometryHistoryExtendHandler: ctx.geometryHistoryExtendHandler,
+			observationUpdateHandler: ctx.observationUpdateHandler,
+			observationDeleteHandler: ctx.observationDeleteHandler,
+			fieldErrors: ctx.fieldErrors
+		}
+	);
+
+	const recordedLifespanItem = lifespanTreeItem(
+		toTreeId(baseId, 'recordedLifespan'),
+		'Recorded Lifespan',
+		{ lifespan: value.plant.recordedLifespan, workspaces: value.workspaces },
+		{
+			lifespanUpdateHandler: ctx.lifespanUpdateHandler,
+			geometryUpdateHandler: ctx.geometryUpdateHandler,
+			locationUpdateHandler: ctx.locationUpdateHandler,
+			locationHistoryExtendHandler: ctx.locationHistoryExtendHandler,
+			geometryHistoryExtendHandler: ctx.geometryHistoryExtendHandler,
+			observationUpdateHandler: ctx.observationUpdateHandler,
+			observationDeleteHandler: ctx.observationDeleteHandler,
+			fieldErrors: ctx.fieldErrors
+		}
+	);
+
 	return {
 		id: baseId,
-		label: value.plantingArea.name,
+		label: value.plant.cultivarName,
 		children: [
-			nameItem,
-			/** Details. */
-			{
-				id: toTreeId(baseId, 'details'),
-				label: 'Details',
-				children: [descriptionItem, depthItem]
-			},
-			geometryItem,
-			locationHistoryItem
+			cultivarNameItem,
+			quantityItem,
+			expectedLifespanItem,
+			recordedLifespanItem
 		]
 	};
 }

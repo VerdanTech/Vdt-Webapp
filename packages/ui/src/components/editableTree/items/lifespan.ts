@@ -2,7 +2,11 @@ import {
     plantFields,
     type FieldErrors,
     type Lifespan,
-    type LifespanUpdateCommand,OriginEnumLabels
+    type LifespanUpdateCommand,
+    type Origin,
+    OriginEnumLabels,
+    PlantObservationLabels,
+    PlantObservationDescriptions
 } from '@vdg-webapp/models';
 
 import {
@@ -23,6 +27,12 @@ import {
     type LocationHistoryExtendHandler,
     type LocationUpdateHandler
 } from './locations';
+import {
+    type ObservationUpdateHandler,
+    type ObservationDeleteHandler,
+    observationsTreeItem
+} from './observation';
+import { plantObservationDataItemsMap } from './plantObservation';
 import DynamicSelect from '../attributes/DynamicSelect.svelte';
 
 export type LifespanUpdateHandler = (
@@ -39,7 +49,9 @@ export function lifespanTreeItem(
         geometryUpdateHandler: GeometryUpdateHandler;
         locationUpdateHandler: LocationUpdateHandler;
         locationHistoryExtendHandler: LocationHistoryExtendHandler;
-        geometryHistoryExtendHandler: GeometryHistoryExtendHandler
+        geometryHistoryExtendHandler: GeometryHistoryExtendHandler;
+        observationUpdateHandler: ObservationUpdateHandler;
+        observationDeleteHandler: ObservationDeleteHandler;
         fieldErrors: FieldErrors;
     }
 ): Item {
@@ -51,9 +63,9 @@ export function lifespanTreeItem(
 	}
 
     const originId = toTreeId(itemId, 'origin');
-    const geometryHistoryId = toTreeId(itemId, 'geometryHistory')
-    const locationHistoryId = toTreeId(itemId, 'locationHistory')
-    const dates = toTreeId(itemId, 'dates')
+    const geometryHistoryId = toTreeId(itemId, 'geometryHistory');
+    const locationHistoryId = toTreeId(itemId, 'locationHistory');
+    const observationsId = toTreeId(itemId, 'observations');
 
     const originItem: Item = {
         id: originId,
@@ -65,9 +77,9 @@ export function lifespanTreeItem(
                 ([id, label]) => ({ id, label })
                 )
         },
-        onChange: (newData:DynamicSelectValue) => {
+        onChange: (newData: DynamicSelectValue) => {
             if (value.lifespan) {
-                ctx.lifespanUpdateHandler(value.lifespan.id, {origin:})
+                ctx.lifespanUpdateHandler(value.lifespan.id, { origin: newData.id as Origin });
             }
         }
     } 
@@ -101,7 +113,20 @@ export function lifespanTreeItem(
         }
     );
 
-
+    const observationsItem = observationsTreeItem(
+        observationsId,
+        {
+            observations: value.lifespan.observations,
+            labels: PlantObservationLabels,
+            descriptions: PlantObservationDescriptions
+        },
+        {
+            observationUpdateHandler: ctx.observationUpdateHandler,
+            observationDeleteHandler: ctx.observationDeleteHandler,
+            dataItemsMap: plantObservationDataItemsMap,
+            fieldErrors: ctx.fieldErrors
+        }
+    );
 
     return {
         id: itemId,
@@ -109,7 +134,8 @@ export function lifespanTreeItem(
         children: [
             originItem,
             geometryHistoryItem,
-            locationHistoryItem
+            locationHistoryItem,
+            observationsItem
         ]
     };
 }

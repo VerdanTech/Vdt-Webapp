@@ -87,14 +87,19 @@ export const PlantsCreateCommandSchema = z.object({
 });
 export type PlantsCreateCommand = z.infer<typeof PlantsCreateCommandSchema>;
 
+/**
+ * Updates a plant.
+ */
 export const PlantUpdateCommandSchema = z.object({
-	plantId: z.string(),
-	cultivarName: cultivarFields.cultivarNameSchema,
-	quantity: plantQuantitySchema
+	cultivarName: cultivarFields.cultivarNameSchema.optional(),
+	quantity: plantQuantitySchema.optional()
 });
+export type PlantUpdateCommand = z.infer<typeof PlantUpdateCommandSchema>;
 
+/**
+ * Updates a lifespan.
+ */
 export const LifespanUpdateCommandSchema = z.object({
-	lifespanId: z.string(),
 	origin: lifespanOriginSchema.optional()
-	//dates:
 });
+export type LifespanUpdateCommand = z.infer<typeof LifespanUpdateCommandSchema>;
