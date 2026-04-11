@@ -3,13 +3,13 @@
 
 	import {
 		type Cultivar,
-		type Geometry,
+		type GeometryHistoryUpdateCommand,
 		type GeometryUpdateCommand,
-		type Location,
 		type Plant,
 		geometryHistoryUpdate,
-		historySelect,
-		locationHistoryUpdate
+		locationHistoryUpdate,
+		resolveActiveGeometry,
+		resolveActiveLocation
 	} from '@vdg-webapp/models';
 
 	import { Plant as PlantComponent, getVerdagraphContext } from '$components';
@@ -32,86 +32,21 @@
 	const translateCommandHandler = createCommandHandler(locationHistoryUpdate);
 	const transformCommandHandler = createCommandHandler(geometryHistoryUpdate);
 
-	/**
-	 * Tracks the position in the location history at the
-	 * focused time and in this workspace in the timeline selection.
-	 */
+	/** Resolve the active location and geometry across both lifespans. */
+	let activeLocation = $derived(plant ? resolveActiveLocation(plant, verdagraphContext.timeline.focusUtc) : null);
+	let activeGeometry = $derived(plant ? resolveActiveGeometry(plant, verdagraphContext.timeline.focusUtc) : null);
+
 	let position: Vector2d | null = $derived.by(() => {
 		if (
-			!plant ||
-			(!plant.recordedLifespan?.locationHistory &&
-				!plant.expectedLifespan?.locationHistory)
+			activeLocation &&
+			activeLocation.value.workspaceId === canvasContext.workspaceId
 		) {
-			return null;
+			return { x: activeLocation.value.x, y: activeLocation.value.y };
 		}
-
-		let location: Location | null = null;
-		if (plant.recordedLifespan && plant.recordedLifespan.locationHistory) {
-			location = historySelect(
-				plant.recordedLifespan.locationHistory.locations,
-				verdagraphContext.timeline.focusUtc,
-				false
-			);
-		}
-
-		if (!location) {
-			if (plant.expectedLifespan && plant.expectedLifespan.locationHistory) {
-				location = historySelect(
-					plant.expectedLifespan.locationHistory.locations,
-					verdagraphContext.timeline.focusUtc,
-					false
-				);
-			}
-		}
-
-		if (
-			location &&
-			location.workspaceId === verdagraphContext.layoutCanvasContext.workspaceId
-		) {
-			return { x: location.x, y: location.y };
-		} else {
-			return null;
-		}
+		return null;
 	});
 
-	/**
-	 * Tracks the geometry in the geometry history at the
-	 * focused time and in this workspace in the timeline selection.
-	 */
-	let geometry: Geometry | null = $derived.by(() => {
-		if (
-			!plant ||
-			(!plant.recordedLifespan?.geometryHistory &&
-				!plant.expectedLifespan?.geometryHistory)
-		) {
-			return null;
-		}
-
-		let geometry: Geometry | null = null;
-		if (plant.recordedLifespan && plant.recordedLifespan.geometryHistory) {
-			geometry = historySelect(
-				plant.recordedLifespan.geometryHistory.geometries,
-				verdagraphContext.timeline.focusUtc,
-				false
-			);
-		}
-
-		if (!geometry) {
-			if (plant.expectedLifespan && plant.expectedLifespan.geometryHistory) {
-				geometry = historySelect(
-					plant.expectedLifespan.geometryHistory.geometries,
-					verdagraphContext.timeline.focusUtc,
-					false
-				);
-			}
-		}
-
-		if (geometry) {
-			return geometry;
-		} else {
-			return null;
-		}
-	});
+	let geometry = $derived(activeGeometry?.value ?? null);
 
 	let cultivar: Cultivar | null = $derived(ctx.plants.getCultivar(plant.cultivarName));
 
@@ -126,33 +61,58 @@
 	);
 
 	/** Update the location history on translation. */
-	function onTranslate(newPos: Vector2d) {
-		//if (!plant || !workspaceContext.id) {
-		//return;
-		//}
-		/* 
-		translateCommandHandler.execute(
-			{
-				id: plant.expectedLifespan.locationHistoryId,
-				workspaceId: verdagraphContext.layoutCanvasContext.workspaceId,
-				coordinate: {
-					x: canvasContext.transform.modelXPos(newPos.x),
-					y: canvasContext.transform.modelYPos(newPos.y)
-				},
-				date: verdagraphContext.timeline.focusUtc
-			},
-			ctx.controller
-		);
-		*/
-	}
-
-	/** Update the geometry on transformation. */
-	function onTransform(newGeometry: GeometryUpdateCommand) {
-		if (!plant) {
+	function onTranslate(newPos: Vector2d, movementOver: boolean) {
+		if (!movementOver) {
 			return;
 		}
 
-		//transformCommandHandler.execute(plantingArea.geometryId, newGeometry, controller);
+		if (!activeLocation?.lifespan.locationHistoryId) {
+			return;
+		}
+
+		const command = {
+			id: activeLocation.lifespan.locationHistoryId,
+			workspaceId: canvasContext.workspaceId,
+			coordinate: {
+				x: canvasContext.transform.modelXPos(newPos.x),
+				y: canvasContext.transform.modelYPos(newPos.y)
+			},
+			date: verdagraphContext.timeline.focusUtc
+		};
+		console.log('[EditablePlantContainer] onTranslate', command);
+		translateCommandHandler.execute(command, ctx.controller);
+	}
+
+	/** Update the geometry history on transformation. */
+	function onTransform(newGeometry: GeometryUpdateCommand, transformOver: boolean) {
+		if (!transformOver) {
+			return;
+		}
+
+		if (!activeGeometry?.lifespan.geometryHistoryId || !geometry) {
+			return;
+		}
+
+		const command = {
+			id: activeGeometry.lifespan.geometryHistoryId,
+			geometry: {
+				type: newGeometry.type ?? geometry.type,
+				date: verdagraphContext.timeline.focusUtc,
+				scaleFactor: newGeometry.scaleFactor ?? geometry.scaleFactor,
+				rotation: newGeometry.rotation ?? geometry.rotation,
+				rectangleLength: newGeometry.rectangleLength ?? geometry.rectangleLength,
+				rectangleWidth: newGeometry.rectangleWidth ?? geometry.rectangleWidth,
+				polygonNumSides: newGeometry.polygonNumSides ?? geometry.polygonNumSides,
+				polygonRadius: newGeometry.polygonRadius ?? geometry.polygonRadius,
+				ellipseLength: newGeometry.ellipseLength ?? geometry.ellipseLength,
+				ellipseWidth: newGeometry.ellipseWidth ?? geometry.ellipseWidth,
+				linesCoordinates: newGeometry.linesCoordinates ?? [],
+				linesClosed: newGeometry.linesClosed ?? geometry.linesClosed
+			},
+			date: verdagraphContext.timeline.focusUtc
+		} satisfies GeometryHistoryUpdateCommand;
+		console.log('[EditablePlantContainer] onTransform', command);
+		transformCommandHandler.execute(command, ctx.controller);
 	}
 </script>
 
@@ -161,7 +121,7 @@
 Renders a planting area in the canvas for a planting
 area in the workspace editor, ie., editable
 -->
-{#if plant && geometry}
+{#if plant && geometry && cultivar}
 	<PlantComponent
 		{canvasId}
 		layerId={plantLayerId}

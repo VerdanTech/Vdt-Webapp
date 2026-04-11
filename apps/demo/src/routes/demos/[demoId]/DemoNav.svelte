@@ -10,6 +10,7 @@
 
 <!--
 @component Navigation to switch between demos.
+Currently unused.
 -->
 
 <div

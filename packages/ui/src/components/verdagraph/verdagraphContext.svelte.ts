@@ -61,7 +61,11 @@ export function createVerdagraphContext(params: VerdagraphContextParams) {
 	/** Canvas context. */
 	setContext(
 		verdagraphLayoutCanvasContextId,
-		createCanvasContext(verdagraphLayoutCanvasContextId, 'id', mode)
+		createCanvasContext(
+			verdagraphLayoutCanvasContextId,
+			params.defaultSelectedWorkspaceId,
+			mode
+		)
 	);
 
 	/** Forms. */

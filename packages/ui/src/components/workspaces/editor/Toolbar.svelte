@@ -1,6 +1,5 @@
 <script lang="ts">
 	import Icon from '@iconify/svelte';
-	import { Button } from 'bits-ui';
 
 	import type { PlantingArea, Workspace } from '@vdg-webapp/models';
 	import { Menubar, iconIds } from '@vdg-webapp/ui';
@@ -50,40 +49,34 @@
 					{#if workspaces.length > 0}
 						{#each Array.from({ length: Math.min(workspaces.length, workspacesDropdownMaxItems) }, (_, i) => i) as index}
 							{@const workspace = workspaces[index]}
-							<Menubar.Item>
-								<Button.Root
-									onclick={() => {
-										goto(
-											`/gardens/${page.params.gardenId}/workspaces/${workspace.slug}`
-										);
-									}}
-									class="text-light h-full w-full italic"
-								>
-									{workspace.name}
-								</Button.Root>
+							<Menubar.Item
+								onclick={() => {
+									goto(
+										`/gardens/${page.params.gardenId}/workspaces/${workspace.slug}`
+									);
+								}}
+								class="text-light italic"
+							>
+								{workspace.name}
 							</Menubar.Item>
 						{/each}
 					{/if}
-					<Menubar.Item>
-						<Button.Root
-							href="/gardens/{page.params.gardenId}/workspaces"
-							class="flex h-full w-full justify-between"
-						>
-							<span> See All </span>
-							<Icon icon={iconIds.listIcon} width="1.25rem" class="text-neutral-10" />
-						</Button.Root>
+					<Menubar.Item
+						onclick={() => goto(`/gardens/${page.params.gardenId}/workspaces`)}
+						class="flex justify-between"
+					>
+						<span> See All </span>
+						<Icon icon={iconIds.listIcon} width="1.25rem" class="text-neutral-10" />
 					</Menubar.Item>
 				</Menubar.Group>
 				{#if ctx.garden.authorize('WorkspaceCreate')}
 					<Menubar.Separator />
-					<Menubar.Item>
-						<Button.Root
-							href="//gardens/{page.params.gardenId}/workspaces/create"
-							class="flex h-full w-full items-center justify-between"
-						>
-							<span> Create Workspace </span>
-							<Icon icon={iconIds.addIcon} width="1.25rem" class="text-neutral-10" />
-						</Button.Root>
+					<Menubar.Item
+						onclick={() => goto(`/gardens/${page.params.gardenId}/workspaces/create`)}
+						class="flex items-center justify-between"
+					>
+						<span> Create Workspace </span>
+						<Icon icon={iconIds.addIcon} width="1.25rem" class="text-neutral-10" />
 					</Menubar.Item>
 				{/if}
 			</Menubar.Content>
@@ -98,45 +91,40 @@
 			<Menubar.Content>
 				<Menubar.Group>
 					<Menubar.GroupHeading>Tools</Menubar.GroupHeading>
-					<Menubar.Item>
-						<Button.Root class="flex h-full w-full items-center justify-between">
-							<span> Pointer </span>
-							<Icon
-								icon={iconIds.pointerSelectIcon}
-								width="1.25rem"
-								class="text-neutral-10"
-							/>
-						</Button.Root>
+					<Menubar.Item class="flex items-center justify-between">
+						<span> Pointer </span>
+						<Icon
+							icon={iconIds.pointerSelectIcon}
+							width="1.25rem"
+							class="text-neutral-10"
+						/>
 					</Menubar.Item>
-					<Menubar.Item>
-						<Button.Root class="flex h-full w-full items-center justify-between">
-							<span> Group </span>
-							<Icon
-								icon={iconIds.groupSelectIcon}
-								width="1.25rem"
-								class="text-neutral-10"
-							/>
-						</Button.Root>
+					<Menubar.Item class="flex items-center justify-between">
+						<span> Group </span>
+						<Icon
+							icon={iconIds.groupSelectIcon}
+							width="1.25rem"
+							class="text-neutral-10"
+						/>
 					</Menubar.Item>
 				</Menubar.Group>
 				<Menubar.Group>
 					<Menubar.GroupHeading>Planting Areas</Menubar.GroupHeading>
 					{#if selectedPlantingAreas.length > 0}
 						{#each selectedPlantingAreas as plantingArea}
-							<Menubar.Item class="flex justify-between px-2">
+							<Menubar.Item
+								class="flex justify-between px-2"
+								onclick={() => {
+									workspaceEditor.selections.deselect(
+										'plantingArea',
+										plantingArea.id
+									);
+								}}
+							>
 								<span class="text-sm">
 									{plantingArea.name}
 								</span>
-								<Button.Root
-									onclick={() => {
-										workspaceEditor.selections.deselect(
-											'plantingArea',
-											plantingArea.id
-										);
-									}}
-								>
-									<Icon icon={iconIds.defaultClose} width="1.25rem" />
-								</Button.Root>
+								<Icon icon={iconIds.defaultClose} width="1.25rem" />
 							</Menubar.Item>
 						{/each}
 					{:else}
@@ -154,35 +142,31 @@
 				<Menubar.Trigger>Edit</Menubar.Trigger>
 				<Menubar.Content>
 					{#if workspaceEditor.editing}
-						<Menubar.Item>
-							<Button.Root
-								class="flex h-full w-full items-center justify-start"
-								onclick={() => {
-									workspaceEditor.editing = false;
-								}}
-							>
-								<Icon
-									icon={iconIds.endEditingIcon}
-									width="1.25rem"
-									class="text-neutral-11 mr-2"
-								/>
-								<span> End Editing </span>
-							</Button.Root>
+						<Menubar.Item
+							class="flex items-center justify-start"
+							onclick={() => {
+								workspaceEditor.editing = false;
+							}}
+						>
+							<Icon
+								icon={iconIds.endEditingIcon}
+								width="1.25rem"
+								class="text-neutral-11 mr-2"
+							/>
+							<span> End Editing </span>
 						</Menubar.Item>
-						<Menubar.Item>
-							<Button.Root
-								class="flex h-full w-full items-center justify-start"
-								onclick={() => {
-									workspaceEditor.toolbox.activate('translate');
-								}}
-							>
-								<Icon
-									icon={iconIds.verdagraphTranslateIcon}
-									width="1.25rem"
-									class="text-neutral-11 mr-2"
-								/>
-								<span> Translate </span>
-							</Button.Root>
+						<Menubar.Item
+							class="flex items-center justify-start"
+							onclick={() => {
+								workspaceEditor.toolbox.activate('translate');
+							}}
+						>
+							<Icon
+								icon={iconIds.verdagraphTranslateIcon}
+								width="1.25rem"
+								class="text-neutral-11 mr-2"
+							/>
+							<span> Translate </span>
 						</Menubar.Item>
 						<Menubar.Item class="flex items-center justify-start">
 							<Icon
@@ -193,20 +177,18 @@
 							<span> Delete </span>
 						</Menubar.Item>
 					{:else}
-						<Menubar.Item>
-							<Button.Root
-								class="flex h-full w-full items-center justify-start"
-								onclick={() => {
-									workspaceEditor.editing = true;
-								}}
-							>
-								<Icon
-									icon={iconIds.startEditingIcon}
-									width="1.25rem"
-									class="text-neutral-11 mr-2"
-								/>
-								<span> Start Editing </span>
-							</Button.Root>
+						<Menubar.Item
+							class="flex items-center justify-start"
+							onclick={() => {
+								workspaceEditor.editing = true;
+							}}
+						>
+							<Icon
+								icon={iconIds.startEditingIcon}
+								width="1.25rem"
+								class="text-neutral-11 mr-2"
+							/>
+							<span> Start Editing </span>
 						</Menubar.Item>
 					{/if}
 				</Menubar.Content>
@@ -218,20 +200,18 @@
 			<Menubar.Menu>
 				<Menubar.Trigger>Add</Menubar.Trigger>
 				<Menubar.Content>
-					<Menubar.Item>
-						<Button.Root
-							class="flex h-full w-full items-center justify-between"
-							onclick={() => {
-								workspaceEditor.toolbox.activate('plantingAreaCreate');
-							}}
-						>
-							<Icon
-								icon={iconIds.plantingAreaIcon}
-								width="1.25rem"
-								class="text-neutral-11"
-							/>
-							<span> Add Planting Area </span>
-						</Button.Root>
+					<Menubar.Item
+						class="flex items-center justify-between"
+						onclick={() => {
+							workspaceEditor.toolbox.activate('plantingAreaCreate');
+						}}
+					>
+						<Icon
+							icon={iconIds.plantingAreaIcon}
+							width="1.25rem"
+							class="text-neutral-11"
+						/>
+						<span> Add Planting Area </span>
 					</Menubar.Item>
 				</Menubar.Content>
 			</Menubar.Menu>

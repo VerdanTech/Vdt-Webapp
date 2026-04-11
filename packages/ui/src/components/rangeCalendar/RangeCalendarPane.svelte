@@ -60,6 +60,10 @@
 		context.container.width /
 			(context.timeline.sliderValue[2] - context.timeline.sliderValue[0] + 1)
 	);
+
+	const focusSection = $derived(
+		calculateDeltaDays(context.timeline.focus, context.timeline.beginSelection)
+	);
 </script>
 
 <!-- Snippet for rendering a calendar item. Allows arbitrary nesting. -->
@@ -196,18 +200,26 @@
 
 <ScrollArea class="h-full w-full">
 	<div bind:clientHeight={pane.height} class="relative h-full w-full overflow-hidden">
+		<!-- Focus day highlight. -->
+		<div
+			style:left="{calculateSectionLeft(focusSection)}%"
+			style:width="{calculateSectionLeft(focusSection + 1) - calculateSectionLeft(focusSection)}%"
+			class="bg-neutral-9 absolute h-full opacity-10"
+		></div>
+
 		{#each context.container.sections as section}
 			{@const tickLeft = calculateSectionLeft(section)}
 			{@const sectionEven = section % 2 == 0}
+			{@const sectionSurroundsFocusDay = section === focusSection || section === focusSection + 1}
 			<div
 				style:left="{tickLeft}%"
 				style="translate: -50%"
-				class="{sectionEven ? 'bg-neutral-3' : 'bg-neutral-2'} absolute h-full w-[2px]"
+				class="{sectionSurroundsFocusDay ? 'bg-neutral-9 opacity-30' : sectionEven ? 'bg-neutral-3' : 'bg-neutral-2'} absolute h-full w-[2px]"
 			></div>
 		{/each}
 
 		<ul {...pane.tree.root} class="pt-2">
 			{@render calendarItems(pane.tree.children)}
 		</ul>
-	</div>
+	</div><!-- p -->
 </ScrollArea>

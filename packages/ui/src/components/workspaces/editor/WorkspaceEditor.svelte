@@ -1,6 +1,4 @@
 <script lang="ts">
-	import { getContext } from 'svelte';
-
 	import { TabToolbox, TimelineSelector } from '$components';
 	import { Resizable } from '$core';
 	import { getAppContext } from '$state';

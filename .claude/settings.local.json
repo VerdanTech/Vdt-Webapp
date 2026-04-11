@@ -1,7 +1,12 @@
 {
   "permissions": {
     "allow": [
-      "Bash(npx tsc --noEmit --project packages/models/tsconfig.json)"
+      "Bash(npx tsc --noEmit --project packages/models/tsconfig.json)",
+      "Bash(grep -n \"import.*Plant\\\\|from.*$components\" /workspaces/Webapp/packages/ui/src/components/workspaces/editor/EditablePlantingAreaContainer.svelte)",
+      "Bash(grep -r \"testing\\\\|jest\\\\|vitest\\\\|cypress\" /workspaces/Webapp/package.json /workspaces/Webapp/apps/*/package.json)",
+      "Bash(grep -r \"vitest\\\\|jest\\\\|mocha\" /workspaces/Webapp/apps/*/package.json /workspaces/Webapp/packages/*/package.json)",
+      "Bash(grep -r \"zustand\\\\|pinia\\\\|redux\\\\|jotai\\\\|recoil\" /workspaces/Webapp/apps/*/package.json /workspaces/Webapp/packages/*/package.json)",
+      "Bash(cat /workspaces/Webapp/apps/web/src/lib/state/*.ts)"
     ]
   }
 }
