@@ -18,6 +18,11 @@
 	const ctx = getAppContext();
 	const workspaceEditor = setWorkspaceEditorContext(defaultId);
 
+	/** Keep the context id in sync if the defaultId prop changes. */
+	$effect(() => {
+		workspaceEditor.id = defaultId;
+	});
+
 	/** Force a re-render of the PaneGroup if the direction is changed. */
 	let initialized = $state(true);
 	$effect(() => {

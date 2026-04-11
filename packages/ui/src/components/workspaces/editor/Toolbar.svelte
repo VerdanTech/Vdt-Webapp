@@ -50,7 +50,7 @@
 						{#each Array.from({ length: Math.min(workspaces.length, workspacesDropdownMaxItems) }, (_, i) => i) as index}
 							{@const workspace = workspaces[index]}
 							<Menubar.Item
-								onclick={() => {
+								onSelect={() => {
 									goto(
 										`/gardens/${page.params.gardenId}/workspaces/${workspace.slug}`
 									);
@@ -62,7 +62,7 @@
 						{/each}
 					{/if}
 					<Menubar.Item
-						onclick={() => goto(`/gardens/${page.params.gardenId}/workspaces`)}
+						onSelect={() => goto(`/gardens/${page.params.gardenId}/workspaces`)}
 						class="flex justify-between"
 					>
 						<span> See All </span>
@@ -72,7 +72,7 @@
 				{#if ctx.garden.authorize('WorkspaceCreate')}
 					<Menubar.Separator />
 					<Menubar.Item
-						onclick={() => goto(`/gardens/${page.params.gardenId}/workspaces/create`)}
+						onSelect={() => goto(`/gardens/${page.params.gardenId}/workspaces/create`)}
 						class="flex items-center justify-between"
 					>
 						<span> Create Workspace </span>
@@ -114,7 +114,7 @@
 						{#each selectedPlantingAreas as plantingArea}
 							<Menubar.Item
 								class="flex justify-between px-2"
-								onclick={() => {
+								onSelect={() => {
 									workspaceEditor.selections.deselect(
 										'plantingArea',
 										plantingArea.id
@@ -144,7 +144,7 @@
 					{#if workspaceEditor.editing}
 						<Menubar.Item
 							class="flex items-center justify-start"
-							onclick={() => {
+							onSelect={() => {
 								workspaceEditor.editing = false;
 							}}
 						>
@@ -157,7 +157,7 @@
 						</Menubar.Item>
 						<Menubar.Item
 							class="flex items-center justify-start"
-							onclick={() => {
+							onSelect={() => {
 								workspaceEditor.toolbox.activate('translate');
 							}}
 						>
@@ -179,7 +179,7 @@
 					{:else}
 						<Menubar.Item
 							class="flex items-center justify-start"
-							onclick={() => {
+							onSelect={() => {
 								workspaceEditor.editing = true;
 							}}
 						>
@@ -202,7 +202,7 @@
 				<Menubar.Content>
 					<Menubar.Item
 						class="flex items-center justify-between"
-						onclick={() => {
+						onSelect={() => {
 							workspaceEditor.toolbox.activate('plantingAreaCreate');
 						}}
 					>
@@ -272,7 +272,7 @@
 				<Menubar.Separator />
 
 				<Menubar.Item
-					onclick={() => {
+					onSelect={() => {
 						workspaceEditor.toolbox.activate('layoutConfig');
 					}}
 				>

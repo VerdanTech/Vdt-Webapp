@@ -3,7 +3,7 @@ import { useQuery } from '@triplit/svelte';
 import { type ControllerContext, type GardenRole } from '@vdg-webapp/models';
 import { type ActionType, requiredRole as getRequiredRole } from '@vdg-webapp/models';
 
-import { type ClientContext, type ClientContextParams } from './client.svelte';
+import { type ClientContext } from './client.svelte';
 
 /**
  * Holds context for a garden,

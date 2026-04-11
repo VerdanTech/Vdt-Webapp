@@ -4,4 +4,4 @@
 	import { workspace } from '$lib/seeds';
 </script>
 
-<WorkspaceEditor id={workspace.id} includeWorkspacesMenu={false} />
+<WorkspaceEditor defaultId={workspace.id} includeWorkspacesMenu={false} />

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import Konva from 'konva';
 	import type { Vector2d } from 'konva/lib/types';
-	import { getContext, onDestroy } from 'svelte';
+	import { getContext, onDestroy, untrack } from 'svelte';
 
 	import {
 		type Geometry,
@@ -78,8 +78,8 @@
 	const LABEL_OFFSET_PX = 10;
 
 	/** Retrieve canvas and initialize Konva constructs. */
-	const canvas = getContext<CanvasContext>(canvasId);
-	const layer = canvas.container.getLayer(layerId);
+	const canvas = getContext<CanvasContext>(untrack(() => canvasId));
+	const layer = canvas.container.getLayer(untrack(() => layerId));
 	const group: Konva.Group = new Konva.Group({ draggable: editable });
 	layer.add(group);
 
@@ -89,8 +89,8 @@
 		fontFamily: 'sans',
 		fontSize: 15,
 		opacity: 0.7,
-		text: name,
-		visible: showName
+		text: untrack(() => name),
+		visible: untrack(() => showName)
 	});
 	group.add(nameText);
 
@@ -99,7 +99,7 @@
 	 * If the geometry type is changed, a new shape may be rendered.
 	 * Otherwise, the current shape can simply be updated.
 	 */
-	let previousGeometryType = geometry.type;
+	let previousGeometryType = $state(untrack(() => geometry.type));
 
 	/** Update shapes upon geometry change. */
 	$effect(() => {

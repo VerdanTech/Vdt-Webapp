@@ -43,7 +43,7 @@ export function createWorkspaceEditorContext(defaultId: string) {
 	/** If true, the workspace is being edited by the user. */
 	let editing: boolean = $state(false);
 	/** Layout canvas. */
-	let canvas = setCanvasContext('workspaceLayoutCanvas', id, mode);
+	let canvas = setCanvasContext('workspaceLayoutCanvas', defaultId, mode);
 	/** Activated popout tools. */
 	const toolbox = workspaceToolbox();
 	/** Activated pane settings. */
@@ -93,6 +93,9 @@ export function createWorkspaceEditorContext(defaultId: string) {
 	return {
 		get id() {
 			return id;
+		},
+		set id(newVal) {
+			id = newVal;
 		},
 		/* Getters. */
 		get editing(): boolean {
