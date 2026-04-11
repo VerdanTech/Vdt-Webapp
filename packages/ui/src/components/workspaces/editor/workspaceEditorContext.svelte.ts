@@ -36,9 +36,10 @@ const defaultContentPaneDirection = isMobile() ? 'vertical' : 'horizontal';
 /**
  * Holds context for a workspace editor.
  */
-export function createWorkspaceEditorContext(id: string) {
+export function createWorkspaceEditorContext(defaultId: string) {
 	const ctx = getAppContext();
 
+	let id = $state(defaultId);
 	/** If true, the workspace is being edited by the user. */
 	let editing: boolean = $state(false);
 	/** Layout canvas. */
@@ -119,8 +120,8 @@ export function createWorkspaceEditorContext(id: string) {
 }
 export type WorkspaceContext = ReturnType<typeof createWorkspaceEditorContext>;
 
-export function setWorkspaceEditorContext(id: string) {
-	return setContext(workspaceContextKey, createWorkspaceEditorContext(id));
+export function setWorkspaceEditorContext(defaultId: string) {
+	return setContext(workspaceContextKey, createWorkspaceEditorContext(defaultId));
 }
 
 export function getWorkspaceEditorContext() {

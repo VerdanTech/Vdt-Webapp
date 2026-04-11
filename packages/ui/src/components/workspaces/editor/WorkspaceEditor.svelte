@@ -9,14 +9,14 @@
 	import { setWorkspaceEditorContext } from './workspaceEditorContext.svelte';
 
 	type Props = {
-		id: string;
+		defaultId: string;
 		includeWorkspacesMenu: boolean;
 	};
-	let { id, includeWorkspacesMenu = true }: Props = $props();
+	let { defaultId, includeWorkspacesMenu = true }: Props = $props();
 
 	/** Contexts. */
 	const ctx = getAppContext();
-	const workspaceEditor = setWorkspaceEditorContext(id);
+	const workspaceEditor = setWorkspaceEditorContext(defaultId);
 
 	/** Force a re-render of the PaneGroup if the direction is changed. */
 	let initialized = $state(true);
