@@ -1,5 +1,5 @@
 ---
-status: This document is ahead of the implementation, but behind what will be needed in the implementation, as many more attribute profiles will be required, such as geometric attributes.
+status: This document is behind the implementation.
 ---
 
 # Cultivars - Models
