@@ -5,6 +5,8 @@ import { decodePasswordResetToken } from 'users/auth/tokens.js';
 
 import { type UserConfirmPasswordResetCommand } from '@vdg-webapp/models';
 
+import { getAccountById, updatePassword } from '../../controllers/users.js';
+
 /**
  * Closes a password reset request.
  * @param command The request command.
@@ -14,7 +16,7 @@ const confirmPasswordReset = async (
 	command: UserConfirmPasswordResetCommand,
 	container: typeof diContainer
 ) => {
-	const users = container.resolve('userRepo');
+	const db = container.resolve('db');
 
 	/** Decode the token. */
 	const token = await decodePasswordResetToken(command.token);
@@ -26,7 +28,7 @@ const confirmPasswordReset = async (
 	}
 
 	/** Retrieve the user from the token. */
-	const user = await users.getAccountById(token.accountId);
+	const user = await getAccountById(db, token.accountId);
 	if (user == null) {
 		throw new ValidationError(
 			'Failure while decoding password reset token - user does not exist.',
@@ -44,6 +46,6 @@ const confirmPasswordReset = async (
 
 	/** Update the password. */
 	const passwordHash = await hashPassword(command.password1);
-	await users.updatePassword(user.id, passwordHash);
+	await updatePassword(db, user.id, passwordHash);
 };
 export default confirmPasswordReset;

@@ -1,15 +1,15 @@
-import { type Entity, Schema as S, or } from '@triplit/client';
+import { jsonb, pgEnum, pgTable, real, text, timestamp, uuid } from 'drizzle-orm/pg-core';
+import { relations } from 'drizzle-orm';
 
-import { environmentSchema } from '../environments/schema.js';
-import { CultivarAttributes } from './attributes/index.js';
+import { gardens } from '../gardens/schema.js';
+import { profiles } from '../users/schema.js';
+import type { CultivarAttributesUpdateCommand } from './attributes/index.js';
 
 /**
  * Controls the visibility of the collection.
- * HIDDEN: the collection is visible only to those who are members of the garden,
- * or only to the user if the collection is associated with a user.
- * UNLISTED: the collection is visibile to anyone but is not listed
- *     on any public page - a link is required.
- * PUBLIC: the collection is visible to anyone and may be searchable.
+ * HIDDEN: visible only to garden members or the owning user.
+ * UNLISTED: visible to anyone with a link.
+ * PUBLIC: visible to anyone and may be searchable.
  */
 export const CultivarCollectionVisibilityEnumOptions = [
 	'HIDDEN',
@@ -17,216 +17,107 @@ export const CultivarCollectionVisibilityEnumOptions = [
 	'PUBLIC'
 ] as const;
 
-export const cultivarSchema = S.Collections({
-	...environmentSchema,
-	/** Collection schema. */
-	cultivarCollections: {
-		schema: S.Schema({
-			/** URL-friendly shorthand - unique. */
-			id: S.Id(),
+export const cultivarCollectionVisibilityEnum = pgEnum(
+	'cultivar_collection_visibility',
+	CultivarCollectionVisibilityEnumOptions
+);
 
-			/** Non-unique name of the collection. */
-			name: S.String(),
+export const cultivarCollections = pgTable('cultivar_collections', {
+	id: uuid('id').primaryKey().defaultRandom(),
 
-			/** Unique URL slug. */
-			slug: S.String(),
+	/** Non-unique name of the collection. */
+	name: text('name').notNull(),
 
-			/** Visibility of the collection.  */
-			visibility: S.String({ enum: [...CultivarCollectionVisibilityEnumOptions] }),
+	/** Unique URL slug. */
+	slug: text('slug').notNull().unique(),
 
-			/** If defined, the collection is owned by a user. */
-			userId: S.String({ nullable: true, default: null }),
+	/** Visibility of the collection. */
+	visibility: cultivarCollectionVisibilityEnum('visibility').notNull(),
 
-			/** If defined, the colletcion is owned by a garden. Overrides user ownership. */
-			gardenId: S.String({ nullable: true, default: null }),
+	/** If set, the collection is owned by a user. */
+	userId: uuid('user_id').references(() => profiles.id),
 
-			/** Optional priority flag used to decide between collections in a garden. */
-			priority: S.Number({ default: 0 }),
+	/** If set, the collection is owned by a garden. Overrides user ownership. */
+	gardenId: text('garden_id').references(() => gardens.id),
 
-			/** Optional description. */
-			description: S.String({ default: '' }),
+	/** Priority used to resolve which collection wins when multiple match in a garden. */
+	priority: real('priority').default(0).notNull(),
 
-			/** Optional parent collection to derive attributes from. */
-			parentId: S.String({ nullable: true, default: null }),
+	/** Optional description. */
+	description: text('description').default('').notNull(),
 
-			/**
-			 * Optional list of ancestor IDs (parent and their parent, up to fixed depth).
-			 * Note that this is denormalized data and must be maintained
-			 * upon update, to make reactive querying through Triplit easier.
-			 */
-			ancestorIds: S.Set(S.String(), { default: S.Default.Set.empty() }),
+	/**
+	 * Optional parent collection to derive attributes from.
+	 * Ancestor traversal uses a recursive CTE — no ancestorIds denormalization needed.
+	 */
+	parentId: uuid('parent_id'),
 
-			createdAt: S.Date({ default: S.Default.now() })
-		}),
-		relationships: {
-			user: S.RelationById('profiles', 'userId'),
-			garden: S.RelationById('gardens', '$gardenId'),
-			parent: S.RelationById('cultivarCollections', '$parentId'),
-			ancestors: S.RelationMany('cultivarCollections', {
-				where: [['id', 'in', '$ancestorIds']]
-			})
-		},
-		permissions: {
-			anon: {
-				read: {
-					/** Allow anonymous reads if the collection is not hidden. */
-					filter: [['visibility', '!=', 'HIDDEN']]
-				}
-			},
-			user: {
-				read: {
-					/** Allow reads if the collection is not hidden,
-					 *  the garden is defined and the user is a member,
-					 *  or the user is defined and the user is the owner. */
-					filter: [
-						or([
-							['visibility', '!=', 'HIDDEN'],
-							['userId', '=', '$role.profileId'],
-							['garden.adminIds', 'has', '$role.profileId'],
-							['garden.editorIds', 'has', '$role.profileId'],
-							['garden.viewerIds', 'has', '$role.profileId']
-						])
-					]
-				},
-				insert: {
-					/**
-					 * Allow new collections to be created:
-					 * if the garden is defined, the user must be an admin in the garden.
-					 * Otherwise, the user can create their own collections.
-					 */
-					filter: [
-						or([
-							['userId', '=', '$role.profileId'],
-							['garden.adminIds', 'has', '$role.profileId']
-						])
-					]
-				},
-				update: {
-					/**
-					 * Allow collections to be update:
-					 * if the garden is defined, the user must be an admin in the garden.
-					 * Otherwise, the user can update their own collections.
-					 */
-					filter: [
-						or([
-							['userId', '=', '$role.profileId'],
-							['garden.adminIds', 'has', '$role.profileId']
-						])
-					]
-				},
-				delete: {
-					/**
-					 * Allow collections to be deleted:
-					 * if the garden is defined, the user must be an admin in the garden.
-					 * Otherwise, the user can deleted their own collections.
-					 */
-					filter: [
-						or([
-							['userId', '=', '$role.profileId'],
-							['garden.adminIds', 'has', '$role.profileId']
-						])
-					]
-				}
-			}
-		}
-	},
-
-	/** Cultivar schema. */
-	cultivars: {
-		schema: S.Schema({
-			id: S.Id(),
-
-			/** Collection the cultivar is in. */
-			collectionId: S.String(),
-
-			/** A common name. Used to match plants to cultivars. */
-			name: S.String(),
-
-			/** Shorthand. */
-			abbreviation: S.String(),
-
-			/** Optional scientific name. */
-			scientificName: S.Optional(S.String()),
-
-			/** Optional description. */
-			description: S.String({ default: '' }),
-
-			/** Optional parent cultivar to derive attributes from. */
-			parentId: S.String({ nullable: true, default: null }),
-
-			/** Attributes which define this cultivar. */
-			attributes: CultivarAttributes,
-
-			createdAt: S.Date({ default: S.Default.now() })
-		}),
-		relationships: {
-			collection: S.RelationById('cultivarCollections', '$collectionId'),
-			parent: S.RelationById('cultivars', '$parentId')
-		},
-		permissions: {
-			anon: {
-				read: {
-					/** Allow anonymous reads if the collection is not hidden. */
-					filter: [['collection.visibility', '!=', 'HIDDEN']]
-				}
-			},
-			user: {
-				read: {
-					/** Allow reads if the collection is not hidden,
-					 *  the garden is defined and the user is a member,
-					 *  or the user is defined and the user is the owner. */
-					filter: [
-						or([
-							['collection.visibility', '!=', 'HIDDEN'],
-							['collection.userId', '=', '$role.profileId'],
-							['collection.garden.adminIds', 'has', '$role.profileId'],
-							['collection.garden.editorIds', 'has', '$role.profileId'],
-							['collection.garden.viewerIds', 'has', '$role.profileId']
-						])
-					]
-				},
-				insert: {
-					/**
-					 * Allow new cultivars to be created:
-					 * if the garden is defined, the user must be an admin in the garden.
-					 * Otherwise, the user can create their own collections.
-					 */
-					filter: [
-						or([
-							['collection.userId', '=', '$role.profileId'],
-							['collection.garden.adminIds', 'has', '$role.profileId']
-						])
-					]
-				},
-				update: {
-					/**
-					 * Allow cultivars to be update:
-					 * if the garden is defined, the user must be an admin in the garden.
-					 * Otherwise, the user can update their own collections.
-					 */
-					filter: [
-						or([
-							['collection.userId', '=', '$role.profileId'],
-							['collection.garden.adminIds', 'has', '$role.profileId']
-						])
-					]
-				},
-				delete: {
-					/**
-					 * Allow cultivars to be deleted:
-					 * if the garden is defined, the user must be an admin in the garden.
-					 * Otherwise, the user can delete their own collections.
-					 */
-					filter: [
-						or([
-							['collection.userId', '=', '$role.profileId'],
-							['collection.garden.adminIds', 'has', '$role.profileId']
-						])
-					]
-				}
-			}
-		}
-	}
+	createdAt: timestamp('created_at').defaultNow().notNull()
 });
-export type Cultivar = Entity<typeof cultivarSchema, 'cultivars'>;
-export type CultivarCollection = Entity<typeof cultivarSchema, 'cultivarCollections'>;
+
+export const cultivars = pgTable('cultivars', {
+	id: uuid('id').primaryKey().defaultRandom(),
+
+	/** Collection the cultivar belongs to. */
+	collectionId: uuid('collection_id')
+		.notNull()
+		.references(() => cultivarCollections.id, { onDelete: 'cascade' }),
+
+	/** Common name. Used to match plants to cultivars. */
+	name: text('name').notNull(),
+
+	/** Short abbreviation. */
+	abbreviation: text('abbreviation').notNull(),
+
+	/** Optional scientific name. */
+	scientificName: text('scientific_name'),
+
+	/** Optional description. */
+	description: text('description').default('').notNull(),
+
+	/** Optional parent cultivar for attribute inheritance. */
+	parentId: uuid('parent_id'),
+
+	/** Typed jsonb attribute store. */
+	attributes: jsonb('attributes').$type<CultivarAttributesUpdateCommand>().notNull(),
+
+	createdAt: timestamp('created_at').defaultNow().notNull()
+});
+
+export const cultivarCollectionsRelations = relations(
+	cultivarCollections,
+	({ one, many }) => ({
+		user: one(profiles, {
+			fields: [cultivarCollections.userId],
+			references: [profiles.id]
+		}),
+		garden: one(gardens, {
+			fields: [cultivarCollections.gardenId],
+			references: [gardens.id]
+		}),
+		parent: one(cultivarCollections, {
+			fields: [cultivarCollections.parentId],
+			references: [cultivarCollections.id],
+			relationName: 'collection_parent'
+		}),
+		children: many(cultivarCollections, { relationName: 'collection_parent' }),
+		cultivars: many(cultivars)
+	})
+);
+
+export const cultivarsRelations = relations(cultivars, ({ one }) => ({
+	collection: one(cultivarCollections, {
+		fields: [cultivars.collectionId],
+		references: [cultivarCollections.id]
+	}),
+	parent: one(cultivars, {
+		fields: [cultivars.parentId],
+		references: [cultivars.id],
+		relationName: 'cultivar_parent'
+	})
+}));
+
+export type Cultivar = typeof cultivars.$inferSelect;
+export type CultivarCollection = typeof cultivarCollections.$inferSelect;
+export type CultivarCollectionVisibility =
+	(typeof CultivarCollectionVisibilityEnumOptions)[number];

@@ -1,84 +1,36 @@
-import { type Entity, Schema as S, or } from '@triplit/client';
+import { jsonb, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core';
+import { relations } from 'drizzle-orm';
 
-import { gardenSchema } from '../gardens/schema.js';
+import { gardens } from '../gardens/schema.js';
 import { ObservationIds } from './ids.js';
 
-export const observationSchema = S.Collections({
-	...gardenSchema,
-	/** Observation schema. */
-	observations: {
-		schema: S.Schema({
-			id: S.Id(),
+export const observations = pgTable('observations', {
+	id: uuid('id').primaryKey().defaultRandom(),
 
-			/** Garden the entity is located within - required for access control. */
-			gardenId: S.String(),
+	/** Garden the observation belongs to. */
+	gardenId: text('garden_id')
+		.notNull()
+		.references(() => gardens.id, { onDelete: 'cascade' }),
 
-			/** Type of observation - plant/harvest, environment/air_temperature, etc.. */
-			type: S.String({ enum: [...ObservationIds] }),
+	/** Type of observation — drives the shape of the data field. */
+	type: text('type', { enum: ObservationIds as [string, ...string[]] }).notNull(),
 
-			/** IDs of the primary entities which the observation applies to. */
-			entityIds: S.Set(S.String(), { default: S.Default.Set }),
+	/** IDs of the primary entities this observation applies to. */
+	entityIds: text('entity_ids').array().notNull().default([]),
 
-			/** Date of the observation. */
-			date: S.Date(),
+	/** Date of the observation. */
+	date: timestamp('date').notNull(),
 
-			/** Optional unstructured data. Structure depends on the observation type. */
-			data: S.Optional(S.Json({}))
-		}),
-		relationships: {
-			garden: S.RelationById('gardens', '$gardenId')
-		},
-		permissions: {
-			anon: {
-				read: {
-					/** Allow anonymous reads if the garden is not hidden. */
-					filter: [['garden.visibility', '!=', 'HIDDEN']]
-				}
-			},
-			user: {
-				read: {
-					/** Allow reads if the garden is not hidden or the user is a member. */
-					filter: [
-						or([
-							['garden.visibility', '!=', 'HIDDEN'],
-							['garden.adminIds', 'has', '$role.profileId'],
-							['garden.editorIds', 'has', '$role.profileId'],
-							['garden.viewerIds', 'has', '$role.profileId']
-						])
-					]
-				},
-				insert: {
-					/** Allow new observations to be created by admins and editors. */
-					filter: [
-						or([
-							['garden.adminIds', 'has', '$role.profileId'],
-							['garden.editorIds', 'has', '$role.profileId']
-						])
-					]
-				},
-				update: {
-					/** Restrict observation updates to admins and editors. */
-					filter: [
-						or([
-							['garden.adminIds', 'has', '$role.profileId'],
-							['garden.editorIds', 'has', '$role.profileId']
-						])
-					]
-				},
-				delete: {
-					/** Restrict observation deletes to admins and editors. */
-					filter: [
-						or([
-							['garden.adminIds', 'has', '$role.profileId'],
-							['garden.editorIds', 'has', '$role.profileId']
-						])
-					]
-				}
-			}
-		}
-	}
+	/**
+	 * Flexible jsonb data store. Structure is determined by the type field.
+	 * Typed via the generic Observation<TData> wrapper at the application layer.
+	 */
+	data: jsonb('data')
 });
-export type GenericObservation = Entity<typeof observationSchema, 'observations'>;
-export type Observation<TData> = Omit<GenericObservation, 'data'> & {
-	data: TData;
-};
+
+export const observationsRelations = relations(observations, ({ one }) => ({
+	garden: one(gardens, { fields: [observations.gardenId], references: [gardens.id] })
+}));
+
+export type GenericObservation = typeof observations.$inferSelect;
+export type Observation<TData> = Omit<GenericObservation, 'data'> & { data: TData };

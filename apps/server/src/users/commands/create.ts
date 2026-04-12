@@ -4,6 +4,12 @@ import env from 'env.js';
 
 import { type UserCreateCommand } from '@vdg-webapp/models';
 
+import {
+	addEmailVerificationToken,
+	emailExists,
+	userCreate,
+	usernameExists
+} from '../../controllers/users.js';
 import { hashPassword } from '../auth/passwords.js';
 import { encodeEmailConfirmationToken } from '../auth/tokens.js';
 
@@ -13,18 +19,16 @@ import { encodeEmailConfirmationToken } from '../auth/tokens.js';
  * @param container The service locator.
  */
 const create = async (command: UserCreateCommand, container: typeof diContainer) => {
-	const users = container.resolve('userRepo');
+	const db = container.resolve('db');
 	const emailSender = container.resolve('emailSender');
 
 	/** Validate command against existing database state. */
-	const emailExists = await users.emailExists(command.email);
-	if (emailExists) {
+	if (await emailExists(db, command.email)) {
 		throw new ValidationError('Email exists', {
 			fieldErrors: { email: ['This email is already registered.'] }
 		});
 	}
-	const usernameExists = await users.usernameExists(command.username);
-	if (usernameExists) {
+	if (await usernameExists(db, command.username)) {
 		throw new ValidationError('Username exists', {
 			fieldErrors: { username: ['This username is taken.'] }
 		});
@@ -34,7 +38,8 @@ const create = async (command: UserCreateCommand, container: typeof diContainer)
 	const passwordHash = await hashPassword(command.password1);
 
 	/** Create the objects. */
-	const result = await users.create(
+	const result = await userCreate(
+		db,
 		command.username,
 		passwordHash,
 		command.email,
@@ -50,7 +55,7 @@ const create = async (command: UserCreateCommand, container: typeof diContainer)
 	const token = await encodeEmailConfirmationToken(result.account.id);
 
 	/** Add the verification token to the database. */
-	await users.addEmailVerificationToken(result.account.id, token);
+	await addEmailVerificationToken(db, result.account.id, token);
 
 	/** Emit the event which sends the email verification. */
 	await emailSender.sendEmailConfirmationEmail(

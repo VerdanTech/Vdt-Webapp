@@ -1,68 +1,45 @@
 import type { Garden, GardenRole } from './schema.js';
 
 /**
- * Returns a set of all profile IDs which are members of a garden.
- * @param garden The garden to extract IDs from.
- * @returns All profile IDs of garden members.
+ * Returns an array of all profile IDs which are members of a garden.
  */
-export const getMemberIds = (garden: Garden): Set<string> => {
-	return new Set([...garden.adminIds, ...garden.editorIds, ...garden.viewerIds]);
+export const getMemberIds = (garden: Garden): string[] => {
+	return [...garden.adminIds, ...garden.editorIds, ...garden.viewerIds];
 };
 
 /**
  * Checks whether a profile is an existing member of a garden.
- * @param garden The garden to check membership of.
- * @param profileId The ID of the profile to check.
- * @returns True if the profile is a member of the garden.
  */
 export const isProfileMember = (garden: Garden, profileId: string): boolean => {
-	if (
-		garden.adminIds.has(profileId) ||
-		garden.editorIds.has(profileId) ||
-		garden.viewerIds.has(profileId)
-	) {
-		return true;
-	} else {
-		return false;
-	}
+	return (
+		garden.adminIds.includes(profileId) ||
+		garden.editorIds.includes(profileId) ||
+		garden.viewerIds.includes(profileId)
+	);
 };
 
 /**
- * Checks whether a user has a role in the garden.
- * Roles are upwards inclusive, meaning an admin user is authorized for editor activities.
- * @param garden The garden to check membership of.
- * @param profileId The ID of the profile to check.
- * @param role The role to check membership against.
- * @returns True if the user is authorized.
+ * Checks whether a user has at least the given role in the garden.
+ * Roles are upwards-inclusive: admin satisfies editor and viewer checks.
  */
 export const isUserAuthorized = (
 	garden: Garden,
 	profileId: string,
 	role: GardenRole
-) => {
+): boolean => {
 	switch (role) {
 		case 'ADMIN':
-			if (garden.adminIds.has(profileId)) {
-				return true;
-			} else {
-				return false;
-			}
+			return garden.adminIds.includes(profileId);
 		case 'EDITOR':
-			if (garden.adminIds.has(profileId) || garden.editorIds.has(profileId)) {
-				return true;
-			} else {
-				return false;
-			}
+			return (
+				garden.adminIds.includes(profileId) || garden.editorIds.includes(profileId)
+			);
 		case 'VIEWER':
-			if (
-				garden.adminIds.has(profileId) ||
-				garden.editorIds.has(profileId) ||
-				garden.viewerIds.has(profileId)
-			) {
-				return true;
-			} else {
-				return false;
-			}
+			return (
+				garden.adminIds.includes(profileId) ||
+				garden.editorIds.includes(profileId) ||
+				garden.viewerIds.includes(profileId)
+			);
 		default:
 			return false;
 	}

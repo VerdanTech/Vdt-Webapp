@@ -1,14 +1,16 @@
-import { type Entity, Schema as S, or } from '@triplit/client';
+import { boolean, jsonb, pgEnum, pgTable, text, uuid } from 'drizzle-orm/pg-core';
+import { relations } from 'drizzle-orm';
 
-import { workspaceSchema } from '../workspaces/schema.js';
-import { EnvironmentAttributes } from './attributes/index.js';
+import { gardens } from '../gardens/schema.js';
+import { geometryHistories, locationHistories } from '../workspaces/schema.js';
+import type { EnvironmentAttributesUpdateCommand } from './attributes/index.js';
 
 /**
  * Defines the parent entity that the environment describes characteristics for.
- * - GARDEN: the environment applies to a garden.
- * - WORKSPACE: the environment applies to a workspace.
- * - PLANTING_AREA: the environment applies to a planting area.
- * - INDEPENDENT: the environment applies to an independent geometry.
+ * GARDEN: the environment applies to a garden.
+ * WORKSPACE: the environment applies to a workspace.
+ * PLANTING_AREA: the environment applies to a planting area.
+ * INDEPENDENT: the environment applies to an independent geometry.
  */
 export const EnvironmentParentTypeEnumOptions = [
 	'GARDEN',
@@ -17,108 +19,64 @@ export const EnvironmentParentTypeEnumOptions = [
 	'INDEPENDENT'
 ] as const;
 
-export const environmentSchema = S.Collections({
-	...workspaceSchema,
-	/** Environment schema. */
-	environments: {
-		schema: S.Schema({
-			id: S.Id(),
+export const environmentParentTypeEnum = pgEnum(
+	'environment_parent_type',
+	EnvironmentParentTypeEnumOptions
+);
 
-			/** Non-unique name of the environment. */
-			name: S.String(),
+export const environments = pgTable('environments', {
+	id: uuid('id').primaryKey().defaultRandom(),
 
-			/** Optional description. */
-			description: S.String({ default: '' }),
+	/** Non-unique name of the environment. */
+	name: text('name').notNull(),
 
-			/** Type of the parent entity of the environment. */
-			parentType: S.String({
-				enum: [...EnvironmentParentTypeEnumOptions],
-				default: 'GARDEN'
-			}),
+	/** Optional description. */
+	description: text('description').default('').notNull(),
 
-			/** Garden the environment exists in. Defined regardless of parentType. */
-			gardenId: S.String(),
+	/** Type of the parent entity the environment describes. */
+	parentType: environmentParentTypeEnum('parent_type').default('GARDEN').notNull(),
 
-			/** The workspaces the environment applies to. Defined only if parentType = 'WORKSPACE'. */
-			workspaceIds: S.Optional(S.Set(S.String())),
+	/** Garden the environment exists in — always set regardless of parentType. */
+	gardenId: text('garden_id')
+		.notNull()
+		.references(() => gardens.id, { onDelete: 'cascade' }),
 
-			/** The planting areas the environment applies to. Defined only if parentType = 'PLANTING_AREA'. */
-			plantingAreaIds: S.Optional(S.Set(S.String())),
+	/** Workspace IDs this environment applies to. Set when parentType = 'WORKSPACE'. */
+	workspaceIds: text('workspace_ids').array(),
 
-			/** The geometry the environment applies to. Defined only if parentType = 'INDEPENDENT'. */
-			geometryHistoryId: S.Optional(S.String()),
+	/** Planting area IDs this environment applies to. Set when parentType = 'PLANTING_AREA'. */
+	plantingAreaIds: text('planting_area_ids').array(),
 
-			/** The locations the environment geometry exists at. Defined only if parentType = 'INDEPENDENT'. */
-			locationHistoryId: S.Optional(S.String()),
+	/** Geometry history ID. Set when parentType = 'INDEPENDENT'. */
+	geometryHistoryId: uuid('geometry_history_id'),
 
-			/**
-			 * If true, the environment will inherit the attributes of the environments
-			 * defined at higher levels, eg., that of a planting area in a workspace.
-			 */
-			inherit: S.Boolean({ default: true }),
+	/** Location history ID. Set when parentType = 'INDEPENDENT'. */
+	locationHistoryId: uuid('location_history_id'),
 
-			attributes: EnvironmentAttributes
-		}),
-		relationships: {
-			garden: S.RelationById('gardens', '$gardenId'),
-			workspaces: S.RelationMany('workspaces', {
-				where: [['id', 'in', '$workspaceIds']]
-			}),
-			plantingAreas: S.RelationMany('plantingAreas', {
-				where: [['id', 'in', '$plantingAreaIds']]
-			}),
-			geometriHistory: S.RelationById('geometryHistories', '$geometryHistoryId'),
-			locationHistory: S.RelationById('locationHistories', '$locationHistoryId')
-		},
-		permissions: {
-			anon: {
-				read: {
-					/** Allow anonymous reads if the garden is not hidden. */
-					filter: [['garden.visibility', '!=', 'HIDDEN']]
-				}
-			},
-			user: {
-				read: {
-					/** Allow reads if the garden is not hidden or the user is a member. */
-					filter: [
-						or([
-							['garden.visibility', '!=', 'HIDDEN'],
-							['garden.adminIds', 'has', '$role.profileId'],
-							['garden.editorIds', 'has', '$role.profileId'],
-							['garden.viewerIds', 'has', '$role.profileId']
-						])
-					]
-				},
-				insert: {
-					/** Allow new environments to be created by admins and editors. */
-					filter: [
-						or([
-							['garden.adminIds', 'has', '$role.profileId'],
-							['garden.editorIds', 'has', '$role.profileId']
-						])
-					]
-				},
-				update: {
-					/** Restrict environment updates to admins and editors. */
-					filter: [
-						or([
-							['garden.adminIds', 'has', '$role.profileId'],
-							['garden.editorIds', 'has', '$role.profileId']
-						])
-					]
-				},
-				delete: {
-					/** Restrict environment deletes to admins and editors. */
-					filter: [
-						or([
-							['garden.adminIds', 'has', '$role.profileId'],
-							['garden.editorIds', 'has', '$role.profileId']
-						])
-					]
-				}
-			}
-		}
-	}
+	/**
+	 * If true, inherits attributes from environments defined at higher levels,
+	 * e.g. a planting area environment inherits from the workspace environment.
+	 */
+	inherit: boolean('inherit').default(true).notNull(),
+
+	/** Typed jsonb attribute store. Structure depends on parentType. */
+	attributes: jsonb('attributes').$type<EnvironmentAttributesUpdateCommand>().notNull()
 });
-export type Environment = Entity<typeof environmentSchema, 'environments'>;
+
+export const environmentsRelations = relations(environments, ({ one }) => ({
+	garden: one(gardens, {
+		fields: [environments.gardenId],
+		references: [gardens.id]
+	}),
+	geometryHistory: one(geometryHistories, {
+		fields: [environments.geometryHistoryId],
+		references: [geometryHistories.id]
+	}),
+	locationHistory: one(locationHistories, {
+		fields: [environments.locationHistoryId],
+		references: [locationHistories.id]
+	})
+}));
+
+export type Environment = typeof environments.$inferSelect;
 export type EnvironmentParent = (typeof EnvironmentParentTypeEnumOptions)[number];

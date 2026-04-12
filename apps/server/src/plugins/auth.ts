@@ -5,6 +5,8 @@ import { decodeAccessToken, getAccessTokenHeader } from 'users/auth/tokens.js';
 
 import { UserAccount } from '@vdg-webapp/models';
 
+import { getAccountById } from '../controllers/users.js';
+
 /**
  * Given a request, parse the request api key stored in the header
  * and retrieve the user correlating to the token from the DB.
@@ -30,8 +32,8 @@ export const registerAuth = (app: FastifyInstance) => {
 		}
 
 		/** Retrieve the user the token represents. */
-		const users = app.diContainer.resolve('userRepo');
-		const user = await users.getAccountById(token.accountId);
+		const db = app.diContainer.resolve('db');
+		const user = await getAccountById(db, token.accountId);
 
 		/** Add the user to the request dependencies. */
 		request.diScope.register({ client: asValue(user) });

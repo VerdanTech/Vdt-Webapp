@@ -9,6 +9,11 @@ const EnvSchema = z.object({
 		})
 		.default(true),
 
+	/** Postgres. */
+	DATABASE_URL: z
+		.string({ description: 'The connection string for the Postgres database.' })
+		.default('postgres://postgres:postgres@localhost:5432/verdagraph'),
+
 	/** Triplit. */
 	TRIPLIT_URL: z
 		.string({ description: 'The URL of the Triplit database server.' })

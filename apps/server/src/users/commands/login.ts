@@ -3,6 +3,7 @@ import { AuthenticationError, NotFoundError } from 'common/errors.js';
 
 import { type UserLoginCommand } from '@vdg-webapp/models';
 
+import { getAccountByVerifiedEmail, getProfileById } from '../../controllers/users.js';
 import { verifyPassword } from '../auth/passwords.js';
 import { encodeAccessToken, encodeRefreshToken } from '../auth/tokens.js';
 
@@ -23,16 +24,16 @@ const login = async (
 	command: UserLoginCommand,
 	container: typeof diContainer
 ): Promise<UserLoginResult> => {
-	const users = container.resolve('userRepo');
+	const db = container.resolve('db');
 
 	/** Fetch the user from the database. */
-	const userAccount = await users.getAccountByVerifiedEmail(command.email);
+	const userAccount = await getAccountByVerifiedEmail(db, command.email);
 	if (userAccount == null) {
 		throw new NotFoundError('User does not exist', {
 			fieldErrors: { email: ['This email does not exist.'] }
 		});
 	}
-	const userProfile = await users.getProfileByid(userAccount.profileId);
+	const userProfile = await getProfileById(db, userAccount.profileId);
 	if (userProfile == null) {
 		throw new NotFoundError('User does not exist', {
 			fieldErrors: { email: ['This email does not exist.'] }

@@ -1,19 +1,16 @@
-import { diContainer } from '@fastify/awilix';
-import { fastifyAwilixPlugin } from '@fastify/awilix';
-import { HttpClient as TriplitHttpClient } from '@triplit/client';
+import { diContainer, fastifyAwilixPlugin } from '@fastify/awilix';
 import { Lifetime, asClass, asValue } from 'awilix';
 import EmailSender from 'common/emails/sender.js';
-import env from 'env.js';
 import { FastifyInstance } from 'fastify';
-import { UserRepository } from 'users/repository.js';
 
-import { UserAccount } from '@vdg-webapp/models';
+import { type UserAccount } from '@vdg-webapp/models';
 
-/** Declares the types of dependencies available. */
+import { db } from '../db/index.js';
+
+/** Declares the types of dependencies available in the DI container. */
 declare module '@fastify/awilix' {
 	interface Cradle {
-		triplit: TriplitHttpClient;
-		userRepo: UserRepository;
+		db: typeof db;
 		emailSender: EmailSender;
 	}
 	interface RequestCradle {
@@ -21,33 +18,17 @@ declare module '@fastify/awilix' {
 	}
 }
 
-/** Global dependencies. */
-const triplit = new TriplitHttpClient({
-	serverUrl: env.TRIPLIT_URL,
-	token: env.TRIPLIT_SERVER_TOKEN
-});
-
 export const registerDiContainer = (app: FastifyInstance) => {
-	/** Register the plugin. */
 	app.register(fastifyAwilixPlugin);
 
-	/** Register all dependencies. */
-
-	/** Triplit database */
+	/** Postgres / Drizzle database. */
 	diContainer.register({
-		triplit: asValue(triplit)
+		db: asValue(db)
 	});
 
 	/** Email. */
 	diContainer.register({
 		emailSender: asClass(EmailSender, {
-			lifetime: Lifetime.SINGLETON
-		})
-	});
-
-	/** Repos. */
-	diContainer.register({
-		userRepo: asClass(UserRepository, {
 			lifetime: Lifetime.SINGLETON
 		})
 	});

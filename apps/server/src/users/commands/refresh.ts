@@ -1,6 +1,7 @@
 import { diContainer } from '@fastify/awilix';
 import { AuthenticationError } from 'common/errors.js';
 
+import { getAccountById, getProfileById } from '../../controllers/users.js';
 import {
 	decodeRefreshToken,
 	encodeAccessToken,
@@ -12,7 +13,7 @@ const refresh = async (
 	oldRefreshToken: string | null,
 	container: typeof diContainer
 ): Promise<UserLoginResult> => {
-	const users = container.resolve('userRepo');
+	const db = container.resolve('db');
 
 	/** If no refresh token was provided, false authentication. */
 	if (oldRefreshToken == null) {
@@ -30,13 +31,13 @@ const refresh = async (
 	}
 
 	/** Fetch the user represented by the token. */
-	const userAccount = await users.getAccountById(decodedToken.accountId);
+	const userAccount = await getAccountById(db, decodedToken.accountId);
 	if (userAccount == null) {
 		throw new AuthenticationError('No refresh credential.', {
 			nonFormErrors: ['Authentication expired. Please login again.']
 		});
 	}
-	const userProfile = await users.getProfileByid(userAccount.profileId);
+	const userProfile = await getProfileById(db, userAccount.profileId);
 	if (userProfile == null) {
 		throw new AuthenticationError('No refresh credential.', {
 			nonFormErrors: ['Authentication expired. Please login again.']

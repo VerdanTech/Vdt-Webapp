@@ -1,8 +1,26 @@
-import type { Geometry, Location } from '../workspaces/schema.js';
+import type { Geometry, GeometryHistory, Location, LocationHistory } from '../workspaces/schema.js';
 import { historySelect } from '../workspaces/utils.js';
 import type { Lifespan, Plant } from './schema.js';
 
 export type LifespanSource = 'recorded' | 'expected';
+
+/**
+ * A lifespan with its related histories pre-loaded by the caller.
+ * The base Lifespan type only carries FK IDs; callers that need
+ * history data must fetch and pass it explicitly.
+ */
+export type LifespanWithHistories = Lifespan & {
+	locationHistory: (LocationHistory & { locations: Location[] }) | null;
+	geometryHistory: (GeometryHistory & { geometries: Geometry[] }) | null;
+};
+
+/**
+ * A plant with its related lifespans pre-loaded by the caller.
+ */
+export type PlantWithLifespans = Plant & {
+	recordedLifespan: LifespanWithHistories | null;
+	expectedLifespan: LifespanWithHistories | null;
+};
 
 /**
  * Wraps a value resolved from a plant's lifespan history
@@ -12,22 +30,12 @@ export type LifespanSource = 'recorded' | 'expected';
 export type Sourced<T> = {
 	value: T;
 	source: LifespanSource;
-	lifespan: Lifespan;
+	lifespan: LifespanWithHistories;
 };
 
-/**
- * Resolves a value from a plant's lifespans using a selector function.
- * The recorded lifespan is checked first. If no value is found,
- * the expected lifespan is used as a fallback.
- * @param plant The plant whose lifespans to search.
- * @param selector A function that extracts a value from a lifespan,
- * returning null if the lifespan does not contain a match.
- * @returns The resolved value with its source lifespan, or null
- * if neither lifespan produced a match.
- */
 function resolveFromLifespans<T>(
-	plant: Plant,
-	selector: (lifespan: Lifespan) => T | null
+	plant: PlantWithLifespans,
+	selector: (lifespan: LifespanWithHistories) => T | null
 ): Sourced<T> | null {
 	if (plant.recordedLifespan) {
 		const value = selector(plant.recordedLifespan);
@@ -48,44 +56,28 @@ function resolveFromLifespans<T>(
 
 /**
  * Resolves the active location for a plant at a given point in time.
- * A plant may have both a recorded and expected lifespan, each with
- * its own location history. The recorded lifespan takes priority;
- * the expected lifespan is used as a fallback.
- * @param plant The plant to resolve the location for.
- * @param focusDate The point in time to resolve the location at.
- * @returns The location with its source lifespan, or null if no
- * location exists at the given time in either lifespan.
+ * Recorded lifespan takes priority; expected lifespan is the fallback.
  */
 export function resolveActiveLocation(
-	plant: Plant,
+	plant: PlantWithLifespans,
 	focusDate: Date
 ): Sourced<Location> | null {
 	return resolveFromLifespans(plant, (lifespan) => {
-		if (!lifespan.locationHistory) {
-			return null;
-		}
+		if (!lifespan.locationHistory) return null;
 		return historySelect(lifespan.locationHistory.locations, focusDate, false);
 	});
 }
 
 /**
  * Resolves the active geometry for a plant at a given point in time.
- * A plant may have both a recorded and expected lifespan, each with
- * its own geometry history. The recorded lifespan takes priority;
- * the expected lifespan is used as a fallback.
- * @param plant The plant to resolve the geometry for.
- * @param focusDate The point in time to resolve the geometry at.
- * @returns The geometry with its source lifespan, or null if no
- * geometry exists at the given time in either lifespan.
+ * Recorded lifespan takes priority; expected lifespan is the fallback.
  */
 export function resolveActiveGeometry(
-	plant: Plant,
+	plant: PlantWithLifespans,
 	focusDate: Date
 ): Sourced<Geometry> | null {
 	return resolveFromLifespans(plant, (lifespan) => {
-		if (!lifespan.geometryHistory) {
-			return null;
-		}
+		if (!lifespan.geometryHistory) return null;
 		return historySelect(lifespan.geometryHistory.geometries, focusDate, false);
 	});
 }

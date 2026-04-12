@@ -1,15 +1,23 @@
-import { type Entity, type QueryResult, Schema as S, or } from '@triplit/client';
+import {
+	boolean,
+	jsonb,
+	pgEnum,
+	pgTable,
+	real,
+	text,
+	timestamp,
+	uuid
+} from 'drizzle-orm/pg-core';
+import { relations } from 'drizzle-orm';
 
-import { observationSchema } from '../observations/index.js';
+import { gardens } from '../gardens/schema.js';
 
 /**
  * Specifies a type of geometry.
- * Each geometry type is associated with a different record type
- * describing its features.
- * RECTANGLE: a closed shape specified by width and height.
- * POLYGON: a closed shape specified by a number of sides and their length.
- * ELLIPSE: a closed shape specified by a major and minor radius.
- * LINES: a closed or open shape specified by a set of joined line segments.`
+ * RECTANGLE: closed shape specified by width and height.
+ * POLYGON: closed shape specified by number of sides and radius.
+ * ELLIPSE: closed shape specified by major and minor radius.
+ * LINES: open or closed shape specified by inline coordinate points.
  */
 export const GeometryTypeEnumOptions = [
 	'RECTANGLE',
@@ -18,538 +26,217 @@ export const GeometryTypeEnumOptions = [
 	'LINES'
 ] as const;
 
-export const workspaceSchema = S.Collections({
-	...observationSchema,
-	/** Coordinate schema. */
-	coordinates: {
-		schema: S.Schema({
-			id: S.Id(),
+export const geometryTypeEnum = pgEnum('geometry_type', GeometryTypeEnumOptions);
 
-			/** Garden the entity is located within - required for access control. */
-			gardenId: S.String(),
+/** Inline coordinate type used by LINES geometries. */
+export type LinesCoordinate = { x: number; y: number };
 
-			/** The horizontal X component of the coordinate in meters. */
-			x: S.Number(),
+export const workspaces = pgTable('workspaces', {
+	id: uuid('id').primaryKey().defaultRandom(),
 
-			/** The vertical Y component of the coordinate in meters. */
-			y: S.Number(),
+	/** Garden the workspace belongs to. */
+	gardenId: text('garden_id')
+		.notNull()
+		.references(() => gardens.id, { onDelete: 'cascade' }),
 
-			/** The depth/altitude component of the coordinate in meters. */
-			z: S.Number({ nullable: true, default: 0 }),
+	/** Name of the workspace. */
+	name: text('name').notNull(),
 
-			/** Used to maintain ordering in sets of coordinates. */
-			createdAt: S.Date({ default: S.Default.now() })
-		}),
-		relationships: {
-			garden: S.RelationById('gardens', '$gardenId')
-		},
-		permissions: {
-			anon: {
-				read: {
-					/** Allow anonymous reads if the garden is not hidden. */
-					filter: [['garden.visibility', '!=', 'HIDDEN']]
-				}
-			},
-			user: {
-				read: {
-					/** Allow reads if the garden is not hidden or the user is a member. */
-					filter: [
-						or([
-							['garden.visibility', '!=', 'HIDDEN'],
-							['garden.adminIds', 'has', '$role.profileId'],
-							['garden.editorIds', 'has', '$role.profileId'],
-							['garden.viewerIds', 'has', '$role.profileId']
-						])
-					]
-				},
-				insert: {
-					/** Allow new coordinates to be created by admins and editors. */
-					filter: [
-						or([
-							['garden.adminIds', 'has', '$role.profileId'],
-							['garden.editorIds', 'has', '$role.profileId']
-						])
-					]
-				},
-				update: {
-					/** Restrict coordinates updates to admins and editors. */
-					filter: [
-						or([
-							['garden.adminIds', 'has', '$role.profileId'],
-							['garden.editorIds', 'has', '$role.profileId']
-						])
-					]
-				},
-				delete: {
-					/** Restrict coordinates deletes to admins and editors. */
-					filter: [
-						or([
-							['garden.adminIds', 'has', '$role.profileId'],
-							['garden.editorIds', 'has', '$role.profileId']
-						])
-					]
-				}
-			}
-		}
-	},
-	/** Geometries schema. */
-	geometries: {
-		schema: S.Schema({
-			id: S.Id(),
+	/** URL-friendly shorthand of the name. */
+	slug: text('slug').notNull(),
 
-			/** Garden the entity is located within - required for access control. */
-			gardenId: S.String(),
-
-			/**
-			 * Describes the type of the geometry.
-			 * Each geometry object may be of any type. The type determines
-			 * which of the attributes objects is used in the application.
-			 * For example, if the type is 'ELLIPSE', only the ellipseAttribute
-			 * object is used and other attributes are ignored.
-			 */
-			type: S.String({ enum: [...GeometryTypeEnumOptions] }),
-
-			/** The date at which this geometry applies. */
-			date: S.Date(),
-
-			/** Scalar size multiplier. */
-			scaleFactor: S.Number({ default: 1 }),
-
-			/** Rotation of the geometry about its center or location, in degrees. */
-			rotation: S.Number({ default: 0 }),
-
-			/** Rectangular geometry attributes. */
-			/** Horizontal length of the rectangle in meters. */
-			rectangleLength: S.Number({ default: 1 }),
-
-			/** Vertical width of the rectangle in meters. */
-			rectangleWidth: S.Number({ default: 1 }),
-
-			/** Polygon geometry attributes. */
-			/** Number of sides to the polygon. */
-			polygonNumSides: S.Number({ default: 3 }),
-
-			/** Polygon radius. */
-			polygonRadius: S.Number({ default: 1 }),
-
-			/** Ellipe geometry attributes. */
-			/** The length of the horizontal diameter in meters. */
-			ellipseLength: S.Number({ default: 1 }),
-
-			/** The width of the vertical diameter in meters. */
-			ellipseWidth: S.Number({ default: 1 }),
-
-			/** Lines geometry attributes. */
-			/** A set of coordinates which describe an open or closed shape of line segments. */
-			linesCoordinateIds: S.Set(S.String(), { default: S.Default.Set.empty() }),
-
-			/** If true the lines form a closed shape. */
-			linesClosed: S.Boolean({ default: true })
-		}),
-		relationships: {
-			garden: S.RelationById('gardens', '$gardenId'),
-			linesCoordinates: S.RelationMany('coordinates', {
-				where: [['id', 'in', '$linesCoordinateIds']],
-				order: [['createdAt', 'ASC']]
-			})
-		},
-		permissions: {
-			anon: {
-				read: {
-					/** Allow anonymous reads if the garden is not hidden. */
-					filter: [['garden.visibility', '!=', 'HIDDEN']]
-				}
-			},
-			user: {
-				read: {
-					/** Allow reads if the garden is not hidden or the user is a member. */
-					filter: [
-						or([
-							['garden.visibility', '!=', 'HIDDEN'],
-							['garden.adminIds', 'has', '$role.profileId'],
-							['garden.editorIds', 'has', '$role.profileId'],
-							['garden.viewerIds', 'has', '$role.profileId']
-						])
-					]
-				},
-				insert: {
-					/** Allow new geometries to be created by admins and editors. */
-					filter: [
-						or([
-							['garden.adminIds', 'has', '$role.profileId'],
-							['garden.editorIds', 'has', '$role.profileId']
-						])
-					]
-				},
-				update: {
-					/** Restrict geometry updates to admins and editors. */
-					filter: [
-						or([
-							['garden.adminIds', 'has', '$role.profileId'],
-							['garden.editorIds', 'has', '$role.profileId']
-						])
-					]
-				},
-				delete: {
-					/** Restrict geometry deletes to admins and editors. */
-					filter: [
-						or([
-							['garden.adminIds', 'has', '$role.profileId'],
-							['garden.editorIds', 'has', '$role.profileId']
-						])
-					]
-				}
-			}
-		}
-	},
-	/** GeometricHistory schema. */
-	geometryHistories: {
-		schema: S.Schema({
-			id: S.Id(),
-
-			/** Garden the entity is located within - required for access control. */
-			gardenId: S.String(),
-
-			/** A set of geometries which describe a history of geometric change. */
-			geometryIds: S.Set(S.String())
-		}),
-		relationships: {
-			garden: S.RelationById('gardens', '$gardenId'),
-			geometries: S.RelationMany('geometries', {
-				where: [['id', 'in', '$geometryIds']],
-				order: [['date', 'ASC']]
-			})
-		},
-		permissions: {
-			anon: {
-				read: {
-					/** Allow anonymous reads if the garden is not hidden. */
-					filter: [['garden.visibility', '!=', 'HIDDEN']]
-				}
-			},
-			user: {
-				read: {
-					/** Allow reads if the garden is not hidden or the user is a member. */
-					filter: [
-						or([
-							['garden.visibility', '!=', 'HIDDEN'],
-							['garden.adminIds', 'has', '$role.profileId'],
-							['garden.editorIds', 'has', '$role.profileId'],
-							['garden.viewerIds', 'has', '$role.profileId']
-						])
-					]
-				},
-				insert: {
-					/** Allow new geometry history to be created by admins and editors. */
-					filter: [
-						or([
-							['garden.adminIds', 'has', '$role.profileId'],
-							['garden.editorIds', 'has', '$role.profileId']
-						])
-					]
-				},
-				update: {
-					/** Restrict geometry history updates to admins and editors. */
-					filter: [
-						or([
-							['garden.adminIds', 'has', '$role.profileId'],
-							['garden.editorIds', 'has', '$role.profileId']
-						])
-					]
-				},
-				delete: {
-					/** Restrict geometry histories deletes to admins and editors. */
-					filter: [
-						or([
-							['garden.adminIds', 'has', '$role.profileId'],
-							['garden.editorIds', 'has', '$role.profileId']
-						])
-					]
-				}
-			}
-		}
-	},
-	/** Location schema. */
-	locations: {
-		schema: S.Schema({
-			id: S.Id(),
-
-			/** Garden the entity is located within - required for access control. */
-			gardenId: S.String(),
-
-			/** The workspace the cordinate is located in. */
-			workspaceId: S.String(),
-
-			/** The horizontal X component of the location in meters. */
-			x: S.Number(),
-
-			/** The vertical Y component of the location in meters. */
-			y: S.Number(),
-
-			/** The depth/altitude component of the location in meters. */
-			z: S.Number({ nullable: true, default: 0 }),
-
-			/** The date at which the location applies. */
-			date: S.Date()
-		}),
-		relationships: {
-			garden: S.RelationById('gardens', '$gardenId'),
-			workspace: S.RelationById('workspaces', '$workspaceId')
-		},
-		permissions: {
-			anon: {
-				read: {
-					/** Allow anonymous reads if the garden is not hidden. */
-					filter: [['garden.visibility', '!=', 'HIDDEN']]
-				}
-			},
-			user: {
-				read: {
-					/** Allow reads if the garden is not hidden or the user is a member. */
-					filter: [
-						or([
-							['garden.visibility', '!=', 'HIDDEN'],
-							['garden.adminIds', 'has', '$role.profileId'],
-							['garden.editorIds', 'has', '$role.profileId'],
-							['garden.viewerIds', 'has', '$role.profileId']
-						])
-					]
-				},
-				insert: {
-					/** Allow new locations to be created by admins and editors. */
-					filter: [
-						or([
-							['garden.adminIds', 'has', '$role.profileId'],
-							['garden.editorIds', 'has', '$role.profileId']
-						])
-					]
-				},
-				update: {
-					/** Restrict locations updates to admins and editors. */
-					filter: [
-						or([
-							['garden.adminIds', 'has', '$role.profileId'],
-							['garden.editorIds', 'has', '$role.profileId']
-						])
-					]
-				},
-				delete: {
-					/** Restrict locations deletes to admins and editors. */
-					filter: [
-						or([
-							['garden.adminIds', 'has', '$role.profileId'],
-							['garden.editorIds', 'has', '$role.profileId']
-						])
-					]
-				}
-			}
-		}
-	},
-	/** Location history schema. */
-	locationHistories: {
-		schema: S.Schema({
-			id: S.Id(),
-
-			/** Garden the entity is located within - required for access control. */
-			gardenId: S.String(),
-
-			/** A set of locations which describe a history of locational change. */
-			locationIds: S.Set(S.String()),
-
-			/** Denormalized set of workspace IDs that are represented by the locations. */
-			workspaceIds: S.Set(S.String())
-		}),
-		relationships: {
-			garden: S.RelationById('gardens', '$gardenId'),
-			locations: S.RelationMany('locations', {
-				where: [['id', 'in', '$locationIds']],
-				order: [['date', 'ASC']]
-			})
-		},
-		permissions: {
-			anon: {
-				read: {
-					/** Allow anonymous reads if the garden is not hidden. */
-					filter: [['garden.visibility', '!=', 'HIDDEN']]
-				}
-			},
-			user: {
-				read: {
-					/** Allow reads if the garden is not hidden or the user is a member. */
-					filter: [
-						or([
-							['garden.visibility', '!=', 'HIDDEN'],
-							['garden.adminIds', 'has', '$role.profileId'],
-							['garden.editorIds', 'has', '$role.profileId'],
-							['garden.viewerIds', 'has', '$role.profileId']
-						])
-					]
-				},
-				insert: {
-					/** Allow new location history to be created by admins and editors. */
-					filter: [
-						or([
-							['garden.adminIds', 'has', '$role.profileId'],
-							['garden.editorIds', 'has', '$role.profileId']
-						])
-					]
-				},
-				update: {
-					/** Restrict location history updates to admins. */
-					filter: [
-						or([
-							['garden.adminIds', 'has', '$role.profileId'],
-							['garden.editorIds', 'has', '$role.profileId']
-						])
-					]
-				},
-				delete: {
-					/** Restrict location histories deletes to admins. */
-					filter: [
-						or([
-							['garden.adminIds', 'has', '$role.profileId'],
-							['garden.editorIds', 'has', '$role.profileId']
-						])
-					]
-				}
-			}
-		}
-	},
-	/** Planting area schema. */
-	plantingAreas: {
-		schema: S.Schema({
-			id: S.Id(),
-
-			/** Garden the entity is located within - required for access control. */
-			gardenId: S.String(),
-
-			/** Name. */
-			name: S.String(),
-
-			/** The geometry of the planting area. */
-			geometryId: S.String(),
-
-			/** The location history of the planting area. */
-			locationHistoryId: S.String(),
-
-			/** The depth of the planting area in meters. Used to calculate volume. */
-			depth: S.Number({ default: 0 }),
-
-			/** Optional description. */
-			description: S.String({ default: '' })
-		}),
-		relationships: {
-			garden: S.RelationById('gardens', '$gardenId'),
-			geometry: S.RelationById('geometries', '$geometryId'),
-			locationHistory: S.RelationById('locationHistories', '$locationHistoryId')
-		},
-		permissions: {
-			anon: {
-				read: {
-					/** Allow anonymous reads if the garden is not hidden. */
-					filter: [['garden.visibility', '!=', 'HIDDEN']]
-				}
-			},
-			user: {
-				read: {
-					/** Allow reads if the garden is not hidden or the user is a member. */
-					filter: [
-						or([
-							['garden.visibility', '!=', 'HIDDEN'],
-							['garden.adminIds', 'has', '$role.profileId'],
-							['garden.editorIds', 'has', '$role.profileId'],
-							['garden.viewerIds', 'has', '$role.profileId']
-						])
-					]
-				},
-				insert: {
-					/** Allow new planting areas to be created by admins. */
-					filter: [['garden.adminIds', 'has', '$role.profileId']]
-				},
-				update: {
-					/** Restrict planting area updates to admins. */
-					filter: [['garden.adminIds', 'has', '$role.profileId']]
-				},
-				delete: {
-					/** Restrict planting area deletes to admins. */
-					filter: [['garden.adminIds', 'has', '$role.profileId']]
-				}
-			}
-		}
-	},
-	/** Workspace schema. */
-	workspaces: {
-		schema: S.Schema({
-			id: S.Id(),
-
-			/** Garden the entity is located within. */
-			gardenId: S.String(),
-
-			/** Name of the workspace. */
-			name: S.String(),
-
-			/** URL-friendly shorthand of the name. */
-			slug: S.String(),
-
-			/** Optional description. */
-			description: S.String({ default: '' })
-		}),
-		relationships: {
-			garden: S.RelationById('gardens', '$gardenId')
-		},
-		permissions: {
-			anon: {
-				read: {
-					/** Allow anonymous reads if the garden is not hidden. */
-					filter: [['garden.visibility', '!=', 'HIDDEN']]
-				}
-			},
-			user: {
-				read: {
-					/** Allow reads if the garden is not hidden or the user is a member. */
-					filter: [
-						or([
-							['garden.visibility', '!=', 'HIDDEN'],
-							['garden.adminIds', 'has', '$role.profileId'],
-							['garden.editorIds', 'has', '$role.profileId'],
-							['garden.viewerIds', 'has', '$role.profileId']
-						])
-					]
-				},
-				insert: {
-					/** Allow new workspaces to be created by admins. */
-					filter: [['garden.adminIds', 'has', '$role.profileId']]
-				},
-				update: {
-					/** Restrict workspace updates to admins. */
-					filter: [['garden.adminIds', 'has', '$role.profileId']]
-				},
-				delete: {
-					/** Restrict workspace deletes to admins. */
-					filter: [['garden.adminIds', 'has', '$role.profileId']]
-				}
-			}
-		}
-	}
+	/** Optional description. */
+	description: text('description').default('').notNull()
 });
 
-export type Coordinate = Entity<typeof workspaceSchema, 'coordinates'>;
-export type Position = Pick<Coordinate, 'x' | 'y'>;
-export type Geometry = QueryResult<
-	typeof workspaceSchema,
-	{ collectionName: 'geometries'; include: { linesCoordinates: true } }
->;
+export const locations = pgTable('locations', {
+	id: uuid('id').primaryKey().defaultRandom(),
+
+	/** Garden the entity is located within. */
+	gardenId: text('garden_id')
+		.notNull()
+		.references(() => gardens.id, { onDelete: 'cascade' }),
+
+	/** The workspace the location is in. */
+	workspaceId: uuid('workspace_id')
+		.notNull()
+		.references(() => workspaces.id, { onDelete: 'cascade' }),
+
+	/** Horizontal X component in meters. */
+	x: real('x').notNull(),
+
+	/** Vertical Y component in meters. */
+	y: real('y').notNull(),
+
+	/** Depth/altitude in meters. */
+	z: real('z').default(0),
+
+	/** The date at which the location applies. */
+	date: timestamp('date').notNull()
+});
+
+export const locationHistories = pgTable('location_histories', {
+	id: uuid('id').primaryKey().defaultRandom(),
+
+	/** Garden the entity is located within. */
+	gardenId: text('garden_id')
+		.notNull()
+		.references(() => gardens.id, { onDelete: 'cascade' }),
+
+	/**
+	 * Ordered set of location IDs describing a history of positional change.
+	 * Locations are ordered by their date column when queried.
+	 * Note: workspaceIds is intentionally omitted — derive with a JOIN query when needed.
+	 */
+	locationIds: text('location_ids').array().notNull().default([])
+});
+
+export const geometries = pgTable('geometries', {
+	id: uuid('id').primaryKey().defaultRandom(),
+
+	/** Garden the entity is located within. */
+	gardenId: text('garden_id')
+		.notNull()
+		.references(() => gardens.id, { onDelete: 'cascade' }),
+
+	/**
+	 * Type of the geometry. Determines which attribute columns are used.
+	 */
+	type: geometryTypeEnum('type').notNull(),
+
+	/** The date at which this geometry applies. */
+	date: timestamp('date').notNull(),
+
+	/** Scalar size multiplier. */
+	scaleFactor: real('scale_factor').default(1).notNull(),
+
+	/** Rotation about center in degrees. */
+	rotation: real('rotation').default(0).notNull(),
+
+	/** RECTANGLE: horizontal length in meters. */
+	rectangleLength: real('rectangle_length').default(1).notNull(),
+
+	/** RECTANGLE: vertical width in meters. */
+	rectangleWidth: real('rectangle_width').default(1).notNull(),
+
+	/** POLYGON: number of sides. */
+	polygonNumSides: real('polygon_num_sides').default(3).notNull(),
+
+	/** POLYGON: radius from center to vertex in meters. */
+	polygonRadius: real('polygon_radius').default(1).notNull(),
+
+	/** ELLIPSE: horizontal diameter in meters. */
+	ellipseLength: real('ellipse_length').default(1).notNull(),
+
+	/** ELLIPSE: vertical diameter in meters. */
+	ellipseWidth: real('ellipse_width').default(1).notNull(),
+
+	/**
+	 * LINES: inline coordinate points.
+	 * Stored as jsonb rather than a separate table — coordinates are private
+	 * to a single geometry and always fetched together with it.
+	 */
+	linesCoordinates: jsonb('lines_coordinates')
+		.$type<LinesCoordinate[]>()
+		.default([])
+		.notNull(),
+
+	/** LINES: if true, the first and last points are connected. */
+	linesClosed: boolean('lines_closed').default(true).notNull()
+});
+
+export const geometryHistories = pgTable('geometry_histories', {
+	id: uuid('id').primaryKey().defaultRandom(),
+
+	/** Garden the entity is located within. */
+	gardenId: text('garden_id')
+		.notNull()
+		.references(() => gardens.id, { onDelete: 'cascade' }),
+
+	/**
+	 * Ordered set of geometry IDs describing a history of geometric change.
+	 * Geometries are ordered by their date column when queried.
+	 */
+	geometryIds: text('geometry_ids').array().notNull().default([])
+});
+
+export const plantingAreas = pgTable('planting_areas', {
+	id: uuid('id').primaryKey().defaultRandom(),
+
+	/** Garden the entity is located within. */
+	gardenId: text('garden_id')
+		.notNull()
+		.references(() => gardens.id, { onDelete: 'cascade' }),
+
+	/** Name. */
+	name: text('name').notNull(),
+
+	/** The geometry of the planting area. */
+	geometryId: uuid('geometry_id')
+		.notNull()
+		.references(() => geometries.id),
+
+	/** The location history of the planting area. */
+	locationHistoryId: uuid('location_history_id')
+		.notNull()
+		.references(() => locationHistories.id),
+
+	/** Depth in meters — used to calculate volume. */
+	depth: real('depth').default(0).notNull(),
+
+	/** Optional description. */
+	description: text('description').default('').notNull()
+});
+
+/** Relations. */
+
+export const workspacesRelations = relations(workspaces, ({ one }) => ({
+	garden: one(gardens, { fields: [workspaces.gardenId], references: [gardens.id] })
+}));
+
+export const locationsRelations = relations(locations, ({ one }) => ({
+	garden: one(gardens, { fields: [locations.gardenId], references: [gardens.id] }),
+	workspace: one(workspaces, {
+		fields: [locations.workspaceId],
+		references: [workspaces.id]
+	})
+}));
+
+export const locationHistoriesRelations = relations(locationHistories, ({ one }) => ({
+	garden: one(gardens, {
+		fields: [locationHistories.gardenId],
+		references: [gardens.id]
+	})
+}));
+
+export const geometriesRelations = relations(geometries, ({ one }) => ({
+	garden: one(gardens, { fields: [geometries.gardenId], references: [gardens.id] })
+}));
+
+export const geometryHistoriesRelations = relations(geometryHistories, ({ one }) => ({
+	garden: one(gardens, {
+		fields: [geometryHistories.gardenId],
+		references: [gardens.id]
+	})
+}));
+
+export const plantingAreasRelations = relations(plantingAreas, ({ one }) => ({
+	garden: one(gardens, { fields: [plantingAreas.gardenId], references: [gardens.id] }),
+	geometry: one(geometries, {
+		fields: [plantingAreas.geometryId],
+		references: [geometries.id]
+	}),
+	locationHistory: one(locationHistories, {
+		fields: [plantingAreas.locationHistoryId],
+		references: [locationHistories.id]
+	})
+}));
+
+export type Workspace = typeof workspaces.$inferSelect;
+export type Location = typeof locations.$inferSelect;
+export type LocationHistory = typeof locationHistories.$inferSelect;
+export type Geometry = typeof geometries.$inferSelect;
+export type GeometryHistory = typeof geometryHistories.$inferSelect;
+export type PlantingArea = typeof plantingAreas.$inferSelect;
 export type GeometryType = (typeof GeometryTypeEnumOptions)[number];
-export type GeometryHistory = Entity<typeof workspaceSchema, 'geometryHistories'> & {
-	geometries: Geometry[];
-};
-export type Location = Entity<typeof workspaceSchema, 'locations'>;
-export type LocationHistory = QueryResult<
-	typeof workspaceSchema,
-	{ collectionName: 'locationHistories'; include: { locations: true } }
->;
-export type PlantingArea = Entity<typeof workspaceSchema, 'plantingAreas'> & {
-	geometry: Geometry | null | undefined;
-	locationHistory: LocationHistory | null | undefined;
-};
-export type Workspace = Entity<typeof workspaceSchema, 'workspaces'>;
+export type Position = Pick<Location, 'x' | 'y'>;

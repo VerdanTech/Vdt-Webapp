@@ -1,4 +1,3 @@
-import { Schema as S } from '@triplit/client';
 import { z } from 'zod';
 
 import * as AnnualLifeCycle from './annualLifeCycle/index.js';
@@ -15,16 +14,6 @@ export const attributesSchemas = {
 	...Origin.fields
 };
 
-export const CultivarAttributes = S.Record({
-	annualLifeCycle: S.Optional(AnnualLifeCycle.AnnualLifeCycleProfile),
-	color: S.Optional(Color.ColorProfile),
-	frostDatePlantingWindows: S.Optional(
-		FrostDatePlantingWindows.FrostDatePlantingWindowsProfile
-	),
-	expectedGeometry: S.Optional(ExpectedGeometry.ExpectedGeometryProfile),
-	origin: S.Optional(Origin.OriginProfile)
-});
-
 export const CultivarAttributesUpdateCommandSchema = z
 	.object({
 		annualLifeCycle: AnnualLifeCycle.AnnualLifecycleUpdateCommandSchema.optional(),
@@ -35,6 +24,7 @@ export const CultivarAttributesUpdateCommandSchema = z
 		origin: Origin.OriginUpdateCommandSchema.optional()
 	})
 	.describe('Contains all cultivar attributes');
+
 export type CultivarAttributesUpdateCommand = z.infer<
 	typeof CultivarAttributesUpdateCommandSchema
 >;

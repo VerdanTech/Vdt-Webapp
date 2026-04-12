@@ -3,7 +3,8 @@
 	"version": "1.0.0",
 	"type": "module",
 	"exports": {
-		".": "./dist/index.js"
+		".": "./dist/index.js",
+		"./tables": "./dist/tables.js"
 	},
 	"scripts": {
 		"dev": "TRIPLIT_JWT_SECRET=secret npx triplit dev --seed=triplit/seeds/seed.ts",
@@ -29,6 +30,7 @@
 		"zod": "^3.24.2"
 	},
 	"dependencies": {
-		"@triplit/client": "^1.0.33"
+		"drizzle-orm": "^0.41.0",
+		"drizzle-zod": "^0.7.0"
 	}
 }

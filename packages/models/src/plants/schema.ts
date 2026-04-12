@@ -1,269 +1,130 @@
-import { type Entity, Schema as S, or } from '@triplit/client';
+import { integer, jsonb, pgEnum, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core';
+import { relations } from 'drizzle-orm';
 
-import { CultivarAttributes } from '../cultivars/attributes/index.js';
-import { type Cultivar, cultivarSchema } from '../cultivars/schema.js';
-import { type Environment } from '../environments/schema.js';
-import { type DateRange } from '../time/utils.js';
-import { GeometryHistory, LocationHistory } from '../workspaces/schema.js';
-import { PlantObservation } from './observations.js';
+import { gardens } from '../gardens/schema.js';
+import type { CultivarAttributesUpdateCommand } from '../cultivars/attributes/index.js';
+import { geometryHistories, locationHistories } from '../workspaces/schema.js';
 
-/**
- *
- */
 export const OriginEnumOptions = [
 	'DIRECT_SEED',
 	'SEED_TO_TRANSPLANT',
 	'SEEDLING_TO_TRANSPLANT'
 ] as const;
 
-export const plantSchema = S.Collections({
-	...cultivarSchema,
-	/** Lifespan schema. */
-	lifespans: {
-		schema: S.Schema({
-			id: S.Id(),
+export const originEnum = pgEnum('origin', OriginEnumOptions);
 
-			/** Garden the entity is located within - required for access control. */
-			gardenId: S.String(),
+export const lifespans = pgTable('lifespans', {
+	id: uuid('id').primaryKey().defaultRandom(),
 
-			/** The origin of the lifespan. */
-			origin: S.String({ enum: [...OriginEnumOptions] }),
+	/** Garden the lifespan belongs to. */
+	gardenId: text('garden_id')
+		.notNull()
+		.references(() => gardens.id, { onDelete: 'cascade' }),
 
-			/** The geometries of the lifespan. */
-			geometryHistoryId: S.Optional(S.String()),
+	/** How the plant was started. */
+	origin: originEnum('origin').notNull(),
 
-			/** The locations of the lifespan. */
-			locationHistoryId: S.Optional(S.String())
-		}),
-		relationships: {
-			garden: S.RelationById('gardens', '$gardenId'),
-			geometryHistory: S.RelationById('geometryHistories', '$geometryHistoryId'),
-			locationHistory: S.RelationById('locationHistories', '$locationHistoryId'),
-			observations: S.RelationMany('observations', {
-				where: [['entityIds', 'has', '$id']]
-			})
-		},
-		permissions: {
-			anon: {
-				read: {
-					/** Allow anonymous reads if the garden is not hidden. */
-					filter: [['garden.visibility', '!=', 'HIDDEN']]
-				}
-			},
-			user: {
-				read: {
-					/** Allow reads if the garden is not hidden or the user is a member. */
-					filter: [
-						or([
-							['garden.visibility', '!=', 'HIDDEN'],
-							['garden.adminIds', 'has', '$role.profileId'],
-							['garden.editorIds', 'has', '$role.profileId'],
-							['garden.viewerIds', 'has', '$role.profileId']
-						])
-					]
-				},
-				insert: {
-					/** Allow new lifespans to be created by admins and editors. */
-					filter: [
-						or([
-							['garden.adminIds', 'has', '$role.profileId'],
-							['garden.editorIds', 'has', '$role.profileId']
-						])
-					]
-				},
-				update: {
-					/** Restrict lifespans updates to admins and editors. */
-					filter: [
-						or([
-							['garden.adminIds', 'has', '$role.profileId'],
-							['garden.editorIds', 'has', '$role.profileId']
-						])
-					]
-				},
-				delete: {
-					/** Restrict lifespans deletes to admins and editors. */
-					filter: [
-						or([
-							['garden.adminIds', 'has', '$role.profileId'],
-							['garden.editorIds', 'has', '$role.profileId']
-						])
-					]
-				}
-			}
-		}
-	},
-	/** Plant schema. */
-	plants: {
-		schema: S.Schema({
-			id: S.Id(),
+	/** Geometry history for this lifespan. */
+	geometryHistoryId: uuid('geometry_history_id').references(() => geometryHistories.id),
 
-			/** Garden the entity is located within - required for access control. */
-			gardenId: S.String(),
-
-			/**
-			 * The name correlating with one of the common names specified by a cultivar.
-			 * Will match the plant with a cultivar in one of the garden's cultivar collections.
-			 */
-			cultivarName: S.String(),
-
-			/** A set of cultivar attributes to override those from the collections. */
-			cultivarAttributes: CultivarAttributes,
-
-			/** Lifespan attributes populated from the expected attributes based on the cultivar. */
-			expectedLifespanId: S.String(),
-
-			/** Lifespan attributes populated by observations of users. */
-			recordedLifespanId: S.String(),
-
-			/**
-			 * Range of dates which encapsulates all dates applicable to this plant.
-			 * This data is denormalized and must be updated alongside the update of
-			 * plant Lifespans.
-			 * This is necessary in order to not rely on complex query logic of what
-			 * time range a plant exists in.
-			 */
-			beginDate: S.Date(),
-			endDate: S.Date(),
-
-			/** The number of distinct plants which are managed together in this plant instance. */
-			quantity: S.Number({ default: 1 })
-		}),
-		relationships: {
-			garden: S.RelationById('gardens', '$gardenId'),
-			expectedLifespan: S.RelationById('lifespans', '$expectedLifespanId'),
-			recordedLifespan: S.RelationById('lifespans', '$recordedLifespanId'),
-		},
-		permissions: {
-			anon: {
-				read: {
-					/** Allow anonymous reads if the garden is not hidden. */
-					filter: [['garden.visibility', '!=', 'HIDDEN']]
-				}
-			},
-			user: {
-				read: {
-					/** Allow reads if the garden is not hidden or the user is a member. */
-					filter: [
-						or([
-							['garden.visibility', '!=', 'HIDDEN'],
-							['garden.adminIds', 'has', '$role.profileId'],
-							['garden.editorIds', 'has', '$role.profileId'],
-							['garden.viewerIds', 'has', '$role.profileId']
-						])
-					]
-				},
-				insert: {
-					/** Allow new location history to be created by admins and editors. */
-					filter: [
-						or([
-							['garden.adminIds', 'has', '$role.profileId'],
-							['garden.editorIds', 'has', '$role.profileId']
-						])
-					]
-				},
-				update: {
-					/** Restrict location history updates to admins. */
-					filter: [
-						or([
-							['garden.adminIds', 'has', '$role.profileId'],
-							['garden.editorIds', 'has', '$role.profileId']
-						])
-					]
-				},
-				delete: {
-					/** Restrict location histories deletes to admins. */
-					filter: [
-						or([
-							['garden.adminIds', 'has', '$role.profileId'],
-							['garden.editorIds', 'has', '$role.profileId']
-						])
-					]
-				}
-			}
-		}
-	},
-	/** Plant groups. */
-	plantGroups: {
-		schema: S.Schema({
-			id: S.Id(),
-
-			/** Garden the entity is located within - required for access control. */
-			gardenId: S.String(),
-
-			/** Name. */
-			name: S.String(),
-
-			/** A set of plants contained with the group. */
-			plantIds: S.Set(S.String()),
-
-			/** Optional description. */
-			description: S.String({ default: '' })
-		}),
-		relationships: {
-			garden: S.RelationById('gardens', '$gardenId'),
-			plants: S.RelationMany('plants', { where: [['id', 'in', '$plantIds']] })
-		},
-		permissions: {
-			anon: {
-				read: {
-					/** Allow anonymous reads if the garden is not hidden. */
-					filter: [['garden.visibility', '!=', 'HIDDEN']]
-				}
-			},
-			user: {
-				read: {
-					/** Allow reads if the garden is not hidden or the user is a member. */
-					filter: [
-						or([
-							['garden.visibility', '!=', 'HIDDEN'],
-							['garden.adminIds', 'has', '$role.profileId'],
-							['garden.editorIds', 'has', '$role.profileId'],
-							['garden.viewerIds', 'has', '$role.profileId']
-						])
-					]
-				},
-				insert: {
-					/** Allow new location history to be created by admins and editors. */
-					filter: [
-						or([
-							['garden.adminIds', 'has', '$role.profileId'],
-							['garden.editorIds', 'has', '$role.profileId']
-						])
-					]
-				},
-				update: {
-					/** Restrict location history updates to admins. */
-					filter: [
-						or([
-							['garden.adminIds', 'has', '$role.profileId'],
-							['garden.editorIds', 'has', '$role.profileId']
-						])
-					]
-				},
-				delete: {
-					/** Restrict location histories deletes to admins. */
-					filter: [
-						or([
-							['garden.adminIds', 'has', '$role.profileId'],
-							['garden.editorIds', 'has', '$role.profileId']
-						])
-					]
-				}
-			}
-		}
-	}
+	/** Location history for this lifespan. */
+	locationHistoryId: uuid('location_history_id').references(() => locationHistories.id)
 });
+
+export const plants = pgTable('plants', {
+	id: uuid('id').primaryKey().defaultRandom(),
+
+	/** Garden the plant belongs to. */
+	gardenId: text('garden_id')
+		.notNull()
+		.references(() => gardens.id, { onDelete: 'cascade' }),
+
+	/**
+	 * Cultivar name matching one of the common names in the garden's cultivar collections.
+	 * Resolved at query time via resolveCultivar — not stored as a FK.
+	 */
+	cultivarName: text('cultivar_name').notNull(),
+
+	/** Cultivar attribute overrides specific to this plant instance. */
+	cultivarAttributes: jsonb('cultivar_attributes')
+		.$type<CultivarAttributesUpdateCommand>()
+		.notNull(),
+
+	/** Expected lifespan, derived from cultivar attributes. */
+	expectedLifespanId: uuid('expected_lifespan_id')
+		.notNull()
+		.references(() => lifespans.id),
+
+	/** Recorded lifespan, built from observations. */
+	recordedLifespanId: uuid('recorded_lifespan_id')
+		.notNull()
+		.references(() => lifespans.id),
+
+	/**
+	 * Denormalized date range spanning all dates applicable to this plant.
+	 * Updated alongside lifespan changes to avoid complex date range queries.
+	 */
+	beginDate: timestamp('begin_date').notNull(),
+	endDate: timestamp('end_date').notNull(),
+
+	/** Number of distinct plants managed together in this instance. */
+	quantity: integer('quantity').default(1).notNull()
+});
+
+export const plantGroups = pgTable('plant_groups', {
+	id: uuid('id').primaryKey().defaultRandom(),
+
+	/** Garden the group belongs to. */
+	gardenId: text('garden_id')
+		.notNull()
+		.references(() => gardens.id, { onDelete: 'cascade' }),
+
+	/** Name. */
+	name: text('name').notNull(),
+
+	/** Plant IDs in this group. */
+	plantIds: text('plant_ids').array().notNull().default([]),
+
+	/** Optional description. */
+	description: text('description').default('').notNull()
+});
+
+/** Relations. */
+
+export const lifespansRelations = relations(lifespans, ({ one }) => ({
+	garden: one(gardens, { fields: [lifespans.gardenId], references: [gardens.id] }),
+	geometryHistory: one(geometryHistories, {
+		fields: [lifespans.geometryHistoryId],
+		references: [geometryHistories.id]
+	}),
+	locationHistory: one(locationHistories, {
+		fields: [lifespans.locationHistoryId],
+		references: [locationHistories.id]
+	})
+}));
+
+export const plantsRelations = relations(plants, ({ one }) => ({
+	garden: one(gardens, { fields: [plants.gardenId], references: [gardens.id] }),
+	expectedLifespan: one(lifespans, {
+		fields: [plants.expectedLifespanId],
+		references: [lifespans.id],
+		relationName: 'expected_lifespan'
+	}),
+	recordedLifespan: one(lifespans, {
+		fields: [plants.recordedLifespanId],
+		references: [lifespans.id],
+		relationName: 'recorded_lifespan'
+	})
+}));
+
+export const plantGroupsRelations = relations(plantGroups, ({ one }) => ({
+	garden: one(gardens, { fields: [plantGroups.gardenId], references: [gardens.id] })
+}));
+
 export type Origin = (typeof OriginEnumOptions)[number];
-export type Lifespan = Entity<typeof plantSchema, 'lifespans'> & {
-	locationHistory: LocationHistory | null;
-	geometryHistory: GeometryHistory | null;
-	observations: PlantObservation[] | null;
-};
-export type Plant = Entity<typeof plantSchema, 'plants'> & {
-	expectedLifespan: Lifespan | null;
-	recordedLifespan: Lifespan | null;
-};
-export type PlantGroup = Entity<typeof plantSchema, 'plantGroups'>;
+export type Lifespan = typeof lifespans.$inferSelect;
+export type Plant = typeof plants.$inferSelect;
+export type PlantGroup = typeof plantGroups.$inferSelect;
 
 export const OriginEnumLabels: Record<Origin, string> = {
 	DIRECT_SEED: 'Direct Seed',
