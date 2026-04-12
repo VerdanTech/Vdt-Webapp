@@ -170,7 +170,7 @@ export function createUnitAwareValues(
 	function setDisplayValues(newVal: Array<number>) {
 		const newDisplayValues =
 			unitSystem === 'metric'
-				? newVal
+				? newVal.map((value) => roundToDecimalPlaces(value, decimalPlaces))
 				: newVal.map((value) =>
 						roundToDecimalPlaces(
 							convertQuantity(value, 'metric', quantityType),

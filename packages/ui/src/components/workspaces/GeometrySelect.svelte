@@ -36,9 +36,10 @@
 	type="single"
 	{value}
 	items={geometryTypeOptions}
-	onValueChange={(value) => {
+	onValueChange={(newValue) => {
+		value = newValue as GeometryType;
 		if (onValueChange) {
-			onValueChange(value as GeometryType);
+			onValueChange(value);
 		}
 	}}
 >

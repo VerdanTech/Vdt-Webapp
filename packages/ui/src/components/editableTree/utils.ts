@@ -49,13 +49,21 @@ export function toTreeId(baseId: string, field: string): string {
 export function fromTreeId<EntityTypeT extends string>(
 	id: string
 ): { entityType: EntityTypeT; entityId: string; field?: string } {
-	const parts = id.split(TREE_ENTITY_ID_DELIMITER);
-	if (parts.length < 2 || parts.length > 3) {
+	const entityDelimIdx = id.indexOf(TREE_ENTITY_ID_DELIMITER);
+	if (entityDelimIdx === -1) {
 		throw new AppError(`Invalid Tree ID format: ${id}`);
 	}
-	return parts[2]
-		? { entityType: parts[0] as EntityTypeT, entityId: parts[1], field: parts[2] }
-		: { entityType: parts[0] as EntityTypeT, entityId: parts[1] };
+	const entityType = id.slice(0, entityDelimIdx) as EntityTypeT;
+	const afterType = id.slice(entityDelimIdx + TREE_ENTITY_ID_DELIMITER.length);
+	const fieldDelimIdx = afterType.indexOf(TREE_FIELD_DELIMITER);
+	if (fieldDelimIdx === -1) {
+		return { entityType, entityId: afterType };
+	}
+	return {
+		entityType,
+		entityId: afterType.slice(0, fieldDelimIdx),
+		field: afterType.slice(fieldDelimIdx + TREE_FIELD_DELIMITER.length)
+	};
 }
 
 /**

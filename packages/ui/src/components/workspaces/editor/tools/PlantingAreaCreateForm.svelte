@@ -24,8 +24,10 @@
 			throw new AppError('Error retrieving workspace context.');
 		}
 
-		$formData.gardenId = page.params.gardenId;
+		$formData.gardenId = ctx.garden.id;
 		$formData.workspaceId = workspaceEditor.id;
+		$formData.location.gardenId = ctx.garden.id;
+		$formData.location.workspaceId = workspaceEditor.id;
 		$formData.geometry.date = workspaceEditor.timelineSelection.focusUtc;
 		$formData.location.date = workspaceEditor.timelineSelection.focusUtc;
 	});

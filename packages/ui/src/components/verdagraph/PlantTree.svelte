@@ -13,7 +13,7 @@
 		observationDelete
 	} from '@vdg-webapp/models';
 
-	import { EditableTree, createEditableTree, toTreeId } from '$components';
+	import { EditableTree, createEditableTree, toTreeBaseId } from '$components';
 	import { plantTreeItem } from '$components';
 	import { ScrollArea } from '$core';
 	import { getAppContext } from '$state';
@@ -124,11 +124,11 @@
 		'plants',
 		(addedIds, removedIds) => {
 			addedIds.forEach((id) => {
-				editableTree.tree.select(toTreeId('plant', id));
+				editableTree.tree.select(toTreeBaseId('plant', id));
 			});
 
 			removedIds.forEach((id) => {
-				editableTree.tree.deselect(toTreeId('plant', id));
+				editableTree.tree.deselect(toTreeBaseId('plant', id));
 			});
 		}
 	);

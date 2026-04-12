@@ -11,7 +11,7 @@
 		plantingAreaUpdate
 	} from '@vdg-webapp/models';
 
-	import { EditableTree, createEditableTree, toTreeId } from '$components';
+	import { EditableTree, createEditableTree, toTreeBaseId } from '$components';
 	import { plantingAreaTreeItem } from '$components';
 	import { ScrollArea } from '$core';
 	import { getAppContext } from '$state';
@@ -97,11 +97,11 @@
 		'plantingArea',
 		(addedIds, removedIds) => {
 			addedIds.forEach((id) => {
-				editableTree.tree.select(toTreeId('plantingArea', id));
+				editableTree.tree.select(toTreeBaseId('plantingArea', id));
 			});
 
 			removedIds.forEach((id) => {
-				editableTree.tree.deselect(toTreeId('plantingArea', id));
+				editableTree.tree.deselect(toTreeBaseId('plantingArea', id));
 			});
 		}
 	);
