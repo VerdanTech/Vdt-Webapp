@@ -1,5 +1,5 @@
 ---
-status: This document matches the implementation.
+status: This document matches the implementation in all but the requirement for external auth servers.
 ---
 
 # User - Models
@@ -38,3 +38,7 @@ The verifiedEmail stores the user's email which has been verified, or if verific
 ## passwordResetToken
 
 Similar to emails, users can reset their passwords using this JWT token.
+
+# Authentication
+
+The software should support pluggable auth servers for self-hosted deployments.
