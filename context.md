@@ -467,3 +467,567 @@ The shapes routes are simpler than controllers — mostly just `getUserGardenIds
 WHERE clause, and pipe the stream. Controllers are about verifying intent and writing
 data safely; shape proxies are about controlling what data each user is allowed to read.
 They are distinct concerns that happen to live side by side.
+
+---
+
+## Presence and locking with Durable Streams
+
+### What Durable Streams are
+
+Durable Streams (durablestreams.com) are persistent, addressable, resumable real-time
+streams. Each stream has a URL, an append-only log, and an offset-based protocol
+identical to Electric's. Clients can reconnect and catch up rather than starting from
+scratch. They have a Yjs wrapper protocol built in, making them a natural transport for
+CRDT-based collaborative editing.
+
+### Workspace presence streams
+
+Each workspace gets a presence stream — a persistent channel all connected clients read
+and write to:
+
+```
+stream address: /streams/workspaces/{workspaceId}/presence
+```
+
+The Durable Streams approach is better than WebSockets for presence because reconnecting
+clients resume from their last offset rather than requiring a fresh broadcast of all
+current state. No sticky sessions, no shared presence server.
+
+The event type covers everything presence needs:
+
+```ts
+type PresenceEvent = {
+  userId: string
+  username: string
+  color: string          // deterministic per-user color for cursors
+  type: 'join' | 'leave' | 'cursor' | 'viewport' | 'lock' | 'unlock' | 'heartbeat'
+  timestamp: number
+  payload: {
+    entityType?: 'plantingArea' | 'geometry' | 'observation'
+    entityId?: string
+    x?: number           // canvas coordinates
+    y?: number
+    viewportX?: number
+    viewportY?: number
+    zoom?: number
+  }
+}
+```
+
+### Lock semantics
+
+Locks cannot rely on clients to release themselves — a crash or tab close leaves them
+dangling. The solution is TTL-based advisory locks with a heartbeat:
+
+```ts
+const LOCK_TTL_MS = 3000        // lock expires if not renewed
+const HEARTBEAT_INTERVAL = 1000  // renew every second while holding
+
+const locks = new Map<string, { userId: string; username: string; expiresAt: number }>()
+
+presenceStream.subscribe((events) => {
+  for (const event of events) {
+    if (event.type === 'lock') {
+      locks.set(event.payload.entityId!, {
+        userId: event.userId,
+        username: event.username,
+        expiresAt: event.timestamp + LOCK_TTL_MS
+      })
+    } else if (event.type === 'unlock') {
+      locks.delete(event.payload.entityId!)
+    }
+  }
+  const now = Date.now()
+  for (const [id, lock] of locks) {
+    if (lock.expiresAt < now) locks.delete(id)
+  }
+})
+```
+
+On drag start: write a `lock` event, then write `heartbeat` events every second.
+On drop: write `unlock`, then commit final position to Postgres.
+
+### Yjs Awareness as an alternative to raw events
+
+Durable Streams has a Yjs wrapper protocol. `Y.Awareness` is Yjs's built-in presence
+primitive and handles TTL automatically — when a client disconnects, Yjs removes their
+awareness state after a timeout:
+
+```ts
+const awareness = new Y.Awareness(ydoc)
+awareness.setLocalStateField('user', { id: userId, name: username, color })
+awareness.setLocalStateField('cursor', { x: 142, y: 87 })
+awareness.setLocalStateField('lock', { entityId: 'pa-123', entityType: 'plantingArea' })
+
+awareness.on('change', () => {
+  const states = awareness.getStates()  // Map<clientId, AwarenessState>
+  // derive lock map, render cursors, show collaborator list
+})
+```
+
+This removes the need to build heartbeat and TTL machinery manually.
+
+### Advisory vs hard enforcement
+
+Advisory locks (UI warns, doesn't block) are sufficient for collaborative tools. If hard
+enforcement is needed, the controller can check the presence system before accepting a
+write — but this requires a server-side Durable Streams client and is usually overkill.
+
+---
+
+## Optimizing Postgres sync for smooth shape editing
+
+### The fundamental principle
+
+Postgres is not the right path for 60fps cursor drag. Two channels with different latency
+profiles:
+
+```
+High-frequency (during drag):    Presence stream → other clients in <50ms
+Low-frequency (on drop):         Postgres → Electric → other clients in ~150ms with SSE
+```
+
+During drag, position updates flow through the presence stream only — no Postgres write.
+On drop, the final position commits to Postgres and Electric syncs it back. Other clients
+show a ghost/preview from the presence stream during drag, then transition cleanly to the
+committed Electric position on drop.
+
+```ts
+canvas.on('dragmove', (entityId, x, y) => {
+  // Presence stream only — no Postgres write
+  presenceStream.write({ type: 'cursor', payload: { entityId, x, y }, ... })
+})
+
+canvas.on('dragend', (entityId, x, y) => {
+  releaseLock(entityId)
+  locationUpdate(locationId, { coordinate: { x, y } })
+    .then(({ txid }) => locationCollection.utils.awaitTxId(txid))
+})
+
+// Receiving client: show ghost from presence, clear on Electric sync
+presenceStream.subscribe((events) => {
+  for (const e of events) {
+    if (e.type === 'cursor' && e.userId !== currentUserId) {
+      setGhostPosition(e.payload.entityId, { x: e.payload.x, y: e.payload.y })
+    }
+  }
+})
+locationCollection.on('change', (id) => clearGhostPosition(id))
+```
+
+### SSE mode
+
+Enable SSE on shape streams to push committed changes immediately rather than waiting
+for the next long-poll cycle. With SSE, WAL → Electric → client is typically 50–150ms:
+
+```ts
+const locationStream = new ShapeStream({
+  url: '/api/shapes/locations',
+  params: { workspaceId },
+  liveSse: true
+})
+```
+
+Electric's client automatically falls back to long-polling if SSE is not working (e.g.,
+due to proxy buffering) after 3 consecutive failures within 1 second.
+
+### Column projection
+
+The canvas view only needs spatial data. Project down to what the renderer needs:
+
+```ts
+electricUrl.searchParams.set('columns', 'id,x,y,workspace_id,date')
+```
+
+Electric's `replica: 'default'` (the default) already sends only changed columns on
+updates — a position change sends only `x` and `y`, not the full row.
+
+### Workspace-scoped shapes
+
+Move from garden-scoped to workspace-scoped shapes to reduce the data set for a single
+editing session:
+
+```ts
+// Proxy: workspace-scoped locations
+where = `garden_id = '${gardenId}' AND workspace_id = '${workspaceId}'`
+
+// Proxy: workspace-scoped geometries via subquery
+where = `id IN (
+  SELECT geometry_id FROM planting_areas WHERE workspace_id = '${workspaceId}'
+)`
+```
+
+When the user switches workspaces, the collection ID changes, TanStack DB discards the
+old collection, and a fresh workspace-scoped shape starts. Smaller initial sync, faster
+live query results.
+
+---
+
+## Offline and local-first
+
+### What the stack gives for free
+
+Electric shapes are resumable from an offset. On reconnect — whether after 5 seconds or
+5 days — the client sends its last known offset:
+
+```
+GET /api/shapes/locations?offset=<lastSeen>&handle=<shapeHandle>
+```
+
+Electric responds with only changes since that offset. No full re-fetch. The client
+catches up efficiently regardless of how long it was offline. TanStack DB collections
+hold synced data in memory and serve reads even while offline.
+
+### What needs to be added for full offline support
+
+**1. Persist shape state to IndexedDB**
+
+Store the collection snapshot and the Electric offset/handle in IndexedDB. On load,
+hydrate the collection from the snapshot first (instant data from cache), then resume the
+shape from the stored offset (catch-up sync of only what changed while offline).
+
+**2. Persist the mutation queue to IndexedDB**
+
+Writes made offline need to survive a page refresh. Queue pending mutation payloads in
+IndexedDB and flush them in order on reconnect. TanStack DB's optimistic state persists
+these visually until the queued mutations resolve.
+
+### The offline reconciliation problem
+
+When reconnecting after offline edits, queued mutations fire against the current server
+state, which may have changed. Electric's shape catch-up delivers concurrent changes from
+other clients. For most garden planning operations — edits to independent objects, adding
+observations to different dates — LWW is acceptable in practice because conflict rate is
+naturally low.
+
+Concurrent edits to the same object (two users moving the same planting area while one
+was offline) require CRDT semantics to merge correctly. This is where the Yjs layer
+becomes necessary rather than optional.
+
+### Yjs for offline spatial editing
+
+The Yjs IndexedDB provider persists the Yjs document locally. Offline Yjs updates
+accumulate in the local document and survive page refresh. On reconnect, the Durable
+Streams Yjs provider syncs by exchanging update vectors — each side sends what the other
+missed. Because Yjs updates are CRDTs, offline edits to `linesCoordinates` (Y.Array of
+points) merge with online edits from other clients without either side losing work.
+
+### The Electric offset as the key primitive
+
+The offset mechanism is what makes reconnection viable without full CRDT semantics on
+the main data path. The delta sync from a stored offset is cheap enough that most offline
+scenarios (minutes to hours) result in fast catch-up rather than a full re-fetch.
+Paired with IndexedDB persistence of the snapshot and offset, the app can serve data
+instantly on load from local cache and sync updates in the background — the core
+local-first experience even without full CRDT conflict resolution everywhere.
+
+### Summary of the full offline picture
+
+```
+                    ONLINE                         OFFLINE
+Reading:    Electric shape stream              IndexedDB snapshot (stale by offline duration)
+                    ↓                                  ↓
+              TanStack DB collection  ←————————  Hydrated on load, then catch-up sync on reconnect
+
+Writing:    mutationFn → API → Postgres        Queued in IndexedDB, flush on reconnect
+                    ↓                                  ↓
+              Optimistic state (memory)         Optimistic state (persisted in IndexedDB)
+
+Spatial:    Yjs doc ← Durable Streams          Yjs doc (IndexedDB provider)
+            CRDT merge in real-time             CRDT merge on reconnect
+
+Presence:   Presence stream (live)              Resumed from offset on reconnect
+```
+
+---
+
+## Alternative architectures: conflict resolution and real-time
+
+### What Triplit gave that we lost
+
+Triplit's CRDT foundation provided:
+
+- **Commutative set operations** — two clients adding different items to a set both win;
+  neither overwrites the other
+- **Per-field vector clocks** — concurrent writes to different fields of the same record
+  both apply; only writes to the exact same field at the exact same time conflict
+- **Offline accumulation** — operations queue locally and merge cleanly on reconnect
+  regardless of how long offline
+- **Unified simplicity** — one package, schema defined once, real-time sync happened
+  automatically, permissions declared alongside schema
+
+What we now have instead is row-level last-write-wins (the last Postgres transaction to
+commit wins entirely), with a significantly more complex stack of moving parts:
+Drizzle schema, Zod command schemas, controllers, shape proxy routes, TanStack DB
+collections, Electric service, and a separate presence layer still needed.
+
+---
+
+### Zero (Rocicorp)
+
+Zero is the closest direct alternative to Triplit with a better conflict story. It is
+Postgres-backed, TypeScript-first, and designed explicitly for collaborative data-intensive
+applications.
+
+**How it works:**
+
+Zero maintains a client-side cache (backed by SQLite in the browser) synced from
+Postgres. Queries run against the local cache — sub-millisecond, reactive. Mutations are
+defined as TypeScript functions called "mutators" that run twice: once optimistically on
+the client (instant UI) and once authoritatively on the server. The server result
+replaces the client's optimistic result; if they differ, the client reconciles.
+
+```ts
+// Mutator defined once, runs on both client and server
+const mutators = {
+  async updateLocation(tx, { id, x, y }: { id: string; x: number; y: number }) {
+    await tx.update('locations', { x, y }, { id })
+  }
+}
+
+// Client usage — instant, optimistic
+await zero.mutate.updateLocation({ id: 'loc-123', x: 142, y: 87 })
+```
+
+**Conflict model:** deterministic mutators mean the client's optimistic state is always
+consistent with what the server will produce. Snap-back only happens if the server
+rejects the mutation entirely (authorization failure, constraint violation) — not from
+concurrent writes landing in a different order. Two concurrent writes to different rows
+both succeed. Two concurrent writes to the same field still have one winner, but the
+losing client's optimistic state was already correct (the mutator function is
+deterministic), so the reconciliation is invisible rather than a visual snap-back.
+
+**Compared to our stack:**
+
+| | Our stack | Zero |
+|---|---|---|
+| Read path | Electric shapes → proxy → TanStack DB | Zero cache (SQLite) → reactive queries |
+| Write path | Controller per operation | Mutator per operation (runs client + server) |
+| Real-time | Electric WAL streaming | Zero's own sync protocol |
+| Conflict | Row-level LWW | Deterministic mutators (less snap-back) |
+| Offline | Needs IndexedDB adapter | Built-in |
+| Schema | Drizzle (server) + Zod commands | Zero schema (shared) |
+| Presence | Needs Durable Streams separately | Needs separately |
+| Complexity | High — many distinct layers | Medium — more unified |
+| Postgres fidelity | Full (Drizzle, migrations, raw SQL) | Full (Zero syncs from Postgres) |
+| Status | Electric stable, TanStack DB new | Zero newer, less battle-tested |
+
+Zero does not have CRDTs. Its advantage over our stack is the deterministic mutator
+model which eliminates most visible snap-backs, not true merge semantics.
+
+---
+
+### Convex
+
+Convex is a reactive backend platform where the database, real-time sync, and server
+functions are a unified service.
+
+**How it works:**
+
+Queries are TypeScript functions that subscribe to data — they re-run automatically
+when underlying data changes. Mutations are TypeScript functions that run in a
+transaction on the server. The client calls them like local functions; Convex handles
+optimistic updates, real-time propagation to all subscribed clients, and consistency.
+
+```ts
+// Query — automatically reactive across all clients
+export const getPlantingAreas = query({
+  args: { workspaceId: v.string() },
+  handler: async (ctx, { workspaceId }) => {
+    return ctx.db.query('plantingAreas')
+      .withIndex('by_workspace', (q) => q.eq('workspaceId', workspaceId))
+      .collect()
+  }
+})
+
+// Mutation — transactional, optimistic, automatically propagated
+export const moveArea = mutation({
+  args: { locationId: v.string(), x: v.number(), y: v.number() },
+  handler: async (ctx, { locationId, x, y }) => {
+    await ctx.db.patch(locationId, { x, y })
+  }
+})
+```
+
+**Conflict model:** all mutations run inside transactions on Convex's servers. Concurrent
+mutations are serialized. The optimistic update on the client uses the exact same
+mutation function (run locally in a sandbox), so the optimistic and authoritative results
+are always consistent.
+
+**Compared to our stack:**
+
+| | Our stack | Convex |
+|---|---|---|
+| Simplicity | Low (many layers) | Very high (one service, one client) |
+| Real-time | Electric WAL streaming | WebSocket, built-in |
+| Conflict | Row-level LWW | Serialized transactions |
+| Offline | Needs IndexedDB adapter | Limited |
+| Postgres | Full control | Not Postgres (Convex DB) |
+| Migrations | Drizzle migrations | Schema evolution via functions |
+| Raw SQL | Yes (Drizzle) | No |
+| CRDTs | No (Yjs separately) | No |
+| Self-hosted | Yes (Electric + Postgres) | Convex Cloud or self-hosted |
+| Vendor lock-in | Low | High |
+
+The fundamental cost of Convex is leaving Postgres. Recursive CTEs for cultivar
+inheritance, jsonb operations for attributes, array columns for membership — all of these
+require Postgres specifically. Convex has its own database with its own query model.
+
+---
+
+### InstantDB
+
+InstantDB is a triple-store database (entity-attribute-value) inspired by Datomic, with
+real-time sync built in from the start.
+
+**How it works:**
+
+Data is stored as triples: `(entity-id, attribute, value)`. Each attribute update is an
+independent fact. Two clients updating different attributes of the same entity both win
+because they're separate triples — not a row-level replacement. This gives CRDT-like
+semantics for attribute-level writes without an explicit CRDT implementation.
+
+```ts
+const { data } = db.useQuery({
+  plantingAreas: {
+    $: { where: { workspaceId: workspaceId } },
+    location: {},     // joined relation
+    geometry: {}
+  }
+})
+
+db.transact([
+  tx.locations[locationId].update({ x: 142, y: 87 })
+])
+```
+
+**Conflict model:** last-write-wins per attribute, not per row. Two concurrent edits to
+`location.x` and `location.y` independently both apply. Two concurrent edits to the same
+attribute still have one winner, but attribute-level granularity means conflicts at the
+semantic level are rarer.
+
+**Compared to our stack:**
+
+| | Our stack | InstantDB |
+|---|---|---|
+| Conflict granularity | Row-level LWW | Attribute-level LWW |
+| Simplicity | Low | High |
+| Real-time | Electric WAL streaming | WebSocket, built-in |
+| Query model | SQL (Drizzle) + TanStack DB | Datalog-inspired, graph queries |
+| Postgres | Yes | No (triple-store) |
+| Offline | Needs work | Built-in |
+| CRDTs | No | Partial (attribute independence) |
+| Schema | Explicit (Drizzle) | Flexible (declared schema) |
+
+The triple-store model is a different mental model than relational. Complex queries
+involving date ranges, aggregates across the geometry history structure, and the
+cultivar inheritance chain don't map as naturally as SQL.
+
+---
+
+### PowerSync
+
+PowerSync syncs a Postgres (or other SQL) backend to a client-side SQLite database.
+
+**How it works:**
+
+The client has a real SQLite database — full SQL queries, indexes, the works. A
+PowerSync service layer sits between Postgres and the client, managing sync rules and
+change propagation. Writes go back to Postgres via your API (similar to our controllers).
+
+**Conflict model:** server wins. Identical to our current stack. No CRDTs.
+
+**Where it differs:** the client query layer is real SQLite rather than TanStack DB's
+in-memory store. This gives recursive queries, complex joins, and aggregates that run
+client-side with full SQL expressiveness — including the cultivar inheritance resolution
+via recursive CTEs, which would run client-side against the synced data naturally.
+
+**Compared to our stack:**
+
+| | Our stack | PowerSync |
+|---|---|---|
+| Client query | TanStack DB (in-memory, differential) | SQLite (full SQL) |
+| Conflict | LWW | LWW (server wins) |
+| Offline | Needs IndexedDB adapter | Built-in (SQLite is local) |
+| Real-time latency | Electric (very fast) | PowerSync (slightly slower) |
+| Postgres | Yes | Yes |
+| Write path | Our controllers | Your API (same pattern) |
+| Cultivar resolution | Client needs reimplementation | Recursive CTE runs in client SQLite |
+
+PowerSync is an honest alternative if full offline and client-side SQL are more important
+than the fastest possible real-time sync. It would not solve the CRDT/conflict problem.
+
+---
+
+### Livestore
+
+Livestore is a new (2025) local-first framework from Johannes Schickling (Prisma
+co-founder) based on event sourcing.
+
+**How it works:**
+
+All state changes are represented as immutable events appended to a log. State is derived
+by replaying the event log. Events replicate across clients. Because events are
+append-only, there's no write conflict at the data level — every client eventually has
+the same event log and derives the same state. Conflicts are semantic (two events
+representing contradictory intent) rather than structural.
+
+```ts
+// All writes are events
+store.commit(events.movePlantingArea({ id: 'pa-123', x: 142, y: 87 }))
+store.commit(events.addObservation({ entityIds: ['pa-123'], date: '2025-04-14', data: {} }))
+
+// State is a live query over the event log
+const areas = store.query(PlantingAreaState.forWorkspace(workspaceId))
+```
+
+**Conflict model:** structurally conflict-free (events always append). Semantically,
+"last event wins" for derived scalar state — but at event granularity, not row granularity.
+Two offline clients both adding different observations produce two events that both
+persist when they sync.
+
+**Compared to our stack:**
+
+| | Our stack | Livestore |
+|---|---|---|
+| Conflict | Row-level LWW | Event-level (semantically richer) |
+| Offline | Needs IndexedDB adapter | Built-in (event log is local) |
+| Real-time | Electric WAL | Livestore sync |
+| Postgres | Yes | Event log in SQLite / Postgres |
+| Schema evolution | Drizzle migrations | Event schema versioning |
+| Complexity | High (many layers) | Medium (new mental model) |
+| Maturity | Electric stable, TanStack DB new | Very new |
+| Cultivar resolution | Client reimplementation or API | Derived state from events |
+
+Event sourcing is a genuine shift in how you model the domain — instead of "what is the
+current position of planting area 123" you think "what events have happened to planting
+area 123." This maps well to a garden management domain (planting, observation, harvest
+events) but requires rebuilding the data model around events.
+
+---
+
+### Honest recommendation
+
+**If staying on this stack (Electric + TanStack DB + Drizzle):** augment with Yjs via
+Durable Streams for the spatial canvas layer. Accept LWW for non-spatial data. Add the
+IndexedDB persistence adapter for offline. The result is the best Postgres fidelity and
+the most control, at the cost of the most complexity.
+
+**If starting fresh prioritizing simplicity and conflict resolution:** Zero is the
+closest to the Triplit experience with better real-time and a cleaner conflict model, while
+keeping Postgres as the backend. The mutator model (deterministic functions run on both
+client and server) eliminates most visible snap-backs without requiring CRDTs.
+
+**If prioritizing true CRDT semantics throughout:** Livestore's event sourcing approach
+is the most principled solution, at the cost of a significant mental model shift and
+early-stage maturity risk.
+
+**If prioritizing simplicity above all else and willing to leave Postgres:** Convex is
+the simplest full-stack real-time option with serialized transactions giving clean
+consistency guarantees. The cost is vendor lock-in and losing the SQL/Postgres toolchain.
+
+The honest assessment of our current migration: we gained Postgres fidelity, scalability
+via Electric's CDN-cacheable shapes, and a clean separation between read and write paths.
+We lost Triplit's unified simplicity and CRDT-based conflict resolution. The augmentation
+path (Yjs for spatial, IndexedDB for offline) recovers most of what was lost for the
+highest-value cases, without replacing the stack again.
