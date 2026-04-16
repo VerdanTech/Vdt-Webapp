@@ -25,3 +25,6 @@ vite.config.ts.timestamp-*
 
 # Svelte
 **/.svelte-kit/
+
+# LLM
+.claude
