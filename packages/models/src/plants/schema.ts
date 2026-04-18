@@ -1,3 +1,15 @@
+import { co, z } from 'jazz-tools';
+
+
+
+
+export const 
+
+
+
+
+
+
 import { type Entity, Schema as S, or } from '@triplit/client';
 
 import { CultivarAttributes } from '../cultivars/attributes/index.js';
@@ -6,15 +18,6 @@ import { type Environment } from '../environments/schema.js';
 import { type DateRange } from '../time/utils.js';
 import { GeometryHistory, LocationHistory } from '../workspaces/schema.js';
 import { PlantObservation } from './observations.js';
-
-/**
- *
- */
-export const OriginEnumOptions = [
-	'DIRECT_SEED',
-	'SEED_TO_TRANSPLANT',
-	'SEEDLING_TO_TRANSPLANT'
-] as const;
 
 export const plantSchema = S.Collections({
 	...cultivarSchema,

@@ -1,15 +1,11 @@
 import { z } from 'zod';
 
-/** Field specifications. */
-const colorSchema = z.string().describe('May be a hex value');
-export const fields = {
-	colorSchema
-};
+import fields from './fields.js';
 
 /** Update command. */
 export const ColorUpdateCommandSchema = z.object({
-	baseColor: colorSchema.optional(),
-	outlineColor: colorSchema.optional(),
-	textColor: colorSchema.optional()
+	baseColor: fields.colorField.optional(),
+	outlineColor: fields.colorField.optional(),
+	textColor: fields.colorField.optional()
 });
 export type ColorUpdateCommand = z.infer<typeof ColorUpdateCommandSchema>;

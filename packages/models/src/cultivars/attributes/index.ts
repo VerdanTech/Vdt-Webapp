@@ -7,14 +7,6 @@ import * as FrostDatePlantingWindows from './frostDatePlantingWindows/index.js';
 import * as ExpectedGeometry from './geometry/index.js';
 import * as Origin from './origin/index.js';
 
-export const attributesSchemas = {
-	...AnnualLifeCycle.fields,
-	...Color,
-	...FrostDatePlantingWindows.fields,
-	...ExpectedGeometry.fields,
-	...Origin.fields
-};
-
 export const CultivarAttributes = S.Record({
 	annualLifeCycle: S.Optional(AnnualLifeCycle.AnnualLifeCycleProfile),
 	color: S.Optional(Color.ColorProfile),

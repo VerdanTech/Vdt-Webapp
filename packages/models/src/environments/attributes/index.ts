@@ -4,8 +4,6 @@ import { z } from 'zod';
 import * as AnnualTemperature from './annualTemperature/index.js';
 import * as FrostDates from './frostDates/index.js';
 
-export const attributesSchemas = { ...FrostDates.fields, ...AnnualTemperature.fields };
-
 export const EnvironmentAttributes = S.Record({
 	frostDates: S.Optional(FrostDates.FrostDateProfile),
 	annualTemperature: S.Optional(AnnualTemperature.AnnualTemperatureProfile)

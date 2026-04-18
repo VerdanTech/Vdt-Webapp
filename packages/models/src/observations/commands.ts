@@ -1,14 +1,4 @@
-import z, { string } from 'zod';
-
-import { commonFields } from '../commands.js';
-
-/** Field specifications. */
-
-/** Observations. */
-//const workspaceNameSchema = commonFields.nameSchema.describe(
-//    'Name of the workspace. Must be unique within a garden.'
-//);
-export const observationFields = {};
+import z from 'zod';
 
 /** Commands. */
 

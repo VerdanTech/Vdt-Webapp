@@ -1,136 +1,6 @@
 import z from 'zod';
 
-import { commonFields } from '../commands.js';
-import { GeometryTypeEnumOptions } from './schema.js';
-
-/** Field specifications. */
-
-/** Workspaces. */
-const workspaceNameSchema = commonFields.nameSchema.describe(
-	'Name of the workspace. Must be unique within a garden.'
-);
-const workspaceDescriptionSchema = commonFields.descriptionSchema.describe(
-	'Optional description.'
-);
-
-/** Planting areas. */
-const plantingAreaNameSchema = commonFields.nameSchema.describe(
-	'The name of the planting area.'
-);
-const plantingAreaDescriptionSchema = commonFields.descriptionSchema.describe(
-	'Optional description.'
-);
-const plantingAreaDepthSchema = z
-	.number()
-	.min(0, 'May not be negative')
-	.max(1000, 'May be at most 1000m.')
-	.describe('The depth of the planting area.');
-
-/** Geometries.  */
-const coordinateXSchema = z
-	.number()
-	.min(-1000000, 'Limited to 1 000 000 meters.')
-	.max(1000000, 'Limited to 1 000 000 meters.')
-	.describe('The horizontal X component of the coordinate.');
-const coordinateYSchema = z
-	.number()
-	.min(-1000000, 'Limited to 1 000 000 meters.')
-	.max(1000000, 'Limited to 1 000 000 meters.')
-	.describe('The vertical Y component of the coordinate.');
-const coordinateSchema = z
-	.object({
-		x: coordinateXSchema,
-		y: coordinateYSchema
-	})
-	.describe('A position relative to the origin of a workspace or a geometry.');
-const locationDateSchema = z.date().describe('The date at which the location applies.');
-
-const geometryTypeSchema = z
-	.enum(GeometryTypeEnumOptions)
-	.describe(
-		'Describes the type of geometry. Each type has a unique set of attributes associated with it.'
-	);
-const geometryDateSchema = z
-	.date()
-	.describe('The date at which the geometry applies to the object.');
-const geometryScaleFactorSchema = z
-	.number()
-	.min(0.01, 'Must be at least 1%.')
-	.max(100, 'May be at most 10000%')
-	.describe(
-		'Factor used to scale the geometry up or down. Must be within 1 and 1000 percent.'
-	);
-const geometryRotationSchema = z
-	.number()
-	.min(-360, 'Must be at least negative 360 degrees.')
-	.max(360, 'May be at most 360 degrees.')
-	.describe(
-		'The rotation of the geometry in degrees. Must be between 0 and 360 degrees.'
-	);
-const geometryRectangleLengthSchema = z
-	.number()
-	.min(0.01, 'May not be negative or zero.')
-	.max(1000, 'May be at most 1000m')
-	.describe('The horizontal, or x-axis length of the rectangle.');
-const geometryRectangleWidthSchema = z
-	.number()
-	.min(0.01, 'May not be negative or zero.')
-	.max(1000, 'May be at most 1000m')
-	.describe('The vertical, or y-axis width of the rectangle.');
-const geometryPolygonNumSidesSchema = z
-	.number()
-	.min(3, 'Must have at least 3 sides.')
-	.max(20, 'May have at most 20 sides.')
-	.describe('The amount of sides the polygon has.');
-const geometryPolygonRadiusSchema = z
-	.number()
-	.min(0.01, 'May not be negative or zero.')
-	.max(1000, 'May be at most 1000m')
-	.describe('The distance from the center to any vertex of the polygon.');
-const geometryEllipseLengthSchema = z
-	.number()
-	.min(0.01, 'May not be negative or zero.')
-	.max(1000, 'May be at most 1000m.')
-	.describe('The horizontal, or x-axis diameter of the ellipse.');
-const geometryEllipseWidthSchema = z
-	.number()
-	.min(0.01, 'May not be negative or zero.')
-	.max(1000, 'May be at most 1000m')
-	.describe(
-		'The vertical, or y-axis diameter of the ellipse. Must be between 0 and 1000 meters.'
-	);
-const geometryLinesCoordinatesSchema = z
-	.array(coordinateSchema)
-	.min(3, 'Must have at least 3 points.')
-	.describe(
-		'A list of coordinates relative to the position of the geometry which define an irregular polygonal.'
-	);
-const geometryLinesClosedSchema = z
-	.boolean()
-	.describe('If true, the line segments form a closed shape.');
-export const workspaceFields = {
-	workspaceNameSchema,
-	workspaceDescriptionSchema,
-	plantingAreaNameSchema,
-	plantingAreaDescriptionSchema,
-	plantingAreaDepthSchema,
-	coordinateXSchema,
-	coordinateYSchema,
-	coordinateSchema,
-	locationDateSchema,
-	geometryTypeSchema,
-	geometryDateSchema,
-	geometryScaleFactorSchema,
-	geometryRotationSchema,
-	geometryRectangleLengthSchema,
-	geometryRectangleWidthSchema,
-	geometryPolygonNumSidesSchema,
-	geometryPolygonRadiusSchema,
-	geometryEllipseLengthSchema,
-	geometryEllipseWidthSchema,
-	geometryLinesCoordinatesSchema,
-	geometryLinesClosedSchema
-};
+import fields from './fields.js';
 
 /** Commands. */
 
@@ -140,8 +10,8 @@ export const workspaceFields = {
 export const LocationCreateCommandSchema = z.object({
 	gardenId: z.string(),
 	workspaceId: z.string(),
-	coordinate: coordinateSchema,
-	date: locationDateSchema
+	coordinate: fields.coordinateField,
+	date: fields.locationDateField
 });
 export type LocationCreateCommand = z.infer<typeof LocationCreateCommandSchema>;
 
@@ -162,8 +32,8 @@ export type LocationHistoryCreateCommand = z.infer<
 export const LocationHistoryUpdateCommandSchema = z.object({
 	id: z.string(),
 	workspaceId: z.string(),
-	coordinate: coordinateSchema,
-	date: locationDateSchema
+	coordinate: fields.coordinateField,
+	date: fields.locationDateField
 });
 export type LocationHistoryUpdateCommand = z.infer<
 	typeof LocationHistoryUpdateCommandSchema
@@ -173,37 +43,33 @@ export type LocationHistoryUpdateCommand = z.infer<
  * Updates a location.
  */
 export const LocationUpdateCommandSchema = z.object({
-	coordinate: coordinateSchema.optional(),
-	date: locationDateSchema.optional(),
+	coordinate: fields.coordinateField.optional(),
+	date: fields.locationDateField.optional(),
 	workspaceId: z.string().optional(),
 	delete: z.boolean().optional()
 });
 export type LocationUpdateCommand = z.infer<typeof LocationUpdateCommandSchema>;
 
 /**
- * Updates a location
- */
-
-/**
  * Create a new geometry.
  */
 export const GeometryCreateCommandSchema = z.object({
-	type: geometryTypeSchema.default('RECTANGLE'),
-	date: geometryDateSchema,
-	scaleFactor: geometryScaleFactorSchema.default(1),
-	rotation: geometryRotationSchema.default(0),
-	rectangleLength: geometryRectangleLengthSchema.default(1),
-	rectangleWidth: geometryRectangleWidthSchema.default(1),
-	polygonNumSides: geometryPolygonNumSidesSchema.default(3),
-	polygonRadius: geometryPolygonRadiusSchema.default(1),
-	ellipseLength: geometryEllipseLengthSchema.default(1),
-	ellipseWidth: geometryEllipseWidthSchema.default(1),
-	linesCoordinates: geometryLinesCoordinatesSchema.default([
+	type: fields.geometryTypeField.default('RECTANGLE'),
+	date: fields.geometryDateField,
+	scaleFactor: fields.geometryScaleFactorField.default(1),
+	rotation: fields.geometryRotationField.default(0),
+	rectangleLength: fields.geometryRectangleLengthField.default(1),
+	rectangleWidth: fields.geometryRectangleWidthField.default(1),
+	polygonNumSides: fields.geometryPolygonNumSidesField.default(3),
+	polygonRadius: fields.geometryPolygonRadiusField.default(1),
+	ellipseLength: fields.geometryEllipseLengthField.default(1),
+	ellipseWidth: fields.geometryEllipseWidthField.default(1),
+	linesCoordinates: fields.geometryLinesCoordinatesField.default([
 		{ x: -1, y: 0 },
 		{ x: 0, y: 1 },
 		{ x: 1, y: 0 }
 	]),
-	linesClosed: geometryLinesClosedSchema.default(true)
+	linesClosed: fields.geometryLinesClosedField.default(true)
 });
 export type GeometryCreateCommand = z.infer<typeof GeometryCreateCommandSchema>;
 
@@ -211,18 +77,18 @@ export type GeometryCreateCommand = z.infer<typeof GeometryCreateCommandSchema>;
  * Update a geometry.
  */
 export const GeometryUpdateCommandSchema = z.object({
-	type: geometryTypeSchema.optional(),
-	date: geometryDateSchema.optional(),
-	scaleFactor: geometryScaleFactorSchema.optional(),
-	rotation: geometryRotationSchema.optional(),
-	rectangleLength: geometryRectangleLengthSchema.optional(),
-	rectangleWidth: geometryRectangleWidthSchema.optional(),
-	polygonNumSides: geometryPolygonNumSidesSchema.optional(),
-	polygonRadius: geometryPolygonRadiusSchema.optional(),
-	ellipseLength: geometryEllipseLengthSchema.optional(),
-	ellipseWidth: geometryEllipseWidthSchema.optional(),
-	linesCoordinates: geometryLinesCoordinatesSchema.optional(),
-	linesClosed: geometryLinesClosedSchema.optional(),
+	type: fields.geometryTypeField.optional(),
+	date: fields.geometryDateField.optional(),
+	scaleFactor: fields.geometryScaleFactorField.optional(),
+	rotation: fields.geometryRotationField.optional(),
+	rectangleLength: fields.geometryRectangleLengthField.optional(),
+	rectangleWidth: fields.geometryRectangleWidthField.optional(),
+	polygonNumSides: fields.geometryPolygonNumSidesField.optional(),
+	polygonRadius: fields.geometryPolygonRadiusField.optional(),
+	ellipseLength: fields.geometryEllipseLengthField.optional(),
+	ellipseWidth: fields.geometryEllipseWidthField.optional(),
+	linesCoordinates: fields.geometryLinesCoordinatesField.optional(),
+	linesClosed: fields.geometryLinesClosedField.optional(),
 	delete: z.boolean().optional()
 });
 export type GeometryUpdateCommand = z.infer<typeof GeometryUpdateCommandSchema>;
@@ -244,7 +110,7 @@ export type GeometryHistoryCreateCommand = z.infer<
 export const GeometryHistoryUpdateCommandSchema = z.object({
 	id: z.string(),
 	geometry: GeometryCreateCommandSchema,
-	date: geometryDateSchema
+	date: fields.geometryDateField
 });
 export type GeometryHistoryUpdateCommand = z.infer<
 	typeof GeometryHistoryUpdateCommandSchema
@@ -255,8 +121,8 @@ export type GeometryHistoryUpdateCommand = z.infer<
  */
 export const WorkspaceCreateCommandSchema = z.object({
 	gardenId: z.string(),
-	name: workspaceNameSchema,
-	description: workspaceDescriptionSchema.optional()
+	name: fields.workspaceNameField,
+	description: fields.workspaceDescriptionField.optional()
 });
 export type WorkspaceCreateCommand = z.infer<typeof WorkspaceCreateCommandSchema>;
 
@@ -264,8 +130,8 @@ export type WorkspaceCreateCommand = z.infer<typeof WorkspaceCreateCommandSchema
  * Update a workspace.
  */
 export const WorkspaceUpdateCommandSchema = z.object({
-	name: workspaceNameSchema.optional(),
-	description: workspaceDescriptionSchema.optional()
+	name: fields.workspaceNameField.optional(),
+	description: fields.workspaceDescriptionField.optional()
 });
 export type WorkspaceUpdateCommand = z.infer<typeof WorkspaceUpdateCommandSchema>;
 
@@ -275,11 +141,11 @@ export type WorkspaceUpdateCommand = z.infer<typeof WorkspaceUpdateCommandSchema
 export const PlantingAreaCreateCommandSchema = z.object({
 	gardenId: z.string(),
 	workspaceId: z.string(),
-	name: plantingAreaNameSchema,
-	description: plantingAreaDescriptionSchema.default(''),
+	name: fields.plantingAreaNameField,
+	description: fields.plantingAreaDescriptionField.default(''),
 	location: LocationCreateCommandSchema,
 	geometry: GeometryCreateCommandSchema,
-	depth: plantingAreaDepthSchema.default(0)
+	depth: fields.plantingAreaDepthField.default(0)
 });
 export type PlantingAreaCreateCommand = z.infer<typeof PlantingAreaCreateCommandSchema>;
 
@@ -287,8 +153,8 @@ export type PlantingAreaCreateCommand = z.infer<typeof PlantingAreaCreateCommand
  * Update a planting area.
  */
 export const PlantingAreaUpdateCommandSchema = z.object({
-	name: plantingAreaNameSchema.optional(),
-	description: plantingAreaDescriptionSchema.optional(),
-	depth: plantingAreaDepthSchema.optional()
+	name: fields.plantingAreaNameField.optional(),
+	description: fields.plantingAreaDescriptionField.optional(),
+	depth: fields.plantingAreaDepthField.optional()
 });
 export type PlantingAreaUpdateCommand = z.infer<typeof PlantingAreaUpdateCommandSchema>;

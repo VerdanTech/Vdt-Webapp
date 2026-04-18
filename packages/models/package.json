@@ -12,12 +12,12 @@
 		"lint": "eslint . --fix"
 	},
 	"devDependencies": {
-		"@vdg-webapp/eslint-config": "workspace:*",
-		"@vdg-webapp/typescript-config": "workspace:*",
-		"@triplit/cli": "^1.0.42",
 		"@internationalized/date": "^3.7.0",
+		"@triplit/cli": "^1.0.42",
 		"@types/eslint": "^8.56.12",
 		"@types/node": "^20.17.24",
+		"@vdg-webapp/eslint-config": "workspace:*",
+		"@vdg-webapp/typescript-config": "workspace:*",
 		"eslint": "^9.22.0",
 		"eslint-config-prettier": "^9.1.0",
 		"eslint-plugin-svelte": "^2.46.1",
@@ -29,6 +29,7 @@
 		"zod": "^3.24.2"
 	},
 	"dependencies": {
-		"@triplit/client": "^1.0.33"
+		"@triplit/client": "^1.0.33",
+		"jazz-tools": "^0.20.17"
 	}
 }

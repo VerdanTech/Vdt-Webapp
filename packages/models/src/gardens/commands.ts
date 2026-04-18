@@ -1,58 +1,26 @@
 import z from 'zod';
 
-import { commonFields } from '../commands.js';
-import { userFields } from '../users/commands.js';
-import {
-	GardenMembershipRoleEnumOptions,
-	GardenVisibilityEnumOptions
-} from './schema.js';
-
-/** Field specifications. */
-const gardenIdSchema = z
-	.string()
-	.trim()
-	.toLowerCase()
-	.min(4, 'Must be at least 4 characters.')
-	.max(21, 'May be at most 21 characters.')
-	.regex(/[0-9A-Za-z-]+/, 'Must contain only alphanumeric characters and hyphens.')
-	.describe('Unique shorthand name for the garden used in URLs.');
-const gardenNameSchema = commonFields.nameSchema.describe('Name of the garden.');
-const gardenDescriptionSchema = commonFields.descriptionSchema.describe(
-	'Optional description.'
-);
-const gardenVisibilitySchema = z.enum(GardenVisibilityEnumOptions);
-const gardenMembershipRoleSchema = z.enum(GardenMembershipRoleEnumOptions);
-const usernameInvitesListSchema = z
-	.array(userFields.usernameSchema)
-	.max(10, 'A maximum of 10 users can be invited at once.');
-export const gardenFields = {
-	gardenIdSchema,
-	gardenNameSchema,
-	gardenDescriptionSchema,
-	gardenVisibilitySchema,
-	gardenMembershipRoleSchema,
-	usernameInvitesListSchema
-};
+import fields from './fields.js';
 
 /**
  * Command to create a new garden.
  */
 export const GardenCreateCommandSchema = z.object({
-	id: gardenIdSchema,
-	name: gardenNameSchema,
-	description: gardenDescriptionSchema.default(''),
-	visibility: gardenVisibilitySchema.default('HIDDEN'),
-	adminInvites: usernameInvitesListSchema
+	id: fields.gardenIdField,
+	name: fields.gardenNameField,
+	description: fields.gardenDescriptionField.default(''),
+	visibility: fields.gardenVisibilityField.default('HIDDEN'),
+	adminInvites: fields.usernameInvitesListField
 		.describe(
 			'A list of usernames to invite as admins. A maximum of 10 users can be invited at once.'
 		)
 		.default([]),
-	editorInvites: usernameInvitesListSchema
+	editorInvites: fields.usernameInvitesListField
 		.describe(
 			'A list of usernames to invite as editors. A maximum of 10 users can be invited at once.'
 		)
 		.default([]),
-	viewerInvites: usernameInvitesListSchema
+	viewerInvites: fields.usernameInvitesListField
 		.describe(
 			'A list of usernames to invite as viewers. A maximum of 10 users can be invited at once.'
 		)
@@ -65,13 +33,13 @@ export type GardenCreateCommand = z.infer<typeof GardenCreateCommandSchema>;
  */
 export const GardenMembershipCreateCommandSchema = z.object({
 	gardenId: z.string(),
-	adminInvites: usernameInvitesListSchema
+	adminInvites: fields.usernameInvitesListField
 		.describe('A list of usernames to invite as admins.')
 		.default([]),
-	editorInvites: usernameInvitesListSchema
+	editorInvites: fields.usernameInvitesListField
 		.describe('A list of usernames to invite as editors.')
 		.default([]),
-	viewerInvites: usernameInvitesListSchema
+	viewerInvites: fields.usernameInvitesListField
 		.describe('A list of usernames to invite as viewers.')
 		.default([])
 });
@@ -116,7 +84,7 @@ export type GardenMembershipRevokeCommand = z.infer<
 export const GardenMembershipRoleChangeCommandSchema = z.object({
 	gardenId: z.string(),
 	profileId: z.string(),
-	newRole: gardenMembershipRoleSchema
+	newRole: fields.gardenMembershipRoleField
 });
 export type GardenMembershipRoleChangeCommand = z.infer<
 	typeof GardenMembershipRoleChangeCommandSchema
