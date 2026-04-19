@@ -44,7 +44,7 @@
 	<Form.Field {form} name="username">
 		<Form.Control>
 			{#snippet children({ props })}
-				<Form.Label description={userFields.usernameSchema.description}
+				<Form.Label description={userFields.usernameField.description}
 					>Username</Form.Label
 				>
 				<Input.Root
@@ -62,7 +62,7 @@
 	<Form.Field {form} name="email">
 		<Form.Control>
 			{#snippet children({ props })}
-				<Form.Label description={userFields.emailSchema.description}>Email</Form.Label>
+				<Form.Label description={userFields.emailField.description}>Email</Form.Label>
 				<Input.Root
 					{...props}
 					type="email"
@@ -78,7 +78,7 @@
 	<Form.Field {form} name="password1">
 		<Form.Control>
 			{#snippet children({ props })}
-				<Form.Label description={userFields.passwordSchema.description}
+				<Form.Label description={userFields.passwordField.description}
 					>Password</Form.Label
 				>
 				<Input.Root {...props} type="password" bind:value={$formData.password1} />
@@ -91,7 +91,7 @@
 	<Form.Field {form} name="password2">
 		<Form.Control>
 			{#snippet children({ props })}
-				<Form.Label description={userFields.passwordSchema.description}
+				<Form.Label description={userFields.passwordField.description}
 					>Confirm Password</Form.Label
 				>
 				<Input.Root {...props} type="password" bind:value={$formData.password2} />

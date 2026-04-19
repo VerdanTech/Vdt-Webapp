@@ -1,18 +1,9 @@
-import { Schema as S } from '@triplit/client';
-import { z } from 'zod';
+import { z } from 'jazz-tools';
 
 import * as AnnualTemperature from './annualTemperature/index.js';
 import * as FrostDates from './frostDates/index.js';
 
-export const EnvironmentAttributes = S.Record({
-	frostDates: S.Optional(FrostDates.FrostDateProfile),
-	annualTemperature: S.Optional(AnnualTemperature.AnnualTemperatureProfile)
+export const EnvironmentAttributesSchema = z.object({
+	frostDates: z.optional(FrostDates.FrostDatesProfileSchema),
+	annualTemperature: z.optional(AnnualTemperature.AnnualTemperatureProfileSchema)
 });
-
-export const EnvironmentAttributesUpdateCommandSchema = z.object({
-	frostDates: FrostDates.FrostDatesUpdateCommandSchema.optional(),
-	annualTemperature: AnnualTemperature.AnnualTemperatureUpdateCommandSchema.optional()
-});
-export type EnvironmentAttributesUpdateCommand = z.infer<
-	typeof EnvironmentAttributesUpdateCommandSchema
->;

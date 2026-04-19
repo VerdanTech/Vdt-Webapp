@@ -46,7 +46,7 @@
 	<Form.Field {form} name="password1">
 		<Form.Control>
 			{#snippet children({ props })}
-				<Form.Label description={userFields.passwordSchema.description}
+				<Form.Label description={userFields.passwordField.description}
 					>New Password</Form.Label
 				>
 				<Input.Root {...props} type="password" bind:value={$formData.password1} />
@@ -59,7 +59,7 @@
 	<Form.Field {form} name="password2">
 		<Form.Control>
 			{#snippet children({ props })}
-				<Form.Label description={userFields.passwordSchema.description}
+				<Form.Label description={userFields.passwordField.description}
 					>Confirm Password</Form.Label
 				>
 				<Input.Root {...props} type="password" bind:value={$formData.password2} />

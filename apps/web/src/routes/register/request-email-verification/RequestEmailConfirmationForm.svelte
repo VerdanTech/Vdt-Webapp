@@ -44,7 +44,7 @@
 	<Form.Field {form} name="email">
 		<Form.Control>
 			{#snippet children({ props })}
-				<Form.Label description={userFields.emailSchema.description}>Email</Form.Label>
+				<Form.Label description={userFields.emailField.description}>Email</Form.Label>
 				<Input.Root
 					{...props}
 					type="email"

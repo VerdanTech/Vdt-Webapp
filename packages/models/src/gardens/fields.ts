@@ -1,4 +1,4 @@
-import z from 'zod';
+import {z} from 'jazz-tools'
 
 import { commonFields } from '../commands.js';
 import userFields from '../users/fields.js';
@@ -43,7 +43,9 @@ const gardenFields = {
 		.regex(/[0-9A-Za-z-]+/, 'Must contain only alphanumeric characters and hyphens.')
 		.describe('Unique shorthand name for the garden used in URLs.'),
 	gardenNameField: commonFields.nameSchema.describe('Name of the garden.'),
-	gardenDescriptionField: commonFields.descriptionSchema.describe('Optional description.'),
+	gardenDescriptionField: commonFields.descriptionSchema.describe(
+		'Optional description.'
+	),
 	gardenVisibilityField: z.enum(GardenVisibilityEnumOptions),
 	gardenMembershipRoleField: z.enum(GardenMembershipRoleEnumOptions),
 	gardenMembershipStatusField: z.enum(GardenMembershipStatusEnumOptions),

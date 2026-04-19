@@ -72,7 +72,7 @@
 		<Form.Control>
 			{#snippet children({ props })}
 				<Form.Label
-					description={gardenFields.gardenDescriptionSchema.description}
+					description={gardenFields.gardenIdField.description}
 					optional={false}>ID</Form.Label
 				>
 				<span class="flex">
@@ -111,7 +111,7 @@
 		<Form.Control>
 			{#snippet children({ props })}
 				<Form.Label
-					description={gardenFields.gardenNameSchema.description}
+					description={gardenFields.gardenNameField.description}
 					optional={false}>Name</Form.Label
 				>
 				<Input.Root
@@ -130,7 +130,7 @@
 		<Form.Control>
 			{#snippet children({ props })}
 				<Form.Label
-					description={gardenFields.gardenVisibilitySchema.description}
+					description={gardenFields.gardenVisibilityField.description}
 					optional={false}>Visibility</Form.Label
 				>
 				<Select.Root
@@ -174,7 +174,7 @@
 		<Form.Control>
 			{#snippet children({ props })}
 				<Form.Label
-					description={gardenFields.gardenDescriptionSchema.description}
+					description={gardenFields.gardenDescriptionField.description}
 					optional={true}>Description</Form.Label
 				>
 				<Textarea.Root {...props} bind:value={$formData.description} />

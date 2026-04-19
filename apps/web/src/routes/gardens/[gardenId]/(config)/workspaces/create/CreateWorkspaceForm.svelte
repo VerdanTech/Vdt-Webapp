@@ -38,7 +38,7 @@
 		<Form.Control>
 			{#snippet children({ props })}
 				<Form.Label
-					description={workspaceFields.workspaceNameSchema.description}
+					description={workspaceFields.workspaceNameField.description}
 					optional={false}>Name</Form.Label
 				>
 				<Input.Root
@@ -57,7 +57,7 @@
 		<Form.Control>
 			{#snippet children({ props })}
 				<Form.Label
-					description={workspaceFields.workspaceDescriptionSchema.description}
+					description={workspaceFields.workspaceDescriptionField.description}
 					optional={true}>Description</Form.Label
 				>
 				<Textarea.Root {...props} bind:value={$formData.description} />

@@ -1,7 +1,20 @@
 import z from 'zod';
 
-import { CultivarAttributesUpdateCommandSchema } from '../cultivars/attributes/index.js';
-import { OriginEnumOptions } from './schema.js';
+/**
+ *
+ */
+export const OriginEnumOptions = [
+	'DIRECT_SEED',
+	'SEED_TO_TRANSPLANT',
+	'SEEDLING_TO_TRANSPLANT'
+] as const;
+
+export const OriginEnumLabels: Record<Origin, string> = {
+	DIRECT_SEED: 'Direct Seed',
+	SEEDLING_TO_TRANSPLANT: 'Seedling to Transplant',
+	SEED_TO_TRANSPLANT: 'Seed to Transplant'
+};
+
 
 /** Field specifications for plant domain commands. */
 const plantFields = {
@@ -25,7 +38,6 @@ const plantFields = {
 		growthDates: z.array(z.date()).describe('')
 	}),
 	plantCultivarNameField: z.string(),
-	plantCultivarAttributesField: CultivarAttributesUpdateCommandSchema,
 	plantQuantityField: z
 		.number()
 		.describe('The number of distinct plants this plant entity represents.')

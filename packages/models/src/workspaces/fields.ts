@@ -1,4 +1,4 @@
-import {z} from "jazz-tools"
+import { z } from 'jazz-tools';
 
 import { commonFields } from '../commands.js';
 
@@ -131,7 +131,7 @@ const workspaceFields = {
 						.max(1000000, 'Limited to 1 000 000 meters.')
 						.describe('The vertical Y component of the coordinate.')
 				})
-				.describe('A position relative to the origin of a workspace or a geometry.')
+				.describe('A position relative to the origin of a geometry.')
 		)
 		.min(3, 'Must have at least 3 points.')
 		.describe(

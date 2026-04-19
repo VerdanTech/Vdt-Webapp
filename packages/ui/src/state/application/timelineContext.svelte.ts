@@ -15,8 +15,8 @@ export function createTimelineContext() {
 	const todayDate = today(tz);
 	const startDate = todayDate.subtract(defaultLowerSelectionOffset);
 	const endDate = todayDate.add(defaultUpperSelectionOffset);
-	let beginSelection = $state(startDate.toDate(tz))
-	let endSelection = $state(endDate.toDate(tz))
+	let beginSelection = $state(startDate.toDate(tz));
+	let endSelection = $state(endDate.toDate(tz));
 
 	function reset() {
 		const tz = getLocalTimeZone();
@@ -38,7 +38,7 @@ export function createTimelineContext() {
 			return new Date(endSelection);
 		},
 		set endSelection(newVal) {
-			endSelection= newVal;
+			endSelection = newVal;
 		},
 		reset
 	};

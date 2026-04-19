@@ -1,114 +1,102 @@
-import type { Observation } from '../observations/schema.js';
+import { co, z } from 'jazz-tools';
 
-/**
- * Used to record the date at which a seed was planted.
- *
- * entityIds type: Lifespan
- */
-export const PlantSeedObservationId = 'plant-seed';
-export type PlantSeedObservationData = undefined;
-export type PlantSeedObservation = Observation<PlantSeedObservationData>;
+import { ObservationSchema } from '../observations/schema.js';
 
-/**
- * Used to record when a seed has successfully germinated (sprouted).
- *
- * entityIds type: Lifespan
- */
-export const PlantGermObservationId = 'plant-germ';
-export type PlantGermObservationData = undefined;
-export type PlantGermObservation = Observation<PlantGermObservationData>;
+/** Used to record the date at which a seed was planted. */
+export const PlantSeedObservationId = 'plant-seed' as const;
+export const PlantSeedObservationDetailsSchema = co.map({
+	type: z.literal(PlantSeedObservationId)
+});
 
-/**
- * Used to record the harvest of a plant and its produce.
- *
- * entityIds type: Lifespan
- */
-export const PlantHarvestObservationId = 'plant-harvest';
-export type PlantHarvestObservationData = {
-	/** The mass of the harvest in kilograms. */
-	mass?: number;
-	/** The quality of the harvest. */
-	quality?: string;
-	/** Optional description. */
-	description?: string;
-};
-export type PlantHarvestObservation = Observation<PlantHarvestObservationData>;
+/** Used to record when a seed has successfully germinated (sprouted). */
+export const PlantGermObservationId = 'plant-germ' as const;
+export const PlantGermObservationDetailsSchema = co.map({
+	type: z.literal(PlantGermObservationId)
+});
 
-/**
- * Used to record when a plant has reached the end of its life and has been removed.
- *
- * entityIds type: Lifespan
- */
-export const PlantExpiryObservationId = 'plant-expiry';
-export type PlantExpiryObservationData = undefined;
-export type PlantExpiryObservation = Observation<PlantExpiryObservationData>;
+/** Used to record the harvest of a plant and its produce. */
+export const PlantHarvestObservationId = 'plant-harvest' as const;
+export const PlantHarvestObservationDetailsSchema = co.map({
+	type: z.literal(PlantHarvestObservationId),
+	mass: z.optional(z.number()),
+	quality: z.optional(z.string()),
+	description: z.optional(z.string())
+});
 
-/**
- * Used to record when a plant enters a dormant state (e.g., winter rest).
- *
- * entityIds type: Lifespan
- */
-export const PlantDormancyEnterObservationId = 'plant-dormancy-enter';
-export type PlantDormancyEnterObservationData = undefined;
-export type PlantDormancyEnterObservation =
-	Observation<PlantDormancyEnterObservationData>;
+/** Used to record when a plant has reached the end of its life and has been removed. */
+export const PlantExpiryObservationId = 'plant-expiry' as const;
+export const PlantExpiryObservationDetailsSchema = co.map({
+	type: z.literal(PlantExpiryObservationId)
+});
 
-/**
- * Used to record when a plant has exited dormancy.
- *
- * entityIds type: Lifespan
- */
-export const PlantDormancyExitObservationId = 'plant-growth-enter';
-export type PlantDormancyExitObservationData = undefined;
-export type PlantDormancyExitObservation =
-	Observation<PlantDormancyExitObservationData>;
+/** Used to record when a plant enters a dormant state (e.g., winter rest). */
+export const PlantDormancyEnterObservationId = 'plant-dormancy-enter' as const;
+export const PlantDormancyEnterObservationDetailsSchema = co.map({
+	type: z.literal(PlantDormancyEnterObservationId)
+});
 
-/**
- * Used to record when a plant has flowered.
- *
- * entityIds type: Lifespan
- */
-export const PlantFlowerObservationId = 'plant-flower';
-export type PlantFlowerObservationData = undefined;
-export type PlantFlowerObservation = Observation<PlantFlowerObservationData>;
+/** Used to record when a plant has exited dormancy. */
+export const PlantDormancyExitObservationId = 'plant-growth-enter' as const;
+export const PlantDormancyExitObservationDetailsSchema = co.map({
+	type: z.literal(PlantDormancyExitObservationId)
+});
 
-export type PlantObservation =
-	| PlantSeedObservation
-	| PlantHarvestObservation
-	| PlantGermObservation
-	| PlantExpiryObservation
-	| PlantDormancyEnterObservation
-	| PlantDormancyExitObservation
-	| PlantFlowerObservation;
+/** Used to record when a plant has flowered. */
+export const PlantFlowerObservationId = 'plant-flower' as const;
+export const PlantFlowerObservationDetailsSchema = co.map({
+	type: z.literal(PlantFlowerObservationId)
+});
 
-export const PlantObservationIds = [
-	PlantSeedObservationId,
-	PlantGermObservationId,
-	PlantHarvestObservationId,
-	PlantExpiryObservationId,
-	PlantDormancyEnterObservationId,
-	PlantDormancyExitObservationId,
-	PlantFlowerObservationId
-] as const;
+const plantObservationRegistry = {
+	[PlantSeedObservationId]: {
+		label: 'Seed',
+		description: 'The date at which the plant is sown as a seed.',
+		schema: PlantSeedObservationDetailsSchema
+	},
+	[PlantGermObservationId]: {
+		label: 'Germination',
+		description: "The date at which the plant's seed germinates.",
+		schema: PlantGermObservationDetailsSchema
+	},
+	[PlantHarvestObservationId]: {
+		label: 'Harvest',
+		description: 'A date at which a harvest is made from the plant.',
+		schema: PlantHarvestObservationDetailsSchema
+	},
+	[PlantExpiryObservationId]: {
+		label: 'Expiry',
+		description:
+			'The date at which the plant is removed or otherwise no longer considered in the model.',
+		schema: PlantExpiryObservationDetailsSchema
+	},
+	[PlantDormancyEnterObservationId]: {
+		label: 'Dormancy',
+		description: 'A date at which the plant enters a dormant stage.',
+		schema: PlantDormancyEnterObservationDetailsSchema
+	},
+	[PlantDormancyExitObservationId]: {
+		label: 'Growth',
+		description: 'A date at which the plant exits a dormant stage.',
+		schema: PlantDormancyExitObservationDetailsSchema
+	},
+	[PlantFlowerObservationId]: {
+		label: 'Flower',
+		description: 'A date at which the plant produces a flower.',
+		schema: PlantFlowerObservationDetailsSchema
+	}
+} as const;
 
-export type PlantObservationId = (typeof PlantObservationIds)[number];
+export type PlantObservationId = keyof typeof plantObservationRegistry;
 
-export const PlantObservationLabels: Record<PlantObservationId, string> = {
-	'plant-seed': 'Seed',
-	'plant-germ': 'Germination',
-	'plant-harvest': 'Harvest',
-	'plant-expiry': 'Expiry',
-	'plant-dormancy-enter': 'Dormancy',
-	'plant-growth-enter': 'Growth',
-	'plant-flower': 'Flower'
-};
-export const PlantObservationDescriptions: Record<PlantObservationId, string> = {
-	'plant-seed': 'The date at which the plant is sown as a seed.',
-	'plant-germ': "The date at which the plant's seed germinates.",
-	'plant-harvest': 'A date at which a harvest is made from the plant.',
-	'plant-expiry':
-		'The date at which the plant is removed or otherwise no longer considered in the model.',
-	'plant-dormancy-enter': 'A date at which the plant enters a dormant stage.',
-	'plant-growth-enter': 'A date at which the plant exits a dormant stage.',
-	'plant-flower': 'A date at which the plant produces a flower.'
-};
+export const PlantObservationSchema = ObservationSchema.extend({
+	details: co.discriminatedUnion('type', [
+		PlantSeedObservationDetailsSchema,
+		PlantGermObservationDetailsSchema,
+		PlantHarvestObservationDetailsSchema,
+		PlantExpiryObservationDetailsSchema,
+		PlantDormancyEnterObservationDetailsSchema,
+		PlantDormancyExitObservationDetailsSchema,
+		PlantFlowerObservationDetailsSchema
+	])
+});
+export type PlantObservation = co.loaded<typeof PlantObservationSchema>;

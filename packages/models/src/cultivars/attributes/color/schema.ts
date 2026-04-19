@@ -1,8 +1,8 @@
-import { Schema as S } from '@triplit/client';
+import { z } from 'jazz-tools';
 
 /** Schema. */
-export const ColorProfile = S.Record({
-	baseColor: S.Optional(S.String()),
-	outlineColor: S.Optional(S.String()),
-	textColor: S.Optional(S.String())
+export const ColorProfileSchema = z.object({
+	baseColor: z.optional(z.string()).describe('May be a hex value.'),
+	outlineColor: z.optional(z.string()).describe('May be a hex value.'),
+	textColor: z.optional(z.string()).describe('May be a hex value.')
 });

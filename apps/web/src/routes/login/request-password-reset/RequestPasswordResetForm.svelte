@@ -40,7 +40,7 @@
 	<Form.Field {form} name="email">
 		<Form.Control>
 			{#snippet children({ props })}
-				<Form.Label description={userFields.emailSchema.description} optional={false}
+				<Form.Label description={userFields.emailField.description} optional={false}
 					>Email</Form.Label
 				>
 				<Input.Root

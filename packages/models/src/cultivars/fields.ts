@@ -1,10 +1,57 @@
 import { z } from 'zod';
 
 import { commonFields } from '../commands.js';
-import { CultivarCollectionVisibilityEnumOptions } from './schema.js';
+
+/**
+ * Controls the visibility of the collection.
+ * HIDDEN: the collection is visible only to those who are members of the garden,
+ * or only to the user if the collection is associated with a user.
+ * UNLISTED: the collection is visibile to anyone but is not listed
+ *     on any public page - a link is required.
+ * PUBLIC: the collection is visible to anyone and may be searchable.
+ */
+export const CultivarCollectionVisibilityEnumOptions = [
+	'HIDDEN',
+	'UNLISTED',
+	'PUBLIC'
+] as const;
 
 /** Field specifications for cultivar domain commands. */
 const cultivarFields = {
+	cultivarCollectionIdField: z.string().describe('URL friendly unique ID'),
+	cultivarCollectionNameField: commonFields.descriptionSchema.describe(
+		'The name of the collection.'
+	),
+	cultivarCollectionDescriptionField: commonFields.descriptionSchema.describe(
+		'Optional description.'
+	),
+	cultivarCollectionVisibilityField: z
+		.enum(CultivarCollectionVisibilityEnumOptions)
+		.describe(
+			'Public collections may be viewed by anyone and are publicly searchable. \
+            Unlisted collections may be viewed by anyone with the link. \
+            Private collections may only be accessed by the creator or members of the associated garden.'
+		),
+	cultivarCollectionTagField: z
+		.string()
+		.trim()
+		.max(150, 'Must be at most 150 characters.')
+		.regex(/^[0-9A-Za-z ]+$/, 'Must contain only alphanumeric characters and spaces.')
+		.describe('A metadata tag.'),
+	cultivarCollectionTagsField: z
+		.array(
+			z
+				.string()
+				.trim()
+				.max(150, 'Must be at most 150 characters.')
+				.regex(
+					/^[0-9A-Za-z ]+$/,
+					'Must contain only alphanumeric characters and spaces.'
+				)
+				.describe('A metadata tag.')
+		)
+		.max(150, 'Must contain at most 150 tags.')
+		.describe('A set of metadata tags.'),
 	cultivarNameField: z
 		.string()
 		.trim()
@@ -43,39 +90,8 @@ const cultivarFields = {
 		.trim()
 		.max(60, 'May be at most 60 characters.')
 		.describe('The scientific name of this plant species.'),
-	cultivarDescriptionField: commonFields.descriptionSchema.describe('Optional description.'),
-	cultivarCollectionNameField: commonFields.descriptionSchema.describe(
-		'The name of the collection.'
-	),
-	cultivarCollectionDescriptionField: commonFields.descriptionSchema.describe(
+	cultivarDescriptionField: commonFields.descriptionSchema.describe(
 		'Optional description.'
-	),
-	cultivarCollectionVisibilityField: z
-		.enum(CultivarCollectionVisibilityEnumOptions)
-		.describe(
-			'Public collections may be viewed by anyone and are publicly searchable. \
-            Unlisted collections may be viewed by anyone with the link. \
-            Private collections may only be accessed by the creator or members of the associated garden.'
-		),
-	cultivarCollectionTagField: z
-		.string()
-		.trim()
-		.max(150, 'Must be at most 150 characters.')
-		.regex(/^[0-9A-Za-z ]+$/, 'Must contain only alphanumeric characters and spaces.')
-		.describe('A metadata tag.'),
-	cultivarCollectionTagsField: z
-		.array(
-			z
-				.string()
-				.trim()
-				.max(150, 'Must be at most 150 characters.')
-				.regex(
-					/^[0-9A-Za-z ]+$/,
-					'Must contain only alphanumeric characters and spaces.'
-				)
-				.describe('A metadata tag.')
-		)
-		.max(150, 'Must contain at most 150 tags.')
-		.describe('A set of metadata tags.')
+	)
 };
 export default cultivarFields;
