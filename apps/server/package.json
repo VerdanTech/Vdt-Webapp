@@ -10,6 +10,7 @@
 	},
 	"dependencies": {
 		"@vdg-webapp/models": "workspace:*",
+		"jazz-tools": "^0.20.17",
 		"@fastify/awilix": "^6.0.2",
 		"@fastify/cookie": "^11.0.2",
 		"@fastify/cors": "^10.1.0",
