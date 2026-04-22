@@ -1,4 +1,4 @@
-import z from 'zod';
+import { z } from 'jazz-tools';
 
 /** Field specifications. */
 const nameSchema = z
@@ -11,4 +11,5 @@ const nameSchema = z
 		'Must contain only letters, numbers, spaces, underscores, and hyphens.'
 	);
 const descriptionSchema = z.string().max(1400, 'May be at most 1400 characters.');
-export const commonFields = { nameSchema, descriptionSchema };
+const schemaIdField = z.string()
+export const commonFields = { nameSchema, descriptionSchema, schemaIdField };

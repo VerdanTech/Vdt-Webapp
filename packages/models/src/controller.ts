@@ -1,93 +1,70 @@
-import { TriplitClient as TriplitClientBase } from '@triplit/client';
+import { type Account } from 'jazz-tools';
 
-import {
-	type ActionType,
-	AppError,
-	type Garden,
-	type User,
-	isUserAuthorized,
-	requiredRole,
-	schema
-} from './index.js';
+import { AppError } from './errors.js';
+import { type GardenRole, type GardenWithMemberships } from './gardens/schema.js';
+import { findAcceptedMembershipForAccount, getGardenByKey } from './index/utils.js';
 
-type TriplitClient = TriplitClientBase<typeof schema>;
-
-export const CONTROLLER_CONTEXT_ID = 'TriplitController';
-
-export type ControllerContextParams = {
-	triplit: TriplitClient;
-	getClient: (triplit: TriplitClient) => Promise<User | null>;
-};
+import { type ActionType, requiredRole } from './permissions.js';
 
 /**
- * Controller class: singleton interface to the data layer.
- * Passed to controller functions to provide configurable behaviour.
- * @param triplit The Triplit client to perform operations on.
- * @param getClient A function for returning an authenticated user.
- * @returns ControllerContext.
+ * Checks whether a member's role meets the required access level.
+ * Roles are upwards inclusive: ADMIN satisfies EDITOR and VIEWER requirements.
+ * @param memberRole The role the user holds.
+ * @param required The minimum role required.
  */
-export function createController(params: ControllerContextParams) {
-	const gardenQuery = params.triplit.query('gardens').Id('$query.id');
-	/**
-	 * Fetches the client's Account and Profile objects.
-	 * If the client fails to authenticate, an access refresh is attempted.
-	 * If this fails, an AppError is raised.
-	 * @returns The client.
-	 */
-	async function getClientOrError(): Promise<User> {
-		/** Return the client if authenticated. */
-		const client = await params.getClient(params.triplit);
-		if (client) {
-			return client;
-		}
+function isRoleSufficient(memberRole: GardenRole, required: GardenRole): boolean {
+	const roleRank: Record<GardenRole, number> = { ADMIN: 3, EDITOR: 2, VIEWER: 1 };
+	return roleRank[memberRole] >= roleRank[required];
+}
 
-		throw new AppError('Authentication failed.', {
-			nonFormErrors: ['Authentication failed. A login is required.']
-		});
+/**
+ * Creates a controller context bound to a Jazz account.
+ * Provides authentication and authorization helpers for command functions.
+ * @param me The authenticated Jazz account.
+ */
+export function createController(me: Account) {
+	/**
+	 * Returns the authenticated account, or throws if unavailable.
+	 */
+	async function getClientOrError(): Promise<Account> {
+		if (!me) {
+			throw new AppError('Authentication failed.', {
+				nonFormErrors: ['Authentication failed. A login is required.']
+			});
+		}
+		return me;
 	}
 
 	/**
-	 * Given a garden and an action, retrieve the client
-	 * and throw an error if the client does not have at least
-	 * that role.
-	 * @param gardenId The garden to retrieve.
-	 * @param action The action to authorize for.
-	 * @returns The client and garden objects.
+	 * Loads a garden by key and verifies the account holds at least the required role.
+	 * @param gardenId The unique ID of the garden.
+	 * @param action The action being authorized.
+	 * @returns The authenticated account and the loaded garden.
 	 */
 	async function requireRole(
 		gardenId: string,
 		action: ActionType
-	): Promise<{
-		client: User;
-		garden: Garden;
-	}> {
-		/** Retrieve client. */
-		const client = await getClientOrError();
+	): Promise<{ me: Account; garden: GardenWithMemberships }> {
+		await getClientOrError();
 
-		/** Retrieve garden. */
-		const garden = await params.triplit.fetchOne(gardenQuery.Vars({ id: gardenId }));
-		if (garden == null) {
-			throw new AppError('Garden key does not exist.', {
-				nonFormErrors: ['Garden key does not exist.']
-			});
-		}
-
-		/** Ensure client is of the specified role. */
+		const garden = await getGardenByKey(gardenId);
 		const role = requiredRole(action);
-		if (!isUserAuthorized(garden, client.profile.id, role)) {
+		const membership = findAcceptedMembershipForAccount(garden, me.$jazz.id);
+
+		if (!membership || !isRoleSufficient(membership.role, role)) {
 			throw new AppError(`Requires ${role} access.`, {
 				nonFormErrors: [`This action requires the ${role} role.`]
 			});
 		}
 
-		return { client, garden };
+		return { me, garden };
 	}
 
 	return {
-		triplit: params.triplit,
-		getClient: params.getClient,
+		me,
 		getClientOrError,
 		requireRole
 	};
 }
+
 export type ControllerContext = ReturnType<typeof createController>;

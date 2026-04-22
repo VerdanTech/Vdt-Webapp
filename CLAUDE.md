@@ -59,6 +59,7 @@ Additionally, variable names are to be verbose at all times. No vague 1 to 3 let
 - JSDoc on exported/public functions with `@param` descriptions
 - Comment syntax uses /\*\* \*/.
 - Comments are to be as plain and precise as possible.
+- Don't use convolutes inline conditional expression. More verbose if statements with brackets around everything is preferred.
 
 ### Domain Model Pattern (`packages/models`)
 

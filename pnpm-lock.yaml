@@ -429,6 +429,9 @@ importers:
       handlebars:
         specifier: ^4.7.8
         version: 4.7.8
+      jazz-tools:
+        specifier: ^0.20.17
+        version: 0.20.17(csstype@3.2.3)(react-native@0.85.1(@babel/core@7.29.0)(react@19.2.5))(react@19.2.5)(sharp@0.33.5)(svelte@5.34.0)
       jsonwebtoken:
         specifier: ^9.0.2
         version: 9.0.3

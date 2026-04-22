@@ -75,14 +75,12 @@ const workspaceFields = {
 		.min(0.01, 'Must be at least 1%.')
 		.max(100, 'May be at most 10000%')
 		.describe(
-			'Factor used to scale the geometry up or down. Must be within 1 and 1000 percent.'
+			'Factor used to scale the geometry up or down. Must be within 1 and 10000 percent.'
 		),
 	geometryRotationField: z
 		.number()
-		.min(-360, 'Must be at least negative 360 degrees.')
-		.max(360, 'May be at most 360 degrees.')
 		.describe(
-			'The rotation of the geometry in degrees. Must be between 0 and 360 degrees.'
+			'The rotation of the geometry in degrees.'
 		),
 	geometryRectangleLengthField: z
 		.number()
@@ -136,7 +134,11 @@ const workspaceFields = {
 		.min(3, 'Must have at least 3 points.')
 		.describe(
 			'A list of coordinates relative to the position of the geometry which define an irregular polygonal.'
-		),
+		).default([
+		{ x: -1, y: 0 },
+		{ x: 0, y: 1 },
+		{ x: 1, y: 0 }
+	]),
 	geometryLinesClosedField: z
 		.boolean()
 		.describe('If true, the line segments form a closed shape.')

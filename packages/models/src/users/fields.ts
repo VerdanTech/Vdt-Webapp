@@ -1,4 +1,4 @@
-import z from 'zod';
+import {z} from 'jazz-tools'
 
 /** Field specifications for user domain commands. */
 const userFields = {

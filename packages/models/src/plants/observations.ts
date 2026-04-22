@@ -88,6 +88,18 @@ const plantObservationRegistry = {
 
 export type PlantObservationId = keyof typeof plantObservationRegistry;
 
+export const PlantObservationIds = Object.keys(
+	plantObservationRegistry
+) as PlantObservationId[];
+
+export const PlantObservationLabels = Object.fromEntries(
+	Object.entries(plantObservationRegistry).map(([id, { label }]) => [id, label])
+) as Record<PlantObservationId, string>;
+
+export const PlantObservationDescriptions = Object.fromEntries(
+	Object.entries(plantObservationRegistry).map(([id, { description }]) => [id, description])
+) as Record<PlantObservationId, string>;
+
 export const PlantObservationSchema = ObservationSchema.extend({
 	details: co.discriminatedUnion('type', [
 		PlantSeedObservationDetailsSchema,

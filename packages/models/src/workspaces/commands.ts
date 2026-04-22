@@ -1,160 +1,171 @@
 import { z } from 'jazz-tools';
-
+import { AppError, zodErrorToAppErrors } from '../errors.js';
 import fields from './fields.js';
+import * as schema from './schema.js'
+import { commonFields } from '../commands.js';
+import { historySelectDay } from './utils.js';
 
-/** Commands. */
+export const GeometryCreateCommandSchema = z.object({
+	date: fields.geometryDateField,
+	scaleFactor: fields.geometryScaleFactorField,
+	rotation: fields.geometryRotationField,
+	attributes: z.discriminatedUnion('type', [
+		z.object({ type: z.literal('RECTANGLE'), rectangleLength: fields.geometryRectangleLengthField, rectangleWidth: fields.geometryRectangleWidthField }),
+		z.object({ type: z.literal('ELLIPSE'), ellipseLength: fields.geometryEllipseLengthField, ellipseWidth: fields.geometryEllipseWidthField }),
+		z.object({ type: z.literal('POLYGON'), polygonNumSides: fields.geometryPolygonNumSidesField, polygonRadius: fields.geometryPolygonRadiusField }),
+		z.object({ type: z.literal('LINES'), linesCoordinates: fields.geometryLinesCoordinatesField, linesClosed: fields.geometryLinesClosedField })
+	])
+});
+export type GeometryCreateCommand = z.infer<typeof GeometryCreateCommandSchema>;
+
+export const GeometryUpdateCommandSchema = GeometryCreateCommandSchema.partial();
+export type GeometryUpdateCommand = z.infer<typeof GeometryUpdateCommandSchema>;
 
 /**
- * Create a new location.
+ * Location
  */
+
 export const LocationCreateCommandSchema = z.object({
-	gardenId: z.string(),
-	workspaceId: z.string(),
+	date: fields.locationDateField,
 	coordinate: fields.coordinateField,
-	date: fields.locationDateField
+	workspace: commonFields.schemaIdField
 });
 export type LocationCreateCommand = z.infer<typeof LocationCreateCommandSchema>;
 
 /**
- * Creates a location history.
+ * Creates a location in the object history.
+ * Allows overwriting or throwing an exception if a location already exists at that day.
+ * @param history The object history to update.
+ * @param command The new location to create.
+ * @param throwOnOverwrite If false and a location exists at the given day, it will be overwritten,
+ * otherwise an exception will be raised.
  */
-export const LocationHistoryCreateCommandSchema = z.object({
-	gardenId: z.string(),
-	locations: z.array(LocationCreateCommandSchema)
-});
-export type LocationHistoryCreateCommand = z.infer<
-	typeof LocationHistoryCreateCommandSchema
->;
+export function locationCreate(
+	history: schema.ObjectHistory,
+	command: LocationCreateCommand,
+	throwOnOverwrite: boolean
+) {
+	const validated = LocationCreateCommandSchema.safeParse(command);
+	if (!validated.success) {
+		throw new AppError('Invalid coordinate.', zodErrorToAppErrors(validated.error));
+	}
 
-/**
- * Updates a location history.
- */
-export const LocationHistoryUpdateCommandSchema = z.object({
-	id: z.string(),
-	workspaceId: z.string(),
-	coordinate: fields.coordinateField,
-	date: fields.locationDateField
-});
-export type LocationHistoryUpdateCommand = z.infer<
-	typeof LocationHistoryUpdateCommandSchema
->;
+	const existing = historySelectDay([...history.locations], command.date);
 
-/**
- * Updates a location.
- */
+	if (existing) {
+		if (throwOnOverwrite) {
+			throw new AppError('Location creation command would overwrite an existing item.')
+		} else {
+			existing.$jazz.applyDiff(validated)
+		}
+
+	} else {
+		history.locations.$jazz.push(
+			schema.LocationSchema.create(
+				validated,
+				{ owner: history.$jazz.owner }
+			)
+		);
+	}
+}
+
 export const LocationUpdateCommandSchema = z.object({
+	date: fields.locationDateField,
 	coordinate: fields.coordinateField.optional(),
-	date: fields.locationDateField.optional(),
-	workspaceId: z.string().optional(),
-	delete: z.boolean().optional()
+	workspace: commonFields.schemaIdField.optional()
 });
 export type LocationUpdateCommand = z.infer<typeof LocationUpdateCommandSchema>;
 
-/**
- * Create a new geometry.
- */
-export const GeometryCreateCommandSchema = z.object({
-	type: fields.geometryTypeField.default('RECTANGLE'),
-	date: fields.geometryDateField,
-	scaleFactor: fields.geometryScaleFactorField.default(1),
-	rotation: fields.geometryRotationField.default(0),
-	rectangleLength: fields.geometryRectangleLengthField.default(1),
-	rectangleWidth: fields.geometryRectangleWidthField.default(1),
-	polygonNumSides: fields.geometryPolygonNumSidesField.default(3),
-	polygonRadius: fields.geometryPolygonRadiusField.default(1),
-	ellipseLength: fields.geometryEllipseLengthField.default(1),
-	ellipseWidth: fields.geometryEllipseWidthField.default(1),
-	linesCoordinates: fields.geometryLinesCoordinatesField.default([
-		{ x: -1, y: 0 },
-		{ x: 0, y: 1 },
-		{ x: 1, y: 0 }
-	]),
-	linesClosed: fields.geometryLinesClosedField.default(true)
-});
-export type GeometryCreateCommand = z.infer<typeof GeometryCreateCommandSchema>;
+export function locationUpdate(
+	history: schema.ObjectHistory,
+	command: LocationUpdateCommand,
+	throwOnNotFound: boolean
+) {
+	const validated = LocationUpdateCommandSchema.safeParse(command);
+	if(!validated.success) {
+		throw new AppError('Invalid coordinate.', zodErrorToAppErrors(validated.error));
+	}
 
-/**
- * Update a geometry.
- */
-export const GeometryUpdateCommandSchema = z.object({
-	type: fields.geometryTypeField.optional(),
-	date: fields.geometryDateField.optional(),
-	scaleFactor: fields.geometryScaleFactorField.optional(),
-	rotation: fields.geometryRotationField.optional(),
-	rectangleLength: fields.geometryRectangleLengthField.optional(),
-	rectangleWidth: fields.geometryRectangleWidthField.optional(),
-	polygonNumSides: fields.geometryPolygonNumSidesField.optional(),
-	polygonRadius: fields.geometryPolygonRadiusField.optional(),
-	ellipseLength: fields.geometryEllipseLengthField.optional(),
-	ellipseWidth: fields.geometryEllipseWidthField.optional(),
-	linesCoordinates: fields.geometryLinesCoordinatesField.optional(),
-	linesClosed: fields.geometryLinesClosedField.optional(),
-	delete: z.boolean().optional()
-});
-export type GeometryUpdateCommand = z.infer<typeof GeometryUpdateCommandSchema>;
+	const existing = historySelectDay([...history.locations], command.date)
 
-/**
- * Creates a geometry history.
- */
-export const GeometryHistoryCreateCommandSchema = z.object({
-	gardenId: z.string(),
-	geometries: z.array(GeometryCreateCommandSchema)
-});
-export type GeometryHistoryCreateCommand = z.infer<
-	typeof GeometryHistoryCreateCommandSchema
->;
+	if(existing) {
+		existing.$jazz.applyDiff({
+			coordinate: validated.data.coordinate,
+			// Can you assign IDs like this?
+			workspace: validated.data.workspace
+		})
+	} else if(throwOnNotFound) {
+		throw new AppError('Location update command found no location at this date.')
+	}
+}
 
-/**
- * Updates a geometry history.
- */
-export const GeometryHistoryUpdateCommandSchema = z.object({
-	id: z.string(),
-	geometry: GeometryCreateCommandSchema,
-	date: fields.geometryDateField
-});
-export type GeometryHistoryUpdateCommand = z.infer<
-	typeof GeometryHistoryUpdateCommandSchema
->;
+
 
 /**
  * Create a new workspace.
  */
 export const WorkspaceCreateCommandSchema = z.object({
-	gardenId: z.string(),
 	name: fields.workspaceNameField,
-	description: fields.workspaceDescriptionField.optional()
+	description: z.string().optional()
 });
-export type WorkspaceCreateCommand = z.infer<typeof WorkspaceCreateCommandSchema>;
+export type WorkspaceCreateInput = z.infer<typeof WorkspaceCreateCommandSchema>;
 
 /**
  * Update a workspace.
  */
 export const WorkspaceUpdateCommandSchema = z.object({
 	name: fields.workspaceNameField.optional(),
-	description: fields.workspaceDescriptionField.optional()
+	description: z.string().optional()
 });
-export type WorkspaceUpdateCommand = z.infer<typeof WorkspaceUpdateCommandSchema>;
+export type WorkspaceUpdateInput = z.infer<typeof WorkspaceUpdateCommandSchema>;
+
+
+
+/** Partial update applied to an existing loaded Geometry CoValue. */
+export type GeometryDiff = {
+	date?: Date;
+	scaleFactor?: number;
+	rotation?: number;
+	attributes?: schema.GeometryAttributes;
+};
+
+/** Partial update applied to an existing loaded Location CoValue. */
+export type LocationDiff = {
+	date?: Date;
+	coordinate?: schema.Coordinate.partial();
+};
 
 /**
  * Create a new planting area.
  */
-export const PlantingAreaCreateCommandSchema = z.object({
-	gardenId: z.string(),
-	workspaceId: z.string(),
+export const PlantingAreaCreateComandSchema = z.object({
 	name: fields.plantingAreaNameField,
-	description: fields.plantingAreaDescriptionField.default(''),
-	location: LocationCreateCommandSchema,
-	geometry: GeometryCreateCommandSchema,
-	depth: fields.plantingAreaDepthField.default(0)
+	description: z.string().optional(),
+	depth: fields.plantingAreaDepthField,
+	initialGeometry: GeometryCreateCommandSchema,
+	initialLocation: z.object({
+		coordinate: fields.coordinateField,
+		date: z.date()
+	})
 });
-export type PlantingAreaCreateCommand = z.infer<typeof PlantingAreaCreateCommandSchema>;
+export type PlantingAreaCreateInput = z.infer<typeof PlantingAreaCreateComandSchema>;
 
 /**
  * Update a planting area.
  */
-export const PlantingAreaUpdateCommandSchema = z.object({
+export const plantingAreaUpdateInputSchema = z.object({
 	name: fields.plantingAreaNameField.optional(),
-	description: fields.plantingAreaDescriptionField.optional(),
+	description: z.string().optional(),
 	depth: fields.plantingAreaDepthField.optional()
 });
-export type PlantingAreaUpdateCommand = z.infer<typeof PlantingAreaUpdateCommandSchema>;
+export type PlantingAreaUpdateInput = z.infer<typeof plantingAreaUpdateInputSchema>;
+
+
+
+
+
+
+
+
+
+/** Commands. */

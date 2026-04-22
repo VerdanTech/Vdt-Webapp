@@ -29,6 +29,6 @@ export const CultivarCollectionCreateCommand = z
 		userId: z.string().optional()
 	})
 	.refine((data) => data.gardenId && data.parentId, {
-		message: 'A cultivar collection must be connected to a garden or a user..',
+		message: 'A cultivar collection must be connected to a garden or a user.',
 		path: ['gardenId', 'userId']
 	});

@@ -183,21 +183,21 @@ export function historyGetRange<T extends { date: Date }>(
  * @returns The height, in meters, of the vertical extent of the shape.
  */
 export function getGeometryHeight(
-	geometry: Omit<Geometry, 'id' | 'gardenId' | 'linesCoordinateIds' | 'date'>
+	geometry: Geometry
 ): number {
-	switch (geometry.type) {
+	switch (geometry.attributes.type) {
 		case 'RECTANGLE':
-			return (geometry.rectangleWidth / 2) * geometry.scaleFactor;
+			return (geometry.attributes.rectangleWidth / 2) * geometry.scaleFactor;
 
 		case 'POLYGON':
-			return geometry.polygonRadius * geometry.scaleFactor;
+			return geometry.attributes.polygonRadius * geometry.scaleFactor;
 
 		case 'ELLIPSE':
-			return (geometry.ellipseWidth / 2) * geometry.scaleFactor;
+			return (geometry.attributes.ellipseWidth / 2) * geometry.scaleFactor;
 
 		case 'LINES':
 			return (
-				Math.max(...geometry.linesCoordinates.map((coordinate) => coordinate.y)) *
+				Math.max(...geometry.attributes.linesCoordinates.map((coordinate) => coordinate.y)) *
 				geometry.scaleFactor
 			);
 	}

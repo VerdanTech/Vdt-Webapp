@@ -39,6 +39,26 @@ export type ServerErrorResponse = {
 };
 
 /**
+ * Converts a Zod validation error into the AppErrors format.
+ * Builds field error messages from the error's issues list.
+ * @param error A Zod validation error with an issues array. Issue paths may contain symbols, which are coerced to strings.
+ * @returns AppErrors with field-level messages keyed by dot-separated path.
+ */
+export function zodErrorToAppErrors(error: {
+	issues: Array<{ path: PropertyKey[]; message: string }>;
+}): AppErrors {
+	const fieldErrors: FieldErrors = {};
+	for (const issue of error.issues) {
+		const path = issue.path.map(String).join('.');
+		if (!fieldErrors[path]) {
+			fieldErrors[path] = [];
+		}
+		fieldErrors[path].push(issue.message);
+	}
+	return { fieldErrors };
+}
+
+/**
  * Base class for all application exceptions raised by the frontend and server code.
  */
 export class AppError extends Error {

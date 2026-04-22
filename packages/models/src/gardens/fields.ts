@@ -5,9 +5,9 @@ import userFields from '../users/fields.js';
 
 /**
  * Controls the visibility of the garden.
- * HIDDEN: visible only to members.
- * UNLISTED: visible to anyone with a link.
- * PUBLIC: publicly searchable.
+ * HIDDEN: Visible only to members.
+ * UNLISTED: Visible to anyone. Not publicaly searchable.
+ * PUBLIC: Visibile to anyone. Publicly searchable.
  */
 export const GardenVisibilityEnumOptions = ['HIDDEN', 'UNLISTED', 'PUBLIC'] as const;
 
@@ -46,11 +46,11 @@ const gardenFields = {
 	gardenDescriptionField: commonFields.descriptionSchema.describe(
 		'Optional description.'
 	),
-	gardenVisibilityField: z.enum(GardenVisibilityEnumOptions),
-	gardenMembershipRoleField: z.enum(GardenMembershipRoleEnumOptions),
-	gardenMembershipStatusField: z.enum(GardenMembershipStatusEnumOptions),
+	gardenVisibilityField: z.literal(GardenVisibilityEnumOptions).default('HIDDEN').describe(''),
+	gardenMembershipRoleField: z.literal(GardenMembershipRoleEnumOptions).default('VIEWER'),
+	gardenMembershipStatusField: z.literal(GardenMembershipStatusEnumOptions).default('CREATED'),
 	usernameInvitesListField: z
 		.array(userFields.usernameField)
-		.max(10, 'A maximum of 10 users can be invited at once.')
+		.max(10, 'A maximum of 10 users can be invited at once.').default([])
 };
 export default gardenFields;
