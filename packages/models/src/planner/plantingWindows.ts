@@ -8,8 +8,8 @@ import {
 	rangesOverlap
 } from '@vdg-webapp/models';
 
-import type { FrostDatePlantingWindowsProfile } from '../cultivars/attributes/frostDatePlantingWindows/schema.js';
-import type { FrostDateProfile } from '../environments/attributes/frostDates/schema.js';
+import type { FrostDatePlantingWindowsProfile } from '../cultivars/attributes/frostDatePlantingWindows/index.js';
+import type { FrostDateProfile } from '../environments/attributes/frostDates/index.js';
 
 export type PlantingWindow = {
 	range: DateRange;

@@ -44,3 +44,6 @@ export const FrostDatePlantingWindowsUpdateCommandSchema = z
 export type FrostDatePlantingWindowsUpdateCommand = z.infer<
 	typeof FrostDatePlantingWindowsUpdateCommandSchema
 >;
+export type FrostDatePlantingWindowsProfile = z.infer<
+	typeof FrostDatePlantingWindowsUpdateCommandSchema
+>;

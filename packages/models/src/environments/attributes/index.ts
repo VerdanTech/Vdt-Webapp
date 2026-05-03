@@ -12,3 +12,6 @@ export const EnvironmentAttributesUpdateCommandSchema = z.object({
 export type EnvironmentAttributesUpdateCommand = z.infer<
 	typeof EnvironmentAttributesUpdateCommandSchema
 >;
+export type EnvironmentAttributes = z.infer<
+	typeof EnvironmentAttributesUpdateCommandSchema
+>;

@@ -8,7 +8,7 @@ import * as Origin from './origin/index.js';
 
 export const attributesSchemas = {
 	...AnnualLifeCycle.fields,
-	...Color,
+	...Color.fields,
 	...FrostDatePlantingWindows.fields,
 	...ExpectedGeometry.fields,
 	...Origin.fields
@@ -27,3 +27,4 @@ export const CultivarAttributesUpdateCommandSchema = z
 export type CultivarAttributesUpdateCommand = z.infer<
 	typeof CultivarAttributesUpdateCommandSchema
 >;
+export type CultivarAttributes = z.infer<typeof CultivarAttributesUpdateCommandSchema>;

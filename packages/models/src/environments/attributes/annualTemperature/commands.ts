@@ -23,3 +23,6 @@ export const AnnualTemperatureUpdateCommandSchema = z
 export type AnnualTemperatureUpdateCommand = z.infer<
 	typeof AnnualTemperatureUpdateCommandSchema
 >;
+export type AnnualTemperatureProfile = z.infer<
+	typeof AnnualTemperatureUpdateCommandSchema
+>;

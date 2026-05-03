@@ -1,5 +1,7 @@
 import { type TableRow, schema as s } from 'jazz-tools';
 
+import { EnvironmentAttributesUpdateCommandSchema } from './attributes/index.js';
+
 /**
  * Defines the parent entity that the environment describes characteristics for.
  * - GARDEN: the environment applies to a garden.
@@ -47,8 +49,8 @@ export const environmentSchema = {
 		 */
 		inherit: s.boolean().default(true),
 
-		/** Environment attributes. Stored as JSON. */
-		attributes: s.json().optional()
+		/** Environment attributes. */
+		attributes: s.json(EnvironmentAttributesUpdateCommandSchema).optional()
 	})
 };
 

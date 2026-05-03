@@ -40,3 +40,4 @@ export const AnnualLifecycleUpdateCommandSchema = z
 export type AnnualLifecycleUpdateCommand = z.infer<
 	typeof AnnualLifecycleUpdateCommandSchema
 >;
+export type AnnualLifeCycleProfile = z.infer<typeof AnnualLifecycleUpdateCommandSchema>;

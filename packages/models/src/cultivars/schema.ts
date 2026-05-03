@@ -1,5 +1,7 @@
 import { type TableRow, schema as s } from 'jazz-tools';
 
+import { CultivarAttributesUpdateCommandSchema } from './attributes/index.js';
+
 /**
  * Controls the visibility of the collection.
  * HIDDEN: the collection is visible only to those who are members of the garden,
@@ -67,8 +69,8 @@ export const cultivarSchema = {
 		/** Optional parent cultivar to derive attributes from. */
 		parentId: s.ref('cultivars').optional(),
 
-		/** Attributes which define this cultivar. Stored as JSON. */
-		attributes: s.json().optional(),
+		/** Attributes which define this cultivar. */
+		attributes: s.json(CultivarAttributesUpdateCommandSchema).optional(),
 
 		/** Creation timestamp used for newest-first resolution of duplicate names. */
 		createdAt: s.timestamp()

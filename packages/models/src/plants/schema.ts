@@ -1,5 +1,6 @@
 import { type TableRow, schema as s } from 'jazz-tools';
 
+import { CultivarAttributesUpdateCommandSchema } from '../cultivars/attributes/index.js';
 import type { GeometryHistory, LocationHistory } from '../workspaces/schema.js';
 import type { PlantObservation } from './observations.js';
 
@@ -39,8 +40,8 @@ export const plantSchema = {
 		 */
 		cultivarName: s.string(),
 
-		/** A set of cultivar attributes to override those from the collections. Stored as JSON. */
-		cultivarAttributes: s.json().optional(),
+		/** A set of cultivar attributes to override those from the collections. */
+		cultivarAttributes: s.json(CultivarAttributesUpdateCommandSchema).optional(),
 
 		/** Lifespan populated from the expected attributes based on the cultivar. */
 		expectedLifespanId: s.ref('lifespans'),

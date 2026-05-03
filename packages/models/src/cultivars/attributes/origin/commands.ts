@@ -14,3 +14,4 @@ export const OriginUpdateCommandSchema = z
 	})
 	.describe('The origin refers to the method used to create plants.');
 export type OriginUpdateCommand = z.infer<typeof OriginUpdateCommandSchema>;
+export type OriginProfile = z.infer<typeof OriginUpdateCommandSchema>;
