@@ -1,4 +1,4 @@
-import { useQuery } from '@triplit/svelte';
+import { QuerySubscription } from 'jazz-tools/svelte';
 
 import type { ControllerContext } from '@vdg-webapp/models';
 
@@ -11,26 +11,22 @@ export function createWorkspacesContext(
 	controller: ControllerContext,
 	garden: GardenContext
 ) {
-	const workspacesQuery = $derived(
-		useQuery(
-			controller.triplit,
-			controller.triplit.query('workspaces').Where(['gardenId', '=', garden.id])
+	const workspacesSub = $derived(
+		new QuerySubscription(
+			garden.id ? controller.jazz.workspaces.where({ gardenId: garden.id }) : undefined
 		)
 	);
-	const workspaces = $derived(workspacesQuery.results ?? []);
-	const plantingAreasQuery = $derived(
-		useQuery(
-			controller.triplit,
-			controller.triplit
-				.query('plantingAreas')
-				.Where('gardenId', '=', garden.id)
-				.Include('geometry', (rel) => rel('geometry').Include('linesCoordinates'))
-				.Include('locationHistory', (rel) =>
-					rel('locationHistory').Include('locations')
-				)
+	const workspaces = $derived(workspacesSub.current ?? []);
+
+	/** TODO: Add geometry/locationHistory includes once Jazz2 include API is confirmed. */
+	const plantingAreasSub = $derived(
+		new QuerySubscription(
+			garden.id
+				? controller.jazz.plantingAreas.where({ gardenId: garden.id })
+				: undefined
 		)
 	);
-	const plantingAreas = $derived(plantingAreasQuery.results ?? []);
+	const plantingAreas = $derived(plantingAreasSub.current ?? []);
 
 	return {
 		get workspaces() {

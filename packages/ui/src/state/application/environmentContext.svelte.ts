@@ -1,4 +1,4 @@
-import { useQuery } from '@triplit/svelte';
+import { QuerySubscription } from 'jazz-tools/svelte';
 
 import { type ControllerContext } from '@vdg-webapp/models';
 
@@ -11,14 +11,14 @@ export function createEnvironmentContext(
 	controller: ControllerContext,
 	garden: GardenContext
 ) {
-	/** Queries all environments in the garden. */
-	const environmentsQuery = $derived(
-		useQuery(
-			controller.triplit,
-			controller.triplit.query('environments').Where('gardenId', '=', garden.id)
+	const environmentsSub = $derived(
+		new QuerySubscription(
+			garden.id
+				? controller.jazz.environments.where({ gardenId: garden.id })
+				: undefined
 		)
 	);
-	const environments = $derived(environmentsQuery.results ?? []);
+	const environments = $derived(environmentsSub.current ?? []);
 
 	return {
 		get environments() {

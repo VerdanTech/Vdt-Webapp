@@ -6,35 +6,29 @@ export async function observationUpdate(
 	data: ObservationUpdateCommand,
 	ctx: ControllerContext
 ) {
-	/** Retrieve client and authorize. */
-	//await ctx.requireRole(gardenId, 'ObservationUpdate');
+	const observation = await ctx.db.one(ctx.jazz.observations.where({ id: data.id }));
+	if (!observation) {
+		throw new AppError('Observation does not exist.', {
+			nonFormErrors: ['Failed to update observation.']
+		});
+	}
 
-	const obs = await ctx.triplit.fetchOne(ctx.triplit.query('observations').Id(data.id));
+	const partial: Partial<typeof observation> = {};
+	if (data.entityIds) partial.entityIds = [...data.entityIds];
+	if (data.date) partial.date = data.date;
+	if (data.data !== undefined) partial.data = data.data;
 
-	/** Update the observation. */
-	await ctx.triplit.update('observations', data.id, (observation) => {
-		if (data.entityIds) {
-			observation.entityIds = data.entityIds;
-		}
-		if (data.date) {
-			observation.date = data.date;
-		}
-		if (data.data) {
-			observation.data = data.data;
-		}
-	});
+	ctx.db.update(ctx.jazz.observations, data.id, partial);
 }
 
 /** Deletes an observation. */
 export async function observationDelete(id: string, ctx: ControllerContext) {
-	const observation = await ctx.triplit.fetchOne(
-		ctx.triplit.query('observations').Id(id)
-	);
+	const observation = await ctx.db.one(ctx.jazz.observations.where({ id }));
 	if (!observation) {
 		throw new AppError('Observation does not exist.', {
 			nonFormErrors: ['Failed to delete observation.']
 		});
 	}
 
-	await ctx.triplit.delete('observations', id);
+	ctx.db.delete(ctx.jazz.observations, id);
 }

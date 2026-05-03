@@ -1,4 +1,11 @@
-import { type GardenRole } from './index.js';
+import { constructPermissions as constructCultivarPermissions } from './cultivars/permissions.js';
+import { constructPermissions as constructEnvironmentPermissions } from './environments/permissions.js';
+import { constructPermissions as constructGardenPermissions } from './gardens/permissions.js';
+import type { GardenRole } from './index.js';
+import { constructPermissions as constructObservationPermissions } from './observations/permissions.js';
+import { constructPermissions as constructPlantPermissions } from './plants/permissions.js';
+import { jazz } from './schema.js';
+import { constructPermissions as constructWorkspacePermissions } from './workspaces/permissions.js';
 
 /**
  * This file is a centralized location for mapping application actions to a required Garden role.
@@ -33,3 +40,10 @@ export type ActionType = keyof typeof permissions;
 export function requiredRole(action: ActionType): GardenRole {
 	return permissions[action];
 }
+
+constructGardenPermissions(jazz);
+constructObservationPermissions(jazz);
+constructWorkspacePermissions(jazz);
+constructEnvironmentPermissions(jazz);
+constructCultivarPermissions(jazz);
+constructPlantPermissions(jazz);

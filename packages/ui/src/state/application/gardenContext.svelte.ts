@@ -1,4 +1,4 @@
-import { useQuery } from '@triplit/svelte';
+import { QuerySubscription } from 'jazz-tools/svelte';
 
 import { type ControllerContext, type GardenRole } from '@vdg-webapp/models';
 import { type ActionType, requiredRole as getRequiredRole } from '@vdg-webapp/models';
@@ -15,20 +15,21 @@ export function createGardenContext(
 	client: ClientContext
 ) {
 	let id = $state('');
-	const gardenQuery = $derived(
-		useQuery(controller.triplit, controller.triplit.query('gardens').Id(id))
+	const gardenSub = $derived(
+		new QuerySubscription(id ? controller.jazz.gardens.where({ id }) : undefined)
 	);
-	const garden = $derived(gardenQuery.results ? gardenQuery.results[0] : null);
+	const garden = $derived(gardenSub.current?.[0] ?? null);
+
 	const role: GardenRole | null = $derived.by(() => {
 		if (!client.profile || !garden) {
 			return null;
 		}
 
-		if (garden.adminIds.has(client.profile.id)) {
+		if (garden.adminIds.includes(client.profile.id)) {
 			return 'ADMIN';
-		} else if (garden.editorIds.has(client.profile.id)) {
+		} else if (garden.editorIds.includes(client.profile.id)) {
 			return 'EDITOR';
-		} else if (garden.viewerIds.has(client.profile.id)) {
+		} else if (garden.viewerIds.includes(client.profile.id)) {
 			return 'VIEWER';
 		}
 
@@ -41,7 +42,6 @@ export function createGardenContext(
 	 * @returns If true, the user is authorized.
 	 */
 	function authorize(action: ActionType): boolean {
-		/** False for a null garden or user role. */
 		if (id === null || role === null) {
 			return false;
 		}

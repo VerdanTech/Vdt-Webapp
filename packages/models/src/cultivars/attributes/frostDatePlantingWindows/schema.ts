@@ -1,9 +1,7 @@
-import { Schema as S } from '@triplit/client';
-
-/** Schema. */
-export const FrostDatePlantingWindowsProfile = S.Record({
-	lastFrostWindowOpen: S.Optional(S.Number()),
-	lastFrostWindowClose: S.Optional(S.Number()),
-	firstFrostWindowOpen: S.Optional(S.Number()),
-	firstFrostWindowClose: S.Optional(S.Number())
-});
+/** Stored as JSON in cultivar attributes. */
+export interface FrostDatePlantingWindowsProfile {
+	lastFrostWindowOpen?: number;
+	lastFrostWindowClose?: number;
+	firstFrostWindowOpen?: number;
+	firstFrostWindowClose?: number;
+}

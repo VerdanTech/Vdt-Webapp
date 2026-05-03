@@ -1,7 +1,5 @@
-import { Schema as S } from '@triplit/client';
-
-/** Schema. */
-export const FrostDateProfile = S.Record({
-	lastFrostDate: S.Optional(S.Date()),
-	firstFrostDate: S.Optional(S.Date())
-});
+/** Stored as JSON in environment attributes. */
+export interface FrostDateProfile {
+	lastFrostDate?: Date;
+	firstFrostDate?: Date;
+}

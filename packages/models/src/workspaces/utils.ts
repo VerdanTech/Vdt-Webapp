@@ -1,5 +1,10 @@
 import type { Geometry } from './schema.js';
 
+/** Normalizes a Jazz timestamp (number | Date) to milliseconds since epoch. */
+function toMs(date: Date | number): number {
+	return typeof date === 'number' ? date : date.getTime();
+}
+
 /**
  * Checks whether two dates are on the same day or not.
  * Dates must be in the same timezone.
@@ -27,7 +32,7 @@ export function isSameDay(date1: Date, date2: Date): boolean {
  * Using this reference will modify the original list.
  * @returns The item at the given date.
  */
-export function historySelect<T extends { date: Date }>(
+export function historySelect<T extends { date: Date | number }>(
 	items: Array<T>,
 	date: Date,
 	returnOriginalReferences: boolean
@@ -48,7 +53,7 @@ export function historySelect<T extends { date: Date }>(
  * @param date The date at which to retrieve the item at.
  * @returns The item at the given date.
  */
-export function historySelectCopy<T extends { date: Date }>(
+export function historySelectCopy<T extends { date: Date | number }>(
 	items: Array<T>,
 	date: Date
 ): T | null {
@@ -59,22 +64,22 @@ export function historySelectCopy<T extends { date: Date }>(
 	const time = date.getTime();
 
 	/** Sort items in ascending order. */
-	const sortedItems = [...items].sort((a, b) => a.date.getTime() - b.date.getTime());
+	const sortedItems = [...items].sort((a, b) => toMs(a.date) - toMs(b.date));
 
 	/** If the requested date is before the earliest item, return null. */
-	if (time < sortedItems[0].date.getTime()) {
+	if (time < toMs(sortedItems[0].date)) {
 		return null;
 	}
 
 	/** If the requested date is after the latest item, return the latest item. */
-	if (time >= sortedItems[sortedItems.length - 1].date.getTime()) {
+	if (time >= toMs(sortedItems[sortedItems.length - 1].date)) {
 		return sortedItems[sortedItems.length - 1];
 	}
 
 	/** Find the item where the date falls between it and the next. */
 	for (let i = 0; i < sortedItems.length - 1; i++) {
-		const currentTime = sortedItems[i].date.getTime();
-		const nextTime = sortedItems[i + 1].date.getTime();
+		const currentTime = toMs(sortedItems[i].date);
+		const nextTime = toMs(sortedItems[i + 1].date);
 
 		if (time >= currentTime && time < nextTime) {
 			return sortedItems[i];
@@ -97,7 +102,7 @@ export function historySelectCopy<T extends { date: Date }>(
  * @param date The date at which to retrieve the item at.
  * @returns The item at the given date (reference into items) or null.
  */
-export function historySelectReference<T extends { date: Date }>(
+export function historySelectReference<T extends { date: Date | number }>(
 	items: Array<T>,
 	date: Date
 ): T | null {
@@ -110,24 +115,24 @@ export function historySelectReference<T extends { date: Date }>(
 	/** Build an array of indices and sort those indices by item date ascending.
 	 *  Sorting indices preserves original item references. */
 	const indices = [...items.keys()].sort(
-		(a, b) => items[a].date.getTime() - items[b].date.getTime()
+		(a, b) => toMs(items[a].date) - toMs(items[b].date)
 	);
 
 	/** If the requested date is before the earliest item, return null. */
-	if (time < items[indices[0]].date.getTime()) {
+	if (time < toMs(items[indices[0]].date)) {
 		return null;
 	}
 
 	/** If the requested date is after the latest item, return the latest item (original reference). */
-	if (time >= items[indices[indices.length - 1]].date.getTime()) {
+	if (time >= toMs(items[indices[indices.length - 1]].date)) {
 		return items[indices[indices.length - 1]];
 	}
 
 	/** Find the item where the date falls between it and the next. */
 	for (let i = 0; i < indices.length - 1; i++) {
 		const current = items[indices[i]];
-		const currentTime = current.date.getTime();
-		const nextTime = items[indices[i + 1]].date.getTime();
+		const currentTime = toMs(current.date);
+		const nextTime = toMs(items[indices[i + 1]].date);
 
 		if (time >= currentTime && time < nextTime) {
 			return current;
@@ -147,11 +152,11 @@ export function historySelectReference<T extends { date: Date }>(
  * @param date The date at which to retrieve the item at.
  * @returns The item at the given date.
  */
-export function historySelectDay<T extends { date: Date }>(
+export function historySelectDay<T extends { date: Date | number }>(
 	items: Array<T>,
 	date: Date
 ): T | null {
-	return [...items].find((item) => isSameDay(item.date, date)) || null;
+	return [...items].find((item) => isSameDay(new Date(item.date), date)) || null;
 }
 
 /**
@@ -160,7 +165,7 @@ export function historySelectDay<T extends { date: Date }>(
  * @param items a list of items to search. Assumed to be unsorted.
  * @returns The items at the minimum and maximum dates.
  */
-export function historyGetRange<T extends { date: Date }>(
+export function historyGetRange<T extends { date: Date | number }>(
 	items: Array<T> | null | undefined
 ): { min: T; max: T } | null {
 	if (!items || items.length === 0) {
@@ -169,8 +174,8 @@ export function historyGetRange<T extends { date: Date }>(
 
 	return items.reduce(
 		(acc, current) => ({
-			min: current.date < acc.min.date ? current : acc.min,
-			max: current.date > acc.max.date ? current : acc.max
+			min: toMs(current.date) < toMs(acc.min.date) ? current : acc.min,
+			max: toMs(current.date) > toMs(acc.max.date) ? current : acc.max
 		}),
 		{ min: items[0], max: items[0] }
 	);
@@ -197,8 +202,9 @@ export function getGeometryHeight(
 
 		case 'LINES':
 			return (
-				Math.max(...geometry.linesCoordinates.map((coordinate) => coordinate.y)) *
-				geometry.scaleFactor
+				Math.max(
+					...(geometry.linesCoordinates ?? []).map((coordinate) => coordinate.y)
+				) * geometry.scaleFactor
 			);
 	}
 }

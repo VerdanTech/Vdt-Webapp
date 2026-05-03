@@ -9,30 +9,30 @@
 		"lint": "eslint . --fix"
 	},
 	"dependencies": {
-		"@vdg-webapp/models": "workspace:*",
-		"@fastify/awilix": "^6.0.2",
+		"@fastify/awilix": "^8.2.0",
 		"@fastify/cookie": "^11.0.2",
-		"@fastify/cors": "^10.1.0",
-		"@triplit/client": "^1.0.11",
-		"argon2": "^0.41.1",
-		"awilix": "^12.0.4",
-		"fastify": "^5.2.1",
-		"fastify-cli": "^7.3.0",
-		"fastify-type-provider-zod": "^4.0.2",
-		"handlebars": "^4.7.8",
-		"jsonwebtoken": "^9.0.2",
-		"nodemailer": "^6.10.0",
-		"zod": "^3.24.2"
+		"@fastify/cors": "^11.2.0",
+		"@triplit/client": "^1.0.50",
+		"@vdg-webapp/models": "workspace:*",
+		"argon2": "^0.44.0",
+		"awilix": "^13.0.3",
+		"fastify": "^5.8.5",
+		"fastify-cli": "^8.0.0",
+		"fastify-type-provider-zod": "^6.1.0",
+		"handlebars": "^4.7.9",
+		"jsonwebtoken": "^9.0.3",
+		"nodemailer": "^8.0.7",
+		"zod": "^4.4.1"
 	},
 	"devDependencies": {
+		"@fastify/swagger": "^9.7.0",
+		"@fastify/swagger-ui": "^5.2.6",
+		"@triplit/cli": "^1.0.61",
+		"@types/jsonwebtoken": "^9.0.10",
+		"@types/node": "^25.6.0",
+		"@types/nodemailer": "^8.0.0",
 		"@vdg-webapp/eslint-config": "workspace:*",
 		"@vdg-webapp/typescript-config": "workspace:*",
-		"@triplit/cli": "^1.0.42",
-		"@fastify/swagger": "^9.4.2",
-		"@fastify/swagger-ui": "^5.2.2",
-		"@types/jsonwebtoken": "^9.0.9",
-		"@types/node": "^22.13.10",
-		"@types/nodemailer": "^6.4.17",
-		"tsx": "^4.19.3"
+		"tsx": "^4.21.0"
 	}
 }

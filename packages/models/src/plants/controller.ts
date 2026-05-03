@@ -1,5 +1,5 @@
-import { ControllerContext } from '../index.js';
 import { AppError } from '../errors.js';
+import type { ControllerContext } from '../index.js';
 import { geometryHistoryCreate } from '../workspaces/index.js';
 import {
 	type LifespanUpdateCommand,
@@ -8,28 +8,9 @@ import {
 } from './index.js';
 
 async function plantsCreateSingle(data: PlantsCreateCommand, ctx: ControllerContext) {
-	/** Retrieve client and authorize. */
 	await ctx.requireRole(data.gardenId, 'PlantsCreate');
 
-	/** Match cultivar. */
-
-	/*
-	const expectedGeometryHistoryId = await geometryHistoryCreate([data.singleSchema.])
-	const expectedLifespan = await ctx.triplit.insert('lifespans', {
-		gardenId: data.gardenId,
-		origin: data.singleSchema.origin,
-		geometryHistoryId: expectedGeometryHistoryId,
-		locationHistoryId: expectedLocationHisotryId,
-	})
-	await ctx.triplit.insert('plants', {
-		gardenId: data.gardenId,
-		cultivarName: data.singleSchema.cultivarName,
-		cultivarAttributes: data.singleSchema.cultivarOverride,
-		expectedLifespanId,
-		recordedLifespanId,
-		aggregate: data.singleSchema.aggregate
-	})
-	*/
+	/** TODO: Implement plant creation with lifespan and geometry setup. */
 }
 
 export async function plantsCreate(data: PlantsCreateCommand, ctx: ControllerContext) {
@@ -47,15 +28,13 @@ export async function plantsCreate(data: PlantsCreateCommand, ctx: ControllerCon
 	}
 }
 
-function generateDefaultGeometryHistory() {}
-
 /** Updates a plant. */
 export async function plantUpdate(
 	id: string,
 	data: PlantUpdateCommand,
 	ctx: ControllerContext
 ) {
-	const plant = await ctx.triplit.fetchOne(ctx.triplit.query('plants').Id(id));
+	const plant = await ctx.db.one(ctx.jazz.plants.where({ id }));
 	if (!plant) {
 		throw new AppError('Plant does not exist.', {
 			nonFormErrors: ['Failed to update plant.']
@@ -64,14 +43,11 @@ export async function plantUpdate(
 
 	await ctx.requireRole(plant.gardenId, 'PlantUpdate');
 
-	await ctx.triplit.update('plants', id, (plant) => {
-		if (data.cultivarName) {
-			plant.cultivarName = data.cultivarName;
-		}
-		if (data.quantity) {
-			plant.quantity = data.quantity;
-		}
-	});
+	const partial: { cultivarName?: string; quantity?: number } = {};
+	if (data.cultivarName) partial.cultivarName = data.cultivarName;
+	if (data.quantity) partial.quantity = data.quantity;
+
+	ctx.db.update(ctx.jazz.plants, id, partial);
 }
 
 /** Updates a lifespan. */
@@ -80,9 +56,7 @@ export async function lifespanUpdate(
 	data: LifespanUpdateCommand,
 	ctx: ControllerContext
 ) {
-	const lifespan = await ctx.triplit.fetchOne(
-		ctx.triplit.query('lifespans').Id(id)
-	);
+	const lifespan = await ctx.db.one(ctx.jazz.lifespans.where({ id }));
 	if (!lifespan) {
 		throw new AppError('Lifespan does not exist.', {
 			nonFormErrors: ['Failed to update lifespan.']
@@ -91,9 +65,7 @@ export async function lifespanUpdate(
 
 	await ctx.requireRole(lifespan.gardenId, 'PlantUpdate');
 
-	await ctx.triplit.update('lifespans', id, (lifespan) => {
-		if (data.origin) {
-			lifespan.origin = data.origin;
-		}
-	});
+	if (data.origin) {
+		ctx.db.update(ctx.jazz.lifespans, id, { origin: data.origin });
+	}
 }

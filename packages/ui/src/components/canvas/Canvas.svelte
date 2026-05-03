@@ -39,13 +39,13 @@
 	<div
 		id={canvasId}
 		bind:this={containerRef}
-		class="absolute left-[0.5px] top-0 h-full w-full"
+		class="absolute top-0 left-[0.5px] h-full w-full"
 	>
 		{#if canvas.container.initialized}
 			{@render children()}
 		{/if}
 	</div>
-	<div class="pointer-events-none absolute left-[0.5px] top-0 z-10 h-full w-full">
+	<div class="pointer-events-none absolute top-0 left-[0.5px] z-10 h-full w-full">
 		{@render overlay()}
 	</div>
 </div>

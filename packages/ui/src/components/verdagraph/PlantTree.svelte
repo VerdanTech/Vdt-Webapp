@@ -3,14 +3,14 @@
 		type FieldErrors,
 		type Plant,
 		type Workspace,
-		plantUpdate,
-		lifespanUpdate,
-		geometryUpdate,
-		locationUpdate,
-		locationHistoryExtend,
 		geometryHistoryExtend,
+		geometryUpdate,
+		lifespanUpdate,
+		locationHistoryExtend,
+		locationUpdate,
+		observationDelete,
 		observationUpdate,
-		observationDelete
+		plantUpdate
 	} from '@vdg-webapp/models';
 
 	import { EditableTree, createEditableTree, toTreeBaseId } from '$components';

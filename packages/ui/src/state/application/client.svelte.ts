@@ -1,4 +1,4 @@
-import { useQuery } from '@triplit/svelte';
+import { getSession } from 'jazz-tools/svelte';
 
 import { type ControllerContext } from '@vdg-webapp/models';
 
@@ -8,48 +8,24 @@ export type ClientContextParams = {
 
 /**
  * Holds context for the user client.
- * By default, uses the session ID set by Triplit's auth process.
- * Allows a static ID override for testing and demo app.
+ * Uses the Jazz session from the current auth provider.
  */
 export function createClientContext(
 	controller: ControllerContext,
 	params?: ClientContextParams
 ) {
-	const clientQuery = $derived(
-		useQuery(
-			controller.triplit,
-			controller.triplit.query('accounts').Id('$session.accountId').Include('profile')
-		)
-	);
-	const clientOverrideQuery = $derived(
-		params?.accountIdOverride
-			? useQuery(
-					controller.triplit,
-					controller.triplit
-						.query('accounts')
-						.Id(params.accountIdOverride)
-						.Include('profile')
-				)
-			: null
-	);
-	const account = $derived.by(() => {
-		if (clientOverrideQuery && clientOverrideQuery.results) {
-			return clientOverrideQuery.results[0];
-		}
+	const session = $derived(getSession());
 
-		if (clientQuery.results) {
-			return clientQuery.results[0];
-		}
-
-		return null;
-	});
+	/** TODO: Replace with Better Auth user lookup once adapter is configured. */
+	const account = $derived(session ? { id: session.userId } : null);
 
 	return {
 		get account() {
 			return account;
 		},
+		/** Stub: returns the user ID as a minimal profile until Better Auth lands. */
 		get profile() {
-			return account?.profile;
+			return account ? { id: account.id } : null;
 		}
 	};
 }

@@ -35,11 +35,11 @@
 <li class="flex flex-row">
 	<div class="mr-8 flex flex-col">
 		<div class="mb-4 flex max-w-64 flex-col overflow-hidden text-wrap">
-			<span class="mb-1 break-words font-semibold">
+			<span class="mb-1 font-semibold break-words">
 				{invite.garden?.name ?? 'Error - garden not found.'}
 			</span>
 			<span
-				class="bg-primary-3 text-primary-11 w-fit break-all rounded-md p-1 text-sm italic"
+				class="bg-primary-3 text-primary-11 w-fit rounded-md p-1 text-sm break-all italic"
 			>
 				{invite.gardenId}
 			</span>
@@ -78,6 +78,6 @@
 		>
 	</div>
 </li>
-<li class="mb-4 mt-2 last:hidden">
+<li class="mt-2 mb-4 last:hidden">
 	<Separator.Root class="bg-neutral-5 w-full" />
 </li>

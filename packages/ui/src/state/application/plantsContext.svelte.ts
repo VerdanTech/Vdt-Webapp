@@ -1,4 +1,4 @@
-import { useQuery } from '@triplit/svelte';
+import { QuerySubscription } from 'jazz-tools/svelte';
 
 import { type ControllerContext, resolveCultivar } from '@vdg-webapp/models';
 import { AppError, type Cultivar } from '@vdg-webapp/models';
@@ -14,72 +14,36 @@ export function createPlantsContext(
 	timeline: TimelineContext,
 	garden: GardenContext
 ) {
-	/** Queries all plants in the garden and within the selected timeline. */
-	const plantsQuery = $derived(
-		useQuery(
-			controller.triplit,
-			controller.triplit
-				.query('plants')
-				.Where('gardenId', '=', garden.id)
-				//.Where('beginDate', '>=', timeline.beginSelection)
-				//.Where('endDate', '<=', timeline.endSelection)
-				.Include('expectedLifespan', (rel) =>
-					rel('expectedLifespan')
-						.Include('geometryHistory', (rel) =>
-							rel('geometryHistory').Include('geometries', (rel) =>
-								rel('geometries').Include('linesCoordinates')
-							)
-						)
-						.Include('locationHistory', (rel) =>
-							rel('locationHistory').Include('locations')
-						)
-						.Include('observations')
-				)
-				.Include('recordedLifespan', (rel) =>
-					rel('recordedLifespan')
-						.Include('geometryHistory', (rel) =>
-							rel('geometryHistory').Include('geometries', (rel) =>
-								rel('geometries').Include('linesCoordinates')
-							)
-						)
-						.Include('locationHistory', (rel) =>
-							rel('locationHistory').Include('locations')
-						)
-						.Include('observations')
-				)
+	/** Queries all plants in the garden. TODO: Add lifespan includes once Jazz2 include API is confirmed. */
+	const plantsSub = $derived(
+		new QuerySubscription(
+			garden.id ? controller.jazz.plants.where({ gardenId: garden.id }) : undefined
 		)
 	);
-	const plants = $derived(plantsQuery.results ?? []);
-	/** The set of cultivar names used by all plants in the garden. */
-	const plantsCultivarNames = $derived(
-		plantsQuery.results?.map((plant) => plant.cultivarName) ?? []
-	);
-	/**
-	 * Constructs a map of cultivar names included in the Plants query
-	 * to the full cultivar object and attributes.
-	*/
+	const plants = $derived(plantsSub.current ?? []);
+	const plantsCultivarNames = $derived(plants.map((plant) => plant.cultivarName));
+
 	let plantsCultivarMap: Map<string, Cultivar> = $state(new Map());
 	$effect(() => {
 		(async () => {
 			const names = Array.from(plantsCultivarNames ?? []);
 			if (names.length === 0) {
 				plantsCultivarMap = new Map<string, Cultivar>();
-				return
+				return;
 			}
-			
+
 			const promises = names.map((name) =>
 				resolveCultivar(garden.id, name, controller)
-		);
-		
-		const results = await Promise.all(promises);
-		
-		const entries = names.reduce<Array<[string, Cultivar]>>((acc, name, i) => {
-			const cultivar = results[i];
-			if (cultivar) acc.push([name, cultivar]);
-			return acc;
-		}, []);
-		plantsCultivarMap = new Map(entries);
-	})();
+			);
+			const results = await Promise.all(promises);
+
+			const entries = names.reduce<Array<[string, Cultivar]>>((acc, name, i) => {
+				const cultivar = results[i];
+				if (cultivar) acc.push([name, cultivar]);
+				return acc;
+			}, []);
+			plantsCultivarMap = new Map(entries);
+		})();
 	});
 
 	/**
@@ -88,8 +52,7 @@ export function createPlantsContext(
 	 * @returns The matched cultivar with all attributes.
 	 */
 	function getCultivar(cultivarName: string): Cultivar | null {
-		const cultivar = plantsCultivarMap.get(cultivarName) ?? null;
-		return cultivar;
+		return plantsCultivarMap.get(cultivarName) ?? null;
 	}
 
 	return {
