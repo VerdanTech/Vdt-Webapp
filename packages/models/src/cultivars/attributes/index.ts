@@ -6,14 +6,6 @@ import * as FrostDatePlantingWindows from './frostDatePlantingWindows/index.js';
 import * as ExpectedGeometry from './geometry/index.js';
 import * as Origin from './origin/index.js';
 
-export const attributesSchemas = {
-	...AnnualLifeCycle.fields,
-	...Color.fields,
-	...FrostDatePlantingWindows.fields,
-	...ExpectedGeometry.fields,
-	...Origin.fields
-};
-
 export const CultivarAttributesUpdateCommandSchema = z
 	.object({
 		annualLifeCycle: AnnualLifeCycle.AnnualLifecycleUpdateCommandSchema.optional(),
@@ -28,3 +20,9 @@ export type CultivarAttributesUpdateCommand = z.infer<
 	typeof CultivarAttributesUpdateCommandSchema
 >;
 export type CultivarAttributes = z.infer<typeof CultivarAttributesUpdateCommandSchema>;
+
+export type { AnnualLifecycleUpdateCommand, AnnualLifeCycleProfile } from './annualLifeCycle/index.js';
+export type { ColorUpdateCommand, ColorProfile } from './color/index.js';
+export type { FrostDatePlantingWindowsUpdateCommand, FrostDatePlantingWindowsProfile } from './frostDatePlantingWindows/index.js';
+export type { ExpectedGeometryUpdateCommand, ExpectedGeometryProfile } from './geometry/index.js';
+export type { OriginUpdateCommand, OriginProfile } from './origin/index.js';

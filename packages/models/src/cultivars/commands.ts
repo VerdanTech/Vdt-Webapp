@@ -1,7 +1,11 @@
 import { z } from 'zod';
 
 import { commonFields } from '../commands.js';
-import { attributesSchemas } from './attributes/index.js';
+import * as AnnualLifeCycle from './attributes/annualLifeCycle/index.js';
+import * as Color from './attributes/color/index.js';
+import * as FrostDatePlantingWindows from './attributes/frostDatePlantingWindows/index.js';
+import * as ExpectedGeometry from './attributes/geometry/index.js';
+import * as Origin from './attributes/origin/index.js';
 import { CultivarCollectionVisibilityEnumOptions } from './schema.js';
 
 /** Field specifications. */
@@ -76,7 +80,11 @@ export const cultivarFields = {
 	cultivarCollectionVisibilitySchema,
 	cultivarCollectionTagSchema,
 	cultivarCollectionTagsSchema,
-	...attributesSchemas
+	...AnnualLifeCycle.fields,
+	...Color.fields,
+	...FrostDatePlantingWindows.fields,
+	...ExpectedGeometry.fields,
+	...Origin.fields
 };
 
 /**

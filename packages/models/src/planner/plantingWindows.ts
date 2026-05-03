@@ -5,11 +5,10 @@ import {
 	type Cultivar,
 	type DateRange,
 	type Environment,
-	rangesOverlap
+	rangesOverlap,
+	type FrostDatePlantingWindowsProfile,
+	type FrostDateProfile
 } from '@vdg-webapp/models';
-
-import type { FrostDatePlantingWindowsProfile } from '../cultivars/attributes/frostDatePlantingWindows/index.js';
-import type { FrostDateProfile } from '../environments/attributes/frostDates/index.js';
 
 export type PlantingWindow = {
 	range: DateRange;
