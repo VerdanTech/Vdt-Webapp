@@ -1,8 +1,7 @@
 import { z } from 'zod';
 
 import { commonFields } from '../commands.js';
-import * as AnnualTemperature from './attributes/annualTemperature/index.js';
-import * as FrostDates from './attributes/frostDates/index.js';
+import { attributesSchemas } from './attributes/index.js';
 import { EnvironmentParentTypeEnumOptions } from './schema.js';
 
 /** Field specifications. */
@@ -18,8 +17,7 @@ export const environmentFields = {
 	environmentNameSchema,
 	environmentDescriptionSchema,
 	environmentParentTypeSchema,
-	...FrostDates.fields,
-	...AnnualTemperature.fields
+	...attributesSchemas
 };
 
 /**

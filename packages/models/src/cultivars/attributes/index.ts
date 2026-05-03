@@ -6,6 +6,14 @@ import * as FrostDatePlantingWindows from './frostDatePlantingWindows/index.js';
 import * as ExpectedGeometry from './geometry/index.js';
 import * as Origin from './origin/index.js';
 
+export const attributesSchemas = {
+	...AnnualLifeCycle.fields,
+	...Color.fields,
+	...FrostDatePlantingWindows.fields,
+	...ExpectedGeometry.fields,
+	...Origin.fields
+};
+
 export const CultivarAttributesUpdateCommandSchema = z
 	.object({
 		annualLifeCycle: AnnualLifeCycle.AnnualLifecycleUpdateCommandSchema.optional(),
