@@ -25,6 +25,7 @@ export async function resolveCultivarCollections(
 	gardenId: string,
 	ctx: ControllerContext
 ): Promise<CultivarCollectionInheritanceStructure[]> {
+	/** Get all cultivar collections in the garden. */
 	const gardenCollections = await ctx.db.all(
 		ctx.jazz.cultivarCollections.where({ gardenId })
 	);
@@ -32,17 +33,23 @@ export async function resolveCultivarCollections(
 		return [];
 	}
 
+	/** Iteratively retrieve all collections and their parents. */
 	const collections: CultivarCollectionInheritanceStructure[] = [];
 	for (const collection of gardenCollections) {
 		const branchStructure: CultivarCollectionInheritanceStructure = { collection };
 
 		let currentBranch = branchStructure;
 		for (let i = 0; i < MAX_CULTIVAR_COLLECTION_INHERITANCE_DEPTH; i++) {
-			if (!currentBranch.collection.parentId) break;
+			if (!currentBranch.collection.parentId) {
+				break
+			};
+
 			const parentCollection = await ctx.db.one(
 				ctx.jazz.cultivarCollections.where({ id: currentBranch.collection.parentId })
 			);
-			if (!parentCollection) break;
+			if (!parentCollection) {
+				break
+			};
 
 			currentBranch.parent = { collection: parentCollection };
 			currentBranch = currentBranch.parent;
@@ -57,7 +64,7 @@ export async function resolveCultivarCollections(
 /**
  * Given a cultivar name, retrieves the matching cultivar ID in the garden.
  * Collections are sorted by priority. The first matching cultivar found
- * in a depth-first search of each collection and its parents is returned.
+ * in a search of each collection and its parents is returned.
  * When multiple cultivars share a name in the same collection, the newest is chosen.
  * @param gardenId The garden to search in.
  * @param cultivarName The cultivar name to search.
