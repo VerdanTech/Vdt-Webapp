@@ -22,7 +22,7 @@
 @component Top header.
 -->
 <header
-	class="border-neutral-6 sticky left-0 top-0 z-50 w-full border-b drop-shadow-md"
+	class="border-neutral-6 sticky top-0 left-0 z-50 w-full border-b drop-shadow-md"
 >
 	<nav class="bg-neutral-2 flex items-center justify-between px-8 py-2">
 		<!-- 

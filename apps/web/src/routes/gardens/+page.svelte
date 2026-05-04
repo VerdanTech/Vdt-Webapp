@@ -102,7 +102,7 @@
 				{label}
 			</span>
 			<GardenThumbnailScrollable {gardens} />
-			<Separator.Root class="bg-neutral-7 mb-4 mt-12 w-full" />
+			<Separator.Root class="bg-neutral-7 mt-12 mb-4 w-full" />
 		</div>
 	{/if}
 {/snippet}

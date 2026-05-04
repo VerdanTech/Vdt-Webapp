@@ -93,7 +93,7 @@
 						: 'h-auto opacity-100'} origin-left"
 				>
 					<div
-						class="absolute bottom-2 top-2 w-px bg-gray-200 dark:bg-gray-700"
+						class="absolute top-2 bottom-2 w-px bg-gray-200 dark:bg-gray-700"
 						style="left: {0.5 + depth * 1}rem"
 					></div>
 					{@render treeItems(item.children, depth + 1)}

@@ -33,8 +33,12 @@
 	const transformCommandHandler = createCommandHandler(geometryHistoryUpdate);
 
 	/** Resolve the active location and geometry across both lifespans. */
-	let activeLocation = $derived(plant ? resolveActiveLocation(plant, verdagraphContext.timeline.focusUtc) : null);
-	let activeGeometry = $derived(plant ? resolveActiveGeometry(plant, verdagraphContext.timeline.focusUtc) : null);
+	let activeLocation = $derived(
+		plant ? resolveActiveLocation(plant, verdagraphContext.timeline.focusUtc) : null
+	);
+	let activeGeometry = $derived(
+		plant ? resolveActiveGeometry(plant, verdagraphContext.timeline.focusUtc) : null
+	);
 
 	let position: Vector2d | null = $derived.by(() => {
 		if (

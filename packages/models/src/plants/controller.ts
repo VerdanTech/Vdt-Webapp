@@ -1,5 +1,5 @@
-import { ControllerContext } from '../index.js';
 import { AppError } from '../errors.js';
+import { ControllerContext } from '../index.js';
 import { geometryHistoryCreate } from '../workspaces/index.js';
 import {
 	type LifespanUpdateCommand,
@@ -80,9 +80,7 @@ export async function lifespanUpdate(
 	data: LifespanUpdateCommand,
 	ctx: ControllerContext
 ) {
-	const lifespan = await ctx.triplit.fetchOne(
-		ctx.triplit.query('lifespans').Id(id)
-	);
+	const lifespan = await ctx.triplit.fetchOne(ctx.triplit.query('lifespans').Id(id));
 	if (!lifespan) {
 		throw new AppError('Lifespan does not exist.', {
 			nonFormErrors: ['Failed to update lifespan.']
