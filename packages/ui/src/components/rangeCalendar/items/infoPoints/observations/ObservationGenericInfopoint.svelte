@@ -1,36 +1,44 @@
 <script lang="ts">
-import { type GenericObservation, observationUpdate } from "@vdg-webapp/models";
-	import type { Snippet } from "svelte";
-	import DatePicker from '$core/datepicker';
-	import { getLocalTimeZone, fromDate, type DateDuration } from "@internationalized/date";
-	import createCommandHandler from "$state/commandHandler.svelte";
-	import type { ButtonVariant } from '$core/button';
-	import { getAppContext } from "$state";
-	import { toDate } from "@melt-ui/svelte/internal/helpers/date";
-	import * as Tooltip from '$core/tooltip';
-	import iconIds from '$assets/icons';
-	import { Button } from '$core/button';
 	import Icon from '@iconify/svelte';
+	import {
+		type DateDuration,
+		fromDate,
+		getLocalTimeZone
+	} from '@internationalized/date';
+	import { toDate } from '@melt-ui/svelte/internal/helpers/date';
+	import type { Snippet } from 'svelte';
 
+	import { type GenericObservation, observationUpdate } from '@vdg-webapp/models';
+
+	import iconIds from '$assets/icons';
+	import type { ButtonVariant } from '$core/button';
+	import { Button } from '$core/button';
+	import DatePicker from '$core/datepicker';
+	import * as Tooltip from '$core/tooltip';
+	import { getAppContext } from '$state';
+	import createCommandHandler from '$state/commandHandler.svelte';
 
 	type Props = {
-		observation: GenericObservation,
-		label: string,
-        content: Snippet<[observation: GenericObservation]>
+		observation: GenericObservation;
+		label: string;
+		content: Snippet<[observation: GenericObservation]>;
 	};
 	let { observation, label, content }: Props = $props();
 
 	/** Handlers. */
 	const ctx = getAppContext();
-	const observationUpdateHandler = createCommandHandler(observationUpdate)
+	const observationUpdateHandler = createCommandHandler(observationUpdate);
 
 	const canEdit = false;
 
-	const calendarDate = $derived(fromDate(observation.date, getLocalTimeZone()))
+	const calendarDate = $derived(fromDate(observation.date, getLocalTimeZone()));
 
 	function translateDate(duration: DateDuration) {
-		const newVal = calendarDate.add(duration)
-		observationUpdateHandler.execute({id: observation.id, date: toDate(newVal, getLocalTimeZone())}, ctx.controller)
+		const newVal = calendarDate.add(duration);
+		observationUpdateHandler.execute(
+			{ id: observation.id, date: toDate(newVal, getLocalTimeZone()) },
+			ctx.controller
+		);
 	}
 </script>
 
@@ -65,63 +73,61 @@ import { type GenericObservation, observationUpdate } from "@vdg-webapp/models";
 		<span class="font-semibold">
 			{label}
 		</span>
-		<span class="italic text-neutral-8 text-sm">Observation</span>
+		<span class="text-neutral-8 text-sm italic">Observation</span>
 	</div>
 
 	<!-- Separator -->
-	<div class="w-full h-[1px] bg-neutral-7 rounded-sm mt-1 mb-2"></div>
+	<div class="bg-neutral-7 mt-1 mb-2 h-[1px] w-full rounded-sm"></div>
 
 	<!-- Content -->
 	<div class="pt-1 pb-2">
 		{@render content(observation)}
 	</div>
-	
+
 	<!-- Date -->
 	<DatePicker
 		value={calendarDate}
 		compact={false}
 		onValueChange={async (newVal) => {
 			if (newVal) {
-				observationUpdateHandler.execute({id: observation.id, date: toDate(newVal, getLocalTimeZone())}, ctx.controller)
+				observationUpdateHandler.execute(
+					{ id: observation.id, date: toDate(newVal, getLocalTimeZone()) },
+					ctx.controller
+				);
 			}
 		}}
 		disabled={canEdit}
 	/>
-	 
+
 	<!-- Date translate buttons -->
-	<div class="w-full flex justify-around pt-3 pb-2 my-2">
-		<div class="flex justify-around w-full">
+	<div class="my-2 flex w-full justify-around pt-3 pb-2">
+		<div class="flex w-full justify-around">
 			{@render button(
 				'Move observation to the past by 1 week',
 				iconIds.verdagraphWeekReverseIcon,
 				'default',
-				() =>
-				translateDate({weeks: -1})
+				() => translateDate({ weeks: -1 })
 			)}
 			{@render button(
 				'Move observation to the past by 1 day',
 				iconIds.verdagraphDayReverseIcon,
 				'default',
-				() =>
-				translateDate({days: -1})
+				() => translateDate({ days: -1 })
 			)}
 		</div>
-		<div class="flex justify-around w-full">
+		<div class="flex w-full justify-around">
 			{@render button(
 				'Move observation to the future by 1 day',
 				iconIds.verdagraphDayForwardIcon,
 				'default',
-				() =>
-				translateDate({days: 1})
+				() => translateDate({ days: 1 })
 			)}
 			{@render button(
 				'Move observation to the future by 1 week',
 				iconIds.verdagraphWeekForwardIcon,
 				'default',
-				() =>
-				translateDate({weeks: 1})
+				() => translateDate({ weeks: 1 })
 			)}
 		</div>
 	</div>
 </div>
-

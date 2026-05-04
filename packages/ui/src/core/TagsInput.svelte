@@ -72,7 +72,7 @@
 		{#each $tags as t}
 			<div
 				use:melt={$tag(t)}
-				class="bg-neutral-2 text-neutral-11 flex items-center overflow-hidden rounded-md [word-break:break-word] data-[disabled]:hover:cursor-default data-[disabled]:focus:!outline-none data-[disabled]:focus:!ring-0"
+				class="bg-neutral-2 text-neutral-11 flex items-center overflow-hidden rounded-md [word-break:break-word] data-[disabled]:hover:cursor-default data-[disabled]:focus:!ring-0 data-[disabled]:focus:!outline-none"
 			>
 				<span class="border-neutral-5 flex items-center border-r px-1.5">{t.value}</span
 				>

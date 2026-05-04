@@ -57,29 +57,29 @@ export function createPlantsContext(
 	/**
 	 * Constructs a map of cultivar names included in the Plants query
 	 * to the full cultivar object and attributes.
-	*/
+	 */
 	let plantsCultivarMap: Map<string, Cultivar> = $state(new Map());
 	$effect(() => {
 		(async () => {
 			const names = Array.from(plantsCultivarNames ?? []);
 			if (names.length === 0) {
 				plantsCultivarMap = new Map<string, Cultivar>();
-				return
+				return;
 			}
-			
+
 			const promises = names.map((name) =>
 				resolveCultivar(garden.id, name, controller)
-		);
-		
-		const results = await Promise.all(promises);
-		
-		const entries = names.reduce<Array<[string, Cultivar]>>((acc, name, i) => {
-			const cultivar = results[i];
-			if (cultivar) acc.push([name, cultivar]);
-			return acc;
-		}, []);
-		plantsCultivarMap = new Map(entries);
-	})();
+			);
+
+			const results = await Promise.all(promises);
+
+			const entries = names.reduce<Array<[string, Cultivar]>>((acc, name, i) => {
+				const cultivar = results[i];
+				if (cultivar) acc.push([name, cultivar]);
+				return acc;
+			}, []);
+			plantsCultivarMap = new Map(entries);
+		})();
 	});
 
 	/**

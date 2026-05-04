@@ -26,7 +26,11 @@ export function plantCalendarItem(value: {
 	plant: Plant;
 	cultivar: Cultivar | null;
 }): CalendarItem | null {
-	if (!value.plant.expectedLifespan || !value.plant.recordedLifespan || !value.cultivar) {
+	if (
+		!value.plant.expectedLifespan ||
+		!value.plant.recordedLifespan ||
+		!value.cultivar
+	) {
 		return null;
 	}
 

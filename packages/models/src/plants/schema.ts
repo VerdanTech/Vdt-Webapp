@@ -131,7 +131,7 @@ export const plantSchema = S.Collections({
 		relationships: {
 			garden: S.RelationById('gardens', '$gardenId'),
 			expectedLifespan: S.RelationById('lifespans', '$expectedLifespanId'),
-			recordedLifespan: S.RelationById('lifespans', '$recordedLifespanId'),
+			recordedLifespan: S.RelationById('lifespans', '$recordedLifespanId')
 		},
 		permissions: {
 			anon: {

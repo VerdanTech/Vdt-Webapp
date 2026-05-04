@@ -2,7 +2,12 @@
 	import { CalendarDate } from '@internationalized/date';
 	import { mode } from 'mode-watcher';
 
-	import type { Cultivar, CultivarPlantingWindow, Plant, PlantingWindow } from '@vdg-webapp/models';
+	import type {
+		Cultivar,
+		CultivarPlantingWindow,
+		Plant,
+		PlantingWindow
+	} from '@vdg-webapp/models';
 
 	import { iconIds } from '$assets';
 	import { RangeCalendar, createCalendarContext } from '$components';
@@ -10,14 +15,13 @@
 		plantCalendarItem,
 		plantingWindowCalendarItem
 	} from '$components/rangeCalendar/items';
+	import { getAppContext } from '$state';
 	import { getColor } from '$utils';
 
 	import TestComponent from './TestComponent.svelte';
 	import { getVerdagraphContext } from './verdagraphContext.svelte';
 
-	import { getAppContext } from '$state';
-
-	const ctx = getAppContext()
+	const ctx = getAppContext();
 
 	const windows: CultivarPlantingWindow[] = [
 		{
@@ -41,20 +45,22 @@
 			},
 			windows: [
 				{
-					range: { start: new Date(2026, 0, 1), end: new Date(2026, 0, 6) }, suitability: 1
+					range: { start: new Date(2026, 0, 1), end: new Date(2026, 0, 6) },
+					suitability: 1
 				}
 			]
 		}
 	];
 	const plantItems = $derived(
 		ctx.plants.plants
-		.map((plant) =>
-		{
-			return plantCalendarItem({ plant: plant, cultivar: ctx.plants.getCultivar(plant.cultivarName) })
-		}
-	)
-	.filter((item) => item !== null)
-);
+			.map((plant) => {
+				return plantCalendarItem({
+					plant: plant,
+					cultivar: ctx.plants.getCultivar(plant.cultivarName)
+				});
+			})
+			.filter((item) => item !== null)
+	);
 	const plantingWindowItems = $derived(
 		windows
 			.map((window) => plantingWindowCalendarItem({ plantingWindow: window }))
@@ -66,9 +72,10 @@
 		{ entityType: 'plants', items: () => plantItems, defaultExpanded: true },
 		{
 			entityType: 'plantingWindows',
-			items: () => plantingWindowItems, defaultExpanded: true 
+			items: () => plantingWindowItems,
+			defaultExpanded: true
 		},
-		{ entityType: 'actions', items: () => [], defaultExpanded: true  }
+		{ entityType: 'actions', items: () => [], defaultExpanded: true }
 	]);
 </script>
 
