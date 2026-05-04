@@ -23,3 +23,4 @@ export const FrostDatesUpdateCommandSchema = z
 		'Defines when the first and last frost are expected to occur within a year.'
 	);
 export type FrostDatesUpdateCommand = z.infer<typeof FrostDatesUpdateCommandSchema>;
+export type FrostDateProfile = z.infer<typeof FrostDatesUpdateCommandSchema>;

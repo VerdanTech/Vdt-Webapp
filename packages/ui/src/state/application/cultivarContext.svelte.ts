@@ -1,4 +1,4 @@
-import { useQuery } from '@triplit/svelte';
+import { QuerySubscription } from 'jazz-tools/svelte';
 
 import {
 	type ControllerContext,
@@ -15,56 +15,55 @@ export function createCultivarContext(
 	controller: ControllerContext,
 	garden: GardenContext
 ) {
-	/** Queries all collections in the garden. */
-	const gardenCollectionsQuery = $derived(
-		useQuery(
-			controller.triplit,
-			controller.triplit.query('cultivarCollections').Where('gardenId', '=', garden.id)
+	const gardenCollectionsSub = $derived(
+		new QuerySubscription(
+			garden.id
+				? controller.jazz.cultivarCollections.where({ gardenId: garden.id })
+				: undefined
 		)
 	);
-	const gardenCollections = $derived(gardenCollectionsQuery.results ?? []);
+	const gardenCollections = $derived(gardenCollectionsSub.current ?? []);
 	const gardenCollectionsIds = $derived(
 		gardenCollections.map((collection) => collection.id)
 	);
-	/** Collects IDs of all the ancestors of collections in the garden. */
+
 	const ancestorCollectionsIds = $derived.by(() => {
-		const uniqueAncestorIds = new Set<string>([]);
-
+		const uniqueAncestorIds = new Set<string>();
 		for (const collection of gardenCollections) {
-			if (!collection.ancestorIds) {
-				continue;
-			}
-
+			if (!collection.ancestorIds) continue;
 			for (const id of collection.ancestorIds) {
 				uniqueAncestorIds.add(id);
 			}
 		}
-
 		return uniqueAncestorIds;
 	});
+
 	const allCollectionIds = $derived([
 		...gardenCollectionsIds,
 		...ancestorCollectionsIds
 	]);
-	const allCultivarsQuery = $derived(
-		useQuery(
-			controller.triplit,
-			controller.triplit
-				.query('cultivars')
-				.Where('collectionId', 'in', allCollectionIds)
+
+	const allCultivarsSub = $derived(
+		new QuerySubscription(
+			allCollectionIds.length > 0
+				? // eslint-disable-next-line @typescript-eslint/no-explicit-any
+					controller.jazz.cultivars.where({
+						collectionId: { in: allCollectionIds } as any
+					})
+				: undefined
 		)
 	);
-	const allCultivars = $derived(allCultivarsQuery.results ?? []);
+	const allCultivars = $derived(allCultivarsSub.current ?? []);
 	const cultivarNames = $derived(
 		new Set(allCultivars.map((cultivar) => cultivar.name))
 	);
 
-	/** Collects all resolves cultivar objects in the garden. */
 	let cultivars: Set<Cultivar> = $state(new Set([]));
 	$effect(() => {
 		(async () => {
 			if (cultivarNames.size === 0) {
 				cultivars = new Set([]);
+				return;
 			}
 
 			const promises: Promise<Cultivar | null>[] = [];
@@ -73,8 +72,9 @@ export function createCultivarContext(
 			);
 
 			const results = await Promise.all(promises);
-
-			return new Set(results.filter((cultivar) => cultivar !== null));
+			cultivars = new Set(
+				results.filter((cultivar): cultivar is Cultivar => cultivar !== null)
+			);
 		})();
 	});
 

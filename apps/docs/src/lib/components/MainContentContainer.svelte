@@ -28,7 +28,7 @@
 <div class="flex w-full flex-col">
 	<Nav />
 
-	<div class="mx-auto mb-12 mt-0 flex flex-row justify-center gap-8 px-0 md:mt-12">
+	<div class="mx-auto mt-0 mb-12 flex flex-row justify-center gap-8 px-0 md:mt-12">
 		<div class="sticky top-20 hidden h-full md:block">
 			<Tree />
 		</div>

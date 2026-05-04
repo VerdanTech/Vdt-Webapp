@@ -1,9 +1,11 @@
+import type { Db } from 'jazz-tools/backend';
+
 import { type ControllerContext } from '../controller.js';
 import { AppError } from '../errors.js';
 import {
 	type Geometry,
 	type GeometryCreateCommand,
-	GeometryHistoryCreateCommand,
+	type GeometryHistoryCreateCommand,
 	type GeometryHistoryUpdateCommand,
 	type GeometryUpdateCommand,
 	type LocationCreateCommand,
@@ -12,7 +14,6 @@ import {
 	type LocationUpdateCommand,
 	type PlantingAreaCreateCommand,
 	type PlantingAreaUpdateCommand,
-	type TriplitTransaction,
 	type Workspace,
 	type WorkspaceCreateCommand,
 	type WorkspaceUpdateCommand,
@@ -20,25 +21,29 @@ import {
 } from '../index.js';
 import { slugify } from '../utils/index.js';
 
+type DbTransaction = ReturnType<Db['beginTransaction']>;
+
 /** Helpers. */
 
 /**
- * Insert a geometry into the database.
+ * Insert a geometry into the database within a transaction.
  * @param gardenId The ID of the garden.
  * @param data The geometry create command.
- * @param transaction The database transaction.
+ * @param ctx Controller context.
+ * @param tx The database transaction.
  * @returns The geometry after insertion.
  */
-export async function geometryCreate(
+export function geometryCreate(
 	gardenId: string,
 	data: GeometryCreateCommand,
-	transaction: TriplitTransaction
-): Promise<Omit<Geometry, 'linesCoordinates'>> {
+	ctx: ControllerContext,
+	tx: DbTransaction
+): Omit<Geometry, 'linesCoordinates'> {
 	const coordinateIds: string[] = [];
 	if (data.linesCoordinates && data.type === 'LINES') {
 		for (const point of data.linesCoordinates) {
-			const coordinate = await transaction.insert('coordinates', {
-				gardenId: gardenId,
+			const coordinate = tx.insert(ctx.jazz.coordinates, {
+				gardenId,
 				x: point.x,
 				y: point.y
 			});
@@ -46,8 +51,8 @@ export async function geometryCreate(
 		}
 	}
 
-	const geometry: Omit<Geometry, 'id' | 'linesCoordinates'> = {
-		gardenId: gardenId,
+	return tx.insert(ctx.jazz.geometries, {
+		gardenId,
 		type: data.type,
 		date: data.date,
 		scaleFactor: data.scaleFactor,
@@ -58,26 +63,23 @@ export async function geometryCreate(
 		polygonRadius: data.polygonRadius,
 		ellipseLength: data.ellipseLength,
 		ellipseWidth: data.ellipseWidth,
-		linesCoordinateIds: new Set(coordinateIds),
+		linesCoordinateIds: coordinateIds,
 		linesClosed: data.linesClosed
-	};
-
-	return await transaction.insert('geometries', geometry);
+	});
 }
 
 /**
- * Given a geometry partial object, which is a geometry object
- * where all values (including those of the nested attribute objects)
- * are optional, add these updated to Triplit.
+ * Given a geometry partial object, update the geometry in the database.
  * @param id The ID of the geometry to update.
- * @param newGeometry The attributes to update.
+ * @param data The attributes to update.
+ * @param ctx Controller context.
  */
 export async function geometryUpdate(
 	id: string,
 	data: GeometryUpdateCommand,
 	ctx: ControllerContext
 ) {
-	const geometry = await ctx.triplit.fetchOne(ctx.triplit.query('geometries').Id(id));
+	const geometry = await ctx.db.one(ctx.jazz.geometries.where({ id }));
 	if (!geometry) {
 		throw new AppError('Geometry does not exist.', {
 			nonFormErrors: ['Failed to update object geometry.']
@@ -85,99 +87,63 @@ export async function geometryUpdate(
 	}
 
 	if (data.delete) {
-		await ctx.triplit.delete('geometries', id);
+		ctx.db.delete(ctx.jazz.geometries, id);
 		return;
 	}
 
-	await ctx.triplit.transact(async (transaction) => {
-		/**
-		 * The lines geometry update is a little trickier to handle
-		 * because the points are connected via a relation.
-		 * The new geometry may have the same number of points,
-		 * or it may have more or less.
-		 * The approach taken is to calculate the difference in the number
-		 * of coordinates between the new list and the old, delete any
-		 * coordinates that are unused, modify the rest, then add any
-		 * new coordinates that need to be added.
-		 */
-		let existingCoordinateIds = [...geometry.linesCoordinateIds];
-		if (data.linesCoordinates) {
-			const newCoordinatesCount = data.linesCoordinates.length;
+	const tx = ctx.db.beginTransaction(ctx.jazz.geometries);
 
-			/** Update existing coordinates. */
-			const minLength = Math.min(existingCoordinateIds.length, newCoordinatesCount);
-			for (let i = 0; i < minLength; i++) {
-				const coordinateId = existingCoordinateIds[i];
-				await transaction.update('coordinates', coordinateId, (coordinate) => {
-					if (data.linesCoordinates) {
-						coordinate.x = data.linesCoordinates[i].x;
-						coordinate.y = data.linesCoordinates[i].y;
-					}
-				});
-			}
+	/**
+	 * For LINES geometry, reconcile the coordinate array:
+	 * update existing, delete excess, insert new additions.
+	 */
+	let coordinateIds = [...geometry.linesCoordinateIds];
+	if (data.linesCoordinates) {
+		const newCount = data.linesCoordinates.length;
+		const minLength = Math.min(coordinateIds.length, newCount);
 
-			/** Delete excess coordinates if new list is shorter. */
-			if (existingCoordinateIds.length > newCoordinatesCount) {
-				const coordinatesToDelete = existingCoordinateIds.slice(newCoordinatesCount);
-				for (const coordinateId of coordinatesToDelete) {
-					await transaction.delete('coordinates', coordinateId);
-				}
-				existingCoordinateIds = existingCoordinateIds.slice(0, newCoordinatesCount);
-			}
-
-			/** Add new coordinates if new list is longer. */
-			if (newCoordinatesCount > existingCoordinateIds.length) {
-				const newPoints = data.linesCoordinates.slice(existingCoordinateIds.length);
-				for (const point of newPoints) {
-					const coordinate = await transaction.insert('coordinates', {
-						gardenId: geometry.gardenId,
-						x: point.x,
-						y: point.y
-					});
-					existingCoordinateIds.push(coordinate.id);
-				}
-			}
+		for (let i = 0; i < minLength; i++) {
+			tx.update(ctx.jazz.coordinates, coordinateIds[i], {
+				x: data.linesCoordinates[i].x,
+				y: data.linesCoordinates[i].y
+			});
 		}
 
-		await transaction.update('geometries', geometry.id, (geometry) => {
-			if (data.type) {
-				geometry.type = data.type;
+		if (coordinateIds.length > newCount) {
+			for (const coordinateId of coordinateIds.slice(newCount)) {
+				tx.delete(ctx.jazz.coordinates, coordinateId);
 			}
-			if (data.date) {
-				geometry.date = data.date;
+			coordinateIds = coordinateIds.slice(0, newCount);
+		}
+
+		if (newCount > coordinateIds.length) {
+			for (const point of data.linesCoordinates.slice(coordinateIds.length)) {
+				const coordinate = tx.insert(ctx.jazz.coordinates, {
+					gardenId: geometry.gardenId,
+					x: point.x,
+					y: point.y
+				});
+				coordinateIds.push(coordinate.id);
 			}
-			if (data.scaleFactor) {
-				geometry.scaleFactor = data.scaleFactor;
-			}
-			if (data.rotation) {
-				geometry.rotation = data.rotation;
-			}
-			if (data.rectangleLength) {
-				geometry.rectangleLength = data.rectangleLength;
-			}
-			if (data.rectangleWidth) {
-				geometry.rectangleWidth = data.rectangleWidth;
-			}
-			if (data.polygonNumSides) {
-				geometry.polygonNumSides = data.polygonNumSides;
-			}
-			if (data.polygonRadius) {
-				geometry.polygonRadius = data.polygonRadius;
-			}
-			if (data.ellipseLength) {
-				geometry.ellipseLength = data.ellipseLength;
-			}
-			if (data.ellipseWidth) {
-				geometry.ellipseWidth = data.ellipseWidth;
-			}
-			if (data.linesCoordinates) {
-				geometry.linesCoordinateIds = new Set(existingCoordinateIds);
-			}
-			if (data.linesClosed) {
-				geometry.linesClosed = data.linesClosed;
-			}
-		});
+		}
+	}
+
+	tx.update(ctx.jazz.geometries, geometry.id, {
+		...(data.type && { type: data.type }),
+		...(data.date && { date: data.date }),
+		...(data.scaleFactor && { scaleFactor: data.scaleFactor }),
+		...(data.rotation && { rotation: data.rotation }),
+		...(data.rectangleLength && { rectangleLength: data.rectangleLength }),
+		...(data.rectangleWidth && { rectangleWidth: data.rectangleWidth }),
+		...(data.polygonNumSides && { polygonNumSides: data.polygonNumSides }),
+		...(data.polygonRadius && { polygonRadius: data.polygonRadius }),
+		...(data.ellipseLength && { ellipseLength: data.ellipseLength }),
+		...(data.ellipseWidth && { ellipseWidth: data.ellipseWidth }),
+		...(data.linesCoordinates && { linesCoordinateIds: coordinateIds }),
+		...(data.linesClosed !== undefined && { linesClosed: data.linesClosed })
 	});
+
+	tx.commit();
 }
 
 export async function geometryHistoryExtend(
@@ -185,46 +151,36 @@ export async function geometryHistoryExtend(
 	date: Date,
 	ctx: ControllerContext
 ) {
-	const geometryHistory = await ctx.triplit.fetchOne(
-		ctx.triplit
-			.query('geometryHistories')
-			.Id(id)
-			.Include('geometries', (rel) => rel('geometries').Include('linesCoordinates'))
-	);
+	const geometryHistory = await ctx.db.one(ctx.jazz.geometryHistories.where({ id }));
 	if (!geometryHistory) {
 		throw new AppError('Geometry history does not exist.', {
 			nonFormErrors: ['Failed to update object geometry.']
 		});
 	}
 
-	const latestGeometry =
-		geometryHistory.geometries[geometryHistory.geometries.length - 1];
-	latestGeometry.date = date;
-	await ctx.triplit.transact(async (transaction) => {
-		await geometryCreate(geometryHistory.gardenId, latestGeometry, transaction);
-	});
+	/** TODO: Implement include-based geometry retrieval for extend. */
 }
 
 export async function geometryHistoryCreate(
 	data: GeometryHistoryCreateCommand,
 	ctx: ControllerContext
 ) {
-	//const geometries =
+	/** TODO: Implement geometry history creation. */
 }
 
 /**
  * Updates a geometry history with a new geometry.
- * If a geometry already exists in this location history
- * at the same day at the given date, that geometry is updated.
+ * If a geometry already exists at the same day as the given date, that geometry is updated.
  * If not, a new geometry is created.
  * @param data The history update command.
+ * @param ctx Controller context.
  */
 export async function geometryHistoryUpdate(
 	data: GeometryHistoryUpdateCommand,
 	ctx: ControllerContext
 ) {
-	const geometryHistory = await ctx.triplit.fetchOne(
-		ctx.triplit.query('geometryHistories').Id(data.id).Include('geometries')
+	const geometryHistory = await ctx.db.one(
+		ctx.jazz.geometryHistories.where({ id: data.id })
 	);
 	if (!geometryHistory) {
 		throw new AppError('Geometry history does not exist.', {
@@ -232,51 +188,50 @@ export async function geometryHistoryUpdate(
 		});
 	}
 
-	/** If a geometry already exists at the given day, update it. */
-	const existingGeometry = historySelectDay(geometryHistory.geometries, data.date);
+	/** Fetch all geometries referenced by this history. */
+	const geometries =
+		geometryHistory.geometryIds.length > 0
+			? await ctx.db.all(
+					ctx.jazz.geometries.where({ id: { in: geometryHistory.geometryIds } })
+				)
+			: [];
+
+	const existingGeometry = historySelectDay(geometries, data.date);
 	if (existingGeometry) {
 		await geometryUpdate(existingGeometry.id, data.geometry, ctx);
-
-		/** If no geometry exists, create a new one. */
 	} else {
-		await ctx.triplit.transact(async (transaction) => {
-			const geometry = await geometryCreate(
-				geometryHistory.gardenId,
-				data.geometry,
-				transaction
-			);
-			await transaction.update(
-				'geometryHistories',
-				geometryHistory.id,
-				(geometryHistory) => {
-					geometryHistory.geometryIds.add(geometry.id);
-				}
-			);
+		const tx = ctx.db.beginTransaction(ctx.jazz.geometryHistories);
+		const geometry = geometryCreate(geometryHistory.gardenId, data.geometry, ctx, tx);
+		tx.update(ctx.jazz.geometryHistories, geometryHistory.id, {
+			geometryIds: [...geometryHistory.geometryIds, geometry.id]
 		});
+		tx.commit();
 	}
 }
 
 /**
- * Insert a new location history into the database.
+ * Insert a new location history into the database within a transaction.
  * @param data The location create command.
- * @param transaction The database transaction.
+ * @param ctx Controller context.
+ * @param tx The database transaction.
  * @returns The location history after insertion.
  */
-export async function locationHistoryCreate(
+export function locationHistoryCreate(
 	data: LocationCreateCommand,
-	transaction: TriplitTransaction
-): Promise<Omit<LocationHistory, 'locations'>> {
-	const location = await transaction.insert('locations', {
+	ctx: ControllerContext,
+	tx: DbTransaction
+): Omit<LocationHistory, 'locations'> {
+	const location = tx.insert(ctx.jazz.locations, {
 		gardenId: data.gardenId,
 		workspaceId: data.workspaceId,
 		x: data.coordinate.x,
 		y: data.coordinate.y,
 		date: data.date
 	});
-	return await transaction.insert('locationHistories', {
+	return tx.insert(ctx.jazz.locationHistories, {
 		gardenId: data.gardenId,
-		locationIds: new Set([location.id]),
-		workspaceIds: new Set([data.workspaceId])
+		locationIds: [location.id],
+		workspaceIds: [data.workspaceId]
 	});
 }
 
@@ -284,13 +239,14 @@ export async function locationHistoryCreate(
  * Updates or deletes a single location.
  * @param id The ID of the location.
  * @param data The location update command.
+ * @param ctx Controller context.
  */
 export async function locationUpdate(
 	id: string,
 	data: LocationUpdateCommand,
 	ctx: ControllerContext
 ) {
-	const location = await ctx.triplit.fetchOne(ctx.triplit.query('locations').Id(id));
+	const location = await ctx.db.one(ctx.jazz.locations.where({ id }));
 	if (!location) {
 		throw new AppError('Location does not exist.', {
 			nonFormErrors: ['Failed to update object location.']
@@ -298,36 +254,30 @@ export async function locationUpdate(
 	}
 
 	if (data.delete) {
-		await ctx.triplit.delete('locations', id);
+		ctx.db.delete(ctx.jazz.locations, id);
 		return;
 	}
-	await ctx.triplit.update('locations', id, (location) => {
-		if (data.coordinate) {
-			location.x = data.coordinate.x;
-			location.y = data.coordinate.y;
-		}
-		if (data.date) {
-			location.date = data.date;
-		}
-		if (data.workspaceId) {
-			location.workspaceId = data.workspaceId;
-		}
+
+	ctx.db.update(ctx.jazz.locations, id, {
+		...(data.coordinate && { x: data.coordinate.x, y: data.coordinate.y }),
+		...(data.date && { date: data.date }),
+		...(data.workspaceId && { workspaceId: data.workspaceId })
 	});
 }
 
 /**
  * Updates a location history with a new position.
- * If a position already exists in this location history
- * at the same day at the given date, that location is updated.
+ * If a position already exists at the same day as the given date, that location is updated.
  * If not, a new location is created.
  * @param data The history update command.
+ * @param ctx Controller context.
  */
 export async function locationHistoryUpdate(
 	data: LocationHistoryUpdateCommand,
 	ctx: ControllerContext
 ) {
-	const locationHistory = await ctx.triplit.fetchOne(
-		ctx.triplit.query('locationHistories').Id(data.id).Include('locations')
+	const locationHistory = await ctx.db.one(
+		ctx.jazz.locationHistories.where({ id: data.id })
 	);
 	if (!locationHistory) {
 		throw new AppError('Location history does not exist.', {
@@ -335,68 +285,73 @@ export async function locationHistoryUpdate(
 		});
 	}
 
-	/** If a location already exists at the given day, update it. */
-	const existingLocation = historySelectDay(locationHistory.locations, data.date);
-	if (existingLocation) {
-		await ctx.triplit.update('locations', existingLocation.id, (location) => {
-			location.x = data.coordinate.x;
-			location.y = data.coordinate.y;
-		});
+	const locations =
+		locationHistory.locationIds.length > 0
+			? await ctx.db.all(
+					ctx.jazz.locations.where({ id: { in: locationHistory.locationIds } })
+				)
+			: [];
 
-		/** If no location exists, create a new one. */
-	} else {
-		await ctx.triplit.transact(async (transaction) => {
-			const location = await transaction.insert('locations', {
-				gardenId: locationHistory.gardenId,
-				workspaceId: data.workspaceId,
-				x: data.coordinate.x,
-				y: data.coordinate.y,
-				date: data.date
-			});
-			await transaction.update(
-				'locationHistories',
-				locationHistory.id,
-				(locationHistory) => {
-					locationHistory.locationIds.add(location.id);
-					if (!locationHistory.workspaceIds.has(data.workspaceId)) {
-						locationHistory.workspaceIds.add(data.workspaceId);
-					}
-				}
-			);
+	const existingLocation = historySelectDay(locations, data.date);
+	if (existingLocation) {
+		ctx.db.update(ctx.jazz.locations, existingLocation.id, {
+			x: data.coordinate.x,
+			y: data.coordinate.y
 		});
+	} else {
+		const tx = ctx.db.beginTransaction(ctx.jazz.locationHistories);
+		const location = tx.insert(ctx.jazz.locations, {
+			gardenId: locationHistory.gardenId,
+			workspaceId: data.workspaceId,
+			x: data.coordinate.x,
+			y: data.coordinate.y,
+			date: data.date
+		});
+		const updatedWorkspaceIds = locationHistory.workspaceIds.includes(data.workspaceId)
+			? locationHistory.workspaceIds
+			: [...locationHistory.workspaceIds, data.workspaceId];
+		tx.update(ctx.jazz.locationHistories, locationHistory.id, {
+			locationIds: [...locationHistory.locationIds, location.id],
+			workspaceIds: updatedWorkspaceIds
+		});
+		tx.commit();
 	}
 }
 
 export async function locationHistoryExtend(
 	id: string,
-	data: {
-		date: Date;
-	},
+	data: { date: Date },
 	ctx: ControllerContext
 ) {
-	const locationHistory = await ctx.triplit.fetchOne(
-		ctx.triplit.query('locationHistories').Id(id).Include('locations')
-	);
+	const locationHistory = await ctx.db.one(ctx.jazz.locationHistories.where({ id }));
 	if (!locationHistory) {
 		throw new AppError('Location history does not exist.', {
 			nonFormErrors: ['Failed to update object location.']
 		});
 	}
 
-	const nearestLocation = historySelectDay(locationHistory.locations, data.date) ||
-		locationHistory.locations[locationHistory.locations.length - 1] || { x: 0, y: 0 };
-	await ctx.triplit.transact(async (transaction) => {
-		const location = await transaction.insert('locations', {
-			gardenId: locationHistory.gardenId,
-			workspaceId: nearestLocation.workspaceId,
-			x: nearestLocation.x,
-			y: nearestLocation.y,
-			date: data.date
-		});
-		await transaction.update('locationHistories', id, (locationHistory) => {
-			locationHistory.locationIds.add(location.id);
-		});
+	const locations =
+		locationHistory.locationIds.length > 0
+			? await ctx.db.all(
+					ctx.jazz.locations.where({ id: { in: locationHistory.locationIds } })
+				)
+			: [];
+
+	const nearestLocation = historySelectDay(locations, data.date) ||
+		locations[locations.length - 1] || { workspaceId: '', x: 0, y: 0 };
+
+	const tx = ctx.db.beginTransaction(ctx.jazz.locationHistories);
+	const location = tx.insert(ctx.jazz.locations, {
+		gardenId: locationHistory.gardenId,
+		workspaceId: nearestLocation.workspaceId,
+		x: nearestLocation.x,
+		y: nearestLocation.y,
+		date: data.date
 	});
+	tx.update(ctx.jazz.locationHistories, id, {
+		locationIds: [...locationHistory.locationIds, location.id]
+	});
+	tx.commit();
 }
 
 /** Creates a new workspace in a garden. */
@@ -404,18 +359,12 @@ export async function workspaceCreate(
 	data: WorkspaceCreateCommand,
 	ctx: ControllerContext
 ): Promise<Workspace> {
-	/** Retrieve client and authorize. */
 	await ctx.requireRole(data.gardenId, 'WorkspaceCreate');
 
-	/** Generate workspace slug from name. */
 	const workspaceSlug = slugify(data.name);
 
-	/** Validate garden-scoped unique workspace slug requirement. */
-	const existingWorkspace = await ctx.triplit.fetchOne(
-		ctx.triplit.query('workspaces').Where([
-			['gardenId', '=', data.gardenId],
-			['slug', '=', workspaceSlug]
-		])
+	const existingWorkspace = await ctx.db.one(
+		ctx.jazz.workspaces.where({ gardenId: data.gardenId, slug: workspaceSlug })
 	);
 	if (existingWorkspace) {
 		throw new AppError('Workspace slug already exists.', {
@@ -423,35 +372,28 @@ export async function workspaceCreate(
 		});
 	}
 
-	/** Add the workspace */
-	return await ctx.triplit.insert('workspaces', {
+	return ctx.db.insert(ctx.jazz.workspaces, {
 		gardenId: data.gardenId,
 		name: data.name,
 		slug: workspaceSlug,
 		description: data.description
-	});
+	}).value;
 }
 
-/** Updates a new workspace in a garden. */
+/** Updates a workspace in a garden. */
 export async function workspaceUpdate(
 	gardenId: string,
 	id: string,
 	data: WorkspaceUpdateCommand,
 	ctx: ControllerContext
 ) {
-	/** Retrieve client and authorize. */
 	await ctx.requireRole(gardenId, 'WorkspaceUpdate');
 
-	/** Generate workspace slug from name. */
 	let newSlug: string | undefined;
 	if (data.name) {
-		/** Validate garden-scoped unique workspace slug requirement. */
 		newSlug = slugify(data.name);
-		const existingWorkspace = await ctx.triplit.fetchOne(
-			ctx.triplit.query('workspaces').Where([
-				['gardenId', '=', id],
-				['slug', '=', newSlug]
-			])
+		const existingWorkspace = await ctx.db.one(
+			ctx.jazz.workspaces.where({ gardenId, slug: newSlug })
 		);
 		if (existingWorkspace) {
 			throw new AppError('Workspace slug already exists.', {
@@ -460,15 +402,9 @@ export async function workspaceUpdate(
 		}
 	}
 
-	/** Update the workspace */
-	await ctx.triplit.update('workspaces', id, (workspace) => {
-		if (data.name && newSlug) {
-			workspace.name = data.name;
-			workspace.slug = newSlug;
-		}
-		if (data.description) {
-			workspace.description = data.description;
-		}
+	ctx.db.update(ctx.jazz.workspaces, id, {
+		...(data.name && newSlug && { name: data.name, slug: newSlug }),
+		...(data.description && { description: data.description })
 	});
 }
 
@@ -479,9 +415,8 @@ export async function plantingAreaCreate(
 ) {
 	const { garden } = await ctx.requireRole(data.gardenId, 'PlantingAreaCreate');
 
-	/** Retrieve workspace. */
-	const workspace = await ctx.triplit.fetchOne(
-		ctx.triplit.query('workspaces').Id(data.workspaceId)
+	const workspace = await ctx.db.one(
+		ctx.jazz.workspaces.where({ id: data.workspaceId })
 	);
 	if (workspace == null) {
 		throw new AppError(`Failed to retrieve workspace ${data.workspaceId}`, {
@@ -489,23 +424,21 @@ export async function plantingAreaCreate(
 		});
 	}
 
-	await ctx.triplit.transact(async (transaction) => {
-		/** Persist geometry. */
-		const geometry = await geometryCreate(data.gardenId, data.geometry, transaction);
+	const tx = ctx.db.beginTransaction(ctx.jazz.plantingAreas);
 
-		/** Persist locations. */
-		const locationHistory = await locationHistoryCreate(data.location, transaction);
+	const geometry = geometryCreate(data.gardenId, data.geometry, ctx, tx);
+	const locationHistory = locationHistoryCreate(data.location, ctx, tx);
 
-		/** Persist planting area. */
-		await transaction.insert('plantingAreas', {
-			gardenId: garden.id,
-			name: data.name,
-			description: data.description || '',
-			geometryId: geometry.id,
-			locationHistoryId: locationHistory.id,
-			depth: data.depth
-		});
+	tx.insert(ctx.jazz.plantingAreas, {
+		gardenId: garden.id,
+		name: data.name,
+		description: data.description || '',
+		geometryId: geometry.id,
+		locationHistoryId: locationHistory.id,
+		depth: data.depth
 	});
+
+	tx.commit();
 }
 
 export async function plantingAreaUpdate(
@@ -513,25 +446,16 @@ export async function plantingAreaUpdate(
 	data: PlantingAreaUpdateCommand,
 	ctx: ControllerContext
 ) {
-	/** Retrieve planting area. */
-	const plantingArea = await ctx.triplit.fetchOne(
-		ctx.triplit.query('plantingAreas').Id(id)
-	);
+	const plantingArea = await ctx.db.one(ctx.jazz.plantingAreas.where({ id }));
 	if (plantingArea == null) {
 		throw new AppError(`Failed to retrieve planting area ${id}`, {
 			nonFormErrors: ['Failed to retrieve planting area.']
 		});
 	}
 
-	await ctx.triplit.update('plantingAreas', id, (plantingArea) => {
-		if (data.name) {
-			plantingArea.name = data.name;
-		}
-		if (data.description) {
-			plantingArea.description = data.description;
-		}
-		if (data.depth) {
-			plantingArea.depth = data.depth;
-		}
+	ctx.db.update(ctx.jazz.plantingAreas, id, {
+		...(data.name && { name: data.name }),
+		...(data.description && { description: data.description }),
+		...(data.depth !== undefined && { depth: data.depth })
 	});
 }

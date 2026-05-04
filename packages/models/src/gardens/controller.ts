@@ -14,31 +14,32 @@ import {
 /** Helpers. */
 
 /**
- * Given a list of usernames, constructs a set of matching profile IDs
- * given they are not already members in a garden.
- * @param usernames The usernames to retrieve profile IDs for.
+ * Given a list of usernames, constructs an array of matching user IDs
+ * that are not already members in the given garden.
+ * @param usernames The usernames to retrieve user IDs for.
  * @param ctx Controller context.
- * @param garden The garden to check the user's aren't already members in.
- * If the garden is undefined, all users are considered new members.
- * @returns A set of matching profile IDs that aren't already members in the garden.
+ * @param garden The garden to check the users aren't already members in.
+ * @returns An array of matching user IDs that aren't already members.
+ *
+ * TODO: Update query once Better Auth user schema is generated.
+ * Currently stubs the user lookup since the users table schema comes from the Better Auth adapter.
  */
 async function getNewMembershipIdsFromUsernames(
 	usernames: string[] | undefined,
 	ctx: ControllerContext,
 	garden?: Garden
-): Promise<Set<string>> {
-	if (!usernames) {
-		return new Set();
+): Promise<string[]> {
+	if (!usernames || usernames.length === 0) {
+		return [];
 	}
 
-	const profiles = await ctx.triplit.fetch(
-		ctx.triplit.query('profiles').Where('username', 'in', usernames)
+	/** TODO: Replace with Better Auth users table query once schema is generated. */
+	const users = await ctx.db.all(
+		(ctx.jazz as any).users.where({ username: { in: usernames } })
 	);
-	return new Set(
-		profiles
-			.filter((profile) => garden === undefined || !isProfileMember(garden, profile.id))
-			.map((profile) => profile.id)
-	);
+	return users
+		.filter((user: any) => garden === undefined || !isProfileMember(garden, user.id))
+		.map((user: any) => user.id);
 }
 
 /** Commands. */
@@ -54,9 +55,7 @@ export async function gardenCreate(
 	const client = await ctx.getClientOrError();
 
 	/** Validate unique key constraint. */
-	const existingGarden = await ctx.triplit.fetchOne(
-		ctx.triplit.query('gardens').Id(data.id)
-	);
+	const existingGarden = await ctx.db.one(ctx.jazz.gardens.where({ id: data.id }));
 	if (existingGarden) {
 		throw new AppError('Garden ID already exists.', {
 			fieldErrors: { id: ['Key already exists.'] }
@@ -64,89 +63,88 @@ export async function gardenCreate(
 	}
 
 	/** Retrieve all invitee IDs. */
-	const adminIds = await getNewMembershipIdsFromUsernames(data.adminInvites, ctx);
+	const adminInviteIds = await getNewMembershipIdsFromUsernames(data.adminInvites, ctx);
 	const editorIds = await getNewMembershipIdsFromUsernames(data.editorInvites, ctx);
 	const viewerIds = await getNewMembershipIdsFromUsernames(data.viewerInvites, ctx);
 
-	/** Add creator's ID. */
-	adminIds.add(client.profile.id);
+	/** Add creator's ID and deduplicate. */
+	const adminIds = [...new Set([client.profile.id, ...adminInviteIds])];
 
 	/** Persist to db and add memberships. */
-	let garden: Garden | null = null;
-	await ctx.triplit.transact(async (transaction) => {
-		garden = await transaction.insert('gardens', {
-			id: data.id,
-			name: data.name,
-			visibility: data.visibility,
-			description: data.description,
-			creatorId: client.profile.id,
-			adminIds,
-			editorIds,
-			viewerIds
-		});
+	const tx = ctx.db.beginTransaction(ctx.jazz.gardens);
 
-		/** Add creator membership. */
-		await transaction.insert('gardenMemberships', {
-			gardenId: garden.id,
-			userId: client.profile.id,
-			role: 'ADMIN',
-			inviterId: null,
-			status: 'ACCEPTED'
-		});
+	/** Garden IDs are user-supplied slugs — cast to bypass auto-ID enforcement. */
+	tx.insert(ctx.jazz.gardens, {
+		id: data.id,
+		name: data.name,
+		visibility: data.visibility,
+		description: data.description,
+		creatorId: client.profile.id,
+		adminIds,
+		editorIds,
+		viewerIds
+	} as any);
 
-		/** Add admin memberships. */
-		for (const userId in adminIds) {
-			if (userId === client.profile.id) {
-				continue;
-			}
-
-			await transaction.insert('gardenMemberships', {
-				gardenId: garden.id,
-				userId: userId,
-				role: 'ADMIN',
-				inviterId: client.profile.id,
-				status: 'CREATED'
-			});
-		}
-
-		/** Add editor memberships. */
-		for (const userId in editorIds) {
-			await transaction.insert('gardenMemberships', {
-				gardenId: garden.id,
-				userId: userId,
-				role: 'EDITOR',
-				inviterId: client.profile.id,
-				status: 'CREATED'
-			});
-		}
-
-		/** Add editor memberships. */
-		for (const userId in viewerIds) {
-			await transaction.insert('gardenMemberships', {
-				gardenId: garden.id,
-				userId: userId,
-				role: 'VIEWER',
-				inviterId: client.profile.id,
-				status: 'CREATED'
-			});
-		}
-
-		/** Add a default workspace. */
-		await transaction.insert('workspaces', {
-			gardenId: garden.id,
-			name: 'Default',
-			slug: 'default'
-		});
-
-		/** Add a default environment. */
-		await transaction.insert('environments', {
-			gardenId: garden.id,
-			name: 'Default',
-			parentType: 'GARDEN',
-			attributes: {}
-		});
+	/** Add creator membership. */
+	tx.insert(ctx.jazz.gardenMemberships, {
+		gardenId: data.id,
+		userId: client.profile.id,
+		role: 'ADMIN',
+		status: 'ACCEPTED'
 	});
 
+	/** Add admin memberships. */
+	for (const userId of adminInviteIds) {
+		if (userId === client.profile.id) continue;
+		tx.insert(ctx.jazz.gardenMemberships, {
+			gardenId: data.id,
+			userId,
+			role: 'ADMIN',
+			inviterId: client.profile.id,
+			status: 'CREATED'
+		});
+	}
+
+	/** Add editor memberships. */
+	for (const userId of editorIds) {
+		tx.insert(ctx.jazz.gardenMemberships, {
+			gardenId: data.id,
+			userId,
+			role: 'EDITOR',
+			inviterId: client.profile.id,
+			status: 'CREATED'
+		});
+	}
+
+	/** Add viewer memberships. */
+	for (const userId of viewerIds) {
+		tx.insert(ctx.jazz.gardenMemberships, {
+			gardenId: data.id,
+			userId,
+			role: 'VIEWER',
+			inviterId: client.profile.id,
+			status: 'CREATED'
+		});
+	}
+
+	/** Add a default workspace. */
+	tx.insert(ctx.jazz.workspaces, {
+		gardenId: data.id,
+		name: 'Default',
+		slug: 'default'
+	});
+
+	/** Add a default environment. */
+	tx.insert(ctx.jazz.environments, {
+		gardenId: data.id,
+		name: 'Default',
+		parentType: 'GARDEN',
+		inherit: true
+	});
+
+	tx.commit();
+
+	const garden = await ctx.db.one(ctx.jazz.gardens.where({ id: data.id }));
 	if (garden == null) {
 		throw new AppError('Failed to create garden.');
 	}
@@ -160,55 +158,62 @@ export async function gardenMembershipCreate(
 	data: GardenMembershipCreateCommand,
 	ctx: ControllerContext
 ) {
-	/** Retrieve client and authorize. */
 	const { client, garden } = await ctx.requireRole(data.gardenId, 'MembershipCreate');
 
-	/** Retrieve all invitee IDs. Drop all IDs which are already members */
-	const adminIds = await getNewMembershipIdsFromUsernames(data.adminInvites, ctx);
-	const editorIds = await getNewMembershipIdsFromUsernames(data.editorInvites, ctx);
-	const viewerIds = await getNewMembershipIdsFromUsernames(data.viewerInvites, ctx);
+	const adminIds = await getNewMembershipIdsFromUsernames(
+		data.adminInvites,
+		ctx,
+		garden
+	);
+	const editorIds = await getNewMembershipIdsFromUsernames(
+		data.editorInvites,
+		ctx,
+		garden
+	);
+	const viewerIds = await getNewMembershipIdsFromUsernames(
+		data.viewerInvites,
+		ctx,
+		garden
+	);
 
-	/** Persist to db and add memberships. */
-	await ctx.triplit.transact(async (transaction) => {
-		await transaction.update('gardens', garden.id, (garden) => {
-			adminIds.forEach((id) => garden.adminIds.add(id));
-			editorIds.forEach((id) => garden.editorIds.add(id));
-			viewerIds.forEach((id) => garden.viewerIds.add(id));
-		});
+	const tx = ctx.db.beginTransaction(ctx.jazz.gardens);
 
-		/** Add admin memberships. */
-		for (const userId in adminIds) {
-			await transaction.insert('gardenMemberships', {
-				gardenId: garden.id,
-				userId: userId,
-				role: 'ADMIN',
-				inviterId: client.profile.id,
-				status: 'CREATED'
-			});
-		}
-
-		/** Add editor memberships. */
-		for (const userId in editorIds) {
-			await transaction.insert('gardenMemberships', {
-				gardenId: garden.id,
-				userId: userId,
-				role: 'EDITOR',
-				inviterId: client.profile.id,
-				status: 'CREATED'
-			});
-		}
-
-		/** Add editor memberships. */
-		for (const userId in viewerIds) {
-			await transaction.insert('gardenMemberships', {
-				gardenId: garden.id,
-				userId: userId,
-				role: 'VIEWER',
-				inviterId: client.profile.id,
-				status: 'CREATED'
-			});
-		}
+	/** Update the garden's ID arrays, deduplicating. */
+	tx.update(ctx.jazz.gardens, garden.id, {
+		adminIds: [...new Set([...garden.adminIds, ...adminIds])],
+		editorIds: [...new Set([...garden.editorIds, ...editorIds])],
+		viewerIds: [...new Set([...garden.viewerIds, ...viewerIds])]
 	});
+
+	for (const userId of adminIds) {
+		tx.insert(ctx.jazz.gardenMemberships, {
+			gardenId: garden.id,
+			userId,
+			role: 'ADMIN',
+			inviterId: client.profile.id,
+			status: 'CREATED'
+		});
+	}
+	for (const userId of editorIds) {
+		tx.insert(ctx.jazz.gardenMemberships, {
+			gardenId: garden.id,
+			userId,
+			role: 'EDITOR',
+			inviterId: client.profile.id,
+			status: 'CREATED'
+		});
+	}
+	for (const userId of viewerIds) {
+		tx.insert(ctx.jazz.gardenMemberships, {
+			gardenId: garden.id,
+			userId,
+			role: 'VIEWER',
+			inviterId: client.profile.id,
+			status: 'CREATED'
+		});
+	}
+
+	tx.commit();
 }
 
 /**
@@ -218,15 +223,13 @@ export async function gardenMembershipAccept(
 	data: GardenMembershipAcceptCommand,
 	ctx: ControllerContext
 ) {
-	/** Retrieve client. */
 	const client = await ctx.getClientOrError();
 
-	/** Retrieve the membership. */
-	const membership = await ctx.triplit.fetchOne(
-		ctx.triplit
-			.query('gardenMemberships')
-			.Where('gardenId', '=', data.gardenId)
-			.Where('userId', '=', client.profile.id)
+	const membership = await ctx.db.one(
+		ctx.jazz.gardenMemberships.where({
+			gardenId: data.gardenId,
+			userId: client.profile.id
+		})
 	);
 	if (!membership) {
 		throw new AppError('Membership does not exist in the collection.', {
@@ -234,17 +237,15 @@ export async function gardenMembershipAccept(
 		});
 	}
 
-	/** Ensure the invite isn't already accepted. */
 	if (membership.status === 'ACCEPTED') {
 		throw new AppError('Membership was already accepted.', {
 			nonFormErrors: ['The invite to this garden is already accepted.']
 		});
 	}
 
-	/** Update the membership. */
-	await ctx.triplit.update('gardenMemberships', membership.id, async (membership) => {
-		membership.status = 'ACCEPTED';
-		membership.acceptedAt = new Date();
+	ctx.db.update(ctx.jazz.gardenMemberships, membership.id, {
+		status: 'ACCEPTED',
+		acceptedAt: new Date()
 	});
 }
 
@@ -255,15 +256,13 @@ export async function gardenMembershipDelete(
 	data: GardenMembershipDeleteCommand,
 	ctx: ControllerContext
 ) {
-	/** Retrieve client. */
 	const client = await ctx.getClientOrError();
 
-	/** Retrieve the membership. */
-	const membership = await ctx.triplit.fetchOne(
-		ctx.triplit
-			.query('gardenMemberships')
-			.Where('gardenId', '=', data.gardenId)
-			.Where('userId', '=', client.profile.id)
+	const membership = await ctx.db.one(
+		ctx.jazz.gardenMemberships.where({
+			gardenId: data.gardenId,
+			userId: client.profile.id
+		})
 	);
 	if (!membership) {
 		throw new AppError('Membership does not exist in the collection.', {
@@ -271,12 +270,7 @@ export async function gardenMembershipDelete(
 		});
 	}
 
-	/**
-	 * Delete the membership.
-	 * Note that the update on the garden (removing the user's ID),
-	 * is handled via event on the server, due to permission constraints.
-	 */
-	await ctx.triplit.delete('gardenMemberships', membership.id);
+	ctx.db.delete(ctx.jazz.gardenMemberships, membership.id);
 }
 
 /**
@@ -286,25 +280,20 @@ export async function gardenMembershipRevoke(
 	data: GardenMembershipRevokeCommand,
 	ctx: ControllerContext
 ) {
-	/** Retrieve client and authorize. */
 	const { client } = await ctx.requireRole(data.gardenId, 'MembershipRevoke');
 
-	/** Ensure the command is valid. */
 	if (client.profile.id === data.profileId) {
 		throw new AppError(
 			"Attempted to revoke one's own membership with the wrong command.",
-			{
-				nonFormErrors: ['Cannot revoke own membership - leave instead.']
-			}
+			{ nonFormErrors: ['Cannot revoke own membership - leave instead.'] }
 		);
 	}
 
-	/** Retrieve the membership. */
-	const membership = await ctx.triplit.fetchOne(
-		ctx.triplit
-			.query('gardenMemberships')
-			.Where('gardenId', '=', data.gardenId)
-			.Where('userId', '=', client.profile.id)
+	const membership = await ctx.db.one(
+		ctx.jazz.gardenMemberships.where({
+			gardenId: data.gardenId,
+			userId: data.profileId
+		})
 	);
 	if (!membership) {
 		throw new AppError('Membership does not exist in the collection.', {
@@ -312,28 +301,21 @@ export async function gardenMembershipRevoke(
 		});
 	}
 
-	/**
-	 * Delete the membership.
-	 * Note that the update on the garden (removing the user's ID),
-	 * is handled via event on the server, due to permission constraints.
-	 */
-	await ctx.triplit.delete('gardenMemberships', membership.id);
+	ctx.db.delete(ctx.jazz.gardenMemberships, membership.id);
 }
 
 /**
- * Revokes a membership of a different user.
+ * Changes the role of an existing garden membership.
  */
 export async function gardenMembershipRoleChange(
 	data: GardenMembershipRoleChangeCommand,
 	ctx: ControllerContext
 ) {
-	/** Retrieve client and authorize. */
 	const { client, garden } = await ctx.requireRole(
 		data.gardenId,
 		'MembershipRoleChange'
 	);
 
-	/** Ensure the command is valid. */
 	if (client.profile.id === data.profileId) {
 		throw new AppError("Attempted to change the role of one's own membership.", {
 			nonFormErrors: ['You cannot change the role of your own membership.']
@@ -345,12 +327,11 @@ export async function gardenMembershipRoleChange(
 		});
 	}
 
-	/** Retrieve membership. */
-	const membership = await ctx.triplit.fetchOne(
-		ctx.triplit
-			.query('gardenMemberships')
-			.Where('gardenId', '=', data.gardenId)
-			.Where('userId', '=', client.profile.id)
+	const membership = await ctx.db.one(
+		ctx.jazz.gardenMemberships.where({
+			gardenId: data.gardenId,
+			userId: data.profileId
+		})
 	);
 	if (!membership) {
 		throw new AppError('Membership does not exist in the collection.', {
@@ -358,53 +339,39 @@ export async function gardenMembershipRoleChange(
 		});
 	}
 
-	/** Ensure the new role is different. */
 	if (data.newRole === membership.role) {
 		throw new AppError('Role to be changed is not different.', {
 			fieldErrors: { newRole: ['The user already has this role.'] }
 		});
 	}
 
-	await ctx.triplit.transact(async (transaction) => {
-		/** Modify the garden. */
-		await transaction.update('gardens', garden.id, async (garden) => {
-			/** Remove existing ID on the garden. */
-			if (data.profileId in garden.adminIds) {
-				garden.adminIds.delete(data.profileId);
-			} else if (data.profileId in garden.editorIds) {
-				garden.editorIds.delete(data.profileId);
-			} else if (data.profileId in garden.viewerIds) {
-				garden.viewerIds.delete(data.profileId);
-				/** Should not get here. */
-			} else {
-				throw new AppError(
-					'User not in garden when modifying a role despite previous check.',
-					{ nonFormErrors: ['Something went wrong.'] }
-				);
-			}
+	/** Remove from old role array and add to new role array. */
+	const newAdminIds = garden.adminIds.filter((id) => id !== data.profileId);
+	const newEditorIds = garden.editorIds.filter((id) => id !== data.profileId);
+	const newViewerIds = garden.viewerIds.filter((id) => id !== data.profileId);
 
-			/** Add new ID. */
-			switch (data.newRole) {
-				case 'ADMIN':
-					garden.adminIds.add(data.profileId);
-					break;
-				case 'EDITOR':
-					garden.editorIds.add(data.profileId);
-					break;
-				case 'VIEWER':
-					garden.viewerIds.add(data.profileId);
-					break;
-				/** Should not get here. */
-				default:
-					throw new AppError('New role not a valid role.', {
-						nonFormErrors: ['Something went wrong.']
-					});
-			}
-		});
+	switch (data.newRole) {
+		case 'ADMIN':
+			newAdminIds.push(data.profileId);
+			break;
+		case 'EDITOR':
+			newEditorIds.push(data.profileId);
+			break;
+		case 'VIEWER':
+			newViewerIds.push(data.profileId);
+			break;
+		default:
+			throw new AppError('New role not a valid role.', {
+				nonFormErrors: ['Something went wrong.']
+			});
+	}
 
-		/** Modify the membership. */
-		await transaction.update('gardenMemberships', membership.id, async (membership) => {
-			membership.role = data.newRole;
-		});
+	const tx = ctx.db.beginTransaction(ctx.jazz.gardens);
+	tx.update(ctx.jazz.gardens, garden.id, {
+		adminIds: newAdminIds,
+		editorIds: newEditorIds,
+		viewerIds: newViewerIds
 	});
+	tx.update(ctx.jazz.gardenMemberships, membership.id, { role: data.newRole });
+	tx.commit();
 }

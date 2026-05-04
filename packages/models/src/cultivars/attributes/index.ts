@@ -1,4 +1,3 @@
-import { Schema as S } from '@triplit/client';
 import { z } from 'zod';
 
 import * as AnnualLifeCycle from './annualLifeCycle/index.js';
@@ -9,21 +8,11 @@ import * as Origin from './origin/index.js';
 
 export const attributesSchemas = {
 	...AnnualLifeCycle.fields,
-	...Color,
+	...Color.fields,
 	...FrostDatePlantingWindows.fields,
 	...ExpectedGeometry.fields,
 	...Origin.fields
 };
-
-export const CultivarAttributes = S.Record({
-	annualLifeCycle: S.Optional(AnnualLifeCycle.AnnualLifeCycleProfile),
-	color: S.Optional(Color.ColorProfile),
-	frostDatePlantingWindows: S.Optional(
-		FrostDatePlantingWindows.FrostDatePlantingWindowsProfile
-	),
-	expectedGeometry: S.Optional(ExpectedGeometry.ExpectedGeometryProfile),
-	origin: S.Optional(Origin.OriginProfile)
-});
 
 export const CultivarAttributesUpdateCommandSchema = z
 	.object({
@@ -38,3 +27,10 @@ export const CultivarAttributesUpdateCommandSchema = z
 export type CultivarAttributesUpdateCommand = z.infer<
 	typeof CultivarAttributesUpdateCommandSchema
 >;
+export type CultivarAttributes = z.infer<typeof CultivarAttributesUpdateCommandSchema>;
+
+export type { AnnualLifecycleUpdateCommand, AnnualLifeCycleProfile } from './annualLifeCycle/index.js';
+export type { ColorUpdateCommand, ColorProfile } from './color/index.js';
+export type { FrostDatePlantingWindowsUpdateCommand, FrostDatePlantingWindowsProfile } from './frostDatePlantingWindows/index.js';
+export type { ExpectedGeometryUpdateCommand, ExpectedGeometryProfile } from './geometry/index.js';
+export type { OriginUpdateCommand, OriginProfile } from './origin/index.js';

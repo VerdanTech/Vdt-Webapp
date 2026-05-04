@@ -74,3 +74,6 @@ export const ExpectedGeometryUpdateCommandSchema = z
 export type ExpectedGeometryUpdateCommand = z.infer<
 	typeof ExpectedGeometryUpdateCommandSchema
 >;
+export type ExpectedGeometryProfile = z.infer<
+	typeof ExpectedGeometryUpdateCommandSchema
+>;

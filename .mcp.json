@@ -1,0 +1,9 @@
+{
+	"mcpServers": {
+		"jazz-docs": {
+			"type": "stdio",
+			"command": "npx",
+			"args": ["jazz-tools@alpha", "mcp"]
+		}
+	}
+}

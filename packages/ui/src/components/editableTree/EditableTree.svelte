@@ -147,7 +147,7 @@
 						: 'pointer-events-none h-0 opacity-0'} relative origin-left"
 				>
 					<div
-						class="bg-neutral-5 absolute bottom-4 top-4 w-[1px]"
+						class="bg-neutral-5 absolute top-4 bottom-4 w-[1px]"
 						style="left: {0.5 + depth * 1}rem"
 					></div>
 					{@render treeItems(item.children, depth + 1)}

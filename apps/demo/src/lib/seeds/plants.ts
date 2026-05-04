@@ -64,8 +64,7 @@ export default function plantsSeed(): BulkInsert<typeof schema> {
 			{
 				id: 'lettuce1-recorded-geometry',
 				gardenId: garden.id,
-				geometryIds: new Set([
-				])
+				geometryIds: new Set([])
 			}
 		],
 		geometries: [
@@ -111,8 +110,7 @@ export default function plantsSeed(): BulkInsert<typeof schema> {
 			{
 				id: 'lettuce1-recorded-location',
 				gardenId: garden.id,
-				locationIds: new Set([
-				]),
+				locationIds: new Set([]),
 				workspaceIds: new Set([])
 			}
 		],

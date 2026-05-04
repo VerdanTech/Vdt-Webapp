@@ -40,7 +40,7 @@
 	{:else if formHandler.isError}
 		<Card.Header>
 			<Card.Title>Something went wrong...</Card.Title>
-			<Card.Content class="text-md text-warning-11 w-full px-0 pb-0 pt-4 font-medium">
+			<Card.Content class="text-md text-warning-11 w-full px-0 pt-4 pb-0 font-medium">
 				<ul>
 					{#each formHandler.fieldErrors?.token ?? [] as error}
 						<li

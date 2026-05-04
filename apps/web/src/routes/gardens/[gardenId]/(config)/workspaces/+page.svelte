@@ -45,7 +45,7 @@
 				class="bg-neutral-2 hover:bg-neutral-1 relative mx-4 flex h-72 w-96 flex-col justify-around text-xl"
 			>
 				<p
-					class="inset-1/8 absolute top-2 w-auto max-w-60 overflow-hidden text-wrap rounded-sm px-2 py-1 text-center"
+					class="absolute inset-1/8 top-2 w-auto max-w-60 overflow-hidden rounded-sm px-2 py-1 text-center text-wrap"
 				>
 					{workspace.name}
 				</p>

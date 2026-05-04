@@ -6,12 +6,7 @@ import {
 	type ObservationUpdateCommand
 } from '@vdg-webapp/models';
 
-import {
-	type Item,
-	TreeDate,
-	TreeDeleteButton,
-	toTreeId
-} from '$components';
+import { type Item, TreeDate, TreeDeleteButton, toTreeId } from '$components';
 
 export type ObservationUpdateHandler = (data: ObservationUpdateCommand) => void;
 export type ObservationDeleteHandler = (id: string) => void;

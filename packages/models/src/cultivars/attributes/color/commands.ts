@@ -13,3 +13,4 @@ export const ColorUpdateCommandSchema = z.object({
 	textColor: colorSchema.optional()
 });
 export type ColorUpdateCommand = z.infer<typeof ColorUpdateCommandSchema>;
+export type ColorProfile = z.infer<typeof ColorUpdateCommandSchema>;

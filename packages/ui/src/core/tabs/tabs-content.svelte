@@ -13,7 +13,7 @@
 <TabsPrimitive.Content
 	bind:ref
 	class={cn(
-		'ring-offset-neutral-1 focus-visible:ring-neutral-11 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2',
+		'ring-offset-neutral-1 focus-visible:ring-neutral-11 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none',
 		className
 	)}
 	{...restProps}

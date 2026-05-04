@@ -37,9 +37,9 @@ export function createTimelineSelection(timeline: TimelineContext) {
 	let disabled = $state(false);
 	/** Controls the view of the Layout. */
 	let focus: DateValue = $state(today(getLocalTimeZone()));
-	/** 
+	/**
 	 * Day which marks the start of the timeline selection.
-	 * the TimelineContext uses native JS dates to match the database, 
+	 * the TimelineContext uses native JS dates to match the database,
 	 * whereas this component uses @internationalized/date dates for proper display.
 	 */
 	let beginSelection: DateValue = $state(

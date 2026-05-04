@@ -1,4 +1,4 @@
-import { TriplitClient as TriplitClientBase } from '@triplit/client';
+import type { Db } from 'jazz-tools/backend';
 
 import {
 	type ActionType,
@@ -6,41 +6,39 @@ import {
 	type Garden,
 	type User,
 	isUserAuthorized,
-	requiredRole,
-	schema
+	requiredRole
 } from './index.js';
+import { type JazzApp, jazz } from './schema.js';
 
-type TriplitClient = TriplitClientBase<typeof schema>;
+/** Descriptive alias for the Jazz runtime database type. */
+export type JazzDb = Db;
 
-export const CONTROLLER_CONTEXT_ID = 'TriplitController';
+export const CONTROLLER_CONTEXT_ID = 'JazzController';
 
 export type ControllerContextParams = {
-	triplit: TriplitClient;
-	getClient: (triplit: TriplitClient) => Promise<User | null>;
+	db: JazzDb;
+	jazz: JazzApp;
+	/** Returns the currently authenticated user, or null if unauthenticated. */
+	getClient: (db: JazzDb) => Promise<User | null>;
 };
 
 /**
  * Controller class: singleton interface to the data layer.
  * Passed to controller functions to provide configurable behaviour.
- * @param triplit The Triplit client to perform operations on.
- * @param getClient A function for returning an authenticated user.
+ * @param params.db The Jazz Db instance.
+ * @param params.jazz The app schema proxy with table query builders.
+ * @param params.getClient A function for returning an authenticated user.
  * @returns ControllerContext.
  */
 export function createController(params: ControllerContextParams) {
-	const gardenQuery = params.triplit.query('gardens').Id('$query.id');
 	/**
-	 * Fetches the client's Account and Profile objects.
-	 * If the client fails to authenticate, an access refresh is attempted.
-	 * If this fails, an AppError is raised.
-	 * @returns The client.
+	 * Fetches the client's user object.
+	 * If the client fails to authenticate, an AppError is raised.
+	 * @returns The authenticated user.
 	 */
 	async function getClientOrError(): Promise<User> {
-		/** Return the client if authenticated. */
-		const client = await params.getClient(params.triplit);
-		if (client) {
-			return client;
-		}
-
+		const client = await params.getClient(params.db);
+		if (client) return client;
 		throw new AppError('Authentication failed.', {
 			nonFormErrors: ['Authentication failed. A login is required.']
 		});
@@ -48,8 +46,7 @@ export function createController(params: ControllerContextParams) {
 
 	/**
 	 * Given a garden and an action, retrieve the client
-	 * and throw an error if the client does not have at least
-	 * that role.
+	 * and throw an error if the client does not have at least that role.
 	 * @param gardenId The garden to retrieve.
 	 * @param action The action to authorize for.
 	 * @returns The client and garden objects.
@@ -61,18 +58,15 @@ export function createController(params: ControllerContextParams) {
 		client: User;
 		garden: Garden;
 	}> {
-		/** Retrieve client. */
 		const client = await getClientOrError();
 
-		/** Retrieve garden. */
-		const garden = await params.triplit.fetchOne(gardenQuery.Vars({ id: gardenId }));
+		const garden = await params.db.one(params.jazz.gardens.where({ id: gardenId }));
 		if (garden == null) {
 			throw new AppError('Garden key does not exist.', {
 				nonFormErrors: ['Garden key does not exist.']
 			});
 		}
 
-		/** Ensure client is of the specified role. */
 		const role = requiredRole(action);
 		if (!isUserAuthorized(garden, client.profile.id, role)) {
 			throw new AppError(`Requires ${role} access.`, {
@@ -84,7 +78,8 @@ export function createController(params: ControllerContextParams) {
 	}
 
 	return {
-		triplit: params.triplit,
+		db: params.db,
+		jazz: params.jazz,
 		getClient: params.getClient,
 		getClientOrError,
 		requireRole

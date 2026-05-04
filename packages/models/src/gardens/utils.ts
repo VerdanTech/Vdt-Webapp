@@ -16,15 +16,11 @@ export const getMemberIds = (garden: Garden): Set<string> => {
  * @returns True if the profile is a member of the garden.
  */
 export const isProfileMember = (garden: Garden, profileId: string): boolean => {
-	if (
-		garden.adminIds.has(profileId) ||
-		garden.editorIds.has(profileId) ||
-		garden.viewerIds.has(profileId)
-	) {
-		return true;
-	} else {
-		return false;
-	}
+	return (
+		garden.adminIds.includes(profileId) ||
+		garden.editorIds.includes(profileId) ||
+		garden.viewerIds.includes(profileId)
+	);
 };
 
 /**
@@ -42,27 +38,17 @@ export const isUserAuthorized = (
 ) => {
 	switch (role) {
 		case 'ADMIN':
-			if (garden.adminIds.has(profileId)) {
-				return true;
-			} else {
-				return false;
-			}
+			return garden.adminIds.includes(profileId);
 		case 'EDITOR':
-			if (garden.adminIds.has(profileId) || garden.editorIds.has(profileId)) {
-				return true;
-			} else {
-				return false;
-			}
+			return (
+				garden.adminIds.includes(profileId) || garden.editorIds.includes(profileId)
+			);
 		case 'VIEWER':
-			if (
-				garden.adminIds.has(profileId) ||
-				garden.editorIds.has(profileId) ||
-				garden.viewerIds.has(profileId)
-			) {
-				return true;
-			} else {
-				return false;
-			}
+			return (
+				garden.adminIds.includes(profileId) ||
+				garden.editorIds.includes(profileId) ||
+				garden.viewerIds.includes(profileId)
+			);
 		default:
 			return false;
 	}

@@ -5,7 +5,9 @@ import {
 	type Cultivar,
 	type DateRange,
 	type Environment,
-	rangesOverlap
+	rangesOverlap,
+	type FrostDatePlantingWindowsProfile,
+	type FrostDateProfile
 } from '@vdg-webapp/models';
 
 export type PlantingWindow = {
@@ -63,16 +65,17 @@ function calculatePlantingWindowFrostDates(
 	const windows: PlantingWindow[] = [];
 
 	/** Retrieve attributes. */
-	const firstWindowOpen =
-		cultivar.attributes.frostDatePlantingWindows?.firstFrostWindowOpen;
+	const cultivarAttrs = cultivar.attributes as {
+		frostDatePlantingWindows?: FrostDatePlantingWindowsProfile;
+	} | null;
+	const envAttrs = environment.attributes as { frostDates?: FrostDateProfile } | null;
+	const firstWindowOpen = cultivarAttrs?.frostDatePlantingWindows?.firstFrostWindowOpen;
 	const firstWindowClose =
-		cultivar.attributes.frostDatePlantingWindows?.firstFrostWindowClose;
-	const firstFrostDate = environment.attributes.frostDates?.firstFrostDate;
-	const lastWindowOpen =
-		cultivar.attributes.frostDatePlantingWindows?.lastFrostWindowOpen;
-	const lastWindowClose =
-		cultivar.attributes.frostDatePlantingWindows?.lastFrostWindowClose;
-	const lastFrostDate = environment.attributes.frostDates?.lastFrostDate;
+		cultivarAttrs?.frostDatePlantingWindows?.firstFrostWindowClose;
+	const firstFrostDate = envAttrs?.frostDates?.firstFrostDate;
+	const lastWindowOpen = cultivarAttrs?.frostDatePlantingWindows?.lastFrostWindowOpen;
+	const lastWindowClose = cultivarAttrs?.frostDatePlantingWindows?.lastFrostWindowClose;
+	const lastFrostDate = envAttrs?.frostDates?.lastFrostDate;
 
 	/** Get all years in the range. */
 	const startYear = range.start.getUTCFullYear();

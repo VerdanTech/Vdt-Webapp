@@ -40,7 +40,7 @@
 
 <div class="flex w-full items-center justify-between gap-0">
 	<span
-		class="border-neutral-7 bg-neutral-1 ring-offset-neutral-1 focus-visible:ring-neutral-7 flex h-10 w-full rounded-md rounded-r-none border border-r-0 px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
+		class="border-neutral-7 bg-neutral-1 ring-offset-neutral-1 focus-visible:ring-neutral-7 flex h-10 w-full rounded-md rounded-r-none border border-r-0 px-3 py-2 text-sm focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
 		>{unitAwareValues.displayValues[0]}</span
 	>
 	<span

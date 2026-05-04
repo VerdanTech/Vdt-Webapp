@@ -64,7 +64,7 @@ export function resolveActiveLocation(
 		if (!lifespan.locationHistory) {
 			return null;
 		}
-		return historySelect(lifespan.locationHistory.locations, focusDate, false);
+		return historySelect(lifespan.locationHistory.locations ?? [], focusDate, false);
 	});
 }
 
@@ -86,6 +86,6 @@ export function resolveActiveGeometry(
 		if (!lifespan.geometryHistory) {
 			return null;
 		}
-		return historySelect(lifespan.geometryHistory.geometries, focusDate, false);
+		return historySelect(lifespan.geometryHistory.geometries ?? [], focusDate, false);
 	});
 }

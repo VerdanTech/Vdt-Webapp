@@ -1,19 +1,13 @@
 import {
 	type GenericObservation,
-	PlantHarvestObservationId,
-	type PlantHarvestObservationData
+	type PlantHarvestObservationData,
+	PlantHarvestObservationId
 } from '@vdg-webapp/models';
+import type { FieldErrors } from '@vdg-webapp/models';
 
-import {
-	type Item,
-	TreeNumber,
-	TreeString,
-	TreeTextarea,
-	toTreeId
-} from '$components';
+import { type Item, TreeNumber, TreeString, TreeTextarea, toTreeId } from '$components';
 
 import type { ObservationDataItemsMap, ObservationUpdateHandler } from './observation';
-import type { FieldErrors } from '@vdg-webapp/models';
 
 /**
  * Builds tree items for the harvest observation's data fields.

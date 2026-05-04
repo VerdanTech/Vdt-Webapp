@@ -51,9 +51,7 @@
 							{@const workspace = workspaces[index]}
 							<Menubar.Item
 								onSelect={() => {
-									goto(
-										`/gardens/${page.params.gardenId}/workspaces/${workspace.slug}`
-									);
+									goto(`/gardens/${page.params.gardenId}/workspaces/${workspace.slug}`);
 								}}
 								class="text-light italic"
 							>
@@ -115,10 +113,7 @@
 							<Menubar.Item
 								class="flex justify-between px-2"
 								onSelect={() => {
-									workspaceEditor.selections.deselect(
-										'plantingArea',
-										plantingArea.id
-									);
+									workspaceEditor.selections.deselect('plantingArea', plantingArea.id);
 								}}
 							>
 								<span class="text-sm">
