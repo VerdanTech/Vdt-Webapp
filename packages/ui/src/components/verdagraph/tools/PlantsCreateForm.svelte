@@ -74,6 +74,12 @@
 </script>
 
 <form method="POST" autocomplete="off" use:enhance class="mx-4 mt-4 mb-8">
+	<div class="flex flex-col">
+		{#each $formData.plants as plant}
+			<span>{plant.cultivarName}</span>
+		{/each}
+	</div>
+
 	<!-- Form mode -->
 	<Form.Field {form} name="mode">
 		<Form.Control>
