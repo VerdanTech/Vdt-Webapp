@@ -19,7 +19,7 @@ The Verdagraph is split into three main views into the model state:
 
 All three of these windows are toggleable. They are supported by the following additional UI elements:
 
-- _Timeline Selector_: Allows selecting a range of dates easily with the mouse and keyboard. This range dictates which model elements are visible in the Tree and Calendar, with the center of the range being the "focused day" which controls the day displayed in the Layout.
+- _Timeline Selector_: Allows selecting a range of dates easily with the mouse and keyboard. This range dictates which model elements are visible in the Tree and Calendar, with a value within the range being the "focused day" which controls the day displayed in the Layout.
 - _Toolbar_: A horizontal toolbar.
 - _Toolbox_ A reusable component for storing a list of active tools (ex. "Add Plant", "Record Observation"), allowing the resuse of functionality between Tree, Calendar, and Layout.
 
@@ -56,4 +56,10 @@ Buttons:
 
 ![Timeline Selector Wireframe](./wireframes/timeline_selector.excalidraw.png)
 
+## Toolbox Tools
+
+### Add Plants
+
 # Workbook
+
+The Workbook is a view of the Actions used as references when completing tasks and updating the model day-to-day.
