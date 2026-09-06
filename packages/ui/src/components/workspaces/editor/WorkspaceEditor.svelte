@@ -41,7 +41,7 @@
 			{includeWorkspacesMenu}
 		/>
 	</div>
-	<div class="absolute bottom-24 top-8 w-full grow overflow-hidden">
+	<div class="absolute top-8 bottom-24 w-full grow overflow-hidden">
 		{#if initialized}
 			<Resizable.PaneGroup direction={workspaceEditor.paneSettings.direction}>
 				{#if workspaceEditor.paneSettings.isEnabled('layout')}

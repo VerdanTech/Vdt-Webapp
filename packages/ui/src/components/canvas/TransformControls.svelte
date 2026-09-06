@@ -189,7 +189,7 @@ the events to hit the canvas underneath.
 						<Tooltip.Root>
 							<Tooltip.Trigger>
 								<span
-									class="bg-neutral-1 text-neutral-11 border-neutral-6 flex h-6 w-auto items-center justify-center border-b border-t px-1 py-0.5 text-sm"
+									class="bg-neutral-1 text-neutral-11 border-neutral-6 flex h-6 w-auto items-center justify-center border-t border-b px-1 py-0.5 text-sm"
 								>
 									{Math.trunc(canvas.transform.scaleFactor.x * 100)}
 									%

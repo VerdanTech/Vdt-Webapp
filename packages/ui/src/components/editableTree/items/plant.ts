@@ -24,8 +24,8 @@ import {
 	type LocationUpdateHandler
 } from './locations';
 import {
-	type ObservationUpdateHandler,
-	type ObservationDeleteHandler
+	type ObservationDeleteHandler,
+	type ObservationUpdateHandler
 } from './observation';
 
 export type PlantUpdateHandler = (id: string, data: PlantUpdateCommand) => void;

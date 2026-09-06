@@ -11,7 +11,7 @@
 
 {#if editing}
 	<Button
-		class="flex w-full select-none items-center justify-center"
+		class="flex w-full items-center justify-center select-none"
 		onclick={() => {
 			onChange(undefined);
 		}}
@@ -19,7 +19,7 @@
 		<Icon icon={iconIds.addIcon} width="1.5rem" class="text-neutral-11" />
 	</Button>
 {:else}
-	<Button class="flex w-full select-none items-center justify-center" disabled={true}>
+	<Button class="flex w-full items-center justify-center select-none" disabled={true}>
 		<Icon icon={iconIds.addIcon} width="1.5rem" class="text-neutral-11" />
 	</Button>
 {/if}

@@ -73,7 +73,7 @@
 	);
 </script>
 
-<form method="POST" autocomplete="off" use:enhance class="mx-4 mb-8 mt-4">
+<form method="POST" autocomplete="off" use:enhance class="mx-4 mt-4 mb-8">
 	<!-- Form mode -->
 	<Form.Field {form} name="mode">
 		<Form.Control>

@@ -6,9 +6,9 @@ import cultivarsSeed from './cultivars';
 import environmentSeed from './environments';
 import gardenSeed from './garden';
 import plantingAreasSeed from './plantingAreas';
+import plantsSeed from './plants';
 import userSeed from './user';
 import workspacesSeed from './workspace';
-import plantsSeed from './plants';
 
 const seeds: Array<() => Record<string, unknown[]>> = [
 	userSeed,

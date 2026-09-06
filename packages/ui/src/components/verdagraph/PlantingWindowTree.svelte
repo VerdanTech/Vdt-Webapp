@@ -5,10 +5,10 @@
 
 	import {
 		EditableTree,
+		type Item,
 		TreeDate,
 		TreeString,
 		createEditableTree,
-		type Item,
 		toTreeBaseId,
 		toTreeId
 	} from '$components';

@@ -6,8 +6,8 @@
 	import { calculateDeltaDays } from '$components/timeline/utils';
 	import { Popover } from '$core';
 	import { ScrollArea } from '$core/scroll-area/index.js';
-	import { cn } from '$utils';
 	import * as Tooltip from '$core/tooltip';
+	import { cn } from '$utils';
 
 	import { type CalendarContext, type CalendarPaneContext } from './context.svelte';
 
@@ -86,7 +86,9 @@
 				style:border-color={item.item.borderColor}
 				class={cn(
 					'relative flex flex-col rounded-sm border-2',
-					item.expanded ? item.item.itemStyleExpanded || '' : item.item.itemStyleCollapsed || '',
+					item.expanded
+						? item.item.itemStyleExpanded || ''
+						: item.item.itemStyleCollapsed || '',
 					item.expanded
 						? `mb-${item.item.bottomMarginChild !== undefined ? item.item.bottomMarginChild : item.item.bottomMargin}`
 						: `mb-${item.item.bottomMargin}`,
@@ -101,8 +103,7 @@
 				>
 					<span class="text-neutral-12 sticky left-0 flex items-center text-xs">
 						<!-- Label. -->
-						<span 
-						class="text-neutral-12 ml-2 px-2 py-0.5 rounded-md">
+						<span class="text-neutral-12 ml-2 rounded-md px-2 py-0.5">
 							{item.item.label}
 						</span>
 
@@ -162,24 +163,23 @@
 									{/if}
 								{/snippet}
 
-							<Tooltip.Root>
-								<Tooltip.Trigger class="w-full">
-									{#if infoPoint.popup}
-									<Popover.Root>
-										<Popover.Trigger class="w-full">
+								<Tooltip.Root>
+									<Tooltip.Trigger class="w-full">
+										{#if infoPoint.popup}
+											<Popover.Root>
+												<Popover.Trigger class="w-full">
+													{@render infoPointIcon(infoPoint.icon)}
+												</Popover.Trigger>
+												<Popover.Content>
+													<infoPoint.popup {...infoPoint.popupProps} />
+												</Popover.Content>
+											</Popover.Root>
+										{:else}
 											{@render infoPointIcon(infoPoint.icon)}
-										</Popover.Trigger>
-									<Popover.Content>
-										<infoPoint.popup {...infoPoint.popupProps} />
-									</Popover.Content>
-								</Popover.Root>
-								{:else}
-								{@render infoPointIcon(infoPoint.icon)}
-								{/if}
-							</Tooltip.Trigger>
-							<Tooltip.Content>{infoPoint.label}
-							</Tooltip.Content>
-						</Tooltip.Root>
+										{/if}
+									</Tooltip.Trigger>
+									<Tooltip.Content>{infoPoint.label}</Tooltip.Content>
+								</Tooltip.Root>
 							</div>
 						{/each}
 					</div>
@@ -203,23 +203,30 @@
 		<!-- Focus day highlight. -->
 		<div
 			style:left="{calculateSectionLeft(focusSection)}%"
-			style:width="{calculateSectionLeft(focusSection + 1) - calculateSectionLeft(focusSection)}%"
+			style:width="{calculateSectionLeft(focusSection + 1) -
+				calculateSectionLeft(focusSection)}%"
 			class="bg-neutral-9 absolute h-full opacity-10"
 		></div>
 
 		{#each context.container.sections as section}
 			{@const tickLeft = calculateSectionLeft(section)}
 			{@const sectionEven = section % 2 == 0}
-			{@const sectionSurroundsFocusDay = section === focusSection || section === focusSection + 1}
+			{@const sectionSurroundsFocusDay =
+				section === focusSection || section === focusSection + 1}
 			<div
 				style:left="{tickLeft}%"
 				style="translate: -50%"
-				class="{sectionSurroundsFocusDay ? 'bg-neutral-9 opacity-30' : sectionEven ? 'bg-neutral-3' : 'bg-neutral-2'} absolute h-full w-[2px]"
+				class="{sectionSurroundsFocusDay
+					? 'bg-neutral-9 opacity-30'
+					: sectionEven
+						? 'bg-neutral-3'
+						: 'bg-neutral-2'} absolute h-full w-[2px]"
 			></div>
 		{/each}
 
 		<ul {...pane.tree.root} class="pt-2">
 			{@render calendarItems(pane.tree.children)}
 		</ul>
-	</div><!-- p -->
+	</div>
+	<!-- p -->
 </ScrollArea>
