@@ -15,6 +15,7 @@ classDiagram
     Lifespan --> Harvest : refers to N
     Plant --> Lifespan : refers to two
     PlantGroup --> Plant : refers to N
+    DraftBucket --> Plant : refers to N
 
     class Lifespan{
         origin: OriginEnum
@@ -42,6 +43,11 @@ classDiagram
     }
     class PlantGroup {
         name: string
+        plants: set of Plant
+    }
+    class DraftBucket {
+        name: string
+        creator: User
         plants: set of Plant
     }
     class LocationHistory {
@@ -102,7 +108,7 @@ The plant model may store the name associated with a Cultivar, correlating with 
 
 ## recordedLifespan and expectedLifespan
 
-The purpose of storing two Lifespan objects is to clearly delineate between the attributes in the Plant model which have been planned with the software, and those which have been recorded from real life. When a Plant is created, its expectedLifespan is populated based on its Cultivar and any user-provided settings, while its recordedLifespan is empty. In this state, the plant is considered 'uncomitted' and is only a model-instance. Once the user records data about the plant, for example to say that this plant has germinated or been harvested, the recordedLifespan is populated and the plant instance becomes tied to a real entity.
+The purpose of storing two Lifespan objects is to clearly delineate between the attributes in the Plant model which have been planned with the software, and those which have been recorded from real life. When a Plant is created, its expectedLifespan is populated based on its Cultivar and any user-provided settings, while its recordedLifespan starts empty and is filled in incrementally as the user records what actually happens to the plant, for example that it has germinated or been harvested. Both are always present on the same Plant instance; there is no separate state or term for a Plant that only has expected data so far. How the two are told apart visually is described in the [Planner wireframes](../planner/wireframes.md#layout).
 
 ## aggregate
 
@@ -110,4 +116,12 @@ If true, the model represents several different plants in real life. In this mod
 
 # PlantGroup
 
-PlantGroups are simple collections of references to Plants which serve to group them together. This is optional, but can be useful when experimenting with different plans. For example, all plants currently in the model which are uncomitted may be put together in a group, and then hidden, with a new group constructed in its place. This allows for creating multiple mutually-exclusive parallel plans for comparison, to try out new ideas without deleting old ones.
+PlantGroups are simple collections of references to Plants which serve to group them together for organizational purposes, e.g. tagging every Plant that belongs to a particular bed, or a particular season. A Plant may belong to any number of PlantGroups.
+
+# DraftBucket
+
+A DraftBucket groups the Plants that make up one unconfirmed plan, so several such plans can be built and compared before any of them are decided on. This is the persisted form of the Add Plants tool's "To Create" bucket described in the [Planner wireframes](../planner/wireframes.md#add-plants): a Plant belongs to at most one DraftBucket, and while it does, it's excluded from official reads of the garden's Plants (Action generation, yield totals, and similar), even though it's an ordinary Plant row and renders in the Layout, Tree, and Calendar like any other. Discarding a plan is an ordinary deletion of every Plant in its DraftBucket; accepting one is just deleting the DraftBucket itself, leaving its Plants in place as ordinary, non-draft Plants.
+
+## creator
+
+The User who started the plan. Since a DraftBucket's Plants are visible to other users of the Garden as an optional overlay rather than official state, `creator` is what lets the UI label whose plan is whose when more than one is visible at once.
