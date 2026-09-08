@@ -87,7 +87,7 @@ The Users responsible for completing this Task. A Task may be assigned by anothe
 
 Seed, Germinate, Transplant, Harvest, and Expire each have a matching type in [Observe](../planner/wireframes.md#observe). For these, `completed` can be set two ways, and both keep the underlying Plant in sync:
 
-- Directly, which writes a minimal observation onto the Task's Plant using today's date and no further detail — the same effect as recording one through Observe, just with defaults instead of a filled-in form.
+- Directly, which writes a minimal observation onto the Task's Plant using today's date and no further detail - the same effect as recording one through Observe, just with defaults instead of a filled-in form.
 - By recording a full observation of the matching type through Observe, which completes the open Task on the Plant automatically.
 
-Every other type (Thin, Harden, Prune, Cover a planting area, Weed a planting area, Till a planting area, Tidy a workspace, Apply fertilizer, Apply water, Custom) has no matching observation type, since there's no Plant data to write — `completed` is a plain manual toggle for these.
+Every other type (Thin, Harden, Prune, Cover a planting area, Weed a planting area, Till a planting area, Tidy a workspace, Apply fertilizer, Apply water, Custom) has no matching observation type, since there's no Plant data to write - `completed` is a plain manual toggle for these.

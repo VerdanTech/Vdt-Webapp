@@ -75,15 +75,15 @@ Placing a stamp appends the plants it describes to the To Create bucket. All mod
 
 #### Drafts are persisted, not local state
 
-The To Create bucket is not transient client state: it is backed by Triplit as a **DraftBucket** (see [Plants model](../plants/models.md#draftbucket)) so it survives navigation and syncs like the rest of the model. Staged plants are ordinary `Plant` rows referencing that DraftBucket — there's no separate draft-shaped entity, since a staged plant is already indistinguishable from a freshly-planned one (neither has recorded data yet).
+The To Create bucket is not transient client state: it is backed by Triplit as a **DraftBucket** (see [Plants model](../plants/models.md#draftbucket)) so it survives navigation and syncs like the rest of the model. Staged plants are ordinary `Plant` rows referencing that DraftBucket - there's no separate draft-shaped entity, since a staged plant is already indistinguishable from a freshly-planned one (neither has recorded data yet).
 
 "Uncommitted" refers specifically to belonging to an open DraftBucket. It's unrelated to whether a Plant has recorded data: a Plant that isn't part of any DraftBucket is real, official garden state from the moment it's created, whether or not its `recordedLifespan` has been filled in (see [Calendar](#calendar) and [Layout](#layout) for how that's shown instead).
 
-Because a staged Plant is a real row, committing a DraftBucket is just deleting the bucket — its Plants don't change, they simply stop being excluded from official reads (Action generation, yield totals, and anything else that shouldn't see a plan still under consideration) the moment nothing references it as a draft anymore.
+Because a staged Plant is a real row, committing a DraftBucket is just deleting the bucket - its Plants don't change, they simply stop being excluded from official reads (Action generation, yield totals, and anything else that shouldn't see a plan still under consideration) the moment nothing references it as a draft anymore.
 
-More than one DraftBucket may exist at once, one per plan under consideration, each with its own creator — useful for seeing what a collaborator is currently drafting, not just your own plans.
+More than one DraftBucket may exist at once, one per plan under consideration, each with its own creator - useful for seeing what a collaborator is currently drafting, not just your own plans.
 
-Selecting an entry in the To Create tree opens it for the same editing available on any Plant, including `recordedLifespan` fields — useful for retroactively drafting a plant that's already in the ground before formally committing it. Ordinarily, though, a Plant staged this way is expected to carry only projected data; nothing about being in a DraftBucket changes how a Plant behaves otherwise.
+Selecting an entry in the To Create tree opens it for the same editing available on any Plant, including `recordedLifespan` fields - useful for retroactively drafting a plant that's already in the ground before formally committing it. Ordinarily, though, a Plant staged this way is expected to carry only projected data; nothing about being in a DraftBucket changes how a Plant behaves otherwise.
 
 #### Visualizing drafts against the existing model
 
@@ -119,29 +119,29 @@ The form's mode determines what kind of stamp it produces:
 
 ### Observe
 
-Records what has actually happened to existing Plants: seeding, germination, entering or exiting dormancy, expiry, transplanting, and harvests. Unlike Add Plants, an observation describes a fact about the real world, not a plan, so there's no draft/commit step — submitting the form writes straight onto the selected Plants' recorded data.
+Records what has actually happened to existing Plants: seeding, germination, entering or exiting dormancy, expiry, transplanting, and harvests. Unlike Add Plants, an observation describes a fact about the real world, not a plan, so there's no draft/commit step - submitting the form writes straight onto the selected Plants' recorded data.
 
-For a type with a matching Task type (Seed, Germinate, Transplant, Harvest, Expire), recording an observation here also completes that Plant's open Task of the same type — see [Actions models](../actions/models.md#completed).
+For a type with a matching Task type (Seed, Germinate, Transplant, Harvest, Expire), recording an observation here also completes that Plant's open Task of the same type - see [Actions models](../actions/models.md#completed).
 
 The tool window is split the same way as Add Plants:
 
-- **Form (top)**: a type selector (Seed, Germinate, Enter Dormancy, Exit Dormancy, Transplant, Harvest, Expire) swaps in the fields for that type — a date for most types, a destination Location/Geometry for Transplant, and mass, units, and quality for Harvest. The date defaults to the Timeline Selector's focused day. These are the values applied to the whole selection by default.
+- **Form (top)**: a type selector (Seed, Germinate, Enter Dormancy, Exit Dormancy, Transplant, Harvest, Expire) swaps in the fields for that type - a date for most types, a destination Location/Geometry for Transplant, and mass, units, and quality for Harvest. The date defaults to the Timeline Selector's focused day. These are the values applied to the whole selection by default.
 - **To Record (bottom)**: a tree of the Plants the observation will apply to, driven by the Layout/Tree/Calendar's shared plant selection (the same `pointer`/`group` box-select used elsewhere), not a separate picker.
 
-Every entry in the tree can be expanded to override that one plant's values, including its date, independent of the rest of the batch — not just for Harvest. This makes the common case fast (select 40 seedlings, mark them all germinated today in one submission) without losing the ability to correct a single plant's mass or backdate one plant's date differently from the rest.
+Every entry in the tree can be expanded to override that one plant's values, including its date, independent of the rest of the batch - not just for Harvest. This makes the common case fast (select 40 seedlings, mark them all germinated today in one submission) without losing the ability to correct a single plant's mass or backdate one plant's date differently from the rest.
 
 ### Translate
 
-Adjusts the planned position of existing Plants: a precise, numeric complement to the free-hand dragging the Layout already supports for repositioning a single Plant by hand. Like Observe and Delete, it has no picker of its own — it acts on the shared plant selection.
+Adjusts the planned position of existing Plants: a precise, numeric complement to the free-hand dragging the Layout already supports for repositioning a single Plant by hand. Like Observe and Delete, it has no picker of its own - it acts on the shared plant selection.
 
-Translate only ever edits `expectedLifespan`'s Location/Geometry. It's for correcting or replanning where a Plant is meant to go, not for recording that a move actually happened in the garden — that's Observe's Transplant type (see above). Splitting it this way keeps exactly one place, Observe, responsible for anything that touches recorded data.
+Translate only ever edits `expectedLifespan`'s Location/Geometry. It's for correcting or replanning where a Plant is meant to go, not for recording that a move actually happened in the garden - that's Observe's Transplant type (see above). Splitting it this way keeps exactly one place, Observe, responsible for anything that touches recorded data.
 
 - An exact destination coordinate, for repositioning one plant precisely.
-- A numeric offset (Δx, Δy), applied to every plant in the selection at once, for shifting a whole group without disturbing its arrangement relative to itself — the case free-hand dragging handles worst.
+- A numeric offset (Δx, Δy), applied to every plant in the selection at once, for shifting a whole group without disturbing its arrangement relative to itself - the case free-hand dragging handles worst.
 
 ### Delete
 
-Deletes existing Plants from the model. Like Observe, it has no picker of its own — it acts on whatever's in the shared plant selection (the same `pointer`/`group` selection used across Layout, Tree, and Calendar).
+Deletes existing Plants from the model. Like Observe, it has no picker of its own - it acts on whatever's in the shared plant selection (the same `pointer`/`group` selection used across Layout, Tree, and Calendar).
 
 Deletion is destructive and there's no undo, so submitting requires an explicit confirmation naming the number of Plants about to be deleted. Deleting a Plant deletes its Actions and Tasks along with it, since an Action tied to a Plant that no longer exists wouldn't mean anything.
 
@@ -149,7 +149,7 @@ Deletion is destructive and there's no undo, so submitting requires an explicit 
 
 Authors and manages the library of saved Pattern templates used by Add Plants' Pattern mode.
 
-- **Library**: a list of saved Patterns, each with a name and an owner — a User or a Garden — following the same visibility model as CultivarCollections (see [Cultivars models](../cultivars/models.md#cultivar-collection)): a HIDDEN pattern is visible only to its owner, or, for a garden-owned pattern, to those with read access to that garden.
+- **Library**: a list of saved Patterns, each with a name and an owner - a User or a Garden - following the same visibility model as CultivarCollections (see [Cultivars models](../cultivars/models.md#cultivar-collection)): a HIDDEN pattern is visible only to its owner, or, for a garden-owned pattern, to those with read access to that garden.
 - **Editor**: selecting a Pattern opens the same Form / To Create bucket editor Add Plants uses, but disconnected from the live Layout and Timeline Selector. A Pattern isn't tied to a real Workspace or date, so its spatial canvas and timeline both work in offsets relative to one origin in the bucket (e.g. the first plant drafted), rather than absolute coordinates and dates.
 - **Sharing**: a Pattern can be exported to a JSON file and imported from one, independent of the visibility/ownership above, so it can move between Gardens or be shared outside the app entirely.
 
