@@ -121,6 +121,8 @@ The form's mode determines what kind of stamp it produces:
 
 Records what has actually happened to existing Plants: seeding, germination, entering or exiting dormancy, expiry, transplanting, and harvests. Unlike Add Plants, an observation describes a fact about the real world, not a plan, so there's no draft/commit step — submitting the form writes straight onto the selected Plants' recorded data.
 
+For a type with a matching Task type (Seed, Germinate, Transplant, Harvest, Expire), recording an observation here also completes that Plant's open Task of the same type — see [Actions models](../actions/models.md#completed).
+
 The tool window is split the same way as Add Plants:
 
 - **Form (top)**: a type selector (Seed, Germinate, Enter Dormancy, Exit Dormancy, Transplant, Harvest, Expire) swaps in the fields for that type — a date for most types, a destination Location/Geometry for Transplant, and mass, units, and quality for Harvest. The date defaults to the Timeline Selector's focused day. These are the values applied to the whole selection by default.
@@ -153,4 +155,4 @@ Authors and manages the library of saved Pattern templates used by Add Plants' P
 
 # Workbook
 
-The Workbook is a view of the Actions used as references when completing tasks and updating the model day-to-day.
+The Workbook is a view of the Actions used as references when completing tasks and updating the model day-to-day. See the [Actions wireframes](../actions/wireframes.md) for its layout, assignment, and task-completion workflow.
