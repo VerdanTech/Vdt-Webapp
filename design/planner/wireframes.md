@@ -54,7 +54,37 @@ A Plant's row renders its `expectedLifespan` and `recordedLifespan` as visually 
 
 ![Layout Wireframe](./wireframes/layout.excalidraw.png)
 
-A Plant's shape reflects whichever of `expectedLifespan` or `recordedLifespan` is driving its current rendering, and changes style depending on which one that is, so it's visually clear whether the plant's current state is a projection or something that's actually been recorded. This is separate from, and stacks with, the "ghost" styling used for drafted plants (see [Add Plants](#add-plants)).
+A 2D grid showing every Plant as an icon, positioned and shaped by its active Geometry, blending expected and recorded model state into one picture rather than two separate views of it.
+
+#### Which Geometry is active
+
+For the Timeline Selector's focused day, a Plant renders using the latest `recordedLifespan` Geometry/Location entry dated on or before that day if one exists, otherwise the corresponding `expectedLifespan` entry - the same recorded-over-expected rule used in [Calendar](#calendar). Rendering snaps discretely to whichever entry applies; smoothly interpolating between entries (animating growth instead of jumping between snapshots) is a deliberate future enhancement, not in scope now, but this rule is written to leave room for it later.
+
+A Plant's shape also changes style depending on which Lifespan is driving it, so it's visually clear whether its current state is a projection or something that's actually been recorded. This is separate from, and stacks with, the "ghost" styling used for a Plant in an open DraftBucket (see [Add Plants](#add-plants)).
+
+#### Default icon
+
+Absent a Cultivar `iconPackId`, a Plant renders as its active Geometry's shape (an ellipse, for most plants) filled with the Cultivar's `baseColor`, stroked with `outlineColor`, and labeled in the center with the Cultivar's `abbreviation` in `textColor` (see [Cultivars models](../cultivars/models.md#color)). The shape scales and reshapes with whichever Geometry entry is active, growing over the Plant's life the same way its Geometry does.
+
+#### Icon packs
+
+A Cultivar may instead reference an IconPack (see [Cultivars models](../cultivars/models.md#iconpack-provisional)): a shareable, importable set of SVGs, one per [GrowthStage](../plants/models.md#growthstage), rendered within the same Geometry-driven bounding shape in place of the default fill-plus-abbreviation. A pack needn't cover every stage - any it doesn't provide falls back to the default icon - and the default icon remains the permanent baseline for every Cultivar without a pack, not a placeholder awaiting one.
+
+#### Aggregate plants
+
+A Plant with `aggregate` set typically has a rectangular or polygonal Geometry describing an area rather than one plant's footprint. It renders as that Geometry filled with the Cultivar's color, with a fixed-size icon centered on it - unscaled, unlike a single plant's icon - and a number badge showing its `quantity`, the count of real plants it represents.
+
+#### Interplanting
+
+A Cultivar's `minimumDistance` (see [Cultivars models](../cultivars/models.md#interplanting-provisional)) is visualized as a dotted line around a Plant's icon at that radius, shown for a selected or hovered Plant rather than every Plant at once, to avoid cluttering the grid.
+
+#### Selection
+
+Clicking a Plant highlights it, adds it to the shared plant selection (the same one Observe/Translate/Delete act on), and opens a popup with a summary of the Plant and quick-actions - recording an observation, completing an open Task - scoped to the whole current selection, so the same popup works for one Plant or many rather than being a single-Plant special case.
+
+A drag-box selects by intersection: a Plant is included if the box touches its shape at all, not only if fully enclosed. It combines with the existing selection using the conventions common to editors like this - a plain drag replaces the selection, Shift adds to it, Alt subtracts from it, and Shift+Alt intersects it.
+
+Selection is shared with Tree and Calendar, which both highlight whatever's selected. Whether selecting in one view also scrolls the others to reveal it is a separate toggle, off by default - forcing a scroll on every click would be disruptive when working across multiple windows at once.
 
 ## Timeline Selector
 
@@ -119,13 +149,13 @@ The form's mode determines what kind of stamp it produces:
 
 ### Observe
 
-Records what has actually happened to existing Plants: seeding, germination, entering or exiting dormancy, expiry, transplanting, and harvests. Unlike Add Plants, an observation describes a fact about the real world, not a plan, so there's no draft/commit step - submitting the form writes straight onto the selected Plants' recorded data.
+Records what has actually happened to existing Plants: seeding, germination, flowering or fruiting, entering or exiting dormancy, expiry, transplanting, and harvests. Unlike Add Plants, an observation describes a fact about the real world, not a plan, so there's no draft/commit step - submitting the form writes straight onto the selected Plants' recorded data.
 
-For a type with a matching Task type (Seed, Germinate, Transplant, Harvest, Expire), recording an observation here also completes that Plant's open Task of the same type - see [Actions models](../actions/models.md#completed).
+For a type with a matching Task type (Seed, Germinate, Flower, Transplant, Harvest, Expire), recording an observation here also completes that Plant's open Task of the same type - see [Actions models](../actions/models.md#completed).
 
 The tool window is split the same way as Add Plants:
 
-- **Form (top)**: a type selector (Seed, Germinate, Enter Dormancy, Exit Dormancy, Transplant, Harvest, Expire) swaps in the fields for that type - a date for most types, a destination Location/Geometry for Transplant, and mass, units, and quality for Harvest. The date defaults to the Timeline Selector's focused day. These are the values applied to the whole selection by default.
+- **Form (top)**: a type selector (Seed, Germinate, Flower, Enter Dormancy, Exit Dormancy, Transplant, Harvest, Expire) swaps in the fields for that type - a date for most types, a destination Location/Geometry for Transplant, and mass, units, and quality for Harvest. The date defaults to the Timeline Selector's focused day. These are the values applied to the whole selection by default.
 - **To Record (bottom)**: a tree of the Plants the observation will apply to, driven by the Layout/Tree/Calendar's shared plant selection (the same `pointer`/`group` box-select used elsewhere), not a separate picker.
 
 Every entry in the tree can be expanded to override that one plant's values, including its date, independent of the rest of the batch - not just for Harvest. This makes the common case fast (select 40 seedlings, mark them all germinated today in one submission) without losing the ability to correct a single plant's mass or backdate one plant's date differently from the rest.

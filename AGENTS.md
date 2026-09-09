@@ -76,6 +76,7 @@ Additionally, variable names are to be verbose and self-documenting at all times
 - Comments are to be as plain and precise as possible.
 - Focus comments on non-obvious details and helpful context - a hidden constraint, a subtle invariant, the reason behind a workaround, something that would surprise a reader - not on over-explaining what well-named code already makes clear. If a comment just restates what the code does, delete it instead.
 - Before writing a comment, look at existing comments nearby (or in a similar domain area) as the reference for tone, length, and what's worth noting - match that style rather than introducing a new one.
+- Avoid comments that read more like a changelog polluted by session context than information that should exist in the source code.
 
 ## Writing Style
 
