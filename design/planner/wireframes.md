@@ -1,5 +1,5 @@
 ---
-status: This document roughly matches the implementation when it comes to the layout, but is ahead when it comes to everything else.
+status: The page structure (Tree/Calendar/Layout/Timeline Selector/Toolbar/Toolbox) roughly matches the implementation. Nearly everything else - the Layout window's rendering rules, Calendar's info-point popups, and every Toolbox Tool except Add Plants' Single mode - is ahead of the implementation.
 ---
 
 # Planner - Wireframes
@@ -20,7 +20,7 @@ The Verdagraph is split into three main views into the model state:
 All three of these windows are toggleable. They are supported by the following additional UI elements:
 
 - _Timeline Selector_: Allows selecting a range of dates easily with the mouse and keyboard. This range dictates which model elements are visible in the Tree and Calendar, with a value within the range being the "focused day" which controls the day displayed in the Layout.
-- _Toolbar_: A horizontal toolbar.
+- _Toolbar_: A horizontal toolbar. Includes a Workspaces control based on the one already built for the Workspace Editor (`(config)/workspaces/+layout.svelte`'s "Workspaces" menu: up to 10 workspaces listed directly, a "See All" link, and a "Create" option gated by the `WorkspaceCreate` authorization), extended from single-select to a toggle per workspace - defaulting to just `defaultSelectedWorkspaceId` enabled - so the same control covers both switching to a different single workspace and enabling more than one at once (see [Layout](#multiple-workspaces)).
 - _Toolbox_ A reusable component for storing a list of active tools (ex. "Add Plant", "Record Observation"), allowing the resuse of functionality between Tree, Calendar, and Layout.
 
 ![Verdagraph Structure Wireframe](./wireframes/verdagraphStructure.excalidraw.png)
@@ -40,7 +40,9 @@ Buttons:
 
 | PlantingWindows                     | Plants         | Actions    |
 | ----------------------------------- | -------------- | ---------- |
-| Cultivar>Environment>PlantingWindow | Cultivar>Plant | ActionType |
+| Environment>Cultivar>PlantingWindow | Cultivar>Plant | ActionType |
+
+Environment leads rather than Cultivar because a PlantingWindow's actual date range is derived from its Environment's frost dates, not its Cultivar - and a garden typically has only a handful of distinct Environments, so grouping by the thing that determines the window, rather than the thing with the most variety, keeps the tree shallow where it matters.
 
 ![Tree Wireframe](./wireframes/tree.excalidraw.png)
 
@@ -48,7 +50,41 @@ Buttons:
 
 ![Calendar Wireframe](./wireframes/calendar.excalidraw.png)
 
-A Plant's row renders its `expectedLifespan` and `recordedLifespan` as visually distinct spans across the day columns, e.g. the recorded portion solid and the expected portion dashed or outlined, so it's clear at a glance which of its dates are still projections and which have actually happened.
+A nested tree of horizontal date-range bars, one pane each for Plants, PlantingWindows, and Actions. Its visible range is the Timeline Selector's - the same relationship [Add Plants](#add-plants) and [Observe](#observe) have with its focused day, just applied to a range instead of a point. Independent zoom/pan is a deliberate future direction, not built now - anchoring to the Timeline Selector this way leaves room to layer that in later without restructuring.
+
+#### Plants pane
+
+Each Plant is one row, collapsed by default to a single bar blending its `expectedLifespan` and `recordedLifespan` (recorded portion solid, expected portion dashed or outlined - see [Layout](#layout)). Expanding the row - the same expand/collapse used throughout the tree - splits it into two child bars, one per Lifespan, for comparing the full plan against the full recorded reality side by side.
+
+Info points mark a Plant's observations along its bar (one per `PlantObservation` - see [Plants models](../plants/models.md#observations)), and now also its open Tasks, reusing the same marker rather than requiring a separate lookup in the Actions pane. When more than one info point falls on the same day, they collapse into a single marker showing a count, opening a popover listing each one individually on click - this keeps row height fixed rather than growing vertically with however many events land on a given day, which would break the tree's uniform row rhythm.
+
+Selection is Plant-granular: clicking anywhere on a Plant's row, or either of its expanded children, selects the whole Plant - matching Tree and Layout, with no separate "just the Expected span" selection.
+
+A Plant belonging to an open DraftBucket renders with the same "ghost" styling as Layout, governed by the same per-DraftBucket visibility toggle shared across all three views (see [Add Plants](#add-plants)).
+
+#### PlantingWindows pane
+
+Nested Environment → Cultivar → PlantingWindow, matching [Tree](#tree)'s sort order - Environment leads because it's what a PlantingWindow's date range is actually derived from (frost dates), and a garden typically has few distinct Environments to begin with.
+
+#### Actions pane
+
+Grouped by target entity (Plant/PlantingArea/Workspace/Garden, per `Action.targetType`) to start. Each Action is one row: a bar spanning its earliest to latest Task date, with each Task as an info point along it - the same marker mechanism as Plant observations, not a new visual language.
+
+#### Info point popups
+
+Every info point opens a popup for viewing and acting on the thing it represents, varying by what the point is:
+
+- **Expected observation** (a projection): record it for real, at either the current date or the date it was expected for - both write through the same minimal-observation path Observe uses, just choosing which date to stamp it with. Also reschedulable (the existing move-by-day/week buttons, plus a direct date edit for larger jumps), and deletable for the edge case where a Cultivar-generated projection doesn't apply to this particular Plant.
+- **Recorded observation** (a fact): editable (date and type-specific fields, e.g. a Harvest's mass/quality) and deletable (undoing an accidental entry). Never converts back to expected.
+- **Task due date**: completes in one tap (the same minimal-write-or-plain-toggle behavior as the Workbook), expandable inline to fill in detail first, reassignable or self-claimable, and reschedulable (setting `dateOverridden` same as anywhere else). Not deletable here - Tasks are mostly system-maintained off an Action, so removing one piecemeal risks drifting out of sync with whatever's maintaining it.
+- **Same-day cluster** (multiple info points collapsed into one marker): a plain routing list, one line per point, each opening straight into its own popup as above - not a new interaction surface of its own.
+
+A few rules apply across all of these:
+
+- Every action here calls the same write path Observe/Workbook already use - these are shortcuts into that system, not a third way to record the same data.
+- Scope is always the one Plant an info point belongs to. Batch operations remain Observe/Workbook's job.
+- Action buttons only render under the same `ADMIN`/`EDITOR` editing check used elsewhere in the Verdagraph; a viewer gets a read-only popup.
+- Each popup includes an "open in Observe" / "open in Workbook" link for anything beyond these quick actions.
 
 ## Layout
 
@@ -80,11 +116,27 @@ A Cultivar's `minimumDistance` (see [Cultivars models](../cultivars/models.md#in
 
 #### Selection
 
-Clicking a Plant highlights it, adds it to the shared plant selection (the same one Observe/Translate/Delete act on), and opens a popup with a summary of the Plant and quick-actions - recording an observation, completing an open Task - scoped to the whole current selection, so the same popup works for one Plant or many rather than being a single-Plant special case.
+Clicking a Plant highlights it, adds it to the shared plant selection (the same one Observe/Translate/Delete act on), and opens a popup - the same one regardless of how many Plants end up selected, but what it offers changes with that count, since unlike an info point in the Calendar, a clicked Plant icon isn't already tied to one specific observation or Task.
+
+**One Plant selected** behaves like a [Calendar info point](#info-point-popups): instant, single-tap actions, no hand-off needed.
+
+- **Record an observation**: defaults to whichever type its current [GrowthStage](../plants/models.md#growthstage) implies comes next (e.g. a seed-stage Plant defaults to "Record Germination"), with a secondary menu for any other type - the same list Observe itself offers, just pre-defaulted for speed.
+- **Complete a Task**: if it has open ones, lists them individually, with the same single-tap-or-expand-for-detail behavior as a Calendar Task info point.
+- **Delete**: opens the Delete tool pre-scoped to this Plant rather than deleting inline, so its confirmation step stays intact.
+
+**More than one Plant selected** shows a condensed summary (count, Cultivars represented) instead of one Plant's full detail, and every action becomes a hand-off instead of an inline tap: "Record an observation..." opens Observe pre-scoped to the selection, so its per-plant-override tree does the batching work rather than the popup trying to replicate it; completing a Task in bulk hands off to Workbook the same way; Delete hands off to the Delete tool already scoped to the selection. Same escape-hatch principle as Calendar's popups, just drawing the line at selection size instead of action complexity.
 
 A drag-box selects by intersection: a Plant is included if the box touches its shape at all, not only if fully enclosed. It combines with the existing selection using the conventions common to editors like this - a plain drag replaces the selection, Shift adds to it, Alt subtracts from it, and Shift+Alt intersects it.
 
 Selection is shared with Tree and Calendar, which both highlight whatever's selected. Whether selecting in one view also scrolls the others to reveal it is a separate toggle, off by default - forcing a scroll on every click would be disruptive when working across multiple windows at once.
+
+#### Multiple workspaces
+
+The Layout currently shows one Workspace at a time. The motivating case for showing more than one is dragging a Plant directly between them to transplant it - e.g. from an indoor seed-starting Workspace into an outdoor bed - rather than only via Translate's numeric entry or Observe's Transplant type.
+
+Enabling a Workspace is the Toolbar's Workspaces toggle described above, defaulting to just `defaultSelectedWorkspaceId`. Each enabled Workspace gets its own resizable pane in the Layout - the same `Resizable.Pane` mechanism already used to split Tree/Calendar/Layout themselves, not a new docking system. Calendar's and the Layout's own underlying Plant/PlantingWindow queries simply broaden to every enabled Workspace rather than just the one.
+
+`locationHistory` already supports the actual transplant data-wise (each Location is already scoped to a `workspaceId`, so a Plant having locations across two Workspaces is nothing new). What's still open is the cross-pane drag itself - hit-testing a drag that crosses from one pane's canvas into another's. Worth investigating alongside the planned Konva→SVG migration (see `AGENTS.md`), since DOM-native panes make that hit-testing considerably more tractable than converting pointer coordinates between separate Konva Stages.
 
 ## Timeline Selector
 
@@ -182,6 +234,21 @@ Authors and manages the library of saved Pattern templates used by Add Plants' P
 - **Library**: a list of saved Patterns, each with a name and an owner - a User or a Garden - following the same visibility model as CultivarCollections (see [Cultivars models](../cultivars/models.md#cultivar-collection)): a HIDDEN pattern is visible only to its owner, or, for a garden-owned pattern, to those with read access to that garden.
 - **Editor**: selecting a Pattern opens the same Form / To Create bucket editor Add Plants uses, but disconnected from the live Layout and Timeline Selector. A Pattern isn't tied to a real Workspace or date, so its spatial canvas and timeline both work in offsets relative to one origin in the bucket (e.g. the first plant drafted), rather than absolute coordinates and dates.
 - **Sharing**: a Pattern can be exported to a JSON file and imported from one, independent of the visibility/ownership above, so it can move between Gardens or be shared outside the app entirely.
+
+### Generators
+
+A form closely mirroring the `Generator`/`GeneratorObjective` models ([Planner models](models.md#generator)), rather than introducing its own shape:
+
+- **Horizon**: a number input, in days.
+- **Strategy**: a select. Simulated Annealing is the only option for now, but it's a select rather than being hardcoded since the model already anticipates more.
+- **Objective**: a repeatable list of rows, each an objective type (PlantPercentages, Calories, NutrientProfile, Biodiversity, PollinatorStrength, MinimalLabour) paired with a weight - matching `GeneratorObjective`'s `objectives` map directly, one row per key.
+- **Include/Exclude Plants**: two multi-select combo-boxes of Cultivar names, matching `includePlants`/`excludePlants`.
+
+Running a Generator doesn't write to the model directly - it produces a new DraftBucket (see [Add Plants](#drafts-are-persisted-not-local-state)), authored with this Generator's configuration as its creator's intent, and hands off to the same To Create view Add Plants uses. A generated plan is reviewed, ghost-compared, edited, and committed or discarded exactly like a manually-built one - the generator is just a different way of populating a bucket, not a separate commit path.
+
+### Layout Config
+
+The same tool as the Workspace Editor's `layoutConfig` (`packages/ui/src/components/workspaces/editor/tools/LayoutConfigForm.svelte`) - shared, not redesigned separately, since both are configuring the same kind of rendering surface. Whatever settings land there (grid/snapping, units, default zoom, and similar display options) apply here unchanged.
 
 # Workbook
 

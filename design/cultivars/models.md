@@ -1,5 +1,5 @@
 ---
-status: This document is behind the implementation.
+status: Mixed. Color and Expected Geometry profiles now match the implementation (previously undocumented, corrected 2026-09-09). TemperatureProfile is documented but doesn't appear to be implemented at all. InterplantingProfile, IconPack, iconPackId, germToFlowering, and floweringScaleFactor are ahead of the implementation.
 ---
 
 # Cultivars - Models
@@ -146,7 +146,7 @@ The annual lifecycle defines the length of the stages of life for annual plants.
 
 - seedToGerm: The expected amount of days from starting a seed to its germination.
 - germToTransplant: The expected amount of days from the germination of a seed to when it will be ready for transplant. For cultivars which are not able to be transplanted, this value is unused.
-- germToFlowering: The expected amount of days from germination (or, for a biennial/perennial's later cycles, exiting dormancy) to that cycle's first flowering or fruiting. Optional - left unset for cultivars typically harvested before this would ever occur, such as most root and leaf crops. Drives the `floweringDates` entries generated for this Cultivar's Plants, and the flowering-or-fruiting [GrowthStage](../plants/models.md#growthstage).
+- germToFlowering: The expected amount of days from germination (or, for a biennial/perennial's later cycles, exiting dormancy) to that cycle's first flowering or fruiting. Optional - left unset for cultivars typically harvested before this would ever occur, such as most root and leaf crops. Drives the `plant-flower` observations generated for this Cultivar's Plants, and the flowering-or-fruiting [GrowthStage](../plants/models.md#growthstage).
 - germToFirstHarvest: The expected amount of days the germination of a seed to when it will be ready for a harvest.
 - firstToLastHarvest: The expected amount of days the first and last harvest of a plant. For plants which only have one harvest, this value is zero.
 

@@ -1,5 +1,5 @@
 ---
-status: This document is behind of the implementation.
+status: Lifespan/observations now matches the implementation (corrected 2026-09-09, having previously described scalar date fields - seedDate, germDate, etc. - that were never real; the actual schema is a generic PlantObservation relation). GrowthStage, DraftBucket, and the `units` harvest field are ahead of the implementation.
 ---
 
 # Plants - Models
@@ -12,7 +12,7 @@ classDiagram
 
     Lifespan --> LocationHistory : refers to one
     Lifespan --> GeometryHistory : refers to one
-    Lifespan --> Harvest : refers to N
+    Lifespan --> PlantObservation : refers to N
     Plant --> Lifespan : refers to two
     PlantGroup --> Plant : refers to N
     DraftBucket --> Plant : refers to N
@@ -21,25 +21,22 @@ classDiagram
         origin: OriginEnum
         locationHistory: LocationHistory
         geometryHistory: GeometryHistory
-        seedDate: date
-        germDate: date
-        floweringDates: set of Date
-        expiryDate: date
-        dormancyDates: set of Date
-        growthDates: set of Date
-        harvests: set of Harvest
+        observations: set of PlantObservation
     }
-    class Harvest {
+    class PlantObservation {
+        type: PlantObservationType
         date: date
-        mass: number
-        units: number
-        quality: HarvestQualityEnum
+        data: json
     }
     class Plant {
         cultivarName: string
         name: string
+        cultivarAttributes: CultivarAttributes
         recordedLifespan: Lifespan
         expectedLifespan: Lifespan
+        beginDate: date
+        endDate: date
+        quantity: number
         aggregate: boolean
     }
     class PlantGroup {
@@ -77,46 +74,37 @@ In direct seed mode, most plants will have one location: the one they were seede
 
 Both location and geometry may vary over time, as plants move around or grow.
 
-## seedDate, germDate, floweringDates, expiryDate, dormancyDates, growthDates
+## observations
 
-Stores the key dates for the plants.
+Every dated event in a Plant's life - seeding, germination, flowering, entering or exiting dormancy, expiry, and harvests - is a generic `PlantObservation` record (`type`, `date`, optional `data`), not a dedicated scalar field. There's no limit on how many of a given type a Lifespan can hold. `type` is one of:
 
-- seedDate: The date at which the plant is seeded.
-- germDate: The date at which the seed germinated.
-- floweringDates: A set, not a single date - a biennial/perennial plant flowers or fruits once per cycle, same as it enters and exits dormancy once per cycle, so one date per year is expected rather than one ever. For an annual this will typically hold zero or one date. Optional - not every cultivar is grown past this point (e.g. root and leaf crops are typically harvested before it would ever occur), so it's left empty for those.
-- expiryDate: The date at which the plant is removed from the space.
-- dormancyDates: This is defined only for biennial or perennial plants. A set of dates which the plant became dormant until the following year. For example, includes the dates a berry bush has stopped producing fruit and vegetation.
-- growthDates: This is defined only for biennial or perennial plants. A set of dates which the plant exited dormancy for the year. For example, includes the dates a berry bush has begun vegetative growth again.
+- `plant-seed`: the date the plant was sown as a seed.
+- `plant-germ`: the date the seed germinated.
+- `plant-flower`: a date the plant flowered or fruited. Not every Plant gets one - cultivars typically harvested before this would occur (most root and leaf crops) simply never have one.
+- `plant-harvest`: a harvest from the plant. `data` holds `mass` (kg) and `quality`, plus an optional `description`. `quality` is a free-text string, not a closed enum - defective/passable/average/exceptional are offered as suggested values during entry, not enforced, so a free-text description still fits when none of them apply.
+- `plant-dormancy-enter` / `plant-growth-enter`: entering and exiting dormancy. Only meaningful for biennials/perennials.
+- `plant-expiry`: the date the plant was removed from the space.
 
-## harvests
+Because there's no cardinality limit, a long-lived perennial's repeating flower/fruit/dormancy years are just more observations of the same type, one per cycle - not a set-typed field needing its own cycle-tracking logic. [GrowthStage](#growthstage) below reads whichever observations actually exist near the focused day, rather than assuming a fixed number of them.
 
-A variable number of harvests may be assigned to a plant. For plants which have a zero `AnnualLifecycleProfile.firstToLastHarvest` this should include only one harvest, but this may be overridden. Each harvest contains the following attributes:
-
-- date: The date of the harvest.
-- mass: The mass of the harvest, in kg.
-- quality: The quality of the harvest. May be defective, passable, average, or exceptional
-- units: The number of units. This may differ in meaning depending on the plant. For example, for carrots, it could mean the number of roots. For lettuce, it could mean the number of leaves.
+`data.units` - a count whose meaning depends on the plant (roots for carrots, heads for lettuce) - is a planned addition to `plant-harvest` alongside `mass`/`quality`, not yet implemented.
 
 # GrowthStage
 
-Not a stored field: a Plant's growth stage is computed from whichever Lifespan is active for a given day (recorded if present, otherwise expected - see the [Planner wireframes](../planner/wireframes.md#layout)). It's what selects an icon pack's SVG variant in the Layout. The stages, bounded by the dates below, are:
+Not a stored field: a Plant's growth stage is computed from whichever Lifespan is active for a given day (recorded if present, otherwise expected - see the [Planner wireframes](../planner/wireframes.md#layout)), by finding the most recent relevant `observations` entries on or before that day. It's what selects an icon pack's SVG variant in the Layout. The stages, bounded by observation types, are:
 
-- **seed**: `seedDate` to `germDate`. Occurs once, ever.
-- **vegetative**: cycle start to the earliest `floweringDates` entry in the current cycle, or straight through to the first-harvest milestone if this Plant's Cultivar has no `germToFlowering` set.
-- **flowering-or-fruiting**: that `floweringDates` entry to the first-harvest milestone. Skipped entirely for cultivars with no `germToFlowering` (e.g. most root and leaf crops).
-- **harvesting**: the first-harvest milestone to either `expiryDate` or the next `dormancyDates` entry, whichever comes first, covering the last-harvest milestone in between without a separate icon transition at that point.
-- **dormant**: biennial/perennial plants only, from a `dormancyDates` entry to the matching `growthDates` entry.
-- **expired**: after `expiryDate`.
+- **seed**: `plant-seed` to `plant-germ`. Occurs once, ever.
+- **vegetative**: the most recent `plant-germ` or `plant-growth-enter` on or before the focused day, up to the next `plant-flower` (if any) or the first-harvest milestone.
+- **flowering-or-fruiting**: that `plant-flower` up to the first-harvest milestone. Skipped entirely for cultivars with no `germToFlowering` set, which simply never get a `plant-flower` observation.
+- **harvesting**: the first-harvest milestone up to either `plant-expiry` or the next `plant-dormancy-enter`, whichever comes first, covering the last-harvest milestone in between without a separate icon transition at that point.
+- **dormant**: biennial/perennial plants only, from a `plant-dormancy-enter` to the next `plant-growth-enter`.
+- **expired**: after `plant-expiry`.
 
-"Cycle start" is `germDate` for the first cycle, and the most recent `growthDates` entry on or before the focused day for every cycle after - see below.
-
-## Relationship to annual cycles (biennials/perennials)
-
-A plant that flowers and fruits every year doesn't re-germinate each year - it exits dormancy and repeats vegetative → flowering-or-fruiting → harvesting before going dormant again. So for a cycle after the first, the stage boundaries above are computed relative to that cycle's `growthDates` entry instead of `germDate`, using the same Cultivar durations (`germToFlowering`, `germToFirstHarvest`, `firstToLastHarvest`) re-anchored to it, and matched against whichever `floweringDates` entry falls within that cycle's window. This is why `floweringDates`, like `dormancyDates`/`growthDates`, is a set: one entry per cycle, not one ever. The sequence for a long-lived perennial is `seed` once, then `[vegetative → flowering-or-fruiting → harvesting → dormant]` repeating once per year, ending in `expired` only when the Plant is actually removed - `harvesting` never runs into `expired` directly for these, since dormancy intervenes first.
+A plant that flowers and fruits every year doesn't re-germinate each year - it exits dormancy (`plant-growth-enter`) and repeats vegetative → flowering-or-fruiting → harvesting before going dormant again. Because `observations` has no cardinality limit (see [Lifespan](#observations)), this falls out without any special handling: a long-lived perennial simply accumulates one `plant-flower` and one `plant-dormancy-enter`/`plant-growth-enter` pair per year, and stage computation just reads whichever ones are nearest the focused day. The sequence for such a plant is `seed` once, then `[vegetative → flowering-or-fruiting → harvesting → dormant]` repeating once per year, ending in `expired` only when the Plant is actually removed.
 
 ## Relationship to origin
 
-A Plant whose `origin` is `seedToTransplant` or `seedlingToTransplant` may have no `seedDate`/`germDate` of its own - that happened before this Plant's own history began (e.g. at a nursery). Stage computation degrades gracefully for these: it starts at whichever stage the earliest date actually present implies, rather than assuming every earlier stage happened on this Plant's own timeline.
+A Plant whose `origin` is `seedToTransplant` or `seedlingToTransplant` may have no `plant-seed`/`plant-germ` observation of its own - that happened before this Plant's own history began (e.g. at a nursery). Stage computation degrades gracefully for these: it starts at whichever stage the earliest observation actually present implies, rather than assuming every earlier stage happened on this Plant's own timeline.
 
 ## Relationship to transplanting
 
@@ -140,6 +128,18 @@ The plant model may store the name associated with a Cultivar, correlating with 
 ## recordedLifespan and expectedLifespan
 
 The purpose of storing two Lifespan objects is to clearly delineate between the attributes in the Plant model which have been planned with the software, and those which have been recorded from real life. When a Plant is created, its expectedLifespan is populated based on its Cultivar and any user-provided settings, while its recordedLifespan starts empty and is filled in incrementally as the user records what actually happens to the plant, for example that it has germinated or been harvested. Both are always present on the same Plant instance; there is no separate state or term for a Plant that only has expected data so far. How the two are told apart visually is described in the [Planner wireframes](../planner/wireframes.md#layout).
+
+## cultivarAttributes
+
+A set of [Cultivar attribute profiles](../cultivars/models.md) overriding the ones inherited from this Plant's resolved Cultivar - for a specific plant that, say, runs hotter or colder than its Cultivar's usual `TemperatureProfile`. Same shape as a Cultivar's own `profiles`, just scoped to one Plant instead of every Plant of that Cultivar.
+
+## beginDate and endDate
+
+A denormalized cache of the earliest and latest date across both Lifespans' observations, maintained alongside them rather than computed live. Exists purely so the rest of the app (e.g. which Plants fall within the Timeline Selector's range) doesn't need to query through both Lifespans' observations for every Plant just to bound it in time.
+
+## quantity
+
+The number of distinct real plants this one Plant instance represents. For a typical, non-aggregate Plant this is 1; for an `aggregate` Plant it's the count shown on its Layout icon (see [Planner wireframes](../planner/wireframes.md#aggregate-plants)).
 
 ## aggregate
 

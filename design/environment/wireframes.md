@@ -8,7 +8,7 @@ The Environment wireframes allow:
 
 - Viewing and editing Environments
 
-It hasn't been decided whether the Enviornment config should be similar to the Workspace editor for when it needs to manipulate geometries, or if that should just be a part of the Workspace editor
+Decided: Environments are edited as part of the Workspace editor, not a separate config surface - via its "Add Environment" tool (`environmentCreate` in `packages/ui/src/components/workspaces/editor/tools/`), alongside PlantingAreas. See [Workspaces wireframes](../workspaces/wireframes.md#viewingediting-a-workspace).
 
 ## Environment
 

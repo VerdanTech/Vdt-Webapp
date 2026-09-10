@@ -21,3 +21,5 @@ The Workspace wireframes allow:
 ## Viewing/Editing a workspace
 
 ![Workspace Wireframe](./wireframes/workspace.excalidraw.png)
+
+The editor's Toolbox includes tools for adding PlantingAreas and Environments (`plantingAreaCreate`/`environmentCreate`), translating and deleting them, an Expire tool, and Layout Config - see [Environment wireframes](../environment/wireframes.md) for why Environment editing lives here rather than as its own page.
