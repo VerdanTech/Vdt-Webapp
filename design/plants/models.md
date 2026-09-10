@@ -95,12 +95,11 @@ Not a stored field: a Plant's growth stage is computed from whichever Lifespan i
 
 - **seed**: `plant-seed` to `plant-germ`. Occurs once, ever.
 - **vegetative**: the most recent `plant-germ` or `plant-growth-enter` on or before the focused day, up to the next `plant-flower` (if any) or the first-harvest milestone.
-- **flowering-or-fruiting**: that `plant-flower` up to the first-harvest milestone. Skipped entirely for cultivars with no `germToFlowering` set, which simply never get a `plant-flower` observation.
-- **harvesting**: the first-harvest milestone up to either `plant-expiry` or the next `plant-dormancy-enter`, whichever comes first, covering the last-harvest milestone in between without a separate icon transition at that point.
+- **producing**: that `plant-flower`, or the first-harvest milestone if there's no `plant-flower` (cultivars with no `germToFlowering` set never get one), up to either `plant-expiry` or the next `plant-dormancy-enter`, whichever comes first. Covers flowering, fruiting, and harvesting as one stage rather than three - collapsed deliberately, since for most fruiting crops (tomatoes, beans, squash) flowering continues throughout the whole harvest window rather than ending when picking starts, so treating "flowering-or-fruiting" and "harvesting" as sequential, mutually exclusive stages was wrong for the common case. A Cultivar's `ExpectedGeometryProfile` still sizes flowering/firstHarvest/lastHarvest as distinct milestones within this one stage (see below) - the icon just doesn't need a variant for each of them the way geometry needs a size for each.
 - **dormant**: biennial/perennial plants only, from a `plant-dormancy-enter` to the next `plant-growth-enter`.
 - **expired**: after `plant-expiry`.
 
-A plant that flowers and fruits every year doesn't re-germinate each year - it exits dormancy (`plant-growth-enter`) and repeats vegetative → flowering-or-fruiting → harvesting before going dormant again. Because `observations` has no cardinality limit (see [Lifespan](#observations)), this falls out without any special handling: a long-lived perennial simply accumulates one `plant-flower` and one `plant-dormancy-enter`/`plant-growth-enter` pair per year, and stage computation just reads whichever ones are nearest the focused day. The sequence for such a plant is `seed` once, then `[vegetative → flowering-or-fruiting → harvesting → dormant]` repeating once per year, ending in `expired` only when the Plant is actually removed.
+A plant that flowers and fruits every year doesn't re-germinate each year - it exits dormancy (`plant-growth-enter`) and repeats vegetative → producing before going dormant again. Because `observations` has no cardinality limit (see [Lifespan](#observations)), this falls out without any special handling: a long-lived perennial simply accumulates one `plant-flower` and one `plant-dormancy-enter`/`plant-growth-enter` pair per year, and stage computation just reads whichever ones are nearest the focused day. The sequence for such a plant is `seed` once, then `[vegetative → producing → dormant]` repeating once per year, ending in `expired` only when the Plant is actually removed.
 
 ## Relationship to origin
 
@@ -112,7 +111,7 @@ Transplanting is deliberately not a growth stage. It's a location/geometry event
 
 ## Relationship to Cultivar's ExpectedGeometryProfile
 
-A Cultivar's `ExpectedGeometryProfile` (see [Cultivars models](../cultivars/models.md#expected-geometry)) scales geometry at the same milestones GrowthStage is bounded by - seedling, flowering, firstHarvest, lastHarvest, expiry, enterDormancy, exitDormancy - used to generate a Plant's default `expectedLifespan.geometryHistory` at creation. The two are deliberately the same set of boundaries read by two different consumers (sizing vs. icon selection), not two parallel vocabularies that happen to overlap - a milestone added for one should be added for the other.
+A Cultivar's `ExpectedGeometryProfile` (see [Cultivars models](../cultivars/models.md#expected-geometry)) scales geometry at seedling, flowering, firstHarvest, lastHarvest, expiry, enterDormancy, and exitDormancy - used to generate a Plant's default `expectedLifespan.geometryHistory` at creation. GrowthStage reads the same underlying observations but at coarser granularity, since `producing` deliberately covers flowering/firstHarvest/lastHarvest as one stage (see above): geometry still sizes each of those milestones distinctly, it's only the icon that doesn't switch variants between them. A milestone added to one isn't automatically owed to the other anymore - only `seed`/`vegetative`/`dormant`/`expired` still line up boundary-for-boundary with their geometry milestones.
 
 # Plant
 

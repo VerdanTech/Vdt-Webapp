@@ -20,7 +20,7 @@ The Verdagraph is split into three main views into the model state:
 All three of these windows are toggleable. They are supported by the following additional UI elements:
 
 - _Timeline Selector_: Allows selecting a range of dates easily with the mouse and keyboard. This range dictates which model elements are visible in the Tree and Calendar, with a value within the range being the "focused day" which controls the day displayed in the Layout.
-- _Toolbar_: A horizontal toolbar. Includes a Workspaces control based on the one already built for the Workspace Editor (`(config)/workspaces/+layout.svelte`'s "Workspaces" menu: up to 10 workspaces listed directly, a "See All" link, and a "Create" option gated by the `WorkspaceCreate` authorization), extended from single-select to a toggle per workspace - defaulting to just `defaultSelectedWorkspaceId` enabled - so the same control covers both switching to a different single workspace and enabling more than one at once (see [Layout](#multiple-workspaces)).
+- _Toolbar_: A horizontal toolbar. Includes a Workspaces control based on the one already built for the Workspace Editor (`(config)/workspaces/+layout.svelte`'s "Workspaces" menu: up to 10 workspaces listed directly, plus a "See All" link), extended from single-select to a toggle per workspace - defaulting to just `defaultSelectedWorkspaceId` enabled - so the same control covers both switching to a different single workspace and enabling more than one at once (see [Layout](#multiple-workspaces)). No "Create" option here, unlike the Workspace Editor's version: creating a workspace means setting up its PlantingAreas/Environments before it's useful, which is the Workspace Editor's job, not something to start from a Planner toggle - "See All" is the escape hatch to get there.
 - _Toolbox_ A reusable component for storing a list of active tools (ex. "Add Plant", "Record Observation"), allowing the resuse of functionality between Tree, Calendar, and Layout.
 
 ![Verdagraph Structure Wireframe](./wireframes/verdagraphStructure.excalidraw.png)
@@ -54,9 +54,13 @@ A nested tree of horizontal date-range bars, one pane each for Plants, PlantingW
 
 #### Plants pane
 
+Nested Cultivar → Plant, matching [Tree](#tree)'s sort order - a garden can easily have more Plants than fit on screen, and collapsing a Cultivar's group is what keeps that manageable structurally, rather than relying on selection alone to narrow things down.
+
 Each Plant is one row, collapsed by default to a single bar blending its `expectedLifespan` and `recordedLifespan` (recorded portion solid, expected portion dashed or outlined - see [Layout](#layout)). Expanding the row - the same expand/collapse used throughout the tree - splits it into two child bars, one per Lifespan, for comparing the full plan against the full recorded reality side by side.
 
-Info points mark a Plant's observations along its bar (one per `PlantObservation` - see [Plants models](../plants/models.md#observations)), and now also its open Tasks, reusing the same marker rather than requiring a separate lookup in the Actions pane. When more than one info point falls on the same day, they collapse into a single marker showing a count, opening a popover listing each one individually on click - this keeps row height fixed rather than growing vertically with however many events land on a given day, which would break the tree's uniform row rhythm.
+Info points mark a Plant's observations along its bar (one per `PlantObservation` - see [Plants models](../plants/models.md#observations)), and now also its open Tasks, reusing the same marker rather than requiring a separate lookup in the Actions pane. When more than one info point falls on the same day, they shrink and pack into the same space rather than collapse into a single count: up to 2-3 actual icons side by side, and only beyond that a "+N" badge - enough to still see at a glance that a harvest and a task landed on the same day, without the space needed growing unbounded on a crowded day. Either way, clicking opens a popover listing each one individually.
+
+Narrowing a long list stacks three ways: collapsing Cultivar groups (structural), the shared selection (show only what's selected), and an explicit filter by `PlantGroup` tag - independent of selection, for a named subset like "everything in Bed 3" regardless of what's currently clicked.
 
 Selection is Plant-granular: clicking anywhere on a Plant's row, or either of its expanded children, selects the whole Plant - matching Tree and Layout, with no separate "just the Expected span" selection.
 
@@ -66,9 +70,15 @@ A Plant belonging to an open DraftBucket renders with the same "ghost" styling a
 
 Nested Environment → Cultivar → PlantingWindow, matching [Tree](#tree)'s sort order - Environment leads because it's what a PlantingWindow's date range is actually derived from (frost dates), and a garden typically has few distinct Environments to begin with.
 
+#### Environment observations
+
+Recording an Environment observation (e.g. a measured temperature, a frost event) isn't limited to the Workspace Editor - it's reachable from here too, as a quick-action on an Environment's group header in this pane (and the equivalent row in Tree), the same way a Plant's info point popup is a shortcut into Observe rather than a trip to a separate page. This is what eventually makes `TemperatureProfile` (see [Cultivars models](../cultivars/models.md#temperature)) useful: comparing a Cultivar's expected range against what's actually been recorded for the Environment it's planted in.
+
 #### Actions pane
 
 Grouped by target entity (Plant/PlantingArea/Workspace/Garden, per `Action.targetType`) to start. Each Action is one row: a bar spanning its earliest to latest Task date, with each Task as an info point along it - the same marker mechanism as Plant observations, not a new visual language.
+
+Narrowing stacks the same way as the Plants pane: the shared selection narrows to Actions targeting whatever's selected, and an independent filter set - the same My/All Tasks scope Workbook has, plus by assignee, TaskType, and completed/incomplete - narrows regardless of selection.
 
 #### Info point popups
 
@@ -77,7 +87,7 @@ Every info point opens a popup for viewing and acting on the thing it represents
 - **Expected observation** (a projection): record it for real, at either the current date or the date it was expected for - both write through the same minimal-observation path Observe uses, just choosing which date to stamp it with. Also reschedulable (the existing move-by-day/week buttons, plus a direct date edit for larger jumps), and deletable for the edge case where a Cultivar-generated projection doesn't apply to this particular Plant.
 - **Recorded observation** (a fact): editable (date and type-specific fields, e.g. a Harvest's mass/quality) and deletable (undoing an accidental entry). Never converts back to expected.
 - **Task due date**: completes in one tap (the same minimal-write-or-plain-toggle behavior as the Workbook), expandable inline to fill in detail first, reassignable or self-claimable, and reschedulable (setting `dateOverridden` same as anywhere else). Not deletable here - Tasks are mostly system-maintained off an Action, so removing one piecemeal risks drifting out of sync with whatever's maintaining it.
-- **Same-day cluster** (multiple info points collapsed into one marker): a plain routing list, one line per point, each opening straight into its own popup as above - not a new interaction surface of its own.
+- **Same-day cluster** (more info points on one day than fit as individual icons - see [Calendar](#plants-pane)): clicking the "+N" overflow, or any of the shrunk icons shown alongside it, opens a plain routing list, one line per point, each opening straight into its own popup as above - not a new interaction surface of its own.
 
 A few rules apply across all of these:
 
@@ -141,6 +151,18 @@ Enabling a Workspace is the Toolbar's Workspaces toggle described above, default
 ## Timeline Selector
 
 ![Timeline Selector Wireframe](./wireframes/timeline_selector.excalidraw.png)
+
+A three-thumb range slider - begin, focus, end - over a scrollable slider window wider than the selection itself, plus a row of three direct date pickers (one per thumb) and translate buttons (±1 day/week/month). The focus thumb is what sets the Layout's displayed day; begin/end set the range visible in Tree and Calendar.
+
+- **Zoom window**: `beginSlider`/`endSlider` bound the date range actually drawn on the slider, starting two weeks past each side of the selection and expanding automatically as a thumb nears either edge, so the visible window scrolls to keep up with a thumb being dragged toward it rather than needing a separate manual pan.
+- **Offset bounds**: the focus day must stay between 1 day and 4 years from each of `beginSelection`/`endSelection` - a range can't collapse to nothing, and can't run unreasonably long either.
+- **Reset actions**: one resets just the zoom window back to its two-week-past-each-side default; the other resets the whole selection (range and focus) back to today's default.
+
+#### Dragging focus should translate the range, not shrink it
+
+Dragging the focus thumb is meant to move the whole selection together - begin, focus, and end all shift by the same amount, preserving both the range's length and the focus-to-edge distances. The current implementation (`timelineSelection.svelte.ts`'s `updateSlider`) doesn't quite do this: it clamps the new begin and end values independently against the slider's own min/max bounds, rather than clamping the translation itself. The effect matches a real bug report - once the end of the range reaches the edge of the slider, it gets pinned there while focus keeps moving, so continuing to drag focus shortens the range instead of stopping the translation.
+
+The fix is to clamp once, on the delta, not twice, on each endpoint: compute how far focus moved, reduce that delta if applying it to *either* begin or end would exceed the slider's bounds, then apply the same (possibly reduced) delta to begin, focus, and end together. The range stops translating cleanly at the boundary - it never shrinks.
 
 ## Toolbox Tools
 

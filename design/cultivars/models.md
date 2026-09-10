@@ -1,5 +1,5 @@
 ---
-status: Mixed. Color and Expected Geometry profiles now match the implementation (previously undocumented, corrected 2026-09-09). TemperatureProfile is documented but doesn't appear to be implemented at all. InterplantingProfile, IconPack, iconPackId, germToFlowering, and floweringScaleFactor are ahead of the implementation.
+status: Mixed. Color and Expected Geometry profiles now match the implementation (previously undocumented, corrected 2026-09-09). TemperatureProfile, InterplantingProfile, IconPack, iconPackId, germToFlowering, and floweringScaleFactor are ahead of the implementation - TemperatureProfile deliberately so, kept pending Environment temperature observations.
 ---
 
 # Cultivars - Models
@@ -146,7 +146,7 @@ The annual lifecycle defines the length of the stages of life for annual plants.
 
 - seedToGerm: The expected amount of days from starting a seed to its germination.
 - germToTransplant: The expected amount of days from the germination of a seed to when it will be ready for transplant. For cultivars which are not able to be transplanted, this value is unused.
-- germToFlowering: The expected amount of days from germination (or, for a biennial/perennial's later cycles, exiting dormancy) to that cycle's first flowering or fruiting. Optional - left unset for cultivars typically harvested before this would ever occur, such as most root and leaf crops. Drives the `plant-flower` observations generated for this Cultivar's Plants, and the flowering-or-fruiting [GrowthStage](../plants/models.md#growthstage).
+- germToFlowering: The expected amount of days from germination (or, for a biennial/perennial's later cycles, exiting dormancy) to that cycle's first flowering or fruiting. Optional - left unset for cultivars typically harvested before this would ever occur, such as most root and leaf crops. Drives the `plant-flower` observations generated for this Cultivar's Plants, and the start of the `producing` [GrowthStage](../plants/models.md#growthstage).
 - germToFirstHarvest: The expected amount of days the germination of a seed to when it will be ready for a harvest.
 - firstToLastHarvest: The expected amount of days the first and last harvest of a plant. For plants which only have one harvest, this value is zero.
 
@@ -158,6 +158,10 @@ A planting window defines a period of time within an environment that a cultivar
 - lastFrostWindowClose: The amount of days between the last frost and the end of the planting window. Positive values indicate the window begins after the last frost date. For example, a value of 15 indicates the cultivar must be planted before 15 days after the last frost date.
 - firstFrostWindowOpen: The amount of days between the first frost and the beginning of the planting window. Positive values indicate the window begins after the first frost date. For example, a value of -15 indicates the cultivar may be planted 15 days before the first frost date.
 - firstFrostWindowClose: The amount of days between the first frost and the end of the planting window. Positive values indicate the window begins after the first frost date. For example, a value of 15 indicates the cultivar must be planted before 15 days after the first frost date.
+
+### Temperature
+
+Not implemented yet, and deliberately kept rather than dropped: `minTemperature`/`maxTemperature` only become useful once an Environment's actual temperature is something that gets recorded, so this is waiting on Environment observations (see [Planner wireframes](../planner/wireframes.md#environment-observations)) to exist before there's anything to compare it against.
 
 ### Origin
 
@@ -171,7 +175,7 @@ Implemented but previously undocumented. Drives the default Layout rendering of 
 
 ### Expected Geometry
 
-Implemented but previously undocumented, and since extended with `floweringScaleFactor` to match [GrowthStage](../plants/models.md#growthstage). Determines the default `expectedLifespan.geometryHistory` generated for a Plant when it's created: `peakSize` is the geometry's size at its largest (the diameter for an ellipse, a side length for a rectangle or polygon), and each `*ScaleFactor` is a fraction of `peakSize` applied at a milestone date - seedling, flowering (optional, only where `germToFlowering` is set), first harvest, last harvest, expiry, and (for biennials/perennials) entering and exiting dormancy. `geometryType` picks which `Geometry` shape those milestones are expressed in. These are the exact same milestones GrowthStage is bounded by, not a separate vocabulary - a milestone added here should be added there too, and vice versa.
+Implemented but previously undocumented, and since extended with `floweringScaleFactor`. Determines the default `expectedLifespan.geometryHistory` generated for a Plant when it's created: `peakSize` is the geometry's size at its largest (the diameter for an ellipse, a side length for a rectangle or polygon), and each `*ScaleFactor` is a fraction of `peakSize` applied at a milestone date - seedling, flowering (optional, only where `germToFlowering` is set), first harvest, last harvest, expiry, and (for biennials/perennials) entering and exiting dormancy. `geometryType` picks which `Geometry` shape those milestones are expressed in. [GrowthStage](../plants/models.md#growthstage) reads the same observations at coarser granularity - its `producing` stage spans flowering through lastHarvest as one icon variant, even though geometry still sizes each of those milestones separately.
 
 ### Interplanting _(provisional)_
 
