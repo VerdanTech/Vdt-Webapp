@@ -1,8 +1,7 @@
 <script lang="ts">
-	import type { Vector2d } from 'konva/lib/types';
 	import { getContext } from 'svelte';
 
-	import { type Geometry, type GeometryUpdateCommand } from '@vdg-webapp/models';
+	import { type Geometry, type GeometryUpdateCommand, type Position } from '@vdg-webapp/models';
 
 	import { getColor } from '$utils';
 
@@ -18,20 +17,20 @@
 		name: string;
 		showName: boolean;
 		/** The current position of the plant in the workspace, in model quantity (meters). */
-		position: Vector2d | null;
+		position: Position | null;
 		/** The geometry of the plant. */
 		geometry: Omit<Geometry, 'id' | 'gardenId' | 'linesCoordinateIds' | 'date'>;
 		/** If true, the plant may be moved and resized. */
 		editable: boolean;
 		/** If true, the plant is selected. */
 		selected: boolean;
-		labelTranslate?: Vector2d;
+		labelTranslate?: Position;
 		/** The grid attributes of the plant. */
 		grid?: { numRows: number; numCols: number };
 		/** Called when the position is moved in the canvas. */
 		onTranslate?: (
 			/** The new position, in canvas quantity (pixels). */
-			newPos: Vector2d,
+			newPos: Position,
 			/** If true, the movement has ended (dragend).*/
 			movementOver: boolean
 		) => void;
@@ -60,7 +59,7 @@
 		onClick
 	}: Props = $props();
 
-	/** Retrieve canvas and initialize Konva constructs. */
+	/** Retrieve canvas. */
 	const canvas = getContext<CanvasContext>(canvasId);
 
 	/**

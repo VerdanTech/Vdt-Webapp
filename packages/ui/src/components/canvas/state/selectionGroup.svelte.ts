@@ -1,25 +1,8 @@
-import Konva from 'konva';
-
-import { type CanvasContainer } from './container.svelte';
-
 type SelectTool = 'pointer' | 'group' | 'union' | 'intersect';
 
-export function createSelectionGroup(container: CanvasContainer) {
-	/** Consts. */
-
-	/** Konva. */
-	// eslint-disable-next-line
-	const group: Konva.Group = new Konva.Group();
-
+export function createSelectionGroup() {
 	/** Runes. */
 	const selectTool: SelectTool = $state('pointer');
-
-	container.stage?.on('mouseover', () => {
-		setDocumentCursor();
-	});
-	container.stage?.on('mouseout', () => {
-		document.body.style.cursor = 'default';
-	});
 
 	function setDocumentCursor() {
 		switch (selectTool) {

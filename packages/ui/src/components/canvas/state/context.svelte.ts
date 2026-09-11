@@ -43,7 +43,7 @@ export function createCanvasContext(
 		options.draggable || true,
 		options.strokeScale || true
 	);
-	const selectionGroup = createSelectionGroup(container);
+	const selectionGroup = createSelectionGroup();
 	const gridManager = createCanvasGridManager(container, transform);
 
 	/**
@@ -57,13 +57,11 @@ export function createCanvasContext(
 	}
 
 	/**
-	 * Destroy the canvas.
+	 * Destroy the canvas. No-op now that there is no imperative Stage
+	 * instance to tear down, kept so `resetCanvasContext` has a stable
+	 * function to call.
 	 */
-	function destroy() {
-		if (container.stage) {
-			container.stage.destroy();
-		}
-	}
+	function destroy() {}
 
 	return {
 		get canvasId() {

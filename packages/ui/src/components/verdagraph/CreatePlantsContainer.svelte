@@ -1,6 +1,4 @@
 <script lang="ts">
-	import type { Vector2d } from 'konva/lib/types';
-
 	import type { Geometry, GeometryUpdateCommand } from '@vdg-webapp/models';
 
 	import { Plant } from '$components';

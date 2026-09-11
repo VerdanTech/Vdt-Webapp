@@ -1,7 +1,5 @@
 <script lang="ts">
-	import { type Snippet, getContext } from 'svelte';
-
-	import type { CanvasContext } from '../state';
+	import type { Snippet } from 'svelte';
 
 	/** Props. */
 	type Props = {
@@ -9,11 +7,9 @@
 		plantLayerId: string;
 		children: Snippet<[]>;
 	};
-	let { canvasId, plantLayerId, children }: Props = $props();
-
-	let canvas = getContext<CanvasContext>(canvasId);
-
-	canvas.container.addLayer(plantLayerId);
+	let { plantLayerId, children }: Props = $props();
 </script>
 
-{@render children()}
+<g data-layer-id={plantLayerId}>
+	{@render children()}
+</g>

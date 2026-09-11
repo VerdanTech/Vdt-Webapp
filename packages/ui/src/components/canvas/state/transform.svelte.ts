@@ -1,6 +1,4 @@
-import type { Vector2d } from 'konva/lib/types';
-
-import { AppError } from '@vdg-webapp/models';
+import type { Position } from '@vdg-webapp/models';
 
 import { isMobile } from '$state/isMobile.svelte';
 import { LocalStore } from '$state/localStore.svelte';
@@ -31,7 +29,7 @@ const maxScaleFactor = 10;
 /**
  * Context which handles canvas positioning and scaling.
  * @param container The container context.
- * @param draggable: The draggable Konva value.
+ * @param draggable Whether the canvas may be panned by dragging its background.
  * @param strokeScale: The default value for strokeScaleEnabled for shapes.
  * @returns The transform context.
  */
@@ -41,17 +39,22 @@ export function createCanvasTransform(
 	strokeScale: boolean
 ) {
 	/** Runes. */
-	let scaleFactor: Vector2d = $state({ x: 1, y: 1 });
-	let position: Vector2d = $state({ x: 0, y: 0 });
+	let scaleFactor: Position = $state({ x: 1, y: 1 });
+	let position: Position = $state({ x: 0, y: 0 });
 	const config = new LocalStore<TransformControlsState>('layoutControls', {
 		buttonsExpanded: true,
 		buttonsPosition: defaultButtonPosition
 	});
 
 	/**
-	 * An array of functions which, when the canvas is transformed, are called.
+	 * The transform attribute applied to the group wrapping every shape
+	 * and gridline, expressing the current pan/zoom as a single SVG
+	 * transform. This replaces the imperative `stage.scale()`/`stage.position()`
+	 * calls Konva required - Svelte's own reactivity keeps it in sync.
 	 */
-	const transformFunctions: Array<() => void> = [];
+	const stageTransform = $derived(
+		`translate(${position.x} ${position.y}) scale(${scaleFactor.x} ${scaleFactor.y})`
+	);
 
 	/** Functions. */
 
@@ -118,6 +121,31 @@ export function createCanvasTransform(
 	}
 
 	/**
+	 * Converts a pointer event's screen position into local pixel space,
+	 * i.e. the same pre-pan-zoom pixel space `canvasXPos`/`canvasYPos`
+	 * produce. Konva's Stage used to perform this conversion invisibly as
+	 * part of its own hit-testing/drag pipeline; since the SVG stage
+	 * transform (translate + scale) is fully-owned app state rather than
+	 * an opaque nested transform, it is cheaper and simpler to invert it
+	 * directly here than to query `getScreenCTM()` on every pointer move.
+	 * @param event The pointer event to convert.
+	 * @param containerElement The element the event's client coordinates are relative to (the root SVG).
+	 * @returns The equivalent position in local pixel space.
+	 */
+	function localPixelPositionFromPointerEvent(
+		event: PointerEvent,
+		containerElement: Element
+	): Position {
+		const rect = containerElement.getBoundingClientRect();
+		const screenX = event.clientX - rect.left;
+		const screenY = event.clientY - rect.top;
+		return {
+			x: (screenX - position.x) / scaleFactor.x,
+			y: (screenY - position.y) / scaleFactor.y
+		};
+	}
+
+	/**
 	 *  Reset the transformations to the initial state.
 	 */
 	function reset() {
@@ -129,9 +157,8 @@ export function createCanvasTransform(
 	 * Moves the position of the canvas.
 	 * @param translation The translation to move the position by.
 	 */
-	function translate(translation: Vector2d) {
-		position.x += translation.x;
-		position.y += translation.y;
+	function translate(translation: Position) {
+		position = { x: position.x + translation.x, y: position.y + translation.y };
 	}
 
 	/**
@@ -187,41 +214,10 @@ export function createCanvasTransform(
 	}
 
 	/**
-	 * Adds a new side-effect to transforming the canvas.
-	 * @param func The function to add.
-	 */
-	function addTransformFunction(func: () => void) {
-		transformFunctions.push(func);
-	}
-
-	/**
-	 * Initialize the side-effects.
+	 * Initialize the transform's starting position.
 	 */
 	function initialize() {
-		if (!container.stage) {
-			throw new AppError(
-				'Attempted to initialize canvas transform with uninitialized stage.'
-			);
-		}
-
 		position = initialPosition();
-		container.stage.position(position);
-		container.stage.draggable(draggable);
-
-		$effect(() => {
-			if (!container.stage) return;
-
-			container.stage.scale(scaleFactor);
-			container.stage.position(position);
-			transformFunctions.forEach((func) => func());
-		});
-
-		/** Events. */
-		container.stage.on('dragmove', () => {
-			if (!container.stage) return;
-
-			position = container.stage.position();
-		});
 	}
 
 	return {
@@ -231,7 +227,7 @@ export function createCanvasTransform(
 		get scaleFactor() {
 			return scaleFactor;
 		},
-		set scaleFactor(newVal: Vector2d) {
+		set scaleFactor(newVal: Position) {
 			scaleFactor = newVal;
 		},
 		get position() {
@@ -239,6 +235,12 @@ export function createCanvasTransform(
 		},
 		get strokeScale() {
 			return strokeScale;
+		},
+		get draggable() {
+			return draggable;
+		},
+		get stageTransform() {
+			return stageTransform;
 		},
 		set config(newVal: TransformControlsState) {
 			config.value = newVal;
@@ -252,10 +254,10 @@ export function createCanvasTransform(
 		modelYPos,
 		canvasDistance,
 		modelDistance,
+		localPixelPositionFromPointerEvent,
 		translate,
 		addScale,
 		reset,
-		addTransformFunction,
 		initialize
 	};
 }

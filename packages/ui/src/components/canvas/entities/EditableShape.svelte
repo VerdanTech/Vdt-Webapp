@@ -1,30 +1,27 @@
 <script lang="ts">
-	import Konva from 'konva';
-	import type { Vector2d } from 'konva/lib/types';
-	import { getContext, onDestroy, untrack } from 'svelte';
+	import { getContext } from 'svelte';
 
 	import {
 		type Geometry,
 		type GeometryUpdateCommand,
+		type Position,
 		getGeometryHeight
 	} from '@vdg-webapp/models';
 
-	import { getColor } from '$utils';
-
 	import type { CanvasContext } from '../state';
-	import { type SupportedShape, getClosedShape, updateShape } from '../utils';
+	import { getShapeAttributes } from '../utils';
 	import EditableGeometryResizePoints from './EditableGeometryResizePoints.svelte';
 
 	type Props = {
 		/** The ID of the canvas. */
 		canvasId: string;
-		/** The ID of the layer which holds the shape. */
+		/** The ID of the layer which holds the shape. Kept for caller compatibility; z-order is now plain DOM order. */
 		layerId: string;
 		/** Name of the planting area. Can be disabled */
 		name: string;
 		showName: boolean;
 		/** The current position of the shape in the workspace, in model quantity (meters). */
-		position: Vector2d | null;
+		position: Position | null;
 		/** The geometry of the shape. */
 		geometry: Omit<Geometry, 'id' | 'gardenId' | 'linesCoordinateIds' | 'date'>;
 		/** If true, the shape may be moved and resized. */
@@ -37,11 +34,11 @@
 		nameTextFillColor: string;
 		strokeWidth: number;
 		/** Constant to add to the label's position. */
-		labelTranslate?: Vector2d;
+		labelTranslate?: Position;
 		/** Called when the position is moved in the canvas. */
 		onTranslate?: (
 			/** The new position, in canvas quantity (pixels). */
-			newPos: Vector2d,
+			newPos: Position,
 			/** If true, the movement has ended (dragend).*/
 			movementOver: boolean
 		) => void;
@@ -63,7 +60,6 @@
 		position,
 		geometry,
 		editable,
-		selected,
 		strokeColor,
 		fillColor,
 		nameTextFillColor,
@@ -77,146 +73,265 @@
 	/** The number of pixels the label is offset from the top of the shape. */
 	const LABEL_OFFSET_PX = 10;
 
-	/** Retrieve canvas and initialize Konva constructs. */
-	const canvas = getContext<CanvasContext>(untrack(() => canvasId));
-	const layer = canvas.container.getLayer(untrack(() => layerId));
-	const group: Konva.Group = new Konva.Group({ draggable: editable });
-	layer.add(group);
-
-	/** Shapes. */
-	let shape: SupportedShape | null = null;
-	let nameText = new Konva.Text({
-		fontFamily: 'sans',
-		fontSize: 15,
-		opacity: 0.7,
-		text: untrack(() => name),
-		visible: untrack(() => showName)
-	});
-	group.add(nameText);
+	/** Retrieve canvas. */
+	const canvas = getContext<CanvasContext>(canvasId);
 
 	/**
-	 * Store the geometry type.
-	 * If the geometry type is changed, a new shape may be rendered.
-	 * Otherwise, the current shape can simply be updated.
+	 * A resize's geometry updates are optimistically overlaid onto the
+	 * committed `geometry` prop so the shape and its label reposition
+	 * instantly, without waiting on the Triplit round trip that
+	 * `onTransform` triggers. Cleared once the committed prop catches up.
 	 */
-	let previousGeometryType = $state(untrack(() => geometry.type));
+	let geometryOverride: GeometryUpdateCommand | null = $state(null);
+	const effectiveGeometry = $derived({ ...geometry, ...(geometryOverride ?? {}) });
 
-	/** Update shapes upon geometry change. */
 	$effect(() => {
-		/** If the geometry type has changed or the shape hasn't been initialized, initialize. */
-		if (geometry.type !== previousGeometryType || !shape) {
-			shape?.destroy();
-			shape = getClosedShape(canvas, geometry, {
-				stroke: strokeColor,
-				fill: fillColor,
-				strokeWidth: strokeWidth
-			});
-			if (shape) {
-				group.add(shape);
-				group.rotation(geometry.rotation);
-				nameText.y(
-					canvas.transform.canvasYPos(getGeometryHeight(geometry) + labelTranslate.y)
-				);
-				nameText.x(canvas.transform.canvasXPos(labelTranslate.x));
-			}
-
-			/** Otherwise, update the existing shape.*/
-		} else {
-			updateShape(canvas, geometry, shape);
-			nameText.y(
-				canvas.transform.canvasYPos(getGeometryHeight(geometry) + labelTranslate.y)
-			);
-			nameText.x(canvas.transform.canvasXPos(labelTranslate.x));
-		}
-
-		previousGeometryType = geometry.type;
+		void geometry;
+		geometryOverride = null;
 	});
 
-	/** Update position upon position change. */
+	const shapeAttributes = $derived(getShapeAttributes(canvas, effectiveGeometry));
+
+	/**
+	 * A drag's translation is optimistically overlaid onto the committed
+	 * `position` prop for the same reason as `geometryOverride` above.
+	 */
+	let positionOverride: Position | null = $state(null);
+
 	$effect(() => {
-		if (position) {
-			group.position({
-				x: canvas.transform.canvasXPos(position.x),
-				y: canvas.transform.canvasYPos(position.y)
-			});
-			group.visible(true);
-		} else {
-			group.visible(false);
-		}
+		void position;
+		positionOverride = null;
 	});
 
-	/** Update color on selection change. */
-	$effect(() => {
-		shape?.fill(fillColor);
-		shape?.stroke(strokeColor);
-		shape?.strokeWidth(strokeWidth);
-		nameText.fill(nameTextFillColor);
-	});
+	/** The shape's current position in local (pre-pan-zoom) canvas pixels, or null if not placed. */
+	const canvasPosition = $derived(
+		positionOverride ??
+			(position
+				? {
+						x: canvas.transform.canvasXPos(position.x),
+						y: canvas.transform.canvasYPos(position.y)
+					}
+				: null)
+	);
 
-	/** Update name text on name change. */
-	$effect(() => {
-		nameText.text(name);
-		nameText.offsetX(nameText.width() / 2);
-		nameText.offsetY(nameText.height() + LABEL_OFFSET_PX);
-	});
+	const groupTransform = $derived(
+		canvasPosition
+			? `translate(${canvasPosition.x} ${canvasPosition.y}) rotate(${effectiveGeometry.rotation})`
+			: ''
+	);
 
-	/** Add events. */
+	/** Text label measurement. */
+	let textElement: SVGTextElement | undefined = $state();
+	/**
+	 * A reasonable pre-measurement estimate matching the font size below,
+	 * to avoid a visible jump before the first `getBBox()` measurement lands.
+	 */
+	let measuredTextHeight = $state(15);
+
 	$effect(() => {
-		if (editable) {
-			group.draggable(true);
-			shape?.on('mouseover', () => {
-				document.body.style.cursor = 'move';
-			});
-			shape?.on('mouseout', () => {
-				canvas.selectionGroup.setDocumentCursor();
-			});
-			group.on('dragmove', () => {
-				if (onTranslate) {
-					onTranslate({ x: group.x(), y: group.y() }, false);
-				}
-			});
-			group.on('dragend', () => {
-				group.position(canvas.gridManager.snapToGrid(group.position()));
-				if (onTranslate) {
-					onTranslate({ x: group.x(), y: group.y() }, true);
-				}
-			});
-			group.on('pointerclick', () => {
-				if (onClick) {
-					onClick();
-				}
-			});
-		} else {
-			group.draggable(false);
-			group.off('mouseover mouseout dragmove dragend pointerclick');
+		/** Re-measure whenever the rendered text content changes. */
+		void name;
+		void showName;
+		if (!textElement) return;
+		/**
+		 * getBBox() requires the element to already be rendered, unlike
+		 * Konva.Text's synchronous width()/height(), which is why this is
+		 * measured reactively after the fact rather than computed alongside
+		 * the text content itself.
+		 */
+		try {
+			measuredTextHeight = textElement.getBBox().height;
+		} catch {
+			/** Not yet measurable (e.g. not connected to a rendered document) - keep the previous estimate. */
 		}
 	});
+
+	const labelPosition = $derived({
+		x: canvas.transform.canvasXPos(labelTranslate.x),
+		y:
+			canvas.transform.canvasYPos(getGeometryHeight(effectiveGeometry) + labelTranslate.y) -
+			measuredTextHeight -
+			LABEL_OFFSET_PX
+	});
+
+	/** Dragging the shape. */
+	let dragPointerOffset: Position = { x: 0, y: 0 };
+	/**
+	 * Tracks whether the current press actually moved the shape, so a real
+	 * drag doesn't also fire `onClick` afterwards - the browser's native
+	 * `click` event fires after any pointerdown/pointerup pair on the same
+	 * captured element regardless of movement in between, unlike Konva's
+	 * own drag machinery, which suppressed its click event once a real
+	 * drag threshold was crossed.
+	 */
+	let dragOccurred = false;
+
+	function handlePointerDown(event: PointerEvent) {
+		if (!editable || !canvas.container.stageElement || !canvasPosition) return;
+		event.stopPropagation();
+		dragOccurred = false;
+		(event.currentTarget as Element).setPointerCapture(event.pointerId);
+		const pointerLocal = canvas.transform.localPixelPositionFromPointerEvent(
+			event,
+			canvas.container.stageElement
+		);
+		dragPointerOffset = {
+			x: pointerLocal.x - canvasPosition.x,
+			y: pointerLocal.y - canvasPosition.y
+		};
+		document.body.style.cursor = 'move';
+	}
+
+	function handlePointerMove(event: PointerEvent) {
+		if (!editable || !canvas.container.stageElement) return;
+		if (!(event.currentTarget as Element).hasPointerCapture(event.pointerId)) return;
+		dragOccurred = true;
+		const pointerLocal = canvas.transform.localPixelPositionFromPointerEvent(
+			event,
+			canvas.container.stageElement
+		);
+		positionOverride = {
+			x: pointerLocal.x - dragPointerOffset.x,
+			y: pointerLocal.y - dragPointerOffset.y
+		};
+		onTranslate?.(positionOverride, false);
+	}
+
+	function handlePointerUp(event: PointerEvent) {
+		if (!editable) return;
+		if (!(event.currentTarget as Element).hasPointerCapture(event.pointerId)) return;
+		(event.currentTarget as Element).releasePointerCapture(event.pointerId);
+		canvas.selectionGroup.setDocumentCursor();
+		if (positionOverride) {
+			positionOverride = canvas.gridManager.snapToGrid(positionOverride);
+			onTranslate?.(positionOverride, true);
+		}
+	}
+
+	function handlePointerEnter() {
+		if (!editable) return;
+		document.body.style.cursor = 'move';
+	}
+
+	function handlePointerLeave() {
+		if (!editable) return;
+		canvas.selectionGroup.setDocumentCursor();
+	}
+
+	function handleClick() {
+		if (dragOccurred) {
+			dragOccurred = false;
+			return;
+		}
+		/** Matches the original Konva behavior: clicks were only wired up while editable. */
+		if (!editable) return;
+		onClick?.();
+	}
+
+	function handleKeyDown(event: KeyboardEvent) {
+		if (!editable) return;
+		if (event.key === 'Enter' || event.key === ' ') {
+			event.preventDefault();
+			onClick?.();
+		}
+	}
 
 	/**
 	 * Wrap the container's onTransform to optimistically update
 	 * the shape before the geometry is updated in Triplit.
 	 */
 	function onTransform(newGeometry: GeometryUpdateCommand, transformOver: boolean) {
-		if (shape) {
-			updateShape(canvas, newGeometry, shape);
-		}
-		if (onTransformContainer) {
-			onTransformContainer(newGeometry, transformOver);
-		}
+		geometryOverride = { ...geometryOverride, ...newGeometry };
+		onTransformContainer?.(newGeometry, transformOver);
 	}
-
-	onDestroy(() => {
-		group.destroy();
-	});
 </script>
 
-{#if editable}
-	<EditableGeometryResizePoints
-		{canvasId}
-		{geometry}
-		{strokeColor}
-		{fillColor}
-		geometryGroup={group}
-		{onTransform}
-	/>
+{#if canvasPosition}
+	<!-- role is 'button' whenever tabindex is set; the linter can't statically resolve the conditional. -->
+	<!-- svelte-ignore a11y_no_noninteractive_tabindex -->
+	<g
+		data-layer-id={layerId}
+		transform={groupTransform}
+		style:cursor={editable ? 'move' : undefined}
+		onpointerdown={handlePointerDown}
+		onpointermove={handlePointerMove}
+		onpointerup={handlePointerUp}
+		onpointerenter={handlePointerEnter}
+		onpointerleave={handlePointerLeave}
+		onclick={handleClick}
+		onkeydown={handleKeyDown}
+		role={editable ? 'button' : undefined}
+		tabindex={editable ? 0 : undefined}
+	>
+		{#if shapeAttributes.type === 'RECTANGLE'}
+			<rect
+				x={shapeAttributes.x}
+				y={shapeAttributes.y}
+				width={shapeAttributes.width}
+				height={shapeAttributes.height}
+				fill={fillColor}
+				stroke={strokeColor}
+				stroke-width={strokeWidth}
+			/>
+		{:else if shapeAttributes.type === 'ELLIPSE'}
+			<ellipse
+				rx={shapeAttributes.rx}
+				ry={shapeAttributes.ry}
+				fill={fillColor}
+				stroke={strokeColor}
+				stroke-width={strokeWidth}
+			/>
+		{:else if shapeAttributes.type === 'POLYGON'}
+			<polygon
+				points={shapeAttributes.points}
+				fill={fillColor}
+				stroke={strokeColor}
+				stroke-width={strokeWidth}
+			/>
+		{:else if shapeAttributes.type === 'LINES'}
+			{#if shapeAttributes.closed}
+				<polygon
+					points={shapeAttributes.points}
+					fill={fillColor}
+					stroke={strokeColor}
+					stroke-width={strokeWidth}
+				/>
+			{:else}
+				<polyline
+					points={shapeAttributes.points}
+					fill="none"
+					stroke={strokeColor}
+					stroke-width={strokeWidth}
+				/>
+			{/if}
+		{/if}
+
+		{#if showName}
+			<text
+				bind:this={textElement}
+				x={labelPosition.x}
+				y={labelPosition.y}
+				text-anchor="middle"
+				dominant-baseline="hanging"
+				font-family="sans-serif"
+				font-size={15}
+				opacity={0.7}
+				fill={nameTextFillColor}
+			>
+				{name}
+			</text>
+		{/if}
+
+		{#if editable}
+			<EditableGeometryResizePoints
+				{canvasId}
+				geometry={effectiveGeometry}
+				{strokeColor}
+				{fillColor}
+				shapePosition={canvasPosition}
+				rotation={effectiveGeometry.rotation}
+				{onTransform}
+			/>
+		{/if}
+	</g>
 {/if}

@@ -1,9 +1,8 @@
 <script lang="ts">
-	import type { Vector2d } from 'konva/lib/types';
-
 	import {
 		type GeometryUpdateCommand,
 		type PlantingArea,
+		type Position,
 		geometryUpdate,
 		historySelect,
 		locationHistoryUpdate
@@ -35,7 +34,7 @@
 	 * Tracks the position in the location history at the
 	 * focused time and in this workspace in the timeline selection.
 	 */
-	let position: Vector2d | null = $derived.by(() => {
+	let position: Position | null = $derived.by(() => {
 		if (!plantingArea || !plantingArea.locationHistory) {
 			return null;
 		}
@@ -64,7 +63,7 @@
 	);
 
 	/** Update the location history on translation. */
-	function onTranslate(newPos: Vector2d) {
+	function onTranslate(newPos: Position) {
 		if (!plantingArea || !workspaceEditor.id) {
 			return;
 		}
