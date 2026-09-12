@@ -30,14 +30,9 @@ const maxScaleFactor = 10;
  * Context which handles canvas positioning and scaling.
  * @param container The container context.
  * @param draggable Whether the canvas may be panned by dragging its background.
- * @param strokeScale: The default value for strokeScaleEnabled for shapes.
  * @returns The transform context.
  */
-export function createCanvasTransform(
-	container: CanvasContainer,
-	draggable: boolean,
-	strokeScale: boolean
-) {
+export function createCanvasTransform(container: CanvasContainer, draggable: boolean) {
 	/** Runes. */
 	let scaleFactor: Position = $state({ x: 1, y: 1 });
 	let position: Position = $state({ x: 0, y: 0 });
@@ -49,8 +44,7 @@ export function createCanvasTransform(
 	/**
 	 * The transform attribute applied to the group wrapping every shape
 	 * and gridline, expressing the current pan/zoom as a single SVG
-	 * transform. This replaces the imperative `stage.scale()`/`stage.position()`
-	 * calls Konva required - Svelte's own reactivity keeps it in sync.
+	 * transform, kept reactively in sync with `position`/`scaleFactor`.
 	 */
 	const stageTransform = $derived(
 		`translate(${position.x} ${position.y}) scale(${scaleFactor.x} ${scaleFactor.y})`
@@ -123,11 +117,10 @@ export function createCanvasTransform(
 	/**
 	 * Converts a pointer event's screen position into local pixel space,
 	 * i.e. the same pre-pan-zoom pixel space `canvasXPos`/`canvasYPos`
-	 * produce. Konva's Stage used to perform this conversion invisibly as
-	 * part of its own hit-testing/drag pipeline; since the SVG stage
-	 * transform (translate + scale) is fully-owned app state rather than
-	 * an opaque nested transform, it is cheaper and simpler to invert it
-	 * directly here than to query `getScreenCTM()` on every pointer move.
+	 * produce. Since the SVG stage transform (translate + scale) is
+	 * fully-owned app state rather than an opaque nested transform, it is
+	 * cheaper and simpler to invert it directly here than to query
+	 * `getScreenCTM()` on every pointer move.
 	 * @param event The pointer event to convert.
 	 * @param containerElement The element the event's client coordinates are relative to (the root SVG).
 	 * @returns The equivalent position in local pixel space.
@@ -232,9 +225,6 @@ export function createCanvasTransform(
 		},
 		get position() {
 			return position;
-		},
-		get strokeScale() {
-			return strokeScale;
 		},
 		get draggable() {
 			return draggable;

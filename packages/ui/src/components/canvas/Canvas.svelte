@@ -19,8 +19,7 @@
 	/**
 	 * The container div's width/height are already tracked reactively via
 	 * `bind:clientWidth`/`bind:clientHeight` below, so no separate
-	 * ResizeObserver is needed here the way Konva's imperative
-	 * `stage.width()`/`stage.height()` push once required.
+	 * ResizeObserver is needed here.
 	 */
 	onMount(() => {
 		canvas.initialize();

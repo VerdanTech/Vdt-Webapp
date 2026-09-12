@@ -27,11 +27,11 @@
 
 	<PlantingAreas {canvasId} {plantingAreaLayerId}>
 		{#if worskpaceEditor.toolbox.isToolActive('plantingAreaCreate')}
-			<CreatePlantingAreaContainer {plantingAreaLayerId} />
+			<CreatePlantingAreaContainer />
 		{/if}
 
 		{#each plantingAreas as plantingArea}
-			<EditablePlantingAreaContainer {plantingArea} {plantingAreaLayerId} />
+			<EditablePlantingAreaContainer {plantingArea} />
 		{/each}
 	</PlantingAreas>
 </Canvas>

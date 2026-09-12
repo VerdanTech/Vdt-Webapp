@@ -40,7 +40,6 @@
 		{#each plantingAreas as plantingArea}
 			<StaticPlantingAreaContainer
 				{plantingArea}
-				layerId={plantingAreaLayerId}
 				canvasContext={verdagraphContext.layoutCanvasContext}
 				timelineSelection={verdagraphContext.timeline}
 			/>
@@ -48,10 +47,10 @@
 	</PlantingAreas>
 
 	<PlantsContainer {canvasId} {plantLayerId}>
-		<CreatePlantsContainer {workspaceId} {plantLayerId}></CreatePlantsContainer>
+		<CreatePlantsContainer {workspaceId}></CreatePlantsContainer>
 
 		{#each plants as plant}
-			<EditablePlantContainer {plant} {plantLayerId} />
+			<EditablePlantContainer {plant} />
 		{/each}
 	</PlantsContainer>
 </Canvas>

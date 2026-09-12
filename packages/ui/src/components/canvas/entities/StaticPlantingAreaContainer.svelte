@@ -8,12 +8,11 @@
 	} from '$components';
 
 	type Props = {
-		layerId: string;
 		plantingArea: PlantingArea;
 		canvasContext: CanvasContext;
 		timelineSelection: TimelineSelection;
 	};
-	let { layerId, plantingArea, canvasContext, timelineSelection }: Props = $props();
+	let { plantingArea, canvasContext, timelineSelection }: Props = $props();
 
 	/** Contexts. */
 	const canvasId = canvasContext.canvasId;
@@ -48,7 +47,6 @@ area in the workspace editor, ie., editable
 {#if plantingArea && plantingArea.geometry}
 	<PlantingAreaComponent
 		{canvasId}
-		{layerId}
 		name={plantingArea.name}
 		showName={true}
 		{position}

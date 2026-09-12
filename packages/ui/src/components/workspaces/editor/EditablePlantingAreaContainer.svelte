@@ -15,10 +15,9 @@
 	import { getWorkspaceEditorContext } from './workspaceEditorContext.svelte';
 
 	type Props = {
-		plantingAreaLayerId: string;
 		plantingArea: PlantingArea;
 	};
-	let { plantingAreaLayerId, plantingArea }: Props = $props();
+	let { plantingArea }: Props = $props();
 
 	/** Contexts. */
 	const ctx = getAppContext();
@@ -104,7 +103,6 @@ area in the workspace editor, ie., editable
 {#if plantingArea && plantingArea.geometry}
 	<PlantingAreaComponent
 		{canvasId}
-		layerId={plantingAreaLayerId}
 		name={plantingArea.name}
 		showName={true}
 		{position}

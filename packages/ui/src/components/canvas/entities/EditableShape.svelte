@@ -15,8 +15,6 @@
 	type Props = {
 		/** The ID of the canvas. */
 		canvasId: string;
-		/** The ID of the layer which holds the shape. Kept for caller compatibility; z-order is now plain DOM order. */
-		layerId: string;
 		/** Name of the planting area. Can be disabled */
 		name: string;
 		showName: boolean;
@@ -54,7 +52,6 @@
 	};
 	let {
 		canvasId,
-		layerId,
 		name,
 		showName = true,
 		position,
@@ -134,10 +131,9 @@
 		void showName;
 		if (!textElement) return;
 		/**
-		 * getBBox() requires the element to already be rendered, unlike
-		 * Konva.Text's synchronous width()/height(), which is why this is
-		 * measured reactively after the fact rather than computed alongside
-		 * the text content itself.
+		 * getBBox() requires the element to already be rendered, which is
+		 * why this is measured reactively after the fact rather than
+		 * computed alongside the text content itself.
 		 */
 		try {
 			measuredTextHeight = textElement.getBBox().height;
@@ -160,9 +156,7 @@
 	 * Tracks whether the current press actually moved the shape, so a real
 	 * drag doesn't also fire `onClick` afterwards - the browser's native
 	 * `click` event fires after any pointerdown/pointerup pair on the same
-	 * captured element regardless of movement in between, unlike Konva's
-	 * own drag machinery, which suppressed its click event once a real
-	 * drag threshold was crossed.
+	 * captured element regardless of movement in between.
 	 */
 	let dragOccurred = false;
 	/** True only while the pointer is captured and actively dragging, for the grab/grabbing cursor distinction. */
@@ -233,7 +227,6 @@
 			dragOccurred = false;
 			return;
 		}
-		/** Matches the original Konva behavior: clicks were only wired up while editable. */
 		if (!editable) return;
 		onClick?.();
 	}
@@ -260,7 +253,6 @@
 	<!-- role is 'button' whenever tabindex is set; the linter can't statically resolve the conditional. -->
 	<!-- svelte-ignore a11y_no_noninteractive_tabindex -->
 	<g
-		data-layer-id={layerId}
 		transform={groupTransform}
 		style:cursor={editable ? (isDragging ? 'grabbing' : 'grab') : undefined}
 		onpointerdown={handlePointerDown}

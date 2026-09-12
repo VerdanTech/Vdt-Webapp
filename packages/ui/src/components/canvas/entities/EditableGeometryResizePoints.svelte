@@ -32,12 +32,14 @@
 		$props();
 
 	const ATTRIBUTE_DECIMALS = 2;
+	const RESIZE_POINT_RADIUS_PX = 6;
+	const RESIZE_POINT_STROKE_WIDTH_PX = 3;
 
 	/** Retrieve canvas. */
 	const canvas = getContext<CanvasContext>(canvasId);
 
-	/** The canonical handle positions, in local canvas pixels relative to the shape's own (unrotated) origin. */
-	const canonicalPositions = $derived(
+	/** The committed handle positions, in local canvas pixels relative to the shape's own (unrotated) origin. */
+	const committedPositions = $derived(
 		getGeometryResizePoints(geometry).map((point) => ({
 			x: canvas.transform.canvasXPos(point.x),
 			y: canvas.transform.canvasYPos(point.y)
@@ -46,7 +48,7 @@
 
 	/**
 	 * While a handle is being dragged, its live position optimistically
-	 * overrides the canonical one computed from the (not-yet-updated)
+	 * overrides the committed one computed from the (not-yet-updated)
 	 * geometry prop - the same pattern `EditableShape` uses for the shape
 	 * itself, needed here for the same reason: no waiting on the Triplit
 	 * round trip to see the handle move.
@@ -55,7 +57,7 @@
 	let activeDragPosition: Position | null = $state(null);
 
 	const displayedPositions = $derived(
-		canonicalPositions.map((point, index) =>
+		committedPositions.map((point, index) =>
 			index === activeDragIndex && activeDragPosition ? activeDragPosition : point
 		)
 	);
@@ -179,10 +181,9 @@
 	/**
 	 * Converts a pointer event into the shape's own local, unrotated
 	 * coordinate frame (the same frame `getGeometryResizePoints` produces).
-	 * Konva's per-node dragging did this automatically via the scene
-	 * graph's transform inheritance, since the handles were nested inside
-	 * the shape's own (rotated) group; SVG pointer events don't carry that
-	 * inheritance, so the rotation has to be inverted manually here.
+	 * The shape's `<g>` applies a `rotate()` transform, so a pointer's
+	 * canvas-pixel offset from the shape's origin has to be rotated back
+	 * by the negated rotation to land in that same unrotated frame.
 	 * @param event The pointer event to convert.
 	 */
 	function pointerEventToShapeLocalPosition(event: PointerEvent): Position | null {
@@ -206,7 +207,7 @@
 		(event.currentTarget as Element).setPointerCapture(event.pointerId);
 		event.stopPropagation();
 		activeDragIndex = index;
-		activeDragPosition = canonicalPositions[index];
+		activeDragPosition = committedPositions[index];
 		/**
 		 * Unlike a shape's grab/grabbing distinction, a resize handle's
 		 * cursor stays the same directional arrow throughout the drag -
@@ -225,7 +226,18 @@
 		const localPosition = pointerEventToShapeLocalPosition(event);
 		if (!localPosition) return;
 
-		/** Constrain movement to the axis/behavior the current geometry type expects. */
+		/**
+		 * Constrain movement to the axis/behavior the current geometry type
+		 * expects (see the point diagrams in `entities/utils.ts`):
+		 * - RECTANGLE: corner points (even index) move freely in both axes;
+		 *   the top/bottom midpoints (1, 5) are locked to vertical movement,
+		 *   the left/right midpoints (3, 7) to horizontal.
+		 * - POLYGON: its single point is locked to vertical movement, since
+		 *   it only adjusts the radius.
+		 * - ELLIPSE: the top/bottom points (0, 2) are locked to vertical
+		 *   movement, the left/right points (1, 3) to horizontal.
+		 * - LINES: no case here - each point moves freely in both axes.
+		 */
 		switch (geometry.type) {
 			case 'RECTANGLE':
 				if (index % 2 !== 0) {
@@ -289,8 +301,8 @@
 	<circle
 		cx={point.x}
 		cy={point.y}
-		r={6}
-		stroke-width={3}
+		r={RESIZE_POINT_RADIUS_PX}
+		stroke-width={RESIZE_POINT_STROKE_WIDTH_PX}
 		stroke={strokeColor}
 		fill={fillColor}
 		style:cursor={getGeometryResizePointCursor(geometry, index)}

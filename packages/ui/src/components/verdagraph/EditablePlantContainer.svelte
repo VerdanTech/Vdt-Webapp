@@ -16,10 +16,9 @@
 	import createCommandHandler from '$state/commandHandler.svelte';
 
 	type Props = {
-		plantLayerId: string;
 		plant: Plant;
 	};
-	let { plantLayerId, plant }: Props = $props();
+	let { plant }: Props = $props();
 
 	/** Contexts. */
 	const ctx = getAppContext();
@@ -127,7 +126,6 @@ area in the workspace editor, ie., editable
 {#if plant && geometry && cultivar}
 	<PlantComponent
 		{canvasId}
-		layerId={plantLayerId}
 		name={cultivar.abbreviation}
 		showName={true}
 		{position}

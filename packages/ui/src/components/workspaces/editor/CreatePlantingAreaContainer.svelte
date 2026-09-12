@@ -3,11 +3,6 @@
 
 	import { PlantingArea, getWorkspaceEditorContext } from '$components';
 
-	type Props = {
-		plantingAreaLayerId: string;
-	};
-	let { plantingAreaLayerId }: Props = $props();
-
 	/** Contexts.*/
 	const workspaceEditor = getWorkspaceEditorContext();
 	const canvas = workspaceEditor.layoutCanvasContext;
@@ -58,7 +53,6 @@ creation tool is active.
 -->
 <PlantingArea
 	canvasId={canvas.canvasId}
-	layerId={plantingAreaLayerId}
 	name={$formData.name}
 	showName={true}
 	position={$formData.location.coordinate}

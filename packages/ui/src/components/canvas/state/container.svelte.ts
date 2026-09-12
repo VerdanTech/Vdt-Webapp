@@ -18,13 +18,6 @@ export function createCanvasContainer(canvasId: string) {
 	let width = $state(0);
 
 	/**
-	 * Used when the container is resized. The width/height runes are
-	 * bound directly from the container div, so no further action is
-	 * needed beyond notifying that initialization is complete.
-	 */
-	function onResize() {}
-
-	/**
 	 * Initializes the canvas.
 	 */
 	function initialize() {
@@ -63,8 +56,7 @@ export function createCanvasContainer(canvasId: string) {
 			pixelsPerMeter = newVal;
 		},
 
-		initialize,
-		onResize
+		initialize
 	};
 }
 export default createCanvasContainer;

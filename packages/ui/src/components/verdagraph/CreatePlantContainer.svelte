@@ -12,10 +12,9 @@
 
 	type Props = {
 		workspaceId: string;
-		plantLayerId: string;
 		plantIdx: number;
 	};
-	let { workspaceId, plantLayerId, plantIdx }: Props = $props();
+	let { workspaceId, plantIdx }: Props = $props();
 
 	/** Contexts.*/
 	const verdagraphContext = getVerdagraphContext();
@@ -109,7 +108,6 @@ a plant in the plants creation form.
 {#if geometry}
 	<Plant
 		canvasId={canvas.canvasId}
-		layerId={plantLayerId}
 		name={plant.cultivarName}
 		showName={true}
 		{position}

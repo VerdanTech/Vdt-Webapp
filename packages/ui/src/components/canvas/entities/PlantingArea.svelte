@@ -11,8 +11,6 @@
 	type Props = {
 		/** The ID of the canvas. */
 		canvasId: string;
-		/** The ID of the layer which holds the planting areas. */
-		layerId: string;
 		/** Name of the planting area. Can be disabled */
 		name: string;
 		showName: boolean;
@@ -46,7 +44,6 @@
 	};
 	let {
 		canvasId,
-		layerId,
 		name,
 		showName = true,
 		position,
@@ -86,7 +83,6 @@
 
 <EditableShape
 	{canvasId}
-	{layerId}
 	{name}
 	{showName}
 	{position}

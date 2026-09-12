@@ -67,8 +67,7 @@ export function createCanvasGridManager(
 	/**
 	 * The gridlines currently within the viewable area, recomputed
 	 * reactively whenever the pan/zoom transform, container size, or
-	 * gridline spacing changes. Replaces the previous approach of
-	 * destroying and rebuilding a Konva node tree by hand on every change.
+	 * gridline spacing changes.
 	 */
 	const visibleGridlines: Gridline[] = $derived.by(() => {
 		if (!container.initialized) {
@@ -165,8 +164,6 @@ export function createCanvasGridManager(
 
 	/** Functions. */
 
-	function initialize() {}
-
 	/**
 	 * Given a position, returns the closest position that matches a grid,
 	 * meaning that it lies on a gridline or equally between two gridlines,
@@ -199,7 +196,6 @@ export function createCanvasGridManager(
 		get visibleGridlines() {
 			return visibleGridlines;
 		},
-		initialize,
 		snapToGrid
 	};
 }

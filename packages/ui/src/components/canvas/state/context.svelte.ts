@@ -13,8 +13,6 @@ export * from './transform.svelte';
 type CanvasOptions = {
 	/** The draggable property for the stage. */
 	draggable?: boolean;
-	/** The default value for strokeScaleEnabled for shapes. */
-	strokeScale?: boolean;
 };
 
 /**
@@ -24,7 +22,6 @@ type CanvasOptions = {
  * @param canvasId Unique identifier for this canvas.
  * @param canvasWorkspaceId The ID of the workspace represented in the canvas.
  * @param mode Access to the ModeWatcher current store value.
- * @param strokeScale: The default value for strokeScaleEnabled for shapes.
  * @returns The canvas contexts.
  */
 export function createCanvasContext(
@@ -38,11 +35,7 @@ export function createCanvasContext(
 
 	/** Sub-contexts. */
 	const container = createCanvasContainer(canvasId);
-	const transform = createCanvasTransform(
-		container,
-		options.draggable || true,
-		options.strokeScale || true
-	);
+	const transform = createCanvasTransform(container, options.draggable ?? true);
 	const selectionGroup = createSelectionGroup();
 	const gridManager = createCanvasGridManager(container, transform);
 
