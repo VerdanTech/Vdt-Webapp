@@ -54,7 +54,7 @@ A nested tree of horizontal date-range bars, one pane each for Plants, PlantingW
 
 #### Plants pane
 
-Nested Cultivar → Plant, matching [Tree](#tree)'s sort order - a garden can easily have more Plants than fit on screen, and collapsing a Cultivar's group is what keeps that manageable structurally, rather than relying on selection alone to narrow things down.
+Nested Cultivar -> Plant, matching [Tree](#tree)'s sort order - a garden can easily have more Plants than fit on screen, and collapsing a Cultivar's group is what keeps that manageable structurally, rather than relying on selection alone to narrow things down.
 
 Each Plant is one row, collapsed by default to a single bar blending its `expectedLifespan` and `recordedLifespan` (recorded portion solid, expected portion dashed or outlined - see [Layout](#layout)). Expanding the row - the same expand/collapse used throughout the tree - splits it into two child bars, one per Lifespan, for comparing the full plan against the full recorded reality side by side.
 
@@ -68,7 +68,7 @@ A Plant belonging to an open DraftBucket renders with the same "ghost" styling a
 
 #### PlantingWindows pane
 
-Nested Environment → Cultivar → PlantingWindow, matching [Tree](#tree)'s sort order - Environment leads because it's what a PlantingWindow's date range is actually derived from (frost dates), and a garden typically has few distinct Environments to begin with.
+Nested Environment -> Cultivar -> PlantingWindow, matching [Tree](#tree)'s sort order - Environment leads because it's what a PlantingWindow's date range is actually derived from (frost dates), and a garden typically has few distinct Environments to begin with.
 
 #### Environment observations
 
@@ -146,7 +146,7 @@ The Layout currently shows one Workspace at a time. The motivating case for show
 
 Enabling a Workspace is the Toolbar's Workspaces toggle described above, defaulting to just `defaultSelectedWorkspaceId`. Each enabled Workspace gets its own resizable pane in the Layout - the same `Resizable.Pane` mechanism already used to split Tree/Calendar/Layout themselves, not a new docking system. Calendar's and the Layout's own underlying Plant/PlantingWindow queries simply broaden to every enabled Workspace rather than just the one.
 
-`locationHistory` already supports the actual transplant data-wise (each Location is already scoped to a `workspaceId`, so a Plant having locations across two Workspaces is nothing new). What's still open is the cross-pane drag itself - hit-testing a drag that crosses from one pane's canvas into another's. The Konva→SVG migration (see `AGENTS.md`) is complete, which already makes this considerably more tractable than converting pointer coordinates between separate Konva Stages would have been - each Workspace pane becoming its own positioned `<g>`/nested `<svg>` turns that hit-testing into ordinary DOM geometry. The cross-pane drag and multi-pane layout themselves are still unbuilt.
+`locationHistory` already supports the actual transplant data-wise (each Location is already scoped to a `workspaceId`, so a Plant having locations across two Workspaces is nothing new). What's still open is the cross-pane drag itself - hit-testing a drag that crosses from one pane's canvas into another's. Since each Workspace pane is a real, positioned `<g>`/nested `<svg>` (see `AGENTS.md`), that hit-testing is ordinary DOM geometry - the cross-pane drag and multi-pane layout themselves are still unbuilt.
 
 ## Timeline Selector
 
