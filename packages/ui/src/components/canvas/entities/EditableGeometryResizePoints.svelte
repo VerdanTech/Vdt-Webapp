@@ -6,7 +6,7 @@
 	import { roundToDecimalPlaces } from '$utils';
 
 	import type { CanvasContext } from '../state';
-	import { getGeometryResizePoints } from './utils';
+	import { getGeometryResizePointCursor, getGeometryResizePoints } from './utils';
 
 	type Props = {
 		/** The ID of the canvas. */
@@ -207,7 +207,14 @@
 		event.stopPropagation();
 		activeDragIndex = index;
 		activeDragPosition = canonicalPositions[index];
-		document.body.style.cursor = 'grab';
+		/**
+		 * Unlike a shape's grab/grabbing distinction, a resize handle's
+		 * cursor stays the same directional arrow throughout the drag -
+		 * matching how OS-native resize handles behave, since the cursor
+		 * already communicates the resize direction rather than "picking
+		 * something up".
+		 */
+		document.body.style.cursor = getGeometryResizePointCursor(geometry, index);
 	}
 
 	function handlePointerMove(event: PointerEvent, index: number) {
@@ -254,12 +261,19 @@
 		}
 		activeDragIndex = null;
 		activeDragPosition = null;
-		document.body.style.cursor = 'default';
+		/**
+		 * Unlike a dragged shape, a resize handle's own rendered position
+		 * just changed to the new resize location - it's very unlikely to
+		 * still be under the pointer, so reset to the canvas default
+		 * rather than optimistically reapplying the resize cursor.
+		 */
+		canvas.selectionGroup.setDocumentCursor();
 	}
 
-	function handlePointerEnter(event: PointerEvent) {
+	function handlePointerEnter(event: PointerEvent, index: number) {
 		event.stopPropagation();
-		document.body.style.cursor = 'grab';
+		if (activeDragIndex !== null) return;
+		document.body.style.cursor = getGeometryResizePointCursor(geometry, index);
 	}
 
 	function handlePointerLeave(event: PointerEvent) {
@@ -279,11 +293,11 @@
 		stroke-width={3}
 		stroke={strokeColor}
 		fill={fillColor}
-		style:cursor="grab"
+		style:cursor={getGeometryResizePointCursor(geometry, index)}
 		onpointerdown={(event) => handlePointerDown(event, index)}
 		onpointermove={(event) => handlePointerMove(event, index)}
 		onpointerup={(event) => handlePointerUp(event, index)}
-		onpointerenter={handlePointerEnter}
+		onpointerenter={(event) => handlePointerEnter(event, index)}
 		onpointerleave={handlePointerLeave}
 	/>
 {/each}

@@ -93,3 +93,51 @@ export function getGeometryResizePoints(
 		}
 	}
 }
+
+/** Standard 8-way CSS resize cursors, indexed by the RECTANGLE resize point diagram above. */
+const rectangleResizeCursors = [
+	'nwse-resize',
+	'ns-resize',
+	'nesw-resize',
+	'ew-resize',
+	'nwse-resize',
+	'ns-resize',
+	'nesw-resize',
+	'ew-resize'
+];
+
+/** Standard 4-way CSS resize cursors, indexed by the ELLIPSE resize point diagram above. */
+const ellipseResizeCursors = ['ns-resize', 'ew-resize', 'ns-resize', 'ew-resize'];
+
+/**
+ * Given a geometry and the index of one of its resize points (from
+ * `getGeometryResizePoints`), returns the CSS cursor that communicates
+ * which direction dragging that point resizes the shape - the standard
+ * convention visual editors use for resize handles (directional arrows),
+ * as opposed to the `grab`/`grabbing` hand used for freely repositioning
+ * a whole shape or panning the canvas.
+ *
+ * These cursors are fixed compass directions and don't rotate with the
+ * shape's own `rotation` - true rotation-following resize cursors would
+ * need a custom cursor image, since CSS only offers eight fixed angles.
+ * @param geometry The geometry the resize point belongs to.
+ * @param index The index of the resize point.
+ * @returns The CSS `cursor` value for that resize point.
+ */
+export function getGeometryResizePointCursor(
+	geometry: Omit<Geometry, 'id' | 'gardenId' | 'linesCoordinateIds' | 'date'>,
+	index: number
+): string {
+	switch (geometry.type) {
+		case 'RECTANGLE':
+			return rectangleResizeCursors[index];
+		case 'ELLIPSE':
+			return ellipseResizeCursors[index];
+		case 'POLYGON':
+			/** The only point is constrained to vertical movement (see handlePointerMove's axis constraints). */
+			return 'ns-resize';
+		case 'LINES':
+			/** Each point moves freely in both axes, unlike the constrained points above. */
+			return 'move';
+	}
+}

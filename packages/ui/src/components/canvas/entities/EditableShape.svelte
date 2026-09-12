@@ -165,11 +165,14 @@
 	 * drag threshold was crossed.
 	 */
 	let dragOccurred = false;
+	/** True only while the pointer is captured and actively dragging, for the grab/grabbing cursor distinction. */
+	let isDragging = $state(false);
 
 	function handlePointerDown(event: PointerEvent) {
 		if (!editable || !canvas.container.stageElement || !canvasPosition) return;
 		event.stopPropagation();
 		dragOccurred = false;
+		isDragging = true;
 		(event.currentTarget as Element).setPointerCapture(event.pointerId);
 		const pointerLocal = canvas.transform.localPixelPositionFromPointerEvent(
 			event,
@@ -179,7 +182,7 @@
 			x: pointerLocal.x - canvasPosition.x,
 			y: pointerLocal.y - canvasPosition.y
 		};
-		document.body.style.cursor = 'move';
+		document.body.style.cursor = 'grabbing';
 	}
 
 	function handlePointerMove(event: PointerEvent) {
@@ -201,7 +204,14 @@
 		if (!editable) return;
 		if (!(event.currentTarget as Element).hasPointerCapture(event.pointerId)) return;
 		(event.currentTarget as Element).releasePointerCapture(event.pointerId);
-		canvas.selectionGroup.setDocumentCursor();
+		isDragging = false;
+		/**
+		 * The pointer is still logically over the shape at the drop point,
+		 * so show the hover cursor rather than the tool-mode default - if
+		 * the drop point actually isn't over the shape, releasing capture
+		 * triggers a native pointerleave that corrects this via handlePointerLeave.
+		 */
+		document.body.style.cursor = 'grab';
 		if (positionOverride) {
 			positionOverride = canvas.gridManager.snapToGrid(positionOverride);
 			onTranslate?.(positionOverride, true);
@@ -209,12 +219,12 @@
 	}
 
 	function handlePointerEnter() {
-		if (!editable) return;
-		document.body.style.cursor = 'move';
+		if (!editable || isDragging) return;
+		document.body.style.cursor = 'grab';
 	}
 
 	function handlePointerLeave() {
-		if (!editable) return;
+		if (!editable || isDragging) return;
 		canvas.selectionGroup.setDocumentCursor();
 	}
 
@@ -252,7 +262,7 @@
 	<g
 		data-layer-id={layerId}
 		transform={groupTransform}
-		style:cursor={editable ? 'move' : undefined}
+		style:cursor={editable ? (isDragging ? 'grabbing' : 'grab') : undefined}
 		onpointerdown={handlePointerDown}
 		onpointermove={handlePointerMove}
 		onpointerup={handlePointerUp}

@@ -35,6 +35,7 @@
 		(event.currentTarget as Element).setPointerCapture(event.pointerId);
 		isPanning = true;
 		lastPointerPosition = { x: event.clientX, y: event.clientY };
+		document.body.style.cursor = 'grabbing';
 	}
 
 	function handlePointerMove(event: PointerEvent) {
@@ -51,13 +52,16 @@
 		(event.currentTarget as Element).releasePointerCapture(event.pointerId);
 		isPanning = false;
 		lastPointerPosition = null;
+		canvas.selectionGroup.setDocumentCursor();
 	}
 
 	function handlePointerEnter() {
+		if (isPanning) return;
 		canvas.selectionGroup.setDocumentCursor();
 	}
 
 	function handlePointerLeave() {
+		if (isPanning) return;
 		document.body.style.cursor = 'default';
 	}
 </script>
