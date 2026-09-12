@@ -1,6 +1,6 @@
-import Konva from 'konva';
-import type { Vector2d } from 'konva/lib/types';
 import { mode } from 'mode-watcher';
+
+import type { Position } from '@vdg-webapp/models';
 
 import { localStore } from '$state/localStore.svelte';
 import { getColor } from '$utils';
@@ -16,6 +16,18 @@ type GridManagerPersistedState = {
 	snapToGrid: boolean;
 	rightAngleConstraint: boolean;
 	metersPerBackgroundGridline: number;
+};
+
+/** A single gridline to render, in local (pre-pan-zoom) canvas pixels. */
+export type Gridline = {
+	/** Unique and stable across pan/zoom, so `{#each}` doesn't thrash DOM nodes. */
+	key: string;
+	x1: number;
+	y1: number;
+	x2: number;
+	y2: number;
+	color: string;
+	strokeWidth: number;
 };
 
 /**
@@ -42,10 +54,6 @@ export function createCanvasGridManager(
 	container: CanvasContainer,
 	transform: CanvasTransform
 ) {
-	/** Konva elements. */
-	let gridlinesLayer: Konva.Layer | null = null;
-	let backgroundGridlinesGroup: Konva.Group | null = null;
-
 	/** Runes. */
 	const config = localStore<GridManagerPersistedState>('layoutGridState', {
 		snapToGrid: true,
@@ -56,57 +64,25 @@ export function createCanvasGridManager(
 		container.pixelsPerMeter * config.value.metersPerBackgroundGridline
 	);
 
-	function initialize() {
-		gridlinesLayer = container.addLayer('gridlines');
-		backgroundGridlinesGroup = new Konva.Group();
-		gridlinesLayer.add(backgroundGridlinesGroup);
-
-		container.addResizeFunction(renderBackgroundGridlines);
-		transform.addTransformFunction(renderBackgroundGridlines);
-		renderBackgroundGridlines();
-	}
-
-	/** Functions. */
-
 	/**
-	 * Given a position, returns the closest position that matches a grid,
-	 * meaning that it lies on a gridline or equally between two gridlines,
-	 * with all other grids having a higher priority over the background grid.
-	 *
-	 * Returns the original position if snapping to grid is disabled.
-	 * @param pos The position to snap.
-	 * @returns The snapped position
+	 * The gridlines currently within the viewable area, recomputed
+	 * reactively whenever the pan/zoom transform, container size, or
+	 * gridline spacing changes.
 	 */
-	function snapToGrid(pos: Vector2d): Vector2d {
-		if (!config.value.snapToGrid) {
-			return pos;
-		}
-
-		/** TODO: support other grids than the background grid. */
-
-		return {
-			x: roundUpToStep(pos.x, pixelsPerBackgroundGridline / 2),
-			y: roundUpToStep(pos.y, pixelsPerBackgroundGridline / 2)
-		};
-	}
-
-	/**
-	 * Renders the background gridlines onto the gridlines layer.
-	 */
-	function renderBackgroundGridlines() {
-		if (!gridlinesLayer || !backgroundGridlinesGroup) {
-			return;
+	const visibleGridlines: Gridline[] = $derived.by(() => {
+		if (!container.initialized) {
+			return [];
 		}
 
 		/**
 		 * Calculate the coordinate range viewable in the canvas currently,
 		 * considering the canvas dimensions, position, and scaling.
 		 */
-		const viewableStartPosition = {
+		const viewableStartPosition: Position = {
 			x: -transform.position.x / transform.scaleFactor.x,
 			y: -transform.position.y / transform.scaleFactor.y
 		};
-		const viewableEndPosition = {
+		const viewableEndPosition: Position = {
 			x: viewableStartPosition.x + container.width / transform.scaleFactor.x,
 			y: viewableStartPosition.y + container.height / transform.scaleFactor.y
 		};
@@ -116,11 +92,11 @@ export function createCanvasGridManager(
 		 * and is a multiple of the spaces between gridlines, such that the gridlines stay at the same position
 		 * across renders.
 		 */
-		const startPosition = {
+		const startPosition: Position = {
 			x: roundDownToStep(viewableStartPosition.x, pixelsPerBackgroundGridline),
 			y: roundDownToStep(viewableStartPosition.y, pixelsPerBackgroundGridline)
 		};
-		const endPosition = {
+		const endPosition: Position = {
 			x: roundUpToStep(
 				viewableEndPosition.x + pixelsPerBackgroundGridline,
 				pixelsPerBackgroundGridline
@@ -141,9 +117,9 @@ export function createCanvasGridManager(
 
 		const gap = { x: pixelsPerBackgroundGridline, y: pixelsPerBackgroundGridline };
 
-		backgroundGridlinesGroup.destroyChildren();
+		const gridlines: Gridline[] = [];
 
-		/** Render horizontal gridlines. */
+		/** Horizontal gridlines. */
 		for (let i = 0; i <= numSegments.x; i++) {
 			const yPosition = startPosition.y + gap.x * i;
 			let color = getColor('neutral', 3, mode.current);
@@ -152,17 +128,18 @@ export function createCanvasGridManager(
 				color = getColor('neutral', 4, mode.current);
 				strokeWidth = 2;
 			}
-			backgroundGridlinesGroup.add(
-				new Konva.Line({
-					points: [startPosition.x, yPosition, endPosition.x, yPosition],
-					stroke: color,
-					strokeWidth: strokeWidth,
-					strokeScaleEnabled: false
-				})
-			);
+			gridlines.push({
+				key: `h-${yPosition}`,
+				x1: startPosition.x,
+				y1: yPosition,
+				x2: endPosition.x,
+				y2: yPosition,
+				color,
+				strokeWidth
+			});
 		}
 
-		/** Render vertical gridlines. */
+		/** Vertical gridlines. */
 		for (let i = 0; i <= numSegments.y; i++) {
 			const xPosition = startPosition.x + gap.y * i;
 			let color = getColor('neutral', 2, mode.current);
@@ -171,15 +148,42 @@ export function createCanvasGridManager(
 				color = getColor('neutral', 3, mode.current);
 				strokeWidth = 2;
 			}
-			backgroundGridlinesGroup.add(
-				new Konva.Line({
-					points: [xPosition, startPosition.y, xPosition, endPosition.y],
-					stroke: color,
-					strokeWidth: strokeWidth,
-					strokeScaleEnabled: false
-				})
-			);
+			gridlines.push({
+				key: `v-${xPosition}`,
+				x1: xPosition,
+				y1: startPosition.y,
+				x2: xPosition,
+				y2: endPosition.y,
+				color,
+				strokeWidth
+			});
 		}
+
+		return gridlines;
+	});
+
+	/** Functions. */
+
+	/**
+	 * Given a position, returns the closest position that matches a grid,
+	 * meaning that it lies on a gridline or equally between two gridlines,
+	 * with all other grids having a higher priority over the background grid.
+	 *
+	 * Returns the original position if snapping to grid is disabled.
+	 * @param pos The position to snap.
+	 * @returns The snapped position
+	 */
+	function snapToGrid(pos: Position): Position {
+		if (!config.value.snapToGrid) {
+			return pos;
+		}
+
+		/** TODO: support other grids than the background grid. */
+
+		return {
+			x: roundUpToStep(pos.x, pixelsPerBackgroundGridline / 2),
+			y: roundUpToStep(pos.y, pixelsPerBackgroundGridline / 2)
+		};
 	}
 
 	return {
@@ -189,7 +193,9 @@ export function createCanvasGridManager(
 		set config(newVal) {
 			config.value = newVal;
 		},
-		initialize,
+		get visibleGridlines() {
+			return visibleGridlines;
+		},
 		snapToGrid
 	};
 }

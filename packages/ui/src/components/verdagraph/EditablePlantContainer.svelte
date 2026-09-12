@@ -1,11 +1,10 @@
 <script lang="ts">
-	import type { Vector2d } from 'konva/lib/types';
-
 	import {
 		type Cultivar,
 		type GeometryHistoryUpdateCommand,
 		type GeometryUpdateCommand,
 		type Plant,
+		type Position,
 		geometryHistoryUpdate,
 		locationHistoryUpdate,
 		resolveActiveGeometry,
@@ -17,10 +16,9 @@
 	import createCommandHandler from '$state/commandHandler.svelte';
 
 	type Props = {
-		plantLayerId: string;
 		plant: Plant;
 	};
-	let { plantLayerId, plant }: Props = $props();
+	let { plant }: Props = $props();
 
 	/** Contexts. */
 	const ctx = getAppContext();
@@ -40,7 +38,7 @@
 		plant ? resolveActiveGeometry(plant, verdagraphContext.timeline.focusUtc) : null
 	);
 
-	let position: Vector2d | null = $derived.by(() => {
+	let position: Position | null = $derived.by(() => {
 		if (
 			activeLocation &&
 			activeLocation.value.workspaceId === canvasContext.workspaceId
@@ -65,7 +63,7 @@
 	);
 
 	/** Update the location history on translation. */
-	function onTranslate(newPos: Vector2d, movementOver: boolean) {
+	function onTranslate(newPos: Position, movementOver: boolean) {
 		if (!movementOver) {
 			return;
 		}
@@ -128,7 +126,6 @@ area in the workspace editor, ie., editable
 {#if plant && geometry && cultivar}
 	<PlantComponent
 		{canvasId}
-		layerId={plantLayerId}
 		name={cultivar.abbreviation}
 		showName={true}
 		{position}

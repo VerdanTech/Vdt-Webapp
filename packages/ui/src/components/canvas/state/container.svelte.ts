@@ -1,10 +1,6 @@
-import Konva from 'konva';
-
-import { AppError } from '@vdg-webapp/models';
-
 /**
- * Context which stores the Konva stage, container div sizing,
- * and layers.
+ * Context which stores the SVG root element reference and
+ * container div sizing.
  * @param canvasId The ID of the canvas context.
  * @returns The container context.
  */
@@ -13,10 +9,8 @@ export function createCanvasContainer(canvasId: string) {
 	const containerId = canvasId; /** ID of the container HTML element. */
 	let pixelsPerMeter = $state(100); /** The initial scale of rendering, pre-scaling. */
 
-	/** Konva. */
-	let stage: Konva.Stage | null = null;
-	const layers: Record<string, Konva.Layer> =
-		{}; /** Record to track references to layers. */
+	/** The root SVG element that all shapes are rendered within. */
+	let stageElement: SVGSVGElement | null = $state(null);
 
 	/** Runes. */
 	let initialized = $state(false);
@@ -24,75 +18,9 @@ export function createCanvasContainer(canvasId: string) {
 	let width = $state(0);
 
 	/**
-	 * An array of functions which, when the canvas is resized, are called.
-	 */
-	const resizeFunctions: Array<() => void> = [
-		/** Update the stage upon container resize. */
-		() => {
-			if (stage) {
-				stage.width(width);
-				stage.height(height);
-			}
-		}
-	];
-
-	/** Functions. */
-
-	/**
-	 * Adds a new layer to the canvas.
-	 * @param layerId Used as a key to retrieve the layer.
-	 * @returns The new layer.
-	 */
-	function addLayer(layerId: string): Konva.Layer {
-		if (!stage) {
-			throw new AppError('Attempted to add a layer when the canvas is uninitialized.');
-		}
-		layers[layerId] = new Konva.Layer();
-		stage.add(layers[layerId]);
-		return layers[layerId];
-	}
-
-	/**
-	 * Retrieves a layer from the canvas context.
-	 * @param layerId The ID of the layer.
-	 * @returns The retrieved layer.
-	 */
-	function getLayer(layerId: string): Konva.Layer {
-		if (layers[layerId]) {
-			return layers[layerId];
-		}
-
-		throw new AppError(
-			`Attempted to retrieve layer '${layerId}' which does not exist.`
-		);
-	}
-
-	/**
-	 * Used to execute the resize functions.
-	 */
-	function onResize() {
-		resizeFunctions.forEach((func) => func());
-	}
-
-	/**
-	 * Adds a new side-effect to resizing the canvas container.
-	 * @param func The function to add.
-	 */
-	function addResizeFunction(func: () => void) {
-		resizeFunctions.push(func);
-	}
-
-	/**
 	 * Initializes the canvas.
 	 */
 	function initialize() {
-		/** Initialize the stage. */
-		stage = new Konva.Stage({
-			container: containerId,
-			width: width,
-			height: height
-		});
-
 		initialized = true;
 	}
 
@@ -100,8 +28,11 @@ export function createCanvasContainer(canvasId: string) {
 		get containerId() {
 			return containerId;
 		},
-		get stage() {
-			return stage;
+		get stageElement() {
+			return stageElement;
+		},
+		set stageElement(newVal: SVGSVGElement | null) {
+			stageElement = newVal;
 		},
 		get pixelsPerMeter() {
 			return pixelsPerMeter;
@@ -125,11 +56,7 @@ export function createCanvasContainer(canvasId: string) {
 			pixelsPerMeter = newVal;
 		},
 
-		initialize,
-		addLayer,
-		getLayer,
-		onResize,
-		addResizeFunction
+		initialize
 	};
 }
 export default createCanvasContainer;

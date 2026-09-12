@@ -74,7 +74,6 @@
 		"canvas": "npm:@napi-rs/canvas@0.1.69",
 		"flexsearch": "^0.8.205",
 		"gray-matter": "^4.0.3",
-		"konva": "^9.3.20",
 		"melt": "^0.14.1",
 		"remove-markdown": "^0.6.2"
 	}

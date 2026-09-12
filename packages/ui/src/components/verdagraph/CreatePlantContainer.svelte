@@ -1,9 +1,8 @@
 <script lang="ts">
-	import type { Vector2d } from 'konva/lib/types';
-
 	import {
 		type Geometry,
 		type GeometryUpdateCommand,
+		type Position,
 		historySelect
 	} from '@vdg-webapp/models';
 
@@ -13,10 +12,9 @@
 
 	type Props = {
 		workspaceId: string;
-		plantLayerId: string;
 		plantIdx: number;
 	};
-	let { workspaceId, plantLayerId, plantIdx }: Props = $props();
+	let { workspaceId, plantIdx }: Props = $props();
 
 	/** Contexts.*/
 	const verdagraphContext = getVerdagraphContext();
@@ -51,7 +49,7 @@
 	 * Tracks the position in the location history at the
 	 * focused time and in this workspace in the timeline selection.
 	 */
-	let position: Vector2d | null = $derived.by(() => {
+	let position: Position | null = $derived.by(() => {
 		if (!location || location.workspaceId !== workspaceId) {
 			return null;
 		}
@@ -59,7 +57,7 @@
 		return { x: location.coordinate.x, y: location.coordinate.y };
 	});
 
-	function onTranslate(newPos: Vector2d) {
+	function onTranslate(newPos: Position) {
 		if (!location) {
 			return;
 		}
@@ -110,7 +108,6 @@ a plant in the plants creation form.
 {#if geometry}
 	<Plant
 		canvasId={canvas.canvasId}
-		layerId={plantLayerId}
 		name={plant.cultivarName}
 		showName={true}
 		{position}

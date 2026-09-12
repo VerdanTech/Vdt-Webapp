@@ -1,21 +1,14 @@
 <script lang="ts">
-	import type { Vector2d } from 'konva/lib/types';
-
-	import type { Geometry, GeometryUpdateCommand } from '@vdg-webapp/models';
+	import type { Geometry, GeometryUpdateCommand, Position } from '@vdg-webapp/models';
 
 	import { PlantingArea, getWorkspaceEditorContext } from '$components';
-
-	type Props = {
-		plantingAreaLayerId: string;
-	};
-	let { plantingAreaLayerId }: Props = $props();
 
 	/** Contexts.*/
 	const workspaceEditor = getWorkspaceEditorContext();
 	const canvas = workspaceEditor.layoutCanvasContext;
 	const { form: formData } = workspaceEditor.plantingAreaCreateForm.form;
 
-	function onTranslate(newPos: Vector2d) {
+	function onTranslate(newPos: Position) {
 		$formData.location.coordinate = {
 			x: canvas.transform.modelXPos(newPos.x),
 			y: canvas.transform.modelYPos(newPos.y)
@@ -60,7 +53,6 @@ creation tool is active.
 -->
 <PlantingArea
 	canvasId={canvas.canvasId}
-	layerId={plantingAreaLayerId}
 	name={$formData.name}
 	showName={true}
 	position={$formData.location.coordinate}

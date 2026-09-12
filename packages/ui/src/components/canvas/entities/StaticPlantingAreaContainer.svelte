@@ -1,7 +1,5 @@
 <script lang="ts">
-	import type { Vector2d } from 'konva/lib/types';
-
-	import { type PlantingArea, historySelect } from '@vdg-webapp/models';
+	import { type PlantingArea, type Position, historySelect } from '@vdg-webapp/models';
 
 	import {
 		type CanvasContext,
@@ -10,12 +8,11 @@
 	} from '$components';
 
 	type Props = {
-		layerId: string;
 		plantingArea: PlantingArea;
 		canvasContext: CanvasContext;
 		timelineSelection: TimelineSelection;
 	};
-	let { layerId, plantingArea, canvasContext, timelineSelection }: Props = $props();
+	let { plantingArea, canvasContext, timelineSelection }: Props = $props();
 
 	/** Contexts. */
 	const canvasId = canvasContext.canvasId;
@@ -24,7 +21,7 @@
 	 * Tracks the position in the location history at the
 	 * focused time and in this workspace in the timeline selection.
 	 */
-	let position: Vector2d | null = $derived.by(() => {
+	let position: Position | null = $derived.by(() => {
 		if (!plantingArea || !plantingArea.locationHistory) {
 			return null;
 		}
@@ -50,7 +47,6 @@ area in the workspace editor, ie., editable
 {#if plantingArea && plantingArea.geometry}
 	<PlantingAreaComponent
 		{canvasId}
-		{layerId}
 		name={plantingArea.name}
 		showName={true}
 		{position}

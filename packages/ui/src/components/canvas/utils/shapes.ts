@@ -1,178 +1,113 @@
-import Konva from 'konva';
-import type { ShapeConfig } from 'konva/lib/Shape';
-
-import {
-	AppError,
-	type Coordinate,
-	type Geometry,
-	type GeometryUpdateCommand
-} from '@vdg-webapp/models';
+import { AppError, type Geometry } from '@vdg-webapp/models';
 
 import type { CanvasContext } from '../state';
 
-/**
- * Union of supported shape types in Konva for geometry objects.
- */
-export type SupportedShape =
-	| Konva.Rect
-	| Konva.Ellipse
-	| Konva.RegularPolygon
-	| Konva.Line;
+/** A rectangle's SVG attributes, centered on its parent group's origin. */
+export type RectangleShapeAttributes = {
+	type: 'RECTANGLE';
+	x: number;
+	y: number;
+	width: number;
+	height: number;
+};
+
+/** An ellipse's SVG attributes, centered on its parent group's origin. */
+export type EllipseShapeAttributes = {
+	type: 'ELLIPSE';
+	rx: number;
+	ry: number;
+};
+
+/** A regular polygon's SVG attributes, centered on its parent group's origin. */
+export type PolygonShapeAttributes = {
+	type: 'POLYGON';
+	points: string;
+};
 
 /**
- * Constructs a Konva shape from geometry and position objects.
- * @param canvas The canvas context.
- * @param geometry The geometry of the shape. Must have the linesCoordinates included.
- * @param forceLinesClosed If true, the lines geometry will be closed regardless of its attributes.
- * @param config Any additional config to pass to the shape.
- * @param position The position of the shape, if any.
- * @returns The Konva shape. Null, if the geometry is not well-defined.
+ * A lines geometry's SVG attributes. Rendered as a `<polygon>` when closed
+ * (so it fills) and a `<polyline>` when open, since a `<polygon>` always
+ * visually closes its stroke even when not explicitly told to.
  */
-function getClosedOrUnclosedShape(
+export type LinesShapeAttributes = {
+	type: 'LINES';
+	closed: boolean;
+	points: string;
+};
+
+export type ShapeAttributes =
+	| RectangleShapeAttributes
+	| EllipseShapeAttributes
+	| PolygonShapeAttributes
+	| LinesShapeAttributes;
+
+/**
+ * Computes the vertices of a regular polygon centered on the origin,
+ * starting from the top, matching the orientation of the single POLYGON
+ * resize point in `entities/utils.ts`'s `getGeometryResizePoints`.
+ * SVG has no native regular-polygon primitive, so a `<polygon>`'s
+ * `points` attribute must be computed directly.
+ * @param numSides The number of sides of the polygon.
+ * @param radius The radius of the polygon, in canvas pixels.
+ * @returns A space-separated `points` attribute value.
+ */
+function getRegularPolygonPoints(numSides: number, radius: number): string {
+	const points: string[] = [];
+	for (let side = 0; side < numSides; side++) {
+		const angle = (side / numSides) * 2 * Math.PI - Math.PI / 2;
+		points.push(`${radius * Math.cos(angle)},${radius * Math.sin(angle)}`);
+	}
+	return points.join(' ');
+}
+
+/**
+ * Given a geometry, computes the SVG attributes needed to render it,
+ * in canvas pixels relative to the shape's own (already positioned
+ * and rotated) parent group.
+ * @param canvas The canvas context.
+ * @param geometry The geometry of the shape. Must have linesCoordinates included.
+ * @param forceLinesClosed If true, a LINES geometry renders closed regardless of its attributes.
+ * @returns The shape's SVG attributes.
+ */
+export function getShapeAttributes(
 	canvas: CanvasContext,
 	geometry: Omit<Geometry, 'id' | 'gardenId' | 'date' | 'linesCoordinateIds'>,
-	forceLinesClosed: boolean = false,
-	config?: Partial<ShapeConfig>,
-	position?: Coordinate
-): SupportedShape | null {
-	const commonShapeConfig: Partial<ShapeConfig> = {
-		x: canvas.transform.canvasXPos(position?.x || 0),
-		y: canvas.transform.canvasYPos(position?.y || 0),
-		strokeScaleEnabled: canvas.transform.strokeScale,
-		...config
-	};
-
+	forceLinesClosed: boolean = false
+): ShapeAttributes {
 	switch (geometry.type) {
-		case 'RECTANGLE':
-			return new Konva.Rect({
-				width: canvas.transform.canvasDistance(geometry.rectangleLength),
-				height: canvas.transform.canvasDistance(geometry.rectangleWidth),
-				offset: {
-					x: canvas.transform.canvasDistance(geometry.rectangleLength) / 2,
-					y: canvas.transform.canvasDistance(geometry.rectangleWidth) / 2
-				},
-				...commonShapeConfig
-			});
+		case 'RECTANGLE': {
+			const width = canvas.transform.canvasDistance(geometry.rectangleLength);
+			const height = canvas.transform.canvasDistance(geometry.rectangleWidth);
+			return { type: 'RECTANGLE', x: -width / 2, y: -height / 2, width, height };
+		}
 
-		case 'POLYGON':
-			return new Konva.RegularPolygon({
-				sides: geometry.polygonNumSides,
-				radius: canvas.transform.canvasDistance(geometry.polygonRadius),
-				...commonShapeConfig
-			});
+		case 'POLYGON': {
+			const radius = canvas.transform.canvasDistance(geometry.polygonRadius);
+			return {
+				type: 'POLYGON',
+				points: getRegularPolygonPoints(geometry.polygonNumSides, radius)
+			};
+		}
 
 		case 'ELLIPSE':
-			return new Konva.Ellipse({
-				radiusX: canvas.transform.canvasDistance(geometry.ellipseLength / 2),
-				radiusY: canvas.transform.canvasDistance(geometry.ellipseWidth / 2),
-				...commonShapeConfig
-			});
+			return {
+				type: 'ELLIPSE',
+				rx: canvas.transform.canvasDistance(geometry.ellipseLength / 2),
+				ry: canvas.transform.canvasDistance(geometry.ellipseWidth / 2)
+			};
 
-		case 'LINES':
-			return new Konva.Line({
-				points: geometry.linesCoordinates.reduce<number[]>((output, coordinate) => {
-					output.push(
-						canvas.transform.canvasXPos(coordinate.x),
-						canvas.transform.canvasYPos(coordinate.y)
-					);
-					return output;
-				}, []),
-				closed: geometry.linesClosed || forceLinesClosed,
-				...commonShapeConfig
-			});
+		case 'LINES': {
+			const closed = geometry.linesClosed || forceLinesClosed;
+			const points = geometry.linesCoordinates
+				.map(
+					(coordinate) =>
+						`${canvas.transform.canvasXPos(coordinate.x)},${canvas.transform.canvasYPos(coordinate.y)}`
+				)
+				.join(' ');
+			return { type: 'LINES', closed, points };
+		}
 	}
 
 	/** Should not reach here. */
 	throw new AppError('Geometry type undefined.');
-}
-
-/**
- * Constructs a Konva shape from geometry and position objects.
- * The resulting shape may be closed or unclosed.
- * @param canvas The canvas context.
- * @param geometry The geometry of the shape.
- * @param config Any additional config to pass to the shape.
- * @param position The position of the shape, if any.
- * @returns The Konva shape. Null, if the geometry is not well-defined.
- */
-export function getShape(
-	canvas: CanvasContext,
-	geometry: Omit<Geometry, 'id' | 'gardenId' | 'linesCoordinateIds' | 'date'>,
-	config?: Partial<ShapeConfig>,
-	position?: Coordinate
-): SupportedShape | null {
-	return getClosedOrUnclosedShape(canvas, geometry, false, config, position);
-}
-
-/**
- * Constructs a Konva shape from geometry and position objects.
- * The resulting shape is closed.
- * @param canvas The canvas context.
- * @param geometry The geometry of the shape.
- * @param config Any additional config to pass to the shape.
- * @param position The position of the shape, if any.
- * @returns The Konva shape. Null, if the geometry is not well-defined.
- */
-export function getClosedShape(
-	canvas: CanvasContext,
-	geometry: Omit<Geometry, 'id' | 'gardenId' | 'linesCoordinateIds' | 'date'>,
-	config?: Partial<ShapeConfig>,
-	position?: Coordinate
-): SupportedShape | null {
-	return getClosedOrUnclosedShape(canvas, geometry, true, config, position);
-}
-
-/**
- * Given an existing shape object and a partial of geometry
- * updates, update the shape object.
- * @param canvas The canvas context of the shape.
- * @param newGeometry The new geometry updated attributes.
- * @param shape The existing shape object.
- */
-export function updateShape(
-	canvas: CanvasContext,
-	newGeometry: GeometryUpdateCommand,
-	shape: SupportedShape
-) {
-	if (shape instanceof Konva.Rect) {
-		if (newGeometry.rectangleLength) {
-			shape.width(canvas.transform.canvasDistance(newGeometry.rectangleLength));
-			shape.offsetX(canvas.transform.canvasDistance(newGeometry.rectangleLength) / 2);
-		}
-		if (newGeometry.rectangleWidth) {
-			shape.height(canvas.transform.canvasDistance(newGeometry.rectangleWidth));
-			shape.offsetY(canvas.transform.canvasDistance(newGeometry.rectangleWidth) / 2);
-		}
-	} else if (shape instanceof Konva.RegularPolygon) {
-		if (newGeometry.polygonNumSides) {
-			shape.sides(newGeometry.polygonNumSides);
-		}
-		if (newGeometry.polygonRadius) {
-			shape.radius(canvas.transform.canvasDistance(newGeometry.polygonRadius));
-		}
-	} else if (shape instanceof Konva.Ellipse) {
-		if (newGeometry.ellipseLength) {
-			shape.radiusX(canvas.transform.canvasDistance(newGeometry.ellipseLength / 2));
-		}
-		if (newGeometry.ellipseWidth) {
-			shape.radiusY(canvas.transform.canvasDistance(newGeometry.ellipseWidth / 2));
-		}
-	} else if (shape instanceof Konva.Line) {
-		if (newGeometry.linesCoordinates) {
-			shape.points(
-				newGeometry.linesCoordinates.reduce<number[]>((output, coordinate) => {
-					output.push(
-						canvas.transform.canvasXPos(coordinate.x),
-						canvas.transform.canvasYPos(coordinate.y)
-					);
-					return output;
-				}, [])
-			);
-		}
-		if (newGeometry.linesClosed) {
-			shape.closed(newGeometry.linesClosed);
-		}
-	} else {
-		throw new AppError('Geometry shape of an unsupported type.');
-	}
 }

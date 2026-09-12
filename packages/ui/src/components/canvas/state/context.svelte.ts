@@ -13,8 +13,6 @@ export * from './transform.svelte';
 type CanvasOptions = {
 	/** The draggable property for the stage. */
 	draggable?: boolean;
-	/** The default value for strokeScaleEnabled for shapes. */
-	strokeScale?: boolean;
 };
 
 /**
@@ -24,7 +22,6 @@ type CanvasOptions = {
  * @param canvasId Unique identifier for this canvas.
  * @param canvasWorkspaceId The ID of the workspace represented in the canvas.
  * @param mode Access to the ModeWatcher current store value.
- * @param strokeScale: The default value for strokeScaleEnabled for shapes.
  * @returns The canvas contexts.
  */
 export function createCanvasContext(
@@ -38,12 +35,8 @@ export function createCanvasContext(
 
 	/** Sub-contexts. */
 	const container = createCanvasContainer(canvasId);
-	const transform = createCanvasTransform(
-		container,
-		options.draggable || true,
-		options.strokeScale || true
-	);
-	const selectionGroup = createSelectionGroup(container);
+	const transform = createCanvasTransform(container, options.draggable ?? true);
+	const selectionGroup = createSelectionGroup();
 	const gridManager = createCanvasGridManager(container, transform);
 
 	/**
@@ -57,13 +50,11 @@ export function createCanvasContext(
 	}
 
 	/**
-	 * Destroy the canvas.
+	 * Destroy the canvas. No-op now that there is no imperative Stage
+	 * instance to tear down, kept so `resetCanvasContext` has a stable
+	 * function to call.
 	 */
-	function destroy() {
-		if (container.stage) {
-			container.stage.destroy();
-		}
-	}
+	function destroy() {}
 
 	return {
 		get canvasId() {

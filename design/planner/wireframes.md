@@ -54,7 +54,7 @@ A nested tree of horizontal date-range bars, one pane each for Plants, PlantingW
 
 #### Plants pane
 
-Nested Cultivar → Plant, matching [Tree](#tree)'s sort order - a garden can easily have more Plants than fit on screen, and collapsing a Cultivar's group is what keeps that manageable structurally, rather than relying on selection alone to narrow things down.
+Nested Cultivar -> Plant, matching [Tree](#tree)'s sort order - a garden can easily have more Plants than fit on screen, and collapsing a Cultivar's group is what keeps that manageable structurally, rather than relying on selection alone to narrow things down.
 
 Each Plant is one row, collapsed by default to a single bar blending its `expectedLifespan` and `recordedLifespan` (recorded portion solid, expected portion dashed or outlined - see [Layout](#layout)). Expanding the row - the same expand/collapse used throughout the tree - splits it into two child bars, one per Lifespan, for comparing the full plan against the full recorded reality side by side.
 
@@ -68,7 +68,7 @@ A Plant belonging to an open DraftBucket renders with the same "ghost" styling a
 
 #### PlantingWindows pane
 
-Nested Environment → Cultivar → PlantingWindow, matching [Tree](#tree)'s sort order - Environment leads because it's what a PlantingWindow's date range is actually derived from (frost dates), and a garden typically has few distinct Environments to begin with.
+Nested Environment -> Cultivar -> PlantingWindow, matching [Tree](#tree)'s sort order - Environment leads because it's what a PlantingWindow's date range is actually derived from (frost dates), and a garden typically has few distinct Environments to begin with.
 
 #### Environment observations
 
@@ -146,7 +146,7 @@ The Layout currently shows one Workspace at a time. The motivating case for show
 
 Enabling a Workspace is the Toolbar's Workspaces toggle described above, defaulting to just `defaultSelectedWorkspaceId`. Each enabled Workspace gets its own resizable pane in the Layout - the same `Resizable.Pane` mechanism already used to split Tree/Calendar/Layout themselves, not a new docking system. Calendar's and the Layout's own underlying Plant/PlantingWindow queries simply broaden to every enabled Workspace rather than just the one.
 
-`locationHistory` already supports the actual transplant data-wise (each Location is already scoped to a `workspaceId`, so a Plant having locations across two Workspaces is nothing new). What's still open is the cross-pane drag itself - hit-testing a drag that crosses from one pane's canvas into another's. Worth investigating alongside the planned Konva→SVG migration (see `AGENTS.md`), since DOM-native panes make that hit-testing considerably more tractable than converting pointer coordinates between separate Konva Stages.
+`locationHistory` already supports the actual transplant data-wise (each Location is already scoped to a `workspaceId`, so a Plant having locations across two Workspaces is nothing new). What's still open is the cross-pane drag itself - hit-testing a drag that crosses from one pane's canvas into another's. Since each Workspace pane is a real, positioned `<g>`/nested `<svg>` (see `AGENTS.md`), that hit-testing is ordinary DOM geometry - the cross-pane drag and multi-pane layout themselves are still unbuilt.
 
 ## Timeline Selector
 
@@ -162,7 +162,7 @@ A three-thumb range slider - begin, focus, end - over a scrollable slider window
 
 Dragging the focus thumb is meant to move the whole selection together - begin, focus, and end all shift by the same amount, preserving both the range's length and the focus-to-edge distances. The current implementation (`timelineSelection.svelte.ts`'s `updateSlider`) doesn't quite do this: it clamps the new begin and end values independently against the slider's own min/max bounds, rather than clamping the translation itself. The effect matches a real bug report - once the end of the range reaches the edge of the slider, it gets pinned there while focus keeps moving, so continuing to drag focus shortens the range instead of stopping the translation.
 
-The fix is to clamp once, on the delta, not twice, on each endpoint: compute how far focus moved, reduce that delta if applying it to *either* begin or end would exceed the slider's bounds, then apply the same (possibly reduced) delta to begin, focus, and end together. The range stops translating cleanly at the boundary - it never shrinks.
+The fix is to clamp once, on the delta, not twice, on each endpoint: compute how far focus moved, reduce that delta if applying it to _either_ begin or end would exceed the slider's bounds, then apply the same (possibly reduced) delta to begin, focus, and end together. The range stops translating cleanly at the boundary - it never shrinks.
 
 ## Toolbox Tools
 

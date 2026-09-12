@@ -66,7 +66,6 @@
 		"@vdg-webapp/ui": "workspace:*",
 		"@vdg-webapp/models": "workspace:*",
 		"axios": "^1.8.2",
-		"konva": "^9.3.18",
 		"melt": "^0.14.1"
 	}
 }

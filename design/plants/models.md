@@ -99,7 +99,7 @@ Not a stored field: a Plant's growth stage is computed from whichever Lifespan i
 - **dormant**: biennial/perennial plants only, from a `plant-dormancy-enter` to the next `plant-growth-enter`.
 - **expired**: after `plant-expiry`.
 
-A plant that flowers and fruits every year doesn't re-germinate each year - it exits dormancy (`plant-growth-enter`) and repeats vegetative → producing before going dormant again. Because `observations` has no cardinality limit (see [Lifespan](#observations)), this falls out without any special handling: a long-lived perennial simply accumulates one `plant-flower` and one `plant-dormancy-enter`/`plant-growth-enter` pair per year, and stage computation just reads whichever ones are nearest the focused day. The sequence for such a plant is `seed` once, then `[vegetative → producing → dormant]` repeating once per year, ending in `expired` only when the Plant is actually removed.
+A plant that flowers and fruits every year doesn't re-germinate each year - it exits dormancy (`plant-growth-enter`) and repeats vegetative -> producing before going dormant again. Because `observations` has no cardinality limit (see [Lifespan](#observations)), this falls out without any special handling: a long-lived perennial simply accumulates one `plant-flower` and one `plant-dormancy-enter`/`plant-growth-enter` pair per year, and stage computation just reads whichever ones are nearest the focused day. The sequence for such a plant is `seed` once, then `[vegetative -> producing -> dormant]` repeating once per year, ending in `expired` only when the Plant is actually removed.
 
 ## Relationship to origin
 

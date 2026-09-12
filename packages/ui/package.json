@@ -82,7 +82,6 @@
 		"@triplit/client": "^1.0.43",
 		"@triplit/svelte": "^1.0.43",
 		"@vdg-webapp/models": "workspace:*",
-		"konva": "^9.3.20",
 		"melt": "^0.44.0"
 	}
 }
