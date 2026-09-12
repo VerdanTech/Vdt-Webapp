@@ -252,9 +252,19 @@ export function createTimelineSelection(timeline: TimelineContext) {
 
 		/** Drag the selection along with the focus. */
 		if (newVal[1] != sliderValue[1]) {
-			const deltaDays = newVal[1] - sliderValue[1];
-			newVal[0] = Math.max(newVal[0] + deltaDays, minSliderValue);
-			newVal[2] = Math.min(newVal[2] + deltaDays, maxSliderValue);
+			let deltaDays = newVal[1] - sliderValue[1];
+			/** Reduce the delta once, rather than clamping each endpoint
+			 * independently, so the whole range translates together and
+			 * stops at the boundary instead of shrinking. */
+			if (newVal[0] + deltaDays < minSliderValue) {
+				deltaDays = minSliderValue - newVal[0];
+			}
+			if (newVal[2] + deltaDays > maxSliderValue) {
+				deltaDays = maxSliderValue - newVal[2];
+			}
+			newVal[0] = newVal[0] + deltaDays;
+			newVal[1] = sliderValue[1] + deltaDays;
+			newVal[2] = newVal[2] + deltaDays;
 		}
 
 		/** Update the selection. */
