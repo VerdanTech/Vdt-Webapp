@@ -29,6 +29,12 @@ const translateRangeInterval = 50;
 const forwardTranslateRange = { days: 3 };
 const backwardTranslateRange = { days: -1 };
 
+/** The delta of each begin/end edge expansion step (see beginSelectionAtEdge/endSelectionAtEdge below). */
+const edgeExpandStep: DateDuration = { days: 3 };
+
+/** Which slider thumb, if any, is the one currently being dragged. */
+type SliderDragMode = 'focus' | 'begin' | 'end' | null;
+
 export function createTimelineSelection(timeline: TimelineContext) {
 	/**
 	 * Selection.
@@ -87,12 +93,19 @@ export function createTimelineSelection(timeline: TimelineContext) {
 			calculateDeltaDays(endSelection, beginSlider)
 		];
 	});
+	/** Which slider thumb is currently being dragged, if any. Set by
+	 * updateSlider while dragging, cleared by endDrag once the drag
+	 * commits. Gates the two auto-expand mechanisms below so each only
+	 * reacts to the thumb that's actually being dragged, rather than to
+	 * whichever selection bound happens to sit at the slider's edge. */
+	let dragMode: SliderDragMode = $state(null);
+
 	/** Store whether the slider is close enough to the edge to move the range. */
 	const translateSliderForward: boolean = $derived(
-		maxSliderValue - sliderValue[2] < translateRangeThreshold
+		dragMode === 'focus' && maxSliderValue - sliderValue[2] < translateRangeThreshold
 	);
 	const translateSliderBackward: boolean = $derived(
-		sliderValue[0] - minSliderValue < translateRangeThreshold
+		dragMode === 'focus' && sliderValue[0] - minSliderValue < translateRangeThreshold
 	);
 	let sliderExpandIntervalId: NodeJS.Timeout | null = null;
 	$effect(() => {
@@ -120,6 +133,55 @@ export function createTimelineSelection(timeline: TimelineContext) {
 			if (sliderExpandIntervalId) {
 				clearInterval(sliderExpandIntervalId);
 				sliderExpandIntervalId = null;
+			}
+		}
+	});
+
+	/** Whether the begin/end selection thumb is pinned at the slider's
+	 * displayed edge while actually being dragged. Growing beginSlider/
+	 * endSlider alone (without also moving beginSelection/endSelection)
+	 * would just push the selection off this pinned state after one tick,
+	 * which is what the two effects below rely on to keep re-triggering
+	 * continuously for as long as the thumb is genuinely held at the edge. */
+	const beginSelectionAtEdge: boolean = $derived(
+		dragMode === 'begin' && sliderValue[0] <= minSliderValue
+	);
+	const endSelectionAtEdge: boolean = $derived(
+		dragMode === 'end' && sliderValue[2] >= maxSliderValue
+	);
+	let edgeExpandIntervalId: NodeJS.Timeout | null = null;
+	$effect(() => {
+		if (beginSelectionAtEdge) {
+			if (edgeExpandIntervalId === null) {
+				edgeExpandIntervalId = setInterval(() => {
+					/** Move beginSelection together with beginSlider so the
+					 * selection actually grows, not just the displayed range.
+					 * focus and endSelection are untouched - they're their
+					 * own independent state, not derived from beginSlider,
+					 * so they stay anchored automatically. */
+					beginSelection = beginSelection.subtract(edgeExpandStep);
+					beginSlider = beginSlider.subtract(edgeExpandStep);
+				}, translateRangeInterval);
+			}
+		} else {
+			if (edgeExpandIntervalId) {
+				clearInterval(edgeExpandIntervalId);
+				edgeExpandIntervalId = null;
+			}
+		}
+	});
+	$effect(() => {
+		if (endSelectionAtEdge) {
+			if (edgeExpandIntervalId === null) {
+				edgeExpandIntervalId = setInterval(() => {
+					endSelection = endSelection.add(edgeExpandStep);
+					endSlider = endSlider.add(edgeExpandStep);
+				}, translateRangeInterval);
+			}
+		} else {
+			if (edgeExpandIntervalId) {
+				clearInterval(edgeExpandIntervalId);
+				edgeExpandIntervalId = null;
 			}
 		}
 	});
@@ -250,8 +312,17 @@ export function createTimelineSelection(timeline: TimelineContext) {
 			return;
 		}
 
+		const isFocusDrag = newVal[1] != sliderValue[1];
+		if (isFocusDrag) {
+			dragMode = 'focus';
+		} else if (newVal[0] != sliderValue[0]) {
+			dragMode = 'begin';
+		} else if (newVal[2] != sliderValue[2]) {
+			dragMode = 'end';
+		}
+
 		/** Drag the selection along with the focus. */
-		if (newVal[1] != sliderValue[1]) {
+		if (isFocusDrag) {
 			let deltaDays = newVal[1] - sliderValue[1];
 			/** Reduce the delta once, rather than clamping each endpoint
 			 * independently, so the whole range translates together and
@@ -267,10 +338,20 @@ export function createTimelineSelection(timeline: TimelineContext) {
 			newVal[2] = newVal[2] + deltaDays;
 		}
 
-		/** Update the selection. */
+		/** Update the selection. Once a begin/end thumb is pinned at the
+		 * edge, beginSelectionAtEdge/endSelectionAtEdge take over growing
+		 * that side continuously via their own interval - this just keeps
+		 * committing whatever bits-ui reports for the thumb being dragged. */
 		beginSelection = sliderValueToDateValue(newVal[0]);
 		focus = sliderValueToDateValue(newVal[1]);
 		endSelection = sliderValueToDateValue(newVal[2]);
+	}
+
+	/** Called when a slider drag ends (onValueCommit), so the edge-pinned
+	 * auto-expand effects stop rather than continuing to run based on a
+	 * stale dragMode from the last drag. */
+	function endDrag() {
+		dragMode = null;
 	}
 
 	function disable() {
@@ -324,6 +405,7 @@ export function createTimelineSelection(timeline: TimelineContext) {
 		translate,
 		sliderValueToDateValue,
 		updateSlider,
+		endDrag,
 		disable,
 		enable
 	};
