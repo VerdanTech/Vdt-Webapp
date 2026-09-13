@@ -39,6 +39,7 @@
 			selection.updateSlider(newVal);
 		}
 	}
+	onValueCommit={() => selection.endDrag()}
 	min={selection.minSliderValue}
 	max={selection.maxSliderValue}
 	disabled={selection.disabled}
